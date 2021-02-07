@@ -3,12 +3,29 @@
 (use-package yasnippet)
 
 (use-package company
-  :config
-  (global-company-mode))
+  :bind (("M-/" . company-complete)
+         ("C-M-i" . company-complete)
+         :map company-mode-map
+         ("<backtab>" . company-yasnippet)
+         :map company-active-map
+         ("C-p" . company-select-previous)
+         ("C-n" . company-select-next)
+         ("<tab>" . company-complete-common-or-cycle)
+         ("<backtab>" . my-company-yasnippet)
+         :map company-search-map
+         ("C-p" . company-select-previous)
+         ("C-n" . company-select-next))
+  :hook (after-init . global-company-mode)
+  :custom
+  (company-tooltip-limit 10)
+  (company-tooltip-align-annotations t)
+  (company-tooltip-width-grow-only t)
+  (company-dabbrev-downcase nil)
+  (company-global-modes '(not dired-mode dired-sidebar-mode))
+  (company-require-match nil))
 
 (use-package ivy
   :init
-  (setq ivy-count-format "")
   (setq ivy-initial-inputs-alist nil)
   (ivy-mode 1))
 
