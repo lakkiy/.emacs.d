@@ -2,8 +2,9 @@
 
 (use-package go-mode
   :hook (before-save . gofmt-before-save)
-  :config
+  :init
   (setq gofmt-command "goimports")
+  :config
   (with-eval-after-load 'exec-path-from-shell
     (exec-path-from-shell-copy-envs '("GOPATH" "GO111MODULE" "GOPROXY")))
 
