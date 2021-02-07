@@ -13,4 +13,5 @@ private.el
 org-roam.db
 bookmarks
 newsticker
+hackernews
 places
