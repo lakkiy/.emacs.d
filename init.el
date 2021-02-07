@@ -6,6 +6,7 @@
 (require 'init-git)
 (require 'init-org)
 (require 'init-window)
+(require 'init-tree)
 (require 'init-lisp)
 
 (require 'init-lsp)
