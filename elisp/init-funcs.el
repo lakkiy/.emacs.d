@@ -1,5 +1,17 @@
 ;;; -*- lexical-binding: t -*-
 
+(defconst sys/macp
+  (eq system-type 'darwin)
+  "Are we running on a Mac system?")
+
+(defconst sys/mac-x-p
+  (and (display-graphic-p) sys/macp)
+  "Are we running under X on a Mac system?")
+
+(defconst sys/win32p
+  (eq system-type 'windows-nt)
+  "Are we running on a WinTel system?")
+
 (defun font-installed-p (font-name)
   "Check if font with FONT-NAME is available."
   (find-font (font-spec :name font-name)))
