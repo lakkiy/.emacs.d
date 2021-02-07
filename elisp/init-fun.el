@@ -24,4 +24,10 @@
 
 (use-package dockerfile-mode)
 
+(use-package hackernews
+  :straight
+  (hackernews :type git
+              :host github
+              :repo "clarete/hackernews.el"))
+
 (provide 'init-fun)
