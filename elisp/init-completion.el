@@ -11,7 +11,6 @@
          ("C-p" . company-select-previous)
          ("C-n" . company-select-next)
          ("<tab>" . company-complete-common-or-cycle)
-         ("<backtab>" . my-company-yasnippet)
          :map company-search-map
          ("C-p" . company-select-previous)
          ("C-n" . company-select-next))
@@ -21,7 +20,7 @@
   (company-tooltip-align-annotations t)
   (company-tooltip-width-grow-only t)
   (company-dabbrev-downcase nil)
-  (company-global-modes '(not dired-mode dired-sidebar-mode))
+  (company-global-modes '(not org-mode dired-mode dired-sidebar-mode))
   (company-require-match nil))
 
 (use-package ivy

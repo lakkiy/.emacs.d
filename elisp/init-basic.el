@@ -23,6 +23,11 @@
            when (font-installed-p font)
            return (set-fontset-font t '(#x4e00 . #x9fff) font)))
 
+(use-package elec-pair
+  :straight (:type built-in)
+  :hook (after-init . electric-pair-mode)
+  :init (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
+
 (use-package saveplace
   :straight (:type built-in)
   :hook (after-init . save-place-mode))
