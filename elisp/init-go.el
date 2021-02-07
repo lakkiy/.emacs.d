@@ -1,7 +1,9 @@
 ;;; -*- lexical-binding: t -*-
 
 (use-package go-mode
+  :hook (before-save . gofmt-before-save)
   :config
+  (setq gofmt-command "goimports")
   (with-eval-after-load 'exec-path-from-shell
     (exec-path-from-shell-copy-envs '("GOPATH" "GO111MODULE" "GOPROXY")))
 
