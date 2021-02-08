@@ -11,9 +11,14 @@
 (use-package eglot
   :commands (eglot-ensure eglot)
   :hook
-  ((go-mode python-mode) . eglot-ensure)
+  ((go-mode python-mode rust-mode) . eglot-ensure)
   :custom
   (eglot-stay-out-of '())
-  (eglot-ignored-server-capabilites '(:documentHighlightProvider)))
+  (eglot-ignored-server-capabilites '(:documentHighlightProvider))
+  :config
+  (add-to-list 'eglot-server-programs
+			   '(python-mode "pyright"))
+  (add-to-list 'eglot-server-programs
+			   '(rust-mode "rust-analyzer")))
 
 (provide 'init-lsp)
