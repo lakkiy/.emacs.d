@@ -5,6 +5,11 @@
    '("j" . meow-next)
    '("k" . meow-prev))
   (meow-leader-define-key
+   '("p f" . project-find-file)
+   '("o" . ace-window)
+   '("." . xref-find-definitions)
+   '("," . xref-pop-marker-stack)
+   '("?" . xref-find-references)
    '("SPC" . counsel-M-x)
    ;; SPC j/k will run the original command in MOTION state.
    '("j" . meow-motion-origin-command)
