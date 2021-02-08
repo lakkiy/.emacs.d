@@ -22,6 +22,10 @@
                          ("LWN (Linux Weekly News)" "https://lwn.net/headlines/rss"))))
 
 (use-package markdown-mode
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
   :custom
   (markdown-fontify-code-blocks-natively t)
   :init
