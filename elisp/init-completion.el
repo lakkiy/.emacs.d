@@ -1,6 +1,10 @@
 ;;; -*- lexical-binding: t -*-
 
-(use-package yasnippet)
+(use-package yasnippet
+  :config
+  (let ((inhibit-message t)) (yas-reload-all))
+  :init
+  (add-hook 'prog-mode-hook #'yas-minor-mode))
 
 (use-package company
   :bind (("M-/" . company-complete)
