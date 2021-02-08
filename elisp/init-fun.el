@@ -1,5 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
+(require 'init-utils)
+
 (use-package go-translate
   :straight
   (go-translate :type git

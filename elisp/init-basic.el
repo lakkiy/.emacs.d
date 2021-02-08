@@ -1,6 +1,6 @@
 ;;; -*- lexical-binding: t -*-
 
-(require 'init-funcs)
+(require 'init-utils)
 
 (setq custom-file (expand-file-name "emacs-custom.el" user-emacs-directory))
 

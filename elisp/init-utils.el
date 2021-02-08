@@ -12,6 +12,10 @@
   (eq system-type 'windows-nt)
   "Are we running on a WinTel system?")
 
+(defconst sys/linuxp
+  (eq system-type 'gnu/linux)
+  "Are we running on a GNU/Linux system?")
+
 (defun font-installed-p (font-name)
   "Check if font with FONT-NAME is available."
   (find-font (font-spec :name font-name)))
@@ -70,4 +74,4 @@ This function is slow, so we have to use cache."
 (defun +vc-branch ()
   (car (vc-git-branches)))
 
-(provide 'init-funcs)
+(provide 'init-utils)

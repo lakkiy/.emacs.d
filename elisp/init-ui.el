@@ -1,7 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
 (require 'init-themes)
-(require 'init-funcs)
+(require 'init-utils)
 
 (defun +simple-mode-line-render (left right)
   "Return a string of `window-width' length.
