@@ -6,6 +6,8 @@
   :init
   (add-hook 'prog-mode-hook #'yas-minor-mode))
 
+(use-package yasnippet-snippets)
+
 (use-package company
   :bind (("M-/" . company-complete)
          ("C-M-i" . company-complete)
