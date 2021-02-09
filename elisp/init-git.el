@@ -3,6 +3,9 @@
 (use-package magit
   :commands (magit))
 
+(use-package magit-todos
+  :after magit)
+
 (use-package dired-git-info
   :bind
   (:map dired-mode-map
