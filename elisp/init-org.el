@@ -12,6 +12,8 @@
   :straight (:type built-in))
 
 (use-package org-superstar
+  :init
+  (setq org-superstar-leading-bullet ?\s)
   :hook (org-mode . org-superstar-mode))
 
 (use-package org-html-themify
