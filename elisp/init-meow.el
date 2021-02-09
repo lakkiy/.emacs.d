@@ -86,6 +86,7 @@
    '("l" . meow-tail)
    '("L" . meow-tail-expand)
    '("u" . undo)
+   '("U" . undo-redo)
    '("v" . meow-visit)
 ;;   '("e" . meow-next-word)
    '("e" . meow-join)
