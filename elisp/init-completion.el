@@ -22,6 +22,8 @@
          ("C-n" . company-select-next))
   :hook (after-init . global-company-mode)
   :custom
+  (company-idle-delay 0.2)
+  (company-tooltip-idle-delay 0.1)
   (company-tooltip-limit 10)
   (company-tooltip-align-annotations t)
   (company-tooltip-width-grow-only t)
@@ -32,7 +34,9 @@
 (use-package ivy
   :init
   (setq ivy-initial-inputs-alist nil)
-  (ivy-mode 1))
+  (ivy-mode 1)
+  :custom
+  (ivy-use-selectable-prompt t))
 
 (use-package counsel
   :bind
