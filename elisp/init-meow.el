@@ -6,6 +6,7 @@
    '("k" . meow-prev))
   (meow-leader-define-key
    '("p f" . project-find-file)
+   '("p e" . project-eshell)
    '("o" . ace-window)
    '("." . xref-find-definitions)
    '("," . xref-pop-marker-stack)
