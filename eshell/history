@@ -1,7 +1,0 @@
-cd .
-cd ..
-cd ..
-go run cmd/gateway/main.go -c config/cfg-dev.toml
-go run cmd/gateway/main.go -c config/cfg-dev.toml
-2021/02/09 14:41:40.953 [D]  insert: [{116    2021-02-09 14:41:40.860064934 +0800 CST m=+675.719296347 email guyikang@cmcm.com {arn:aws:cloudwatch:us-east-1:879176813947:alarm:hjkl_StatusCheckFailed_Instance_InstanceId:i-08c2c33fb502dc406 10 1 聚云立方 i-08c2c33fb502dc406  }}]
-go run cmd/gateway/main.go -c config/cfg-dev.toml
