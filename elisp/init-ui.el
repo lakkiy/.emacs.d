@@ -22,7 +22,9 @@ Containing LEFT, and RIGHT aligned respectively."
                     " %l:%C "
                     (:propertize (-3 "%p") face +modeline-dim-face))
                   ;; right
-                  '((:propertize mode-name face font-lock-keyword-face)
+                  '((:eval (rime-lighter))
+                    " "
+                    (:propertize mode-name face font-lock-keyword-face)
                     " "
                     (:eval (+smart-file-name-with-propertize))
                     " ")))))

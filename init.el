@@ -1,5 +1,6 @@
 (require 'init-basic)
 (require 'init-meow)
+(require 'init-rime)
 (require 'init-ui)
 (require 'init-hl)
 (require 'init-completion)
