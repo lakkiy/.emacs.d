@@ -14,6 +14,7 @@
         ("C-`" . 'rime-send-keybinding)
         ("M-j" . 'rime-force-enable))
   :custom
+  ;; TODO set rime-share-data-dir and rime-usr-data-dir in macos and linux
   (cond (sys/mac-x-p (rime-librime-root (expand-file-name "librime/dist" user-emacs-directory))))
   (rime-disable-predicates '(meow-normal-mode-p
                              meow-motion-mode-p
