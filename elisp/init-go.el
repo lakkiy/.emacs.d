@@ -16,6 +16,9 @@
     :hook
     (go-mode . flymake-golangci-load))
 
+  (use-package gotest)
+  (use-package go-gen-test)
+
   (use-package go-tag
     :bind (:map go-mode-map
            ("C-c t t" . go-tag-add)

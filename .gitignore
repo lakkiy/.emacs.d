@@ -6,6 +6,7 @@ straight/*
 !straight/versions
 transient
 rime
+librime
 recentf
 tramp
 .cache
@@ -16,3 +17,4 @@ newsticker
 hackernews
 places
 eshell
+url
