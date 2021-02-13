@@ -18,11 +18,6 @@
 
   (use-package gotest)
   (use-package go-gen-test)
-
-  (use-package go-tag
-    :bind (:map go-mode-map
-           ("C-c t t" . go-tag-add)
-           ("C-c t T" . go-tag-remove))
-    :init (setq go-tag-args (list "-transform" "camelcase"))))
+  (use-package go-tag)
 
 (provide 'init-go)
