@@ -18,6 +18,6 @@
 
   (use-package gotest)
   (use-package go-gen-test)
-  (use-package go-tag)
+  (use-package go-tag))
 
 (provide 'init-go)
