@@ -8,6 +8,8 @@
 (require 'init-org)
 (require 'init-window)
 (require 'init-tree)
+(require 'init-chat)
+(require 'init-spcfile)
 (require 'init-lisp)
 
 (require 'init-lsp)
