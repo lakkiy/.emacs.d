@@ -22,7 +22,6 @@
    '(";" . meow-comment)
    '("d" . dired)
    '("L" . display-line-numbers-mode)
-   '("k" . kill-buffer)
    '("w" . ace-window)
    '("W" . ace-swap-window)
    '("o" . delete-other-windows)
