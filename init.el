@@ -6,6 +6,7 @@
 (require 'init-completion)
 (require 'init-git)
 (require 'init-org)
+(require 'init-reader)
 (require 'init-window)
 (require 'init-tree)
 (require 'init-chat)
