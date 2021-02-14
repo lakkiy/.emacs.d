@@ -19,7 +19,10 @@
   (newsticker-treeview-date-format "%F %a, %H:%M  ")
   (newsticker-url-list-defaults nil)
   (newsticker-url-list '(("Planet Emacslife" "https://planet.emacslife.com/atom.xml")
-                         ("LWN (Linux Weekly News)" "https://lwn.net/headlines/rss"))))
+                         ("Mastering Emacs" "http://www.masteringemacs.org/feed/")
+                         ("Oremacs" "https://oremacs.com/atom.xml")
+                         ("EmacsCast" "https://pinecast.com/feed/emacscast")
+                         ("LWN" "https://lwn.net/headlines/rss"))))
 
 (use-package markdown-mode
   :commands (markdown-mode gfm-mode)
