@@ -36,6 +36,7 @@
   (setq ivy-initial-inputs-alist nil)
   (ivy-mode 1)
   :custom
+  (ivy-count-format "%d/%d ")
   (ivy-use-selectable-prompt t))
 
 (use-package counsel
