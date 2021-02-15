@@ -1,7 +1,6 @@
 ;; -*- lexical-binding: t; -*-
 
-(use-package telega
-  :bind
-  ("<f6>" . telega))
+(leaf telega
+  :straight t)
 
 (provide 'init-chat)

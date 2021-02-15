@@ -116,9 +116,7 @@
 
 (use-package meow
   :straight
-  (meow :type git
-	    :host github
-	    :repo "DogLooksGood/meow")
+  (meow :type git :host github :repo "DogLooksGood/meow")
   :init
   (meow-global-mode 1)
   :config

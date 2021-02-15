@@ -1,10 +1,12 @@
 ;;; -*- lexical-binding: t -*-
 
-(use-package hackernews
-  :straight
-  (hackernews :type git
-              :host github
-              :repo "clarete/hackernews.el"))
+;; (use-package hackernews
+;;   :straight
+;;   (hackernews :type git
+;;               :host github
+;;               :repo "clarete/hackernews.el"))
+(leaf hackernews
+  :straight (hackernews :type git :host github :repo "clarete/hackernews.el"))
 
 ;; Web search
 (use-package webjump
@@ -43,5 +45,6 @@
                    ("Cpp Reference" .
                     [simple-query "en.cppreference.com"
                                   "en.cppreference.com/mwiki/index.php?search=" ""]))))
+
 
 (provide 'init-fun)

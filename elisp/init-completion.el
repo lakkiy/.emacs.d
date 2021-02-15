@@ -6,60 +6,96 @@
   :init
   (add-hook 'prog-mode-hook #'yas-minor-mode))
 
-(use-package yasnippet-snippets)
+(leaf yasnippet-snippets
+  :straight t)
 
-(use-package company
+(leaf company
+  :straight t
   :bind (("M-/" . company-complete)
          ("C-M-i" . company-complete)
-         :map company-mode-map
-         ("<backtab>" . company-yasnippet)
-         :map company-active-map
-         ("C-p" . company-select-previous)
-         ("C-n" . company-select-next)
-         ("<tab>" . company-complete-common-or-cycle)
-         :map company-search-map
-         ("C-p" . company-select-previous)
-         ("C-n" . company-select-next))
-  :hook (after-init . global-company-mode)
+         (:company-mode-map
+          ("<backtab>" . company-yasnippet))
+         (:company-active-map
+          ("C-p" . company-select-previous)
+          ("C-n" . company-select-next)
+          ("<tab>" . company-complete-common-or-cycle))
+         (:company-search-map
+          ("C-p" . company-select-previous)
+          ("C-n" . company-select-next)))
+  :hook (after-init-hook . global-company-mode)
   :custom
-  (company-idle-delay 0.2)
-  (company-tooltip-idle-delay 0.1)
-  (company-tooltip-limit 10)
-  (company-tooltip-align-annotations t)
-  (company-tooltip-width-grow-only t)
-  (company-dabbrev-downcase nil)
-  (company-global-modes '(not org-mode dired-mode dired-sidebar-mode))
-  (company-require-match nil))
+  (company-idle-delay . 0.2)
+  (company-tooltip-idle-delay . 0.1)
+  (company-tooltip-limit . 10)
+  (company-tooltip-align-annotations . t)
+  (company-tooltip-width-grow-only . t)
+  (company-dabbrev-downcase . nil)
+  (company-global-modes . '(not org-mode dired-mode dired-sidebar-mode))
+  (company-require-match . nil))
 
-(use-package ivy
+;; (use-package company
+;;   :bind (("M-/" . company-complete)
+;;          ("C-M-i" . company-complete)
+;;          :map company-mode-map
+;;          ("<backtab>" . company-yasnippet)
+;;          :map company-active-map
+;;          ("C-p" . company-select-previous)
+;;          ("C-n" . company-select-next)
+;;          ("<tab>" . company-complete-common-or-cycle)
+;;          :map company-search-map
+;;          ("C-p" . company-select-previous)
+;;          ("C-n" . company-select-next))
+;;   :hook (after-init . global-company-mode)
+;;   :custom
+;;   (company-idle-delay 0.2)
+;;   (company-tooltip-idle-delay 0.1)
+;;   (company-tooltip-limit 10)
+;;   (company-tooltip-align-annotations t)
+;;   (company-tooltip-width-grow-only t)
+;;   (company-dabbrev-downcase nil)
+;;   (company-global-modes '(not org-mode dired-mode dired-sidebar-mode))
+;;   (company-require-match nil))
+
+(leaf ivy
+  :straight t
+  :pre-setq
+  (ivy-initial-inputs-alist . nil)
+  :custom
+  (ivy-count-format . "%d/%d ")
+  (ivy-use-selectable-prompt . t)
   :init
-  (setq ivy-initial-inputs-alist nil)
-  (ivy-mode 1)
-  :custom
-  (ivy-count-format "%d/%d ")
-  (ivy-use-selectable-prompt t))
+  (ivy-mode 1))
 
-(use-package counsel
-  :bind
-  ("C-s" . swiper)
-  ("C-c z" . counsel-fzf)
-  ("C-c r" . counsel-rg)
+;; (use-package ivy
+;;   :init
+;;   (setq ivy-initial-inputs-alist nil)
+;;   (ivy-mode 1)
+;;   :custom
+;;   (ivy-count-format "%d/%d ")
+;;   (ivy-use-selectable-prompt t))
+
+(leaf counsel
+  :straight t
+  :bind (("C-s" . swiper)
+         ("C-c z" . counsel-fzf)
+         ("C-c r" . counsel-rg))
   :init
   (counsel-mode 1))
 
-(use-package ivy-xref
+;; (use-package counsel
+;;   :bind
+;;   ("C-s" . swiper)
+;;   ("C-c z" . counsel-fzf)
+;;   ("C-c r" . counsel-rg)
+;;   :init
+;;   (counsel-mode 1))
+
+(leaf ivy-xref
   :straight
-  (ivy-xref :type git
-            :host github
-            :repo "alexmurray/ivy-xref")
-  :init
-  ;; xref initialization is different in Emacs 27 - there are two different
-  ;; variables which can be set rather than just one
-  (when (>= emacs-major-version 27)
-    (setq xref-show-definitions-function #'ivy-xref-show-defs))
-  ;; Necessary in Emacs <27. In Emacs 27 it will affect all xref-based
-  ;; commands other than xref-find-definitions (e.g. project-find-regexp)
-  ;; as well
-  (setq xref-show-xrefs-function #'ivy-xref-show-xrefs))
+  (ivy-xref :type git :host github :repo "alexmurray/ivy-xref")
+  :pre-setq
+  (xref-show-definitions-function . #'ivy-xref-show-defs)
+  (xref-show-xrefs-function . #'ivy-xref-show-xrefs))
+
 
 (provide 'init-completion)

@@ -1,12 +1,20 @@
 ;;; -*- lexical-binding: t -*-
 
-(use-package flymake
-  :straight (:type built-in)
-  :commands (flymake-mode)
-  :bind
-  (:map flymake-mode-map
-        ("M-n" . 'flymake-goto-next-error)
-        ("M-p" . 'flymake-goto-prev-error)))
+;; (use-package flymake
+;;   :straight (:type built-in)
+;;   :commands (flymake-mode)
+;;   :bind
+;;   (:map flymake-mode-map
+;;         ("M-n" . 'flymake-goto-next-error)
+;;         ("M-p" . 'flymake-goto-prev-error)))
+
+(leaf flymake
+  :tag "builtin"
+  :commands flymake-mode
+  :bind ((flymake-mode-map
+          ("M-n" . flymake-goto-next-error)
+          ("M-p" . flymake-goto-prev-error))))
+
 
 (use-package eglot
   :commands (eglot-ensure eglot)
