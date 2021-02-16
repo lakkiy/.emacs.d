@@ -25,72 +25,57 @@
            when (font-installed-p font)
            return (set-fontset-font t '(#x4e00 . #x9fff) font)))
 
-(use-package elec-pair
-  :straight (:type built-in)
-  :hook (after-init . electric-pair-mode)
-  :init (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
+(leaf elec-pair
+  :tag "builtin"
+  :hook (after-init-hook . electric-pair-mode)
+  :init
+  (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
 
-(use-package saveplace
-  :straight (:type built-in)
-  :hook (after-init . save-place-mode))
+(leaf saveplace :tag "builtin" :hook (after-init-hook . save-place-mode))
+(leaf hideshow :tag "builtin" :hook (prog-mode-hook . hs-minor-mode))
+(leaf autorevert :tag "builtin" :hook (after-init-hook . global-auto-revert-mode))
+(leaf so-long :global-minor-mode :tag "builtin" (global-so-long-mode 1))
 
-(use-package hideshow
-  :straight (:type built-in)
-  :diminish hs-minor-mode
-  :hook (prog-mode . hs-minor-mode))
-
-(use-package so-long
-  :straight (:type built-in)
-  :config (global-so-long-mode 1))
-
-(use-package paren
-  :straight (:type built-in)
-  :hook (after-init . show-paren-mode)
+(leaf paren
+  :tag "builtin"
+  :hook (after-init-hook . show-paren-mode)
   :config
   (setq show-paren-when-point-inside-paren t
         show-paren-when-point-in-periphery t))
-
-(use-package autorevert
-  :straight (:type built-in)
-  :ensure nil
-  :hook (after-init . global-auto-revert-mode))
 
 ;; Mouse & Smooth Scroll
 ;; Scroll one line at a time (less "jumpy" than defaults)
 (when (display-graphic-p)
   (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))
         mouse-wheel-progressive-speed nil))
-(setq scroll-step 1
+(setq scroll-step 3
       scroll-margin 10
       scroll-conservatively 100000)
 
-(use-package which-key
+(leaf which-key
+  :straight t
   :init
   (setq which-key-idle-delay 1)
   (setq which-key-idle-secondary-delay 0.05)
-  :config
-  (which-key-mode))
+  :global-minor-mode t)
 
-(use-package auto-save
+(leaf auto-save
   :straight
   (auto-save :type git
              :host github
              :repo "manateelazycat/auto-save")
+  :require t
   :init
   (setq auto-save-silent t)
-  (setq auto-save-disable-predicates
-      '((lambda ()
-      (string-suffix-p
-      "go"
-      (file-name-extension (buffer-name)) t))))
   :custom
-  (auto-save-idle 2)
+  (auto-save-idle . 1.5)
   :config
   (auto-save-enable))
 
-(when (memq window-system '(mac ns x))
-  (use-package exec-path-from-shell
-    :config
-    (exec-path-from-shell-initialize)))
+(leaf exec-path-from-shell
+  :straight t
+  :when (memq window-system '(mac ns x))
+  :config
+  (exec-path-from-shell-initialize))
 
 (provide 'init-basic)

@@ -114,13 +114,11 @@
    '("%" . meow-query-replace-regexp)
    '("<escape>" . meow-last-buffer)))
 
-(use-package meow
+(leaf meow
   :straight
-  (meow :type git
-	    :host github
-	    :repo "DogLooksGood/meow")
-  :init
-  (meow-global-mode 1)
+  (meow :type git :host github :repo "DogLooksGood/meow")
+  :require t
+  :global-minor-mode meow-global-mode
   :config
   (meow-setup-line-number)
   (meow-setup))
