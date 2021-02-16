@@ -12,7 +12,8 @@
 (when (featurep 'ns)
   (push '(ns-transparent-titlebar . t) default-frame-alist))
 
-(add-to-list 'load-path (expand-file-name "elisp" user-emacs-directory))
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
 (require 'init-defaults)
 (require 'init-straight)
+(require 'init-themes)
