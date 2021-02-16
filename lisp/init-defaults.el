@@ -32,6 +32,10 @@
  cursor-in-non-selected-windows nil
  comment-empty-lines t
  visible-cursor t
+ ;; Window divider setup
+ window-divider-default-right-width 1
+ window-divider-default-bottom-width 1
+ window-divider-default-places t
  ;; Improve long line display performance
  bidi-inhibit-bpa t
  bidi-paragraph-direction 'left-to-right
