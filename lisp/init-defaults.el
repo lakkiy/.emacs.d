@@ -60,6 +60,10 @@
 (global-unset-key (kbd "C-x C-p"))
 (global-set-key (kbd "C-x C-d") #'dired)
 
+;; use mouse left click to find definitions
+(global-unset-key (kbd "C-<down-mouse-1>"))
+(global-set-key (kbd "C-<mouse-1>") #'xref-find-definitions-at-mouse)
+
 (defun +reopen-file-with-sudo ()
   (interactive)
   (find-alternate-file (format "/sudo::%s" (buffer-file-name))))

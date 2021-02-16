@@ -41,6 +41,8 @@
 
 (leaf org-roam-server
   :straight t
+  :commands
+  (org-roam-server-mode)
   :config
   (setq org-roam-server-host "127.0.0.1"
         org-roam-server-port 8080

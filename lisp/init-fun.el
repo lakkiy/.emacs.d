@@ -1,7 +1,12 @@
 ;;; -*- lexical-binding: t -*-
 
 (leaf hackernews
-  :straight (hackernews :type git :host github :repo "clarete/hackernews.el"))
+  :straight
+  (hackernews :type git
+              :host github
+              :repo "clarete/hackernews.el")
+  :commands
+  (hackernews))
 
 ;; Web search
 (leaf webjump
