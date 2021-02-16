@@ -112,6 +112,8 @@
    '("?" . meow-cheatsheet)
    '("&" . meow-query-replace)
    '("%" . meow-query-replace-regexp)
+   '("<f3>" . meow-start-kmacro)
+   '("<f4>" . meow-end-or-call-kmacro)
    '("<escape>" . meow-last-buffer)))
 
 (leaf meow
