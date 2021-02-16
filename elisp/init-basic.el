@@ -83,6 +83,8 @@
       (string-suffix-p
       "go"
       (file-name-extension (buffer-name)) t))))
+  :custom
+  (auto-save-idle 2)
   :config
   (auto-save-enable))
 

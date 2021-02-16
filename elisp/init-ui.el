@@ -29,6 +29,15 @@ Containing LEFT, and RIGHT aligned respectively."
                     (:eval (+smart-file-name-with-propertize))
                     " ")))))
 
+;;; Nice window divider
+(set-display-table-slot standard-display-table
+                        'vertical-border
+                        (make-glyph-code ?┃))
+
+;;; Transparency
+(let ((alpha 100))
+  (add-to-list 'default-frame-alist (cons 'alpha alpha)))
+
 (use-package circadian
   :straight
   (circadian :type git

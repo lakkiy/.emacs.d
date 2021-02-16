@@ -4,10 +4,12 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("515e9dd9749ef52a8e1b63427b50b4dc68afb4a16b1a9cabfbcf6b4897f2c501" "602c523efed33ab7bc708c31ed9d641abe123e2bfbbe124e46faf68c95e67d8d" default)))
+   '("cd96c1e0a34384fff3861cc68c8456104cba5823e3db9a388b4f79dbccb319d2" default)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(aw-leading-char-face ((t (:inherit font-lock-keyword-face :bold t :height 3.0))))
+ '(aw-minibuffer-leading-char-face ((t (:inherit font-lock-keyword-face :bold t :height 2.0))))
+ '(aw-mode-line-face ((t (:inherit mode-line-emphasis :bold t)))))
