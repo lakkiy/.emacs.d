@@ -15,17 +15,4 @@
   :init
   (add-hook 'treemacs-mode-hook '+treemacs-scale-font-size))
 
-;; (use-package treemacs
-;;   :commands
-;;   (treemacs treemacs-select-window)
-;;   :bind
-;;   ("<f1>" . 'treemacs-select-window)
-;;   (:map treemacs-mode-map
-;;         ("<f1>" . 'treemacs))
-;;   :custom
-;;   (treemacs-no-png-images t)
-;;   (treemacs-width 40)
-;;   :init
-;;   (add-hook 'treemacs-mode-hook '+treemacs-scale-font-size))
-
 (provide 'init-tree)

@@ -34,10 +34,7 @@
 (leaf saveplace :tag "builtin" :hook (after-init-hook . save-place-mode))
 (leaf hideshow :tag "builtin" :hook (prog-mode-hook . hs-minor-mode))
 (leaf autorevert :tag "builtin" :hook (after-init-hook . global-auto-revert-mode))
-
-(use-package so-long
-  :straight (:type built-in)
-  :config (global-so-long-mode 1))
+(leaf so-long :global-minor-mode :tag "builtin" (global-so-long-mode 1))
 
 (leaf paren
   :tag "builtin"
@@ -51,7 +48,7 @@
 (when (display-graphic-p)
   (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))
         mouse-wheel-progressive-speed nil))
-(setq scroll-step 1
+(setq scroll-step 3
       scroll-margin 10
       scroll-conservatively 100000)
 
@@ -71,7 +68,7 @@
   :init
   (setq auto-save-silent t)
   :custom
-  (auto-save-idle . 3)
+  (auto-save-idle . 2)
   :config
   (auto-save-enable))
 

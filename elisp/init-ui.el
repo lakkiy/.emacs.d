@@ -29,24 +29,13 @@ Containing LEFT, and RIGHT aligned respectively."
                     (:eval (+smart-file-name-with-propertize))
                     " ")))))
 
-;; (use-package circadian
-;;   :straight
-;;   (circadian :type git
-;;              :host github
-;;              :repo "guidoschmidt/circadian.el")
-;;   :config
-;;   ;; Beijing
-;;   (setq calendar-latitude 39.904202)
-;;   (setq calendar-longitude 116.407394)
-;;   (setq circadian-themes '((:sunrise . storybook)
-;;                            (:sunset  . joker)))
-;;   (circadian-setup))
-
 (leaf circadian
   :straight
   (circadian :type git
              :host github
              :repo "guidoschmidt/circadian.el")
+  :require
+  (joker-theme printed-theme storybook-theme)
   :config
   ;; Beijing
   (setq calendar-latitude 39.904202)
