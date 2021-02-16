@@ -50,19 +50,11 @@
 (add-hook 'conf-mode-hook 'hl-line-mode)
 (add-hook 'prog-mode-hook 'subword-mode)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
-
-(scroll-bar-mode -1)
-(tool-bar-mode -1)
-(menu-bar-mode -1)
 (add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
 
 ;;; project.el use C-x p
 (global-unset-key (kbd "C-x C-p"))
 (global-set-key (kbd "C-x C-d") #'dired)
-
-;; use mouse left click to find definitions
-(global-unset-key (kbd "C-<down-mouse-1>"))
-(global-set-key (kbd "C-<mouse-1>") #'xref-find-definitions-at-mouse)
 
 (defun +reopen-file-with-sudo ()
   (interactive)
@@ -71,5 +63,9 @@
 (global-set-key (kbd "C-x C-z") #'+reopen-file-with-sudo)
 ;; (global-set-key (kbd "<f7>") #'profiler-start)
 ;; (global-set-key (kbd "<f8>") #'profiler-report)
+
+;; use mouse left click to find definitions
+(global-unset-key (kbd "C-<down-mouse-1>"))
+(global-set-key (kbd "C-<mouse-1>") #'xref-find-definitions-at-mouse)
 
 (provide 'init-defaults)
