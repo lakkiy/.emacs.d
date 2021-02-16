@@ -11,7 +11,7 @@
   :straight t
   :commands (eglot-ensure eglot)
   :hook
-  ((go-mode python-mode rust-mode) . eglot-ensure)
+  ((go-mode-hook python-mode-hook rust-mode-hook) . eglot-ensure)
   :custom
   (eglot-stay-out-of . '())
   (eglot-ignored-server-capabilites . '(:documentHighlightProvider))
