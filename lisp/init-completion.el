@@ -35,6 +35,16 @@
   (company-global-modes . '(not org-mode dired-mode dired-sidebar-mode))
   (company-require-match . nil))
 
+(leaf deadgrep
+  :doc "use ripgrep from Emacs"
+  :straight t
+  :bind ((:deadgrep-mode-map
+          ("w" . deadgrep-edit-mode))
+         (:deadgrep-edit-mode-map
+          ("C-x C-s" . deadgrep-mode)))
+  :commands
+  (deadgrep))
+
 (leaf ivy
   :straight t
   :pre-setq
