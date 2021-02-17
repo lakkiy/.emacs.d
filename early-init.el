@@ -20,6 +20,8 @@
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
+(setq package-enable-at-startup nil)
+
 (require 'init-defaults)
 (require 'init-straight)
 (require 'init-themes)
