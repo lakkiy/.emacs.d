@@ -25,6 +25,9 @@
           ("C-p" . company-select-previous)
           ("C-n" . company-select-next)))
   :hook (after-init-hook . global-company-mode)
+  :setq
+  ;; company-capf ignore case completion
+  (completion-ignore-case . t)
   :custom
   (company-idle-delay . 0.2)
   (company-tooltip-idle-delay . 0.1)
