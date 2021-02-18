@@ -15,10 +15,10 @@
        :repo "manateelazycat/emacs-application-framework"
        :files ("*"))
   :init
-  (leaf epc :straight t)
-  (leaf ctable :straight t)
-  (leaf deferred :straight t)
-  (leaf s :straight t)
+  (leaf epc :straight t :leaf-defer t)
+  (leaf ctable :straight t :leaf-defer t)
+  (leaf deferred :straight t :leaf-defer t)
+  (leaf s :straight t :leaf-defer t)
   :commands
   (eaf-open-browser)
   :when (eq system-type 'gnu/linux)
