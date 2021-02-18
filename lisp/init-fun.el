@@ -8,6 +8,23 @@
   :commands
   (hackernews))
 
+(leaf eaf
+  :straight
+  (eaf :type git
+       :host github
+       :repo "manateelazycat/emacs-application-framework"
+       :files ("*"))
+  :init
+  (leaf epc :straight t)
+  (leaf ctable :straight t)
+  (leaf deferred :straight t)
+  (leaf s :straight t)
+  :commands
+  (eaf-open-browser)
+  :when (eq system-type 'gnu/linux)
+  :config
+  (eaf-setq eaf-browser-enable-adblocker "true"))
+
 ;; Web search
 (leaf webjump
   :tag "builtin"
