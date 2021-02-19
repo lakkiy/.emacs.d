@@ -7,13 +7,20 @@
   :when (eq system-type 'gnu/linux)
   :commands
   (tab-bar-mode)
+  ;; FIXME org mode use cc ct
   :bind (("C-c C-t t" . tab-bar-mode)
          ("C-c C-t r" . tab-bar-rename-tab)
          ("C-c C-t n" . tab-bar-new-tab)
          ("C-c C-t d" . tab-bar-close-tab))
   :custom
   (tab-bar-new-tab-choice . "*scratch*")
-  :custom-face)
+  (tab-bar-close-button-show . nil)
+  (tab-bar-new-button-show . nil)
+  :custom-face
+  ;; TODO for joker theme
+  (tab-bar . '((t (:inherit nil variable-pitch :backgronud "#131313" :foreground "#E0E0E0"))))
+  (tab-bar-tab . '((t (:inherit nil :backgronud "#131313" :foreground "#E0E0E0"))))
+  (tab-bar-tab-inactive . '((t (:inherit nil :backgronud "#131313")))))
 
 (leaf hackernews
   :straight
