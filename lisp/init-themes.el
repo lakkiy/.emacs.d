@@ -18,6 +18,16 @@
                    :host github
                    :repo "DoglooksGood/storybook-theme"))
 
+(leaf atom-one-dark-theme :straight t)
+(leaf spacemacs-theme :straight t)
+(leaf cyberpunk-theme :straight t)
+(leaf solarized-theme :straight t)
+(leaf dracula-theme :straight t)
+(leaf minimal-theme :straight t)
+(leaf nord-theme :straight t)
+(leaf tao-theme :straight t)
+;; TODO split citylights theme out of doom themes
+
 ;;; Nice window divider
 (set-display-table-slot standard-display-table
                         'vertical-border
@@ -32,14 +42,12 @@
   (circadian :type git
              :host github
              :repo "guidoschmidt/circadian.el")
-  :require
-  (joker-theme printed-theme storybook-theme)
   :config
   ;; Beijing
   (setq calendar-latitude 39.904202)
   (setq calendar-longitude 116.407394)
-  (setq circadian-themes '((:sunrise . storybook)
-                           (:sunset  . joker)))
+  (setq circadian-themes '((:sunrise . spacemacs-light)
+                           (:sunset  . atom-one-dark)))
   (circadian-setup))
 
 (provide 'init-themes)
