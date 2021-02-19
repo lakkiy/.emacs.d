@@ -1,5 +1,6 @@
 ;;; -*- lexical-binding: t -*-
 
+;; TODO customize face
 (leaf tab-bar
   :doc "save window layout, gui not work on macos"
   :tag "builtin"
@@ -9,7 +10,10 @@
   :bind (("C-c C-t t" . tab-bar-mode)
          ("C-c C-t r" . tab-bar-rename-tab)
          ("C-c C-t n" . tab-bar-new-tab)
-         ("C-c C-t d" . tab-bar-close-tab)))
+         ("C-c C-t d" . tab-bar-close-tab))
+  :custom
+  (tab-bar-new-tab-choice . "*scratch*")
+  :custom-face)
 
 (leaf hackernews
   :straight
