@@ -27,6 +27,12 @@
   :commands
   (restclient-mode))
 
+(leaf yascroll
+  :straight t
+  :hook
+  ((prog-mode-hook . yascroll-bar-mode)
+   (conf-mode-hook . yascroll-bar-mode)))
+
 (leaf hackernews
   :straight
   (hackernews :type git
