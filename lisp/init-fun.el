@@ -1,5 +1,16 @@
 ;;; -*- lexical-binding: t -*-
 
+(leaf tab-bar
+  :doc "save window layout, gui not work on macos"
+  :tag "builtin"
+  :when (eq system-type 'gnu/linux)
+  :commands
+  (tab-bar-mode)
+  :bind (("C-c C-t t" . tab-bar-mode)
+         ("C-c C-t r" . tab-bar-rename-tab)
+         ("C-c C-t n" . tab-bar-new-tab)
+         ("C-c C-t d" . tab-bar-close-tab)))
+
 (leaf hackernews
   :straight
   (hackernews :type git

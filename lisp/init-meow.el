@@ -30,6 +30,7 @@
    '("-" . split-window-below)
    '("\\" . split-window-right)
    '("b" . switch-to-buffer)
+   '("t" . tab-bar-select-tab-by-name)
    '("i" . counsel-imenu)
    ;; SPC j/k will run the original command in MOTION state.
    '("j" . meow-motion-origin-command)
