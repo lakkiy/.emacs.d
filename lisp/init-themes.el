@@ -18,6 +18,12 @@
                    :host github
                    :repo "DoglooksGood/storybook-theme"))
 
+(leaf modus-themes
+  :straight
+  (modus-themes :type git
+                :host gitlab
+                :repo "protesilaos/modus-themes"))
+
 (leaf atom-one-dark-theme :straight t)
 (leaf spacemacs-theme :straight t)
 (leaf cyberpunk-theme :straight t)
@@ -47,7 +53,7 @@
   (setq calendar-latitude 39.904202)
   (setq calendar-longitude 116.407394)
   (setq circadian-themes '((:sunrise . spacemacs-light)
-                           (:sunset  . atom-one-dark)))
+                           (:sunset  . modus-vivendi)))
   (circadian-setup))
 
 (provide 'init-themes)
