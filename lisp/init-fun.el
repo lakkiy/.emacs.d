@@ -22,6 +22,13 @@
   (tab-bar-tab . '((t (:inherit nil :backgronud "#131313" :foreground "#E0E0E0"))))
   (tab-bar-tab-inactive . '((t (:inherit nil :backgronud "#131313")))))
 
+(leaf restart-emacs
+  :straight t
+  :setq
+  (restart-emacs-restore-frames . t)
+  :commands
+  (restart-emacs))
+
 (leaf restclient
   :straight t
   :commands
