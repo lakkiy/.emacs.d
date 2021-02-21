@@ -39,10 +39,6 @@
                         'vertical-border
                         (make-glyph-code ?┃))
 
-;;; Transparency
-(let ((alpha 80))
-  (add-to-list 'default-frame-alist (cons 'alpha alpha)))
-
 (leaf circadian
   :straight
   (circadian :type git
