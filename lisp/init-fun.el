@@ -22,6 +22,16 @@
   (tab-bar-tab . '((t (:inherit nil :backgronud "#131313" :foreground "#E0E0E0"))))
   (tab-bar-tab-inactive . '((t (:inherit nil :backgronud "#131313")))))
 
+(leaf leetcode
+  :straight t
+  :setq
+  (leetcode-prefer-language . "golang")
+  (leetcode-prefer-sql . "mysql")
+  (leetcode-save-solutions . t)
+  (leetcode-directory . "~/Dropbox/leetcode")
+  :commands
+  (leetcode))
+
 (leaf restart-emacs
   :straight t
   :setq
