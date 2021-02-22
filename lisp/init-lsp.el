@@ -17,7 +17,7 @@
   (eglot-ignored-server-capabilites . '(:documentHighlightProvider))
   :config
   (add-to-list 'eglot-server-programs
-			   '(python-mode "pyright"))
+			   '(python-mode . ("pyright-langserver" "--stdio")))
   (add-to-list 'eglot-server-programs
 			   '(rust-mode "rust-analyzer")))
 
