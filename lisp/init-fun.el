@@ -22,6 +22,11 @@
   (tab-bar-tab . '((t (:inherit nil :backgronud "#131313" :foreground "#E0E0E0"))))
   (tab-bar-tab-inactive . '((t (:inherit nil :backgronud "#131313")))))
 
+(leaf undo-tree
+  :straight t
+  :commands
+  (undo-tree-mode))
+
 (leaf vterm
   :straight t
   :commands
