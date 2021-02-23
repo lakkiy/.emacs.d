@@ -1,6 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-;; TODO customize face
 (leaf tab-bar
   :doc "save window layout, gui not work on macos"
   :tag "builtin"
@@ -15,12 +14,12 @@
   :custom
   (tab-bar-new-tab-choice . "*scratch*")
   (tab-bar-close-button-show . nil)
-  (tab-bar-new-button-show . nil)
-  :custom-face
-  ;; TODO for joker theme
-  (tab-bar . '((t (:inherit nil variable-pitch :backgronud "#131313" :foreground "#E0E0E0"))))
-  (tab-bar-tab . '((t (:inherit nil :backgronud "#131313" :foreground "#E0E0E0"))))
-  (tab-bar-tab-inactive . '((t (:inherit nil :backgronud "#131313")))))
+  (tab-bar-new-button-show . nil))
+
+(leaf esup
+  :straight t
+  :commands
+  (esup))
 
 (leaf undo-tree
   :straight t
