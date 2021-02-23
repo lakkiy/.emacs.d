@@ -6,10 +6,10 @@
   :when (eq system-type 'gnu/linux)
   :commands
   (tab-bar-mode)
-  :bind (("C-M-t t" . tab-bar-mode)
-         ("C-M-t r" . tab-bar-rename-tab)
-         ("C-M-t n" . tab-bar-new-tab)
-         ("C-M-t d" . tab-bar-close-tab))
+  :bind (("C-c M-t t" . tab-bar-mode)
+         ("C-c M-t r" . tab-bar-rename-tab)
+         ("C-c M-t n" . tab-bar-new-tab)
+         ("C-c M-t d" . tab-bar-close-tab))
   :custom
   (tab-bar-new-tab-choice . "*scratch*")
   (tab-bar-close-button-show . nil)
