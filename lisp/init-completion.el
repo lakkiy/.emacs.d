@@ -2,11 +2,10 @@
 
 (leaf yasnippet
   :straight t
-  :require t
+  :hook
+  (prog-mode-hook . yas-minor-mode)
   :config
-  (let ((inhibit-message t)) (yas-reload-all))
-  :init
-  (add-hook 'prog-mode-hook #'yas-minor-mode))
+  (let ((inhibit-message t)) (yas-reload-all)))
 
 (leaf yasnippet-snippets
   :straight t)
