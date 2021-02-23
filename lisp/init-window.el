@@ -1,5 +1,20 @@
 ;;; -*- lexical-binding: t -*-
 
+(leaf tab-bar
+  :doc "save window layout, gui not work on macos"
+  :tag "builtin"
+  :when (eq system-type 'gnu/linux)
+  :commands
+  (tab-bar-mode)
+  :bind (("C-M-t t" . tab-bar-mode)
+         ("C-M-t r" . tab-bar-rename-tab)
+         ("C-M-t n" . tab-bar-new-tab)
+         ("C-M-t d" . tab-bar-close-tab))
+  :custom
+  (tab-bar-new-tab-choice . "*scratch*")
+  (tab-bar-close-button-show . nil)
+  (tab-bar-new-button-show . nil))
+
 (leaf ace-window
   :commands
   (ace-swap-window ace-window)
