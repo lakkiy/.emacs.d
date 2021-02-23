@@ -43,6 +43,9 @@
  read-process-output-max (* 1024 1024)
  ;; Default line number width.
  display-line-numbers-width 4
+ ;; Disable title bar text and icon for macos
+ ns-use-proxy-icon  nil
+ frame-title-format nil
  ;; Don't display comp warnings
  warning-suppress-log-types '((comp)))
 
