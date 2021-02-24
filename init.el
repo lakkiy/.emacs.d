@@ -15,5 +15,6 @@
 (require 'init-lsp)
 (require 'init-go)
 (require 'init-python)
+(require 'init-haskell)
 
 (require 'init-fun)
