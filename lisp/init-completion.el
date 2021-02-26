@@ -26,7 +26,7 @@
   :hook (after-init-hook . global-company-mode)
   :setq
   ;; company-capf ignore case completion
-  (completion-ignore-case . t)
+  ;; (completion-ignore-case . t)
   :custom
   (company-idle-delay . 0.2)
   (company-tooltip-idle-delay . 0.1)
@@ -71,5 +71,20 @@
   :pre-setq
   (xref-show-definitions-function . #'ivy-xref-show-defs)
   (xref-show-xrefs-function . #'ivy-xref-show-xrefs))
+
+;; Jump to definition, used as a fallback of lsp-find-definition
+(leaf dumb-jump
+  :straight t
+  :init
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate t)
+  :bind (("M-g j" . dumb-jump-go)
+         ("M-g J" . dumb-jump-go-other-window))
+  :custom
+  (dumb-jump-quiet . t)
+  (dumb-jump-aggressive . t)
+  (dumb-jump-selector . 'ivy)
+  (dumb-jump-prefer-searcher . 'rg)
+  (dumb-jump-disable-obsolete-warnings . t))
+
 
 (provide 'init-completion)
