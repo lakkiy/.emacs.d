@@ -1,5 +1,19 @@
 ;;; -*- lexical-binding: t -*-
 
+(leaf mini-frame-mode
+  :straight
+  (mini-frame-mode :type git
+                   :host github
+                   :repo "muffinmad/emacs-mini-frame")
+  :custom
+  (mini-frame-show-parameters . '((top . 10)
+                                  (width .0.7)
+                                  (left .0.5)))
+  :commands
+  (mini-frame-mode))
+  ;; :global-minor-mode
+  ;; (mini-frame-mode))
+
 (leaf esup
   :straight t
   :commands
