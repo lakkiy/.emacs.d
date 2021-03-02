@@ -1,5 +1,16 @@
 ;;; -*- lexical-binding: t -*-
 
+(leaf vundo
+  :tag "builtin"
+  :init
+  ;; (setq vundo-translation-alist
+  ;;     '((?○ . ?●)))
+  ;; (set-face-attribute 'vundo-highlight nil :foreground "red")
+  ;; (set-face-attribute 'vundo-node nil :foreground "green")
+  ;; (set-face-attribute 'vundo-stem nil :foreground "green")
+  :commands
+  (vundo))
+
 (leaf mini-frame-mode
   :straight
   (mini-frame-mode :type git

@@ -19,6 +19,7 @@
   (push '(ns-transparent-titlebar . t) default-frame-alist))
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+(add-to-list 'load-path (expand-file-name "site-lisp" user-emacs-directory))
 
 (setq package-enable-at-startup nil)
 
