@@ -6,6 +6,7 @@
    '("k" . meow-prev))
   (meow-leader-define-key
    '("p s" . counsel-git-grep)
+   '("p p" . project-switch-project)
    '("p f" . project-find-file)
    '("p e" . project-eshell)
    '("." . xref-find-definitions)

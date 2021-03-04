@@ -68,7 +68,7 @@
   :init
   (setq auto-save-silent t)
   :custom
-  (auto-save-idle . 1.5)
+  (auto-save-idle . 3)
   :config
   (auto-save-enable))
 
