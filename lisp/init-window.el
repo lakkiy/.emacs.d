@@ -5,7 +5,7 @@
   :tag "builtin"
   :when (eq system-type 'gnu/linux)
   :commands
-  (tab-bar-mode)
+  (tab-bar-mode tab-bar-new-tab tab-bar-rename-tab)
   :bind (("C-c M-t t" . tab-bar-mode)
          ("C-c M-t r" . tab-bar-rename-tab)
          ("C-c M-t n" . tab-bar-new-tab)
