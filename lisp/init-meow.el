@@ -8,6 +8,8 @@
    '("p s" . counsel-git-grep)
    '("p p" . project-switch-project)
    '("p f" . project-find-file)
+   '("p b" . project-switch-to-buffer)
+   '("p K" . project-kill-buffers)
    '("p e" . project-eshell)
    '("." . xref-find-definitions)
    '("z" . xref-pop-marker-stack)
