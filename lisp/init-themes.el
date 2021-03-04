@@ -33,6 +33,7 @@
 (leaf nord-theme :straight t)
 (leaf tao-theme :straight t)
 ;; TODO split citylights theme out of doom themes
+(leaf nasy-theme)
 
 ;;; Nice window divider
 (set-display-table-slot standard-display-table
@@ -48,7 +49,7 @@
   ;; Beijing
   (setq calendar-latitude 39.904202)
   (setq calendar-longitude 116.407394)
-  (setq circadian-themes '((:sunrise . spacemacs-light)
+  (setq circadian-themes '((:sunrise . nasy)
                            (:sunset  . modus-vivendi)))
   (circadian-setup))
 

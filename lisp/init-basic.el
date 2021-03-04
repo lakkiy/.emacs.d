@@ -6,14 +6,14 @@
 
 (when (display-graphic-p)
   ;; Set default font
-  (cl-loop for font in '("SF Mono" "Hack" "Source Code Pro" "Fira Code"
+  (cl-loop for font in '("Operator Mono Lig" "SF Mono" "Hack" "Source Code Pro" "Fira Code"
                          "Menlo" "Monaco" "DejaVu Sans Mono" "Consolas")
            when (font-installed-p font)
            return (set-face-attribute 'default nil
                                       :font font
                                       :height (cond (sys/mac-x-p 130)
                                                     (sys/win32p 110)
-                                                    (t 100))))
+                                                    (t 110))))
 
   ;; Specify font for all unicode characters
   (cl-loop for font in '("Apple Color Emoji" "Segoe UI Symbol" "Symbola" "Symbol")
