@@ -26,4 +26,20 @@ Containing LEFT, and RIGHT aligned respectively."
                     (:eval (+smart-file-name-with-propertize))
                     " ")))))
 
+(leaf ligature
+  :straight
+  (ligature :type git
+            :host github
+            :repo "mickeynp/ligature.el")
+  :config
+  ;; https://htmlpreview.github.io/?https://github.com/kiliman/operator-mono-lig/blob/master/images/preview/normal/index.html
+  ;; for operator mono lig
+  (ligature-set-ligatures 'prog-mode
+                          '("&&" "||" "|>" ":=" "==" "===" "==>" "=>"
+                            "=<<" "!=" "!==" ">=" ">=>" ">>=" "->" "--"
+                            "-->" "<|" "<=" "<==" "<=>" "<=<" "<!--" "<-"
+                            "<->" "<--" "</" "+=" "++" "??" "/>" "__" "WWW"))
+  :global-minor-mode
+  (global-ligature-mode))
+
 (provide 'init-ui)
