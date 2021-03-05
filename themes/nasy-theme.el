@@ -384,6 +384,7 @@
    `(meow-insert-indicator          ((t (:foreground "#309030" :background "#AAE9A0"))))
    `(meow-normal-indicator          ((t (:foreground "#6F5033" :background "#FFEE99"))))
    `(meow-motion-indicator          ((t (:foreground "#505090" :background "#AACCEE"))))
+   ;; TODO tab-bar-mode
    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
    ;; tree sitter
