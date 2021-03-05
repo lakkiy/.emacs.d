@@ -152,7 +152,7 @@
    `(company-tooltip-selection
      ((,class (:background ,n/黛缟
                            :box (:style released-button)
-                           :extend t
+                           ;; :extend t
                            :foreground ,n/缟黛))))
 
    ;; counsel & ivy
@@ -283,7 +283,7 @@
                            :weight bold))))
    `(mode-line
      ((,class (:background ,n-荼
-                           :box (:style released-button)
+                           ;; :box (:style released-button)
                            :foreground ,n-墨))))
 
    ;; org mode
@@ -377,6 +377,14 @@
                            :foreground ,n/墨缟
                            :slant normal
                            :weight bold))))
+
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; add by Lulu ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   ;; meow
+   `(meow-keypad-indicator          ((t (:foreground "#801717" :background "#FF6666"))))
+   `(meow-insert-indicator          ((t (:foreground "#309030" :background "#AAE9A0"))))
+   `(meow-normal-indicator          ((t (:foreground "#6F5033" :background "#FFEE99"))))
+   `(meow-motion-indicator          ((t (:foreground "#505090" :background "#AACCEE"))))
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
    ;; tree sitter
    `(tree-sitter-hl-face:operator

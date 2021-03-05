@@ -17,4 +17,5 @@
 (require 'init-python)
 (require 'init-haskell)
 
+(require 'init-unnecessary)
 (require 'init-fun)

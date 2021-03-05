@@ -1,0 +1,60 @@
+;; -*- lexical-binding: t; -*-
+
+;; Use a hook so the message doesn't get clobbered by other messages.
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "Emacs ready in %s with %d garbage collections."
+                     (format "%.2f seconds"
+                             (float-time
+                              (time-subtract after-init-time before-init-time)))
+                     gcs-done)))
+
+(leaf rainbow-mode
+  :doc "show ansi-color, enable manually"
+  :straight t
+  :commands
+  (rainbow-mode))
+
+(leaf restart-emacs
+  :doc "just restart emacs"
+  :straight t
+  :setq
+  (restart-emacs-restore-frames . t)
+  :commands
+  (restart-emacs))
+
+(leaf yascroll
+  :doc "yet another scroll bar"
+  :straight t
+  :hook
+  ((prog-mode-hook . yascroll-bar-mode)
+   (conf-mode-hook . yascroll-bar-mode)))
+
+(leaf hackernews
+  :doc "can't open hackernews in company's network"
+  :straight
+  (hackernews :type git
+              :host github
+              :repo "clarete/hackernews.el")
+  :commands
+  (hackernews))
+
+(leaf eaf
+  :doc "monkeytype in company ("
+  :straight
+  (eaf :type git
+       :host github
+       :repo "manateelazycat/emacs-application-framework"
+       :files ("*"))
+  :init
+  (leaf epc :straight t :leaf-defer t)
+  (leaf ctable :straight t :leaf-defer t)
+  (leaf deferred :straight t :leaf-defer t)
+  (leaf s :straight t :leaf-defer t)
+  :commands
+  (eaf-open-browser eaf-open eaf-open-bookmark)
+  :when (eq system-type 'gnu/linux)
+  :config
+  (eaf-setq eaf-browser-enable-adblocker "true"))
+
+(provide 'init-unnecessary)
