@@ -1,20 +1,33 @@
 ;;; -*- lexical-binding: t -*-
+
 (defun meow-setup ()
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
   (meow-motion-overwrite-define-key
    '("j" . meow-next)
    '("k" . meow-prev))
   (meow-leader-define-key
+   ;; basic
+   '("v" . magit)
+   '("b" . switch-to-buffer)
+   '("t" . tab-bar-select-tab-by-name)
+   '("i" . counsel-imenu)
+   '("SPC" . counsel-M-x)
+   '("d" . dired)
+   '("L" . display-line-numbers-mode)
+   ;; project
    '("p s" . counsel-git-grep)
    '("p p" . project-switch-project)
    '("p f" . project-find-file)
    '("p b" . project-switch-to-buffer)
    '("p K" . project-kill-buffers)
    '("p e" . project-eshell)
+   ;; xref
    '("." . xref-find-definitions)
    '("z" . xref-pop-marker-stack)
+   '("," . xref-pop-marker-stack)
    '("Z" . xref-find-references)
-   '("SPC" . counsel-M-x)
+   '("?" . xref-find-references)
+   ;; wrap
    '("'" . meow-wrap-string)
    '("(" . meow-wrap-round)
    '("[" . meow-wrap-square)
@@ -23,18 +36,13 @@
    '(")" . meow-forward-slurp)
    '("e" . meow-eval-last-exp)
    '(";" . meow-comment)
-   '("d" . dired)
-   '("L" . display-line-numbers-mode)
+   ;; window
    '("w" . ace-window)
    '("W" . ace-swap-window)
    '("o" . delete-other-windows)
    '("q" . delete-window)
-   '("v" . magit)
    '("-" . split-window-below)
    '("\\" . split-window-right)
-   '("b" . switch-to-buffer)
-   '("t" . tab-bar-select-tab-by-name)
-   '("i" . counsel-imenu)
    ;; SPC j/k will run the original command in MOTION state.
    '("j" . meow-motion-origin-command)
    '("k" . meow-motion-origin-command)

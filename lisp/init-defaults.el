@@ -46,33 +46,10 @@
  ;; Disable title bar text and icon for macos
  ns-use-proxy-icon  nil
  frame-title-format nil
- ;; Don't display comp warnings
+ ;; Don't display compile warnings
  warning-suppress-log-types '((comp)))
 
-(fset 'yes-or-no-p 'y-or-n-p)
-
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
-(add-hook 'conf-mode-hook 'display-line-numbers-mode)
-(add-hook 'prog-mode-hook 'hl-line-mode)
-(add-hook 'conf-mode-hook 'hl-line-mode)
-(add-hook 'prog-mode-hook 'subword-mode)
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-(add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
-
-;;; project.el use C-x p
-(global-unset-key (kbd "C-x C-p"))
-(global-set-key (kbd "C-x C-d") #'dired)
-
-(defun +reopen-file-with-sudo ()
-  (interactive)
-  (find-alternate-file (format "/sudo::%s" (buffer-file-name))))
-
-(global-set-key (kbd "C-x C-z") #'+reopen-file-with-sudo)
-;; (global-set-key (kbd "<f7>") #'profiler-start)
-;; (global-set-key (kbd "<f8>") #'profiler-report)
-
-;; use mouse left click to find definitions
-(global-unset-key (kbd "C-<down-mouse-1>"))
-(global-set-key (kbd "C-<mouse-1>") #'xref-find-definitions-at-mouse)
+(setq
+ custom-file (expand-file-name "custom.el" user-emacs-directory))
 
 (provide 'init-defaults)

@@ -1,47 +1,29 @@
 ;;; -*- lexical-binding: t -*-
 
-(require 'init-utils)
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(add-hook 'conf-mode-hook 'display-line-numbers-mode)
+(add-hook 'prog-mode-hook 'hl-line-mode)
+(add-hook 'conf-mode-hook 'hl-line-mode)
+(add-hook 'prog-mode-hook 'subword-mode)
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+(add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
+(fset 'yes-or-no-p 'y-or-n-p)
 
-(setq custom-file (expand-file-name "emacs-custom.el" user-emacs-directory))
+;;; project.el use C-x p
+(global-unset-key (kbd "C-x C-p"))
+(global-set-key (kbd "C-x C-d") #'dired)
 
-(when (display-graphic-p)
-  ;; Set default font
-  (cl-loop for font in '("Operator Mono Lig" "SF Mono"  "Fira Code"
-                          "DejaVu Sans Mono" "Consolas")
-           when (font-installed-p font)
-           return (set-face-attribute 'default nil
-                                      :font font
-                                      :height (cond (sys/mac-x-p 130)
-                                                    (sys/win32p 110)
-                                                    (t 110))))
+(defun +reopen-file-with-sudo ()
+  (interactive)
+  (find-alternate-file (format "/sudo::%s" (buffer-file-name))))
 
-  ;; Specify font for all unicode characters
-  (cl-loop for font in '("Apple Color Emoji" "Segoe UI Symbol" "Symbola" "Symbol")
-           when (font-installed-p font)
-           return(set-fontset-font t 'unicode font nil 'prepend))
+(global-set-key (kbd "C-x C-z") #'+reopen-file-with-sudo)
+;; (global-set-key (kbd "<f7>") #'profiler-start)
+;; (global-set-key (kbd "<f8>") #'profiler-report)
 
-  ;; Specify font for Chinese characters
-  (cl-loop for font in '("WenQuanYi Micro Hei" "Microsoft Yahei")
-           when (font-installed-p font)
-           return (set-fontset-font t '(#x4e00 . #x9fff) font)))
-
-(leaf elec-pair
-  :tag "builtin"
-  :hook (after-init-hook . electric-pair-mode)
-  :init
-  (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
-
-(leaf saveplace :tag "builtin" :hook (after-init-hook . save-place-mode))
-(leaf hideshow :tag "builtin" :hook (prog-mode-hook . hs-minor-mode))
-(leaf autorevert :tag "builtin" :hook (after-init-hook . global-auto-revert-mode))
-(leaf so-long :global-minor-mode :tag "builtin" (global-so-long-mode 1))
-
-(leaf paren
-  :tag "builtin"
-  :hook (after-init-hook . show-paren-mode)
-  :config
-  (setq show-paren-when-point-inside-paren t
-        show-paren-when-point-in-periphery t))
+;; use mouse left click to find definitions
+(global-unset-key (kbd "C-<down-mouse-1>"))
+(global-set-key (kbd "C-<mouse-1>") #'xref-find-definitions-at-mouse)
 
 ;; Mouse & Smooth Scroll
 ;; Scroll one line at a time (less "jumpy" than defaults)
@@ -51,6 +33,25 @@
 (setq scroll-step 3
       scroll-margin 10
       scroll-conservatively 100000)
+
+(leaf saveplace :tag "builtin" :doc "save latest edit place" :hook (after-init-hook . save-place-mode))
+(leaf hideshow :tag "builtin" :doc "flod code" :hook (prog-mode-hook . hs-minor-mode))
+(leaf autorevert :tag "builtin" :hook (after-init-hook . global-auto-revert-mode))
+(leaf so-long :tag "builtin" :config (global-so-long-mode 1))
+
+(leaf elec-pair
+  :tag "builtin"
+  :hook (after-init-hook . electric-pair-mode)
+  :init
+  (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
+
+(leaf paren
+  :tag "builtin"
+  :doc "highlight paren"
+  :hook (after-init-hook . show-paren-mode)
+  :config
+  (setq show-paren-when-point-inside-paren t
+        show-paren-when-point-in-periphery t))
 
 (leaf which-key
   :straight t
