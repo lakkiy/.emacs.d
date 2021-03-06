@@ -26,6 +26,12 @@
 
 (setq package-enable-at-startup nil)
 
+;; TODO it worked !
+;; (defconst *font* "Operator Mono Lig")
+;; (defconst *font-unicode* "Symbola")
+;; (defconst *font-cn* "WenQuanYi Micro Hei")
+;; (setq *font-height* 110)
+
 (require 'init-defaults)
 (require 'init-straight)
 (require 'init-themes)

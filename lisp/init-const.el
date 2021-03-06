@@ -27,6 +27,8 @@
 (defconst *font-cn-list*
   '("WenQuanYi Micro Hei" "Microsoft Yahei"))
 
+;; FIXME nil in daemon, maybe move to early init?
+;; or don't use list
 (defconst *font*
   (cl-loop for font in *font-list*
            when (font-installed-p font)
