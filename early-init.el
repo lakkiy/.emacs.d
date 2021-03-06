@@ -24,13 +24,13 @@
 ;; for now, just for vundo
 (add-to-list 'load-path (expand-file-name "site-lisp" user-emacs-directory))
 
-(setq package-enable-at-startup nil)
-
-;; TODO it worked !
-;; (defconst *font* "Operator Mono Lig")
-;; (defconst *font-unicode* "Symbola")
-;; (defconst *font-cn* "WenQuanYi Micro Hei")
-;; (setq *font-height* 110)
+(setq package-enable-at-startup nil
+      *font* "Operator Mono Ssm Lig"
+      *font-cn* "WenQuanYi Micro Hei"
+      *font-unicode* (cond ((eq system-type 'darwin) "Apple Color Emoji")
+                           ((eq system-type 'gnu/linux) "Symbola"))
+      *font-height* (cond ((eq system-type 'darwin) 130)
+                          (t 110)))
 
 (require 'init-defaults)
 (require 'init-straight)

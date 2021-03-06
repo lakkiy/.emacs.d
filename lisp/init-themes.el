@@ -34,7 +34,7 @@
                 :host gitlab
                 :repo "protesilaos/modus-themes"))
 
-;;; Nice window divider
+;; for terminal
 (set-display-table-slot standard-display-table
                         'vertical-border
                         (make-glyph-code ?┃))
