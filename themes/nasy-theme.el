@@ -24,16 +24,6 @@
   :group 'nasy-theme
   :type 'boolean)
 
-(defcustom nasy-theme-fixed-pitch-font "OperatorMonoSSmLig Nerd Font"
-  "Nasy them fixed pitch font."
-  :group 'nasy-theme
-  :type 'string)
-
-(defcustom nasy-theme-variable-pitch-font "Rec Mono Nasy"
-  "Nasy them variable patch font."
-  :group 'nasy-theme
-  :type 'string)
-
 (defun nasy-theme-light?dark (light dark)
   "Determin using the light or the dark color of nasy-theme."
   (if (eq nasy-theme-light/dark 'light)
@@ -105,7 +95,8 @@
    `(cursor       ((,class (:background ,n/黛霜 :foreground ,n/霜黛))))
    `(error        ((,class (:background ,n-鱼肚 :foreground ,n-品红 :weight bold))))
    `(escape-glyph ((,class (:foreground ,n-茶))))
-   `(fringe       ((,class (:background ,n/霜黛 :foreground ,n/黛霜))))
+   `(fringe       ((,class (:background ,n/缟漆))))
+   `(vertical-border ((t (:inherit default))))
    `(header-line  ((,class (:background ,n-荼
                                         :box (:line-width 2 :style released-button)
                                         :extend t
@@ -117,14 +108,6 @@
    `(secondary-selection
      ((,class (:background ,n-鱼肚))))
    `(success      ((,class (:background ,n-鱼肚 :foreground ,n-靛青 :weight bold))))
-   `(variable-pitch
-     ((,class (:font ,(font-spec :name nasy-theme-variable-pitch-font
-                                 :weight 'normal
-                                 :slant 'normal)))))
-   `(fixed-pitch
-     ((,class (:font ,(font-spec :name nasy-theme-fixed-pitch-font
-                                 :weight 'normal
-                                 :slant 'normal)))))
    `(warning      ((,class (:background ,n-鱼肚 :foreground ,n-茶 :weight bold))))
 
    ;; company
