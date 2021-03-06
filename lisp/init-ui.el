@@ -1,17 +1,8 @@
 ;;; -*- lexical-binding: t -*-
+;; modeline and font
 
 (require 'init-utils)
-
-(defun +simple-mode-line-render (left right)
-  "Return a string of `window-width' length.
-Containing LEFT, and RIGHT aligned respectively."
-  (let ((available-width
-         (- (window-total-width)
-            (+ (length (format-mode-line left))
-               (string-width (format-mode-line right))))))
-    (append left
-            (list (format (format "%%%ds" available-width) ""))
-            right)))
+(require 'init-const)
 
 (setq-default mode-line-format
               '((:eval
@@ -25,6 +16,28 @@ Containing LEFT, and RIGHT aligned respectively."
                     " "
                     (:eval (+smart-file-name-with-propertize))
                     " ")))))
+
+;; FIXME font not work in daemon
+(when (display-graphic-p)
+  ;; Set default font
+  (cl-loop for font in '("Operator Mono Lig" "SF Mono"  "Fira Code"
+                          "DejaVu Sans Mono" "Consolas")
+           when (font-installed-p font)
+           return (set-face-attribute 'default nil
+                                      :font font
+                                      :height (cond (sys/mac-x-p 130)
+                                                    (sys/win32p 110)
+                                                    (t 110))))
+
+  ;; Specify font for all unicode characters
+  (cl-loop for font in '("Apple Color Emoji" "Segoe UI Symbol" "Symbola" "Symbol")
+           when (font-installed-p font)
+           return(set-fontset-font t 'unicode font nil 'prepend))
+
+  ;; Specify font for Chinese characters
+  (cl-loop for font in '("WenQuanYi Micro Hei" "Microsoft Yahei")
+           when (font-installed-p font)
+           return (set-fontset-font t '(#x4e00 . #x9fff) font)))
 
 (leaf ligature
   :straight

@@ -1,5 +1,4 @@
 (require 'init-basic)
-(require 'init-font)
 (require 'init-meow)
 (require 'init-ui)
 (require 'init-hl)
