@@ -13,4 +13,18 @@
   :hook
   (python-mode-hook . highlight-indentation-mode))
 
+;; TODO use elpy + pyright
+(leaf elpy
+  :straight t
+  :init
+  (add-to-list 'elpy-modules 'elpy-module-autodoc)
+  (add-to-list 'elpy-modules 'elpy-module-eldoc)
+  :custom
+  (elpy-rpc-virtualenv-path . 'current)
+  (elpy-modules             . '(elpy-module-company
+                                elpy-module-folding
+                                elpy-module-yasnippet))
+  :advice
+  (:before python-mode elpy-enable))
+
 (provide 'init-python)
