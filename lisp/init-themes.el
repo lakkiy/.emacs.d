@@ -4,7 +4,10 @@
   :straight
   (joker-theme :type git
                :host github
-               :repo "DogLooksGood/joker-theme"))
+               :repo "DogLooksGood/joker-theme")
+  :setq
+  (joker-theme-main-color . "#B762DE")
+  :require t)
 (leaf printed-theme
   :straight
   (printed-theme :type git
@@ -46,7 +49,7 @@
   (setq calendar-latitude 39.904202)
   (setq calendar-longitude 116.407394)
   (setq circadian-themes '((:sunrise . nasy)
-                           (:sunset  . modus-vivendi)))
+                           (:sunset  . joker)))
   (circadian-setup))
 
 (provide 'init-themes)

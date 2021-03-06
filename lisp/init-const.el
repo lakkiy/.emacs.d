@@ -17,8 +17,7 @@
   "Are we running on a GNU/Linux system?")
 
 (defconst *font-list*
-  '("Operator Mono Lig" "SF Mono"  "Fira Code"
-    "DejaVu Sans Mono" "Consolas")
+  '("Operator Mono Lig" "SF Mono"  "Fira Code" "DejaVu Sans Mono" "Consolas")
   "Font list, the first installed font will set to default font")
 
 (defconst *font-unicode-list*
