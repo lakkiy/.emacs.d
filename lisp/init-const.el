@@ -16,21 +16,31 @@
   (eq system-type 'gnu/linux)
   "Are we running on a GNU/Linux system?")
 
+(defconst *font-list*
+  '("Operator Mono Lig" "SF Mono"  "Fira Code"
+    "DejaVu Sans Mono" "Consolas")
+  "Font list, the first installed font will set to default font")
+
+(defconst *font-unicode-list*
+  '("Apple Color Emoji" "Segoe UI Symbol" "Symbola" "Symbol"))
+
+(defconst *font-cn-list*
+  '("WenQuanYi Micro Hei" "Microsoft Yahei"))
+
 (defconst *font*
-  (cl-loop for font in '("Operator Mono Lig" "SF Mono"  "Fira Code"
-                          "DejaVu Sans Mono" "Consolas")
+  (cl-loop for font in *font-list*
            when (font-installed-p font)
            return font)
   "Font used for gui")
 
 (defconst *font-unicode*
-  (cl-loop for font in '("Apple Color Emoji" "Segoe UI Symbol" "Symbola" "Symbol")
+  (cl-loop for font in *font-unicode-list*
            when (font-installed-p font)
            return font)
   "Font used for display unicode")
 
 (defconst *font-cn*
-  (cl-loop for font in '("WenQuanYi Micro Hei" "Microsoft Yahei")
+  (cl-loop for font in *font-cn-list*
            when (font-installed-p font)
            return font)
   "Font used for display chinese")
