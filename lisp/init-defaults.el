@@ -49,7 +49,13 @@
  ;; Don't display compile warnings
  warning-suppress-log-types '((comp)))
 
-(setq
- custom-file (expand-file-name "custom.el" user-emacs-directory))
+(setq package-enable-at-startup nil
+      custom-file (expand-file-name "custom.el" user-emacs-directory)
+      *font* "Operator Mono Ssm Lig"
+      *font-cn* "WenQuanYi Micro Hei"
+      *font-unicode* (cond ((eq system-type 'darwin) "Apple Color Emoji")
+                           ((eq system-type 'gnu/linux) "Symbola"))
+      *font-height* (cond ((eq system-type 'darwin) 130)
+                          (t 110)))
 
 (provide 'init-defaults)
