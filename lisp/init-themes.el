@@ -18,6 +18,7 @@
   (storybook-theme :type git
                    :host github
                    :repo "DoglooksGood/storybook-theme"))
+(leaf acme-theme :straight t :setq (acme-theme-black-fg . t))
 (leaf atom-one-dark-theme :straight t)
 (leaf spacemacs-theme :straight t)
 (leaf cyberpunk-theme :straight t)
@@ -26,8 +27,6 @@
 (leaf minimal-theme :straight t)
 (leaf nord-theme :straight t)
 (leaf tao-theme :straight t)
-;; TODO split citylights theme out of doom themes
-(leaf nasy-theme)
 (leaf modus-themes
   :straight
   (modus-themes :type git
@@ -38,6 +37,8 @@
 (set-display-table-slot standard-display-table
                         'vertical-border
                         (make-glyph-code ?┃))
+
+(leaf nasy-theme)
 
 (leaf circadian
   :straight

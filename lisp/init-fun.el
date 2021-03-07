@@ -1,5 +1,11 @@
 ;;; -*- lexical-binding: t -*-
 
+(leaf olivetti
+  :doc "A simple Emacs minor mode for a nice writing environment."
+  :straight t
+  :commands
+  (olivetti-mode))
+
 (leaf vundo
   :tag "builtin"
   :init
