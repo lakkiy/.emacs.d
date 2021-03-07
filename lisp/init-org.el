@@ -1,5 +1,17 @@
 ;;; -*- lexical-binding: t -*-
 
+(leaf easy-hugo
+  :straight t
+  :commands
+  (easy-hugo)
+  :pre-setq
+  ;; Set easy-hugo-server-flags to -D in order to preview drafts.
+  (easy-hugo-server-flags . "-D")
+  (easy-hugo-basedir . "~/bookshelf/")
+  (easy-hugo-previewtime . "300")
+  (easy-hugo-default-ext . ".org")
+  (easy-hugo-org-header . t))
+
 (leaf valigh
   :straight
   (valign :type git :host github :repo "casouri/valign")
