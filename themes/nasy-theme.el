@@ -364,7 +364,7 @@
    ;; meow
    `(meow-keypad-indicator          ((t (:foreground ,n-漆 :background ,n-品红))))
    `(meow-insert-indicator          ((t (:foreground ,n-松绿 :background ,n-松花))))
-   `(meow-normal-indicator          ((t (:foreground ,n-墨 :background ,n-牙))))
+   `(meow-normal-indicator          ((t (:foreground ,n-墨 :background ,n-鹅黄))))
    `(meow-motion-indicator          ((t (:foreground ,n-墨灰 :background ,n-霜))))
 
    ;; tree sitter
