@@ -8,26 +8,26 @@
   :setq
   (joker-theme-main-color . "#B762DE")
   :require t)
-;; (leaf printed-theme
-;;   :straight
-;;   (printed-theme :type git
-;;                  :host github
-;;                  :repo "DogLooksGood/printed-theme"))
-;; (leaf storybook-theme
-;;   :straight
-;;   (storybook-theme :type git
-;;                    :host github
-;;                    :repo "DoglooksGood/storybook-theme"))
-;; (leaf acme-theme :straight t :setq (acme-theme-black-fg . t))
-;; (leaf atom-one-dark-theme :straight t)
-;; (leaf spacemacs-theme :straight t)
-;; (leaf solarized-theme :straight t)
-;; (leaf dracula-theme :straight t)
-;; (leaf modus-themes
-;;   :straight
-;;   (modus-themes :type git
-;;                 :host gitlab
-;;                 :repo "protesilaos/modus-themes"))
+(leaf printed-theme
+  :straight
+  (printed-theme :type git
+                 :host github
+                 :repo "DogLooksGood/printed-theme"))
+(leaf storybook-theme
+  :straight
+  (storybook-theme :type git
+                   :host github
+                   :repo "DoglooksGood/storybook-theme"))
+(leaf acme-theme :straight t :setq (acme-theme-black-fg . t))
+(leaf atom-one-dark-theme :straight t)
+(leaf spacemacs-theme :straight t)
+(leaf solarized-theme :straight t)
+(leaf dracula-theme :straight t)
+(leaf modus-themes
+  :straight
+  (modus-themes :type git
+                :host gitlab
+                :repo "protesilaos/modus-themes"))
 
 ;; for terminal
 (set-display-table-slot standard-display-table
