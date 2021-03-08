@@ -55,8 +55,7 @@
       custom-file (expand-file-name "custom.el" user-emacs-directory)
       *font* "Operator Mono SSm Lig"
       *font-cn* "WenQuanYi Micro Hei"
-      *font-unicode* (cond ((eq system-type 'darwin) "Apple Color Emoji")
-                           ((eq system-type 'gnu/linux) "Symbola"))
+      *font-unicode* "Apple Color Emoji"
       *font-height* (cond ((eq system-type 'darwin) 130)
                           (t 110)))
 
