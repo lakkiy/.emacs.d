@@ -10,6 +10,10 @@
          ("C-c M-t r" . tab-bar-rename-tab)
          ("C-c M-t n" . tab-bar-new-tab)
          ("C-c M-t d" . tab-bar-close-tab))
+  :custom-face
+  (tab-bar . '((t (:inherit mode-line))))
+  (tab-bar-tab . '((t (:inherit mode-line))))
+  (tab-bar-tab-inactive . '((t (:inherit mode-line-inactive))))
   :custom
   (tab-bar-new-tab-choice . "*scratch*")
   (tab-bar-close-button-show . nil)
