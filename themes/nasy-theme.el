@@ -264,10 +264,8 @@
      ((,class (:foreground ,n-松花
                            :inherit mode-line
                            :weight bold))))
-   `(mode-line
-     ((,class (:background ,n-荼
-                           ;; :box (:style released-button)
-                           :foreground ,n-墨))))
+   `(mode-line          ((,class (:background ,n-荼))))
+   `(mode-line-inactive ((,class (:background ,n-素))))
 
    ;; org mode
    `(org-block
