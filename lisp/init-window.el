@@ -15,6 +15,7 @@
   (tab-bar-tab . '((t (:inherit mode-line))))
   (tab-bar-tab-inactive . '((t (:inherit mode-line-inactive))))
   :custom
+  (tab-bar-show . 1)
   (tab-bar-new-tab-choice . "*scratch*")
   (tab-bar-close-button-show . nil)
   (tab-bar-new-button-show . nil))
