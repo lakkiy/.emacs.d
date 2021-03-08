@@ -1,9 +1,5 @@
 ;; -*- lexical-binding: t; -*-
 
-;; TODO set
-;; rime-share-data-dir
-;; rime-user-data-dir
-;; for mac and linux
 (leaf rime
   :straight
   (rime :type git
@@ -17,7 +13,7 @@
    (:rime-mode-map
     ("C-`" . rime-send-keybinding)
     ("M-j" . rime-force-enable)))
-  :pre-setq
+  :custom
   (rime-cursor . "|")
   (rime-title . "rime")
   (default-input-method . "rime")
@@ -28,6 +24,10 @@
                                meow-motion-mode-p
                                meow-keypad-mode-p))
   (rime-inline-predicates . '(rime-predicate-space-after-cc-p
-                              rime-predicate-current-uppercase-letter-p)))
+                              rime-predicate-current-uppercase-letter-p))
+  `(rime-librime-root . ,(cond ((eq system-type 'darwin) (expand-file-name "librime/dist" user-emacs-directory))
+                               (t rime-librime-root)))
+  `(rime-user-data-dir . ,(cond ((eq system-type 'darwin) "~/Library/Rime")
+                                ((eq system-type 'gnu/linux) "~/.config/fcitx/rime"))))
 
 (provide 'init-rime)
