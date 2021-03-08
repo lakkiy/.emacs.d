@@ -51,7 +51,7 @@
 
 (setq package-enable-at-startup nil
       custom-file (expand-file-name "custom.el" user-emacs-directory)
-      *font* "Operator Mono Ssm Lig"
+      *font* "Operator Mono Lig"
       *font-cn* "WenQuanYi Micro Hei"
       *font-unicode* (cond ((eq system-type 'darwin) "Apple Color Emoji")
                            ((eq system-type 'gnu/linux) "Symbola"))

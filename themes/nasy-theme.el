@@ -361,14 +361,11 @@
                            :slant normal
                            :weight bold))))
 
-   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; add by Lulu ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
    ;; meow
-   `(meow-keypad-indicator          ((t (:foreground "#801717" :background "#FF6666"))))
-   `(meow-insert-indicator          ((t (:foreground "#309030" :background "#AAE9A0"))))
-   `(meow-normal-indicator          ((t (:foreground "#6F5033" :background "#FFEE99"))))
-   `(meow-motion-indicator          ((t (:foreground "#505090" :background "#AACCEE"))))
-   ;; TODO tab-bar-mode
-   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   `(meow-keypad-indicator          ((t (:foreground ,n-漆 :background ,n-品红))))
+   `(meow-insert-indicator          ((t (:foreground ,n-松绿 :background ,n-松花))))
+   `(meow-normal-indicator          ((t (:foreground ,n-墨 :background ,n-牙))))
+   `(meow-motion-indicator          ((t (:foreground ,n-墨灰 :background ,n-霜))))
 
    ;; tree sitter
    `(tree-sitter-hl-face:operator
