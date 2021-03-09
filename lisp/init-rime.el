@@ -17,15 +17,15 @@
   (if (eq system-type 'darwin)
       (setq rime-librime-root (expand-file-name "librime/dist" user-emacs-directory)))
   :custom
+  (default-input-method . "rime")
   (rime-cursor . "|")
   (rime-title . "rime")
-  (default-input-method . "rime")
-  (rime-inline-ascii-holder . ?a)
   (rime-show-candidate . 'minibuffer)
   (rime-translate-keybindings . '("C-f" "C-b" "C-n" "C-p" "C-g"))
   (rime-disable-predicates . '(meow-normal-mode-p
                                meow-motion-mode-p
                                meow-keypad-mode-p))
+  ;; FIXME can back to cn, and inline ascii seems wrong, dont need enter to confim
   (rime-inline-predicates . '(rime-predicate-space-after-cc-p
                               rime-predicate-current-uppercase-letter-p))
   `(rime-user-data-dir . ,(cond ((eq system-type 'darwin) "~/Library/Rime")
