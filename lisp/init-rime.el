@@ -7,12 +7,6 @@
         :repo "DogLooksGood/emacs-rime"
         :files ("*.el" "Makefile" "lib.c"))
   :commands (toggle-input-method)
-  :bind
-  ((:rime-active-mode-map
-    ("<tab>" . rime-inline-ascii))
-   (:rime-mode-map
-    ("C-`" . rime-send-keybinding)
-    ("M-j" . rime-force-enable)))
   :init
   (if (eq system-type 'darwin)
       (setq rime-librime-root (expand-file-name "librime/dist" user-emacs-directory)))
@@ -25,9 +19,6 @@
   (rime-disable-predicates . '(meow-normal-mode-p
                                meow-motion-mode-p
                                meow-keypad-mode-p))
-  ;; FIXME can back to cn, and inline ascii seems wrong, dont need enter to confim
-  (rime-inline-predicates . '(rime-predicate-space-after-cc-p
-                              rime-predicate-current-uppercase-letter-p))
   `(rime-user-data-dir . ,(cond ((eq system-type 'darwin) "~/Library/Rime")
                                 ((eq system-type 'gnu/linux) "~/.config/fcitx/rime"))))
 
