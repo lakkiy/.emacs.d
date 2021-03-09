@@ -14,6 +14,7 @@
 (leaf blacken
   :straight t
   :doc "used to format python buffers"
+  :added "2021-03-09"
   :after python
   :init
   (setq-default blacken-fast-unsafe t)
