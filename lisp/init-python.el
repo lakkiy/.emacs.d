@@ -8,11 +8,6 @@
   ;; Disable readline based native completion
   (setq python-shell-completion-native-enable nil))
 
-(leaf highlight-indentation
-  :straight t
-  :hook
-  (python-mode-hook . highlight-indentation-mode))
-
 ;; TODO use elpy + pyright
 (leaf elpy
   :straight t
