@@ -15,13 +15,17 @@
 (leaf valigh
   :straight
   (valign :type git :host github :repo "casouri/valign")
-  :config
-  (add-hook 'org-mode-hook #'valign-mode))
+  :after org
+  :hook
+  (org-mode-hook . valign-mode))
 
-(leaf org :tag "builtin")
+(leaf org
+  :tag "builtin"
+  :mode "\\.org\\'")
 
 (leaf org-superstar
   :straight t
+  :after org
   :init
   (setq org-superstar-leading-bullet ?\s)
   :hook (org-mode-hook . org-superstar-mode))
@@ -32,6 +36,7 @@
                     :host github
                     :repo "DogLooksGood/org-html-themify"
                     :files ("*.el" "*.js" "*.css"))
+  :after org
   :hook (org-mode-hook . org-html-themify-mode)
   :custom
   (org-html-themify-themes . '((dark .joker)
@@ -39,6 +44,7 @@
 
 (leaf org-roam
   :straight t
+  :after org
   :hook (after-init-hook . org-roam-mode)
   :bind ((org-roam-mode-map
           ("C-c n l" . org-roam)

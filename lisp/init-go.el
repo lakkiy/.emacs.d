@@ -3,6 +3,7 @@
 (leaf go-mode
   :straight t
   :hook (before-save-hook . gofmt-before-save)
+  :mode "\\.go\\'"
   :pre-setq
   (gofmt-command . "goimports")
   :config

@@ -5,6 +5,8 @@
   :commands docker)
 
 (leaf docker-compose-mode :straight t)
-(leaf dockerfile-mode :straight t)
+(leaf dockerfile-mode
+  :straight t
+  :mode "Dockerfile\\'")
 
 (provide 'init-spcfile)

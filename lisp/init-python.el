@@ -2,6 +2,7 @@
 
 (leaf python
   :tag "builtin"
+  :mode "\\.py\\'"
   :hook
   (python-mode-hook . flymake-mode)
   (python-mode-hook . blacken-mode)

@@ -61,6 +61,7 @@
   :tag "builtin"
   ;; C-c / will be shadowed by `org-sparse-tree' in org-mode
   :bind ("C-c C-/" . webjump)
+  :commands webjump
   :custom
   (webjump-sites . '(;; Internet search engines.
                      ("Google" .
