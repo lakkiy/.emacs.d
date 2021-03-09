@@ -8,7 +8,8 @@
   (let ((inhibit-message t)) (yas-reload-all)))
 
 (leaf yasnippet-snippets
-  :straight t)
+  :straight t
+  :after yasnippet)
 
 (leaf company
   :straight t
@@ -75,6 +76,8 @@
 ;; Jump to definition, used as a fallback of lsp-find-definition
 (leaf dumb-jump
   :straight t
+  :commands
+  (dumb-jump-go)
   :init
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate t)
   :bind (("M-g j" . dumb-jump-go)

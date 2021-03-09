@@ -36,6 +36,15 @@
   :commands
   (esup))
 
+(leaf beacon
+  :straight t
+  :doc "Never lose your cursor again"
+  :added "2021-03-09"
+  :init
+  (setq-default beacon-color "#B762DE")
+  :hook
+  (after-init-hook . (lambda () (beacon-mode 1))))
+
 (leaf vterm
   :straight t
   :commands
