@@ -4,22 +4,19 @@
   :tag "builtin"
   :hook
   (python-mode-hook . flymake-mode)
+  (python-mode-hook . blacken-mode)
+  :custom
+  (python-shell-interpreter . "python3")
   :init
   ;; Disable readline based native completion
   (setq python-shell-completion-native-enable nil))
 
-;; TODO use elpy + pyright
-(leaf elpy
+(leaf blacken
   :straight t
+  :doc "used to format python buffers"
+  :after python
   :init
-  (add-to-list 'elpy-modules 'elpy-module-autodoc)
-  (add-to-list 'elpy-modules 'elpy-module-eldoc)
-  :custom
-  (elpy-rpc-virtualenv-path . 'current)
-  (elpy-modules             . '(elpy-module-company
-                                elpy-module-folding
-                                elpy-module-yasnippet))
-  :advice
-  (:before python-mode elpy-enable))
+  (setq-default blacken-fast-unsafe t)
+  (setq-default blacken-line-length 80))
 
-(provide 'init-python)
+ (provide 'init-python)
