@@ -23,6 +23,14 @@
   :tag "builtin"
   :mode "\\.org\\'")
 
+;; TODO
+(leaf org-super-agenda
+  :straight t
+  :doc "supercharge your Org daily/weekly agenda"
+  :added "2021-03-10"
+  :commands
+  (org-super-agenda-mode))
+
 (leaf org-superstar
   :straight t
   :after org
