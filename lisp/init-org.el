@@ -23,6 +23,14 @@
   :tag "builtin"
   :mode "\\.org\\'")
 
+(leaf svg-tag-mode
+  :straight
+  (svg-tag-mode :type git
+                :host github
+                :repo "rougier/svg-tag-mode")
+  :commands
+  (svg-tag-mode))
+
 ;; TODO
 (leaf org-super-agenda
   :straight t

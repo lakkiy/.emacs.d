@@ -62,7 +62,8 @@
   :straight t
   :bind (("C-s" . swiper)
          ("C-c z" . counsel-fzf)
-         ("C-c r" . counsel-rg))
+         ("C-c r" . counsel-rg)
+         ("C-c ." . counsel-unicode-char))
   :init
   (counsel-mode 1))
 
