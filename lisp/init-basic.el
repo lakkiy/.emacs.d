@@ -38,6 +38,7 @@
 (leaf hideshow :tag "builtin" :doc "flod code" :hook (prog-mode-hook . hs-minor-mode))
 (leaf autorevert :tag "builtin" :hook (after-init-hook . global-auto-revert-mode))
 (leaf so-long :tag "builtin" :config (global-so-long-mode 1))
+(leaf winner-mode :tag "builtin" :hook (after-init-hook . winner-mode))
 
 (leaf elec-pair
   :tag "builtin"
