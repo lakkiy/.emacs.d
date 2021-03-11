@@ -15,21 +15,6 @@
   :commands
   (rainbow-mode))
 
-(leaf restart-emacs
-  :doc "just restart emacs"
-  :straight t
-  :setq
-  (restart-emacs-restore-frames . t)
-  :commands
-  (restart-emacs))
-
-(leaf yascroll
-  :doc "yet another scroll bar"
-  :straight t
-  :hook
-  ((prog-mode-hook . yascroll-bar-mode)
-   (conf-mode-hook . yascroll-bar-mode)))
-
 (leaf hackernews
   :doc "can't open hackernews in company's network"
   :straight

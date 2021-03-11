@@ -20,6 +20,13 @@
   (tab-bar-close-button-show . nil)
   (tab-bar-new-button-show . nil))
 
+(leaf yascroll
+  :doc "yet another scroll bar"
+  :straight t
+  :hook
+  ((prog-mode-hook . yascroll-bar-mode)
+   (conf-mode-hook . yascroll-bar-mode)))
+
 (leaf ace-window
   :commands
   (ace-swap-window ace-window)
