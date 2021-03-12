@@ -14,6 +14,7 @@
    '("SPC" . counsel-M-x)
    '("d" . dired)
    '("L" . display-line-numbers-mode)
+   '("S" . ispell-word)
    ;; project
    '("p s" . counsel-git-grep)
    '("p p" . project-switch-project)
