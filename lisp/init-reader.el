@@ -1,22 +1,22 @@
 ;;; -*- lexical-binding: t -*-
 
-(straight-use-package 'elfeed)
-(leaf elfeed
-  :doc "rss reader interface for emacs"
-  :added "2021-03-12"
-  :commands
-  (elfeed))
-
-(straight-use-package 'elfeed-protocol)
-(leaf elfeed-protocol
-  :doc "Provide extra protocols to make self-hosting RSS readers work with elfeed"
-  :added "2021-03-12"
-  :after elfeed
-  :init
-  ;; TODO
-  (setq elfeed-feeds nil)
-  :config
-  (elfeed-protocol-enable))
+;; (straight-use-package 'elfeed)
+;; (leaf elfeed
+;;   :doc "rss reader interface for emacs"
+;;   :added "2021-03-12"
+;;   :commands
+;;   (elfeed))
+;;
+;; (straight-use-package 'elfeed-protocol)
+;; (leaf elfeed-protocol
+;;   :doc "Provide extra protocols to make self-hosting RSS readers work with elfeed"
+;;   :added "2021-03-12"
+;;   :after elfeed
+;;   :init
+;;   ;; TODO
+;;   (setq elfeed-feeds nil)
+;;   :config
+;;   (elfeed-protocol-enable))
 
 (leaf markdown-mode
   :straight t
