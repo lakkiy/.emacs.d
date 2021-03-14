@@ -38,7 +38,6 @@
   (leaf s :straight t :leaf-defer t)
   :commands
   (eaf-open-browser eaf-open eaf-open-bookmark)
-  :when (eq system-type 'gnu/linux)
   :config
   (eaf-setq eaf-browser-enable-adblocker "true"))
 
