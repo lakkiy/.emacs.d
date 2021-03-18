@@ -26,8 +26,8 @@
 (global-set-key (kbd "C-<mouse-1>") #'xref-find-definitions-at-mouse)
 
 ;; Vertical Scroll
-(setq scroll-step 3)
-(setq scroll-margin 10)
+(setq scroll-step 1)
+(setq scroll-margin 15)
 (setq scroll-conservatively 101)
 (setq scroll-up-aggressively 0.01)
 (setq scroll-down-aggressively 0.01)
@@ -37,7 +37,11 @@
 (setq mouse-wheel-progressive-speed nil)
 ;; Horizontal Scroll
 (setq hscroll-step 1)
-(setq hscroll-margin 1)
+(setq hscroll-margin 10)
+(setq ;; install hunspell and hunspell-en_US
+      ispell-dictionary "en_US"
+      ispell-program-name "hunspell"
+      ispell-personal-dictionary (expand-file-name "hunspell_dict.txt" user-emacs-directory))
 
 (leaf saveplace :tag "builtin" :doc "save latest edit place" :hook (after-init-hook . save-place-mode))
 (leaf hideshow :tag "builtin" :doc "flod code" :hook (prog-mode-hook . hs-minor-mode))

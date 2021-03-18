@@ -57,10 +57,6 @@
       *font-cn* "WenQuanYi Micro Hei"
       *font-unicode* "Apple Color Emoji"
       *font-height* (cond ((eq system-type 'darwin) 130)
-                          (t 110))
-      ;; install hunspell and hunspell-en_US
-      ispell-dictionary "en_US"
-      ispell-program-name "hunspell"
-      ispell-personal-dictionary (expand-file-name "hunspell_dict.txt" user-emacs-directory))
+                          (t 110)))
 
 (provide 'init-defaults)
