@@ -38,7 +38,12 @@
   (leaf s :straight t :leaf-defer t)
   :commands
   (eaf-open-browser eaf-open eaf-open-bookmark)
+  :custom
+  (browse-url-browser-function . 'eaf-open-browser)
+  (eaf-browser-continue-where-left-off . t)
   :config
-  (eaf-setq eaf-browser-enable-adblocker "true"))
+  (require 'eaf-org)
+  (eaf-setq eaf-browser-enable-adblocker "true")
+  (eaf-setq eaf-browser-enable-autofill "true"))
 
 (provide 'init-unnecessary)

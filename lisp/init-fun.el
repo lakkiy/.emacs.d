@@ -1,5 +1,13 @@
 ;;; -*- lexical-binding: t -*-
 
+(leaf ibuffer-vc
+  :straight t
+  :doc "group ibuffer"
+  :added "2021-03-18"
+  :commands (ibuffer-vc-set-filter-groups-by-vc-root)
+  :custom
+  (ibuffer-vc-skip-if-remote . 'nil))
+
 (leaf olivetti
   :doc "A simple Emacs minor mode for a nice writing environment."
   :straight t

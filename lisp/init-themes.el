@@ -12,12 +12,14 @@
   :straight
   (printed-theme :type git
                  :host github
-                 :repo "DogLooksGood/printed-theme"))
+                 :repo "DogLooksGood/printed-theme")
+  :require t)
 (leaf storybook-theme
   :straight
   (storybook-theme :type git
                    :host github
-                   :repo "DoglooksGood/storybook-theme"))
+                   :repo "DoglooksGood/storybook-theme")
+  :require t)
 (leaf acme-theme :straight t :setq (acme-theme-black-fg . t))
 (leaf atom-one-dark-theme :straight t)
 (leaf spacemacs-theme :straight t)

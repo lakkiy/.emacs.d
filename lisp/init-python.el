@@ -7,6 +7,7 @@
   (python-mode-hook . flymake-mode)
   (python-mode-hook . blacken-mode)
   :custom
+  (python-indent-offset . 4)
   (python-shell-interpreter . "python3")
   :init
   ;; Disable readline based native completion
