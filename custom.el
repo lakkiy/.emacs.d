@@ -3,15 +3,11 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ansi-color-faces-vector
-   [default bold shadow italic underline success warning error])
  '(ansi-color-names-vector
-   ["#d2ceda" "#f2241f" "#67b11d" "#b1951d" "#3a81c3" "#a31db1" "#21b8c7" "#655370"])
+   ["#21252B" "#E06C75" "#98C379" "#E5C07B" "#61AFEF" "#C678DD" "#56B6C2" "#ABB2BF"])
  '(auto-save-idle 3)
  '(aw-keys '(97 111 101 117 105) t)
  '(aw-scope 'frame t)
- '(awesome-tray-mode-line-active-color "#2fafff")
- '(awesome-tray-mode-line-inactive-color "#323232")
  '(browse-url-browser-function 'eaf-open-browser)
  '(company-dabbrev-downcase nil)
  '(company-global-modes '(not org-mode dired-mode dired-sidebar-mode))
@@ -22,50 +18,22 @@
  '(company-tooltip-limit 10)
  '(company-tooltip-width-grow-only t)
  '(custom-safe-themes
-   '("431adcc780980776e662d0427c72e7f763c2ab2c27125b4b1107d4fde981e266" "fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" "81c3de64d684e23455236abde277cda4b66509ef2c28f66e059aa925b8b12534" "b1147c757ad892085f1bacef35164e87a2a7f4bd08b00b5f4577a75c6a9d563b" "602c523efed33ab7bc708c31ed9d641abe123e2bfbbe124e46faf68c95e67d8d" default))
+   '("6a6ee19d0e502369cd959fc0a893d58833b0af88d2682655026020eadf34ffe8" "0c860c4fe9df8cff6484c54d2ae263f19d935e4ff57019999edbda9c7eda50b8" default))
  '(default-input-method "rime")
  '(dumb-jump-aggressive t t)
  '(dumb-jump-disable-obsolete-warnings t t)
  '(dumb-jump-prefer-searcher 'rg t)
  '(dumb-jump-quiet t t)
  '(dumb-jump-selector 'ivy t)
- '(eaf-browser-continue-where-left-off t)
+ '(eaf-browser-continue-where-left-off t t)
  '(eglot-ignored-server-capabilites '(:documentHighlightProvider))
  '(eglot-stay-out-of nil t)
- '(exwm-floating-border-color "#646464")
- '(flymake-error-bitmap '(flymake-double-exclamation-mark modus-theme-fringe-red))
- '(flymake-note-bitmap '(exclamation-mark modus-theme-fringe-cyan))
- '(flymake-warning-bitmap '(exclamation-mark modus-theme-fringe-yellow))
- '(highlight-tail-colors '(("#2f4a00" . 0) ("#00415e" . 20)))
- '(hl-todo-keyword-faces
-   '(("TODO" . "#dc752f")
-     ("NEXT" . "#dc752f")
-     ("THEM" . "#2d9574")
-     ("PROG" . "#3a81c3")
-     ("OKAY" . "#3a81c3")
-     ("DONT" . "#f2241f")
-     ("FAIL" . "#f2241f")
-     ("DONE" . "#42ae2c")
-     ("NOTE" . "#b1951d")
-     ("KLUDGE" . "#b1951d")
-     ("HACK" . "#b1951d")
-     ("TEMP" . "#b1951d")
-     ("FIXME" . "#dc752f")
-     ("XXX+" . "#dc752f")
-     ("\\?\\?\\?+" . "#dc752f")))
- '(ibuffer-deletion-face 'modus-theme-mark-del)
- '(ibuffer-filter-group-name-face 'modus-theme-mark-symbol)
- '(ibuffer-marked-face 'modus-theme-mark-sel)
- '(ibuffer-title-face 'modus-theme-pseudo-header)
+ '(fci-rule-color "#3E4451")
  '(ibuffer-vc-skip-if-remote nil t)
  '(ivy-count-format "%d/%d ")
  '(ivy-use-selectable-prompt t)
- '(markdown-fontify-code-blocks-natively t t)
+ '(markdown-fontify-code-blocks-natively t)
  '(mini-frame-show-parameters '((top . 10) (width \.0\.7) (left \.0\.5)) t)
- '(org-html-themify-themes '((dark \.joker) (light . storybook)) t)
- '(org-roam-directory "/Users/liubo/Dropbox/org")
- '(org-src-block-faces 'nil)
- '(pdf-view-midnight-colors '("#655370" . "#fbf8ef"))
  '(python-indent-offset 4 t)
  '(python-shell-interpreter "python3" t)
  '(rime-cursor "|")
@@ -73,31 +41,21 @@
  '(rime-show-candidate 'minibuffer)
  '(rime-title "rime" t)
  '(rime-translate-keybindings '("C-f" "C-b" "C-n" "C-p" "C-g") t)
- '(rime-user-data-dir "~/Library/Rime")
+ '(rime-user-data-dir "~/.config/fcitx/rime")
+ '(tab-bar-close-button-show nil)
+ '(tab-bar-new-button-show nil)
+ '(tab-bar-new-tab-choice "*scratch*")
+ '(tab-bar-show 1)
+ '(tetris-x-colors
+   [[229 192 123]
+    [97 175 239]
+    [209 154 102]
+    [224 108 117]
+    [152 195 121]
+    [198 120 221]
+    [86 182 194]])
  '(treemacs-no-png-images t t)
  '(treemacs-width 30 t)
- '(vc-annotate-background nil)
- '(vc-annotate-background-mode nil)
- '(vc-annotate-color-map
-   '((20 . "#ff8059")
-     (40 . "#feacd0")
-     (60 . "#f78fe7")
-     (80 . "#f4923b")
-     (100 . "#eecc00")
-     (120 . "#cfdf30")
-     (140 . "#f8dec0")
-     (160 . "#bfebe0")
-     (180 . "#44bc44")
-     (200 . "#70c900")
-     (220 . "#6ae4b9")
-     (240 . "#4ae8fc")
-     (260 . "#00d3d0")
-     (280 . "#c6eaff")
-     (300 . "#2fafff")
-     (320 . "#79a8ff")
-     (340 . "#00bcff")
-     (360 . "#b6a0ff")))
- '(vc-annotate-very-old-color nil)
  '(webjump-sites
    '(("Google" .
       [simple-query "www.google.com" "www.google.com/search?q=" ""])
@@ -122,16 +80,15 @@
      ("Python Docs" .
       [simple-query "docs.python.org" "docs.python.org/3/search.html?q=" ""])
      ("Cpp Reference" .
-      [simple-query "en.cppreference.com" "en.cppreference.com/mwiki/index.php?search=" ""])) t)
- '(xterm-color-names
-   ["black" "#ff8059" "#44bc44" "#eecc00" "#2fafff" "#feacd0" "#00d3d0" "gray65"])
- '(xterm-color-names-bright
-   ["gray35" "#f4923b" "#70c900" "#cfdf30" "#79a8ff" "#f78fe7" "#4ae8fc" "white"]))
+      [simple-query "en.cppreference.com" "en.cppreference.com/mwiki/index.php?search=" ""])) t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(aw-leading-char-face ((t (:inherit font-lock-keyword-face :bold t :height 3.0))) nil "Customized with leaf in `ace-window' block at `/Users/liubo/.config/emacs/lisp/init-window.el'")
- '(aw-minibuffer-leading-char-face ((t (:inherit font-lock-keyword-face :bold t :height 2.0))) nil "Customized with leaf in `ace-window' block at `/Users/liubo/.config/emacs/lisp/init-window.el'")
- '(aw-mode-line-face ((t (:inherit mode-line-emphasis :bold t))) nil "Customized with leaf in `ace-window' block at `/Users/liubo/.config/emacs/lisp/init-window.el'"))
+ '(aw-leading-char-face ((t (:inherit font-lock-keyword-face :bold t :height 3.0))) nil "Customized with leaf in `ace-window' block at `/home/liubo/.config/emacs/lisp/init-window.el'")
+ '(aw-minibuffer-leading-char-face ((t (:inherit font-lock-keyword-face :bold t :height 2.0))) nil "Customized with leaf in `ace-window' block at `/home/liubo/.config/emacs/lisp/init-window.el'")
+ '(aw-mode-line-face ((t (:inherit mode-line-emphasis :bold t))) nil "Customized with leaf in `ace-window' block at `/home/liubo/.config/emacs/lisp/init-window.el'")
+ '(tab-bar ((t (:inherit mode-line))) nil "Customized with leaf in `tab-bar' block at `/home/liubo/.config/emacs/lisp/init-window.el'")
+ '(tab-bar-tab ((t (:inherit mode-line))) nil "Customized with leaf in `tab-bar' block at `/home/liubo/.config/emacs/lisp/init-window.el'")
+ '(tab-bar-tab-inactive ((t (:inherit mode-line-inactive))) nil "Customized with leaf in `tab-bar' block at `/home/liubo/.config/emacs/lisp/init-window.el'"))
