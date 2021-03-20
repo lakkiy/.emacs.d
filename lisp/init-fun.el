@@ -1,5 +1,13 @@
 ;;; -*- lexical-binding: t -*-
 
+(leaf imenu-list
+  :straight
+  (imenu-list :type git
+              :host github
+              :repo "bmag/imenu-list")
+  :commands
+  (imenu-list-smart-toggle))
+
 (leaf ibuffer-vc
   :straight t
   :doc "group ibuffer"
