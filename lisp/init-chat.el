@@ -1,7 +1,10 @@
 ;; -*- lexical-binding: t; -*-
 
 (leaf telega
-  :straight t
+  :straight
+  (telega :type git
+          :host github
+          :branch "releases")
   :commands
   (telega))
 
