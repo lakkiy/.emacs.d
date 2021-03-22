@@ -23,7 +23,12 @@
   (olivetti-mode))
 
 (leaf vundo
-  :tag "builtin"
+  :straight
+  (vundo :type git
+         :host github
+         :repo "casouri/vundo")
+  :added "2021-03-22"
+  :doc "visual undo tree"
   :init
   ;; (setq vundo-translation-alist
   ;;     '((?○ . ?●)))
