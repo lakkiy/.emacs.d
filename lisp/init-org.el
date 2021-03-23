@@ -12,15 +12,6 @@
   (easy-hugo-default-ext . ".org")
   (easy-hugo-org-header . t))
 
-(leaf gitmoji
-  :straight
-  (gitmoji :type git
-           :host github
-           :repo "Tiv0w/gitmoji")
-  :init
-  (setq gitmoji--insert-utf8-emoji t
-        gitmoji--display-utf8-emoji t))
-
 (leaf valigh
   :straight
   (valign :type git :host github :repo "casouri/valign")

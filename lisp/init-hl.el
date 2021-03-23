@@ -7,6 +7,7 @@
 
 (leaf hl-todo
   :straight t
-  :global-minor-mode global-hl-todo-mode)
+  :hook
+  ((dired-mode-hook prog-mode-hook conf-mode-hook) . hl-todo-mode))
 
 (provide 'init-hl)

@@ -18,6 +18,15 @@
 ;;   :config
 ;;   (elfeed-protocol-enable))
 
+(leaf hackernews
+  :doc "can't open hackernews in company's network"
+  :straight
+  (hackernews :type git
+              :host github
+              :repo "clarete/hackernews.el")
+  :commands
+  (hackernews))
+
 (leaf markdown-mode
   :straight t
   :commands (markdown-mode gfm-mode)

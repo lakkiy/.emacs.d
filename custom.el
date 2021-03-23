@@ -3,12 +3,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ansi-color-names-vector
-   ["#21252B" "#E06C75" "#98C379" "#E5C07B" "#61AFEF" "#C678DD" "#56B6C2" "#ABB2BF"])
  '(auto-save-idle 3)
  '(aw-keys '(97 111 101 117 105) t)
  '(aw-scope 'frame t)
- '(browse-url-browser-function 'eaf-open-browser)
  '(company-dabbrev-downcase nil)
  '(company-global-modes '(not org-mode dired-mode dired-sidebar-mode))
  '(company-idle-delay 0.2)
@@ -18,21 +15,19 @@
  '(company-tooltip-limit 10)
  '(company-tooltip-width-grow-only t)
  '(custom-safe-themes
-   '("6a6ee19d0e502369cd959fc0a893d58833b0af88d2682655026020eadf34ffe8" "0c860c4fe9df8cff6484c54d2ae263f19d935e4ff57019999edbda9c7eda50b8" default))
+   '("21388667ce5ee0b375e6282f0d6c6b61588da6604d343bbb19389e6a54d3d00d" "602c523efed33ab7bc708c31ed9d641abe123e2bfbbe124e46faf68c95e67d8d" default))
  '(default-input-method "rime")
  '(dumb-jump-aggressive t t)
  '(dumb-jump-disable-obsolete-warnings t t)
  '(dumb-jump-prefer-searcher 'rg t)
  '(dumb-jump-quiet t t)
  '(dumb-jump-selector 'ivy t)
- '(eaf-browser-continue-where-left-off t t)
  '(eglot-ignored-server-capabilites '(:documentHighlightProvider))
  '(eglot-stay-out-of nil t)
- '(fci-rule-color "#3E4451")
  '(ibuffer-vc-skip-if-remote nil t)
  '(ivy-count-format "%d/%d ")
  '(ivy-use-selectable-prompt t)
- '(markdown-fontify-code-blocks-natively t)
+ '(markdown-fontify-code-blocks-natively t t)
  '(mini-frame-show-parameters '((top . 10) (width \.0\.7) (left \.0\.5)) t)
  '(python-indent-offset 4 t)
  '(python-shell-interpreter "python3" t)
@@ -46,14 +41,6 @@
  '(tab-bar-new-button-show nil)
  '(tab-bar-new-tab-choice "*scratch*")
  '(tab-bar-show 1)
- '(tetris-x-colors
-   [[229 192 123]
-    [97 175 239]
-    [209 154 102]
-    [224 108 117]
-    [152 195 121]
-    [198 120 221]
-    [86 182 194]])
  '(treemacs-no-png-images t t)
  '(treemacs-width 30 t)
  '(webjump-sites

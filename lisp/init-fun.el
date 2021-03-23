@@ -1,13 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(leaf imenu-list
-  :straight
-  (imenu-list :type git
-              :host github
-              :repo "bmag/imenu-list")
-  :commands
-  (imenu-list-smart-toggle))
-
 (leaf ibuffer-vc
   :straight t
   :doc "group ibuffer"
@@ -21,6 +13,31 @@
   :straight t
   :commands
   (olivetti-mode))
+
+(leaf rainbow-mode
+  :doc "show ansi-color, enable manually"
+  :straight t
+  :commands
+  (rainbow-mode))
+
+(leaf eaf
+  :doc "monkeytype in company ("
+  :straight
+  (eaf :type git
+       :host github
+       :repo "manateelazycat/emacs-application-framework"
+       :files ("*"))
+  :init
+  (leaf epc :straight t :leaf-defer t)
+  (leaf ctable :straight t :leaf-defer t)
+  (leaf deferred :straight t :leaf-defer t)
+  (leaf s :straight t :leaf-defer t)
+  :commands
+  (eaf-open-browser eaf-open eaf-open-bookmark)
+  :config
+  (require 'eaf-org)
+  (eaf-setq eaf-browser-enable-adblocker "true")
+  (eaf-setq eaf-browser-enable-autofill "true"))
 
 (leaf vundo
   :straight
@@ -37,25 +54,6 @@
   ;; (set-face-attribute 'vundo-stem nil :foreground "green")
   :commands
   (vundo))
-
-(leaf mini-frame-mode
-  :straight
-  (mini-frame-mode :type git
-                   :host github
-                   :repo "muffinmad/emacs-mini-frame")
-  :custom
-  (mini-frame-show-parameters . '((top . 10)
-                                  (width .0.7)
-                                  (left .0.5)))
-  :commands
-  (mini-frame-mode))
-  ;; :global-minor-mode
-  ;; (mini-frame-mode))
-
-(leaf esup
-  :straight t
-  :commands
-  (esup))
 
 (leaf vterm
   :straight t

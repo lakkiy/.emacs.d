@@ -22,6 +22,8 @@
    '("p b" . project-switch-to-buffer)
    '("p K" . project-kill-buffers)
    '("p e" . project-eshell)
+   '("p r" . project-query-replace-regexp)
+   '("p d" . project-dired)
    ;; xref
    '("." . xref-find-definitions)
    '("z" . xref-pop-marker-stack)
