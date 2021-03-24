@@ -264,8 +264,8 @@
      ((,class (:foreground ,n-松花
                            :inherit mode-line
                            :weight bold))))
-   `(mode-line          ((,class (:background ,n-荼))))
-   `(mode-line-inactive ((,class (:background ,n-素))))
+   `(mode-line          ((,class (:background ,n-素 :box t))))
+   `(mode-line-inactive ((,class (:background ,n-荼 :box t))))
 
    ;; org mode
    `(org-block
@@ -304,7 +304,7 @@
      ((,class (:background ,n/素墨
                            :extend t
                            :foreground ,n-靛青
-                           :height ,(s?n 1.4)
+                           :height ,(s?n 1.3)
                            :underline t
                            :weight bold))))
    `(org-level-2
@@ -323,30 +323,25 @@
      ((,class (:background ,n/素墨
                            :extend t
                            :foreground ,n/青莲丁香
-                           :height ,(s?n 1.1)
                            :weight bold))))
    `(org-level-5
      ((,class (:extend t
                        :foreground ,n-靛青
-                       :height ,(s?n 1.1)
                        :slant italic
                        :weight normal))))
    `(org-level-6
      ((,class (:extend t
                        :foreground ,n-茶
-                       :height ,(s?n 1.1)
                        :slant italic
                        :weight normal))))
    `(org-level-7
      ((,class (:extend t
                        :foreground ,n-松绿
-                       :height ,(s?n 1.1)
                        :slant italic
                        :weight normal))))
    `(org-level-8
      ((,class (:extend t
                        :foreground ,n/青莲丁香
-                       :height ,(s?n 1.1)
                        :slant italic
                        :weight normal))))
    `(org-meta-line
@@ -364,6 +359,11 @@
    `(meow-insert-indicator          ((t (:foreground ,n-松绿 :background ,n-松花))))
    `(meow-normal-indicator          ((t (:foreground ,n-墨 :background ,n-鹅黄))))
    `(meow-motion-indicator          ((t (:foreground ,n-墨灰 :background ,n-霜))))
+
+   ;; tab bar mode
+   `(tab-bar                ((t (:inherit mode-line))))
+   `(tab-bar-tab            ((t (:inherit mode-line-inactive))))
+   `(tab-bar-tab-inactive   ((t (:inherit mode-line))))
 
    ;; tree sitter
    `(tree-sitter-hl-face:operator

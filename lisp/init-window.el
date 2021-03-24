@@ -12,8 +12,8 @@
          ("C-c M-t d" . tab-bar-close-tab))
   :custom-face
   (tab-bar . '((t (:inherit mode-line))))
-  (tab-bar-tab . '((t (:inherit mode-line))))
-  (tab-bar-tab-inactive . '((t (:inherit mode-line-inactive))))
+  (tab-bar-tab . '((t (:inherit mode-line-inactive))))
+  (tab-bar-tab-inactive . '((t (:inherit mode-line))))
   :custom
   (tab-bar-show . 1)
   (tab-bar-new-tab-choice . "*scratch*")

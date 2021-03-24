@@ -21,7 +21,7 @@
   (rainbow-mode))
 
 (leaf eaf
-  :doc "monkeytype in company ("
+  :doc "monkeytype in company (, don't forget run npm install"
   :straight
   (eaf :type git
        :host github
