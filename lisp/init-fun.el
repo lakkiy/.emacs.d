@@ -20,6 +20,14 @@
   :commands
   (rainbow-mode))
 
+;; FIXME didn't work
+(leaf docstr
+  :straight t
+  :added "2021-03-24"
+  :doc "add doc string to func"
+  :hook
+  (prog-mode-hook . (lambda () (docstr-mode 1))))
+
 (leaf eaf
   :doc "monkeytype in company (, don't forget run npm install"
   :straight
