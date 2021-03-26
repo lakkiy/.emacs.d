@@ -362,7 +362,7 @@
 
    ;; tab bar mode
    `(tab-bar                ((t (:inherit mode-line))))
-   `(tab-bar-tab            ((t (:inherit mode-line-inactive))))
+   `(tab-bar-tab            ((t (:foreground ,n-松绿))))
    `(tab-bar-tab-inactive   ((t (:inherit mode-line))))
 
    ;; tree sitter

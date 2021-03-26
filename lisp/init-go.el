@@ -33,6 +33,8 @@
   :straight t
   :after go-mode
   :doc "generate golang struct tag"
+  :init
+  (setq go-tag-args (list "-transform" "camelcase"))
   :commands
   (go-tag-add go-tag-remove go-tag-refresh))
 
