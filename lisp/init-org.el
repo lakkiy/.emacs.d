@@ -23,6 +23,15 @@
   :tag "builtin"
   :mode "\\.org\\'")
 
+(leaf ob-go
+  :straight
+  (ob-go :type git
+         :host github
+         :repo "pope/ob-go")
+  :after org
+  :added "2021-03-30"
+  :doc "run go code in org src block")
+
 (leaf svg-tag-mode
   :straight
   (svg-tag-mode :type git
