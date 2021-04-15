@@ -10,7 +10,7 @@
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 (add-to-list 'load-path (expand-file-name "site-lisp" user-emacs-directory))
 (add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))
-(add-to-list 'default-frame-alist (cons 'alpha 95))
+(add-to-list 'default-frame-alist (cons 'alpha 100))
 
 ;;; Personal configuration may override some variables
 (let ((private-conf (expand-file-name "private.el" user-emacs-directory)))

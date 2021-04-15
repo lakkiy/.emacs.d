@@ -21,6 +21,7 @@
                    :repo "DoglooksGood/storybook-theme")
   :require t)
 (leaf acme-theme :straight t :setq (acme-theme-black-fg . t))
+(leaf nimbus-theme :straight t)
 (leaf atom-one-dark-theme :straight t)
 (leaf spacemacs-theme :straight t)
 (leaf solarized-theme :straight t)

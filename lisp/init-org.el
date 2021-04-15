@@ -19,9 +19,7 @@
   :hook
   (org-mode-hook . valign-mode))
 
-(leaf org
-  :tag "builtin"
-  :mode "\\.org\\'")
+(leaf org)
 
 (leaf ob-go
   :straight
