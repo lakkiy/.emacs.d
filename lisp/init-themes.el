@@ -20,6 +20,13 @@
                    :host github
                    :repo "DoglooksGood/storybook-theme")
   :require t)
+
+(leaf lazycat-theme
+  :straight
+  (lazycat-theme :type git
+                 :host github
+                 :repo "404cn/lazycat-theme"))
+
 (leaf acme-theme :straight t :setq (acme-theme-black-fg . t))
 (leaf nimbus-theme :straight t)
 (leaf atom-one-dark-theme :straight t)
