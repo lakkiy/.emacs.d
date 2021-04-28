@@ -10,6 +10,7 @@
            :host github
            :repo "Tiv0w/gitmoji")
   :after magit
+  :require t
   :init
   (setq gitmoji--insert-utf8-emoji t
         gitmoji--display-utf8-emoji t))
