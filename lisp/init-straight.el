@@ -22,6 +22,8 @@
 (straight-use-package 'leaf-keywords)
 (leaf-keywords-init)
 
-(leaf gcmh :straight t :global-minor-mode (gcmh-mode))
+(straight-use-package 'gcmh)
+(require 'gcmh)
+(gcmh-mode 1)
 
 (provide 'init-straight)
