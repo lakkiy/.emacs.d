@@ -1,25 +1,31 @@
 ;; -*- lexical-binding: t; -*-
 
-(leaf rime
-  :straight
-  (rime :type git
-        :host github
-        :repo "DogLooksGood/emacs-rime"
-        :files ("*.el" "Makefile" "lib.c"))
-  :commands (toggle-input-method)
-  :init
-  (if (eq system-type 'darwin)
-      (setq rime-librime-root (expand-file-name "librime/dist" user-emacs-directory)))
-  :custom
-  (default-input-method . "rime")
-  (rime-cursor . "|")
-  (rime-title . "rime")
-  (rime-show-candidate . 'minibuffer)
-  (rime-translate-keybindings . '("C-f" "C-b" "C-n" "C-p" "C-g"))
-  (rime-disable-predicates . '(meow-normal-mode-p
-                               meow-motion-mode-p
-                               meow-keypad-mode-p))
-  `(rime-user-data-dir . ,(cond ((eq system-type 'darwin) "~/Library/Rime")
-                                ((eq system-type 'gnu/linux) "~/.config/fcitx/rime"))))
+(straight-use-package '(rime :type git :host github :repo "DogLooksGood/emacs-rime"))
+
+(setq
+ rime-disable-predicates '(meow-normal-mode-p
+                           meow-motion-mode-p
+                           meow-keypad-mode-p)
+ ;; rime-inline-predicates '(rime-predicate-space-after-cc-p
+ ;;                          rime-predicate-current-uppercase-letter-p)
+ rime-translate-keybindings '("C-f" "C-b" "C-n" "C-p" "C-g")
+ rime-inline-ascii-holder ?a
+ default-input-method "rime"
+ rime-cursor "|"
+ rime-show-candidate 'minibuffer
+ rime-title "ㄓ")
+
+(if (eq system-type 'darwin)
+    (setq rime-librime-root (expand-file-name "librime/dist" user-emacs-directory)
+          rime-user-data-dir "~/Library/Rime"))
+(if (eq system-type 'gnu/linux)
+    (setq rime-user-data-dir "~/.config/fcitx/rime"))
+
+(autoload #'toggle-input-method "rime" nil t)
+
+(with-eval-after-load "rime"
+  (define-key rime-active-mode-map [tab] 'rime-inline-ascii)
+  (define-key rime-mode-map (kbd "C-`") 'rime-send-keybinding)
+  (define-key rime-mode-map (kbd "M-j") 'rime-force-enable))
 
 (provide 'init-rime)
