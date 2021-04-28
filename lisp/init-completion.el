@@ -1,15 +1,16 @@
 ;;; -*- lexical-binding: t -*-
 
-(leaf yasnippet
-  :straight t
-  :hook
-  (prog-mode-hook . yas-minor-mode)
-  :config
-  (let ((inhibit-message t)) (yas-reload-all)))
+(straight-use-package 'yasnippet)
+(straight-use-package 'yasnippet-snippets)
 
-(leaf yasnippet-snippets
-  :straight t
-  :after yasnippet)
+(autoload #'yas-minor-mode "yasnippet")
+
+(add-hook 'prog-mode-hook 'yas-minor-mode)
+
+(with-eval-after-load "yasnippet"
+  (let ((inhibit-message t))
+    (yas-reload-all)))
+
 
 (leaf company
   :straight t
@@ -38,15 +39,15 @@
   (company-global-modes . '(not org-mode dired-mode dired-sidebar-mode))
   (company-require-match . nil))
 
-(leaf deadgrep
-  :doc "use ripgrep from Emacs"
-  :straight t
-  :bind ((:deadgrep-mode-map
-          ("w" . deadgrep-edit-mode))
-         (:deadgrep-edit-mode-map
-          ("C-x C-s" . deadgrep-mode)))
-  :commands
-  (deadgrep))
+
+(straight-use-package 'deadgrep)
+
+(autoload #'deadgrep "deadgrep" nil t)
+
+(with-eval-after-load "deadgrep"
+  (define-key deadgrep-mode-map (kbd "w") 'deadgrep-edit-mode)
+  (define-key deadgrep-edit-mode-map (kbd "C-x C-s") 'deadgrep-mode))
+
 
 (leaf ivy
   :straight t
@@ -66,29 +67,5 @@
          ("C-c ." . counsel-unicode-char))
   :init
   (counsel-mode 1))
-
-(leaf ivy-xref
-  :straight
-  (ivy-xref :type git :host github :repo "alexmurray/ivy-xref")
-  :pre-setq
-  (xref-show-definitions-function . #'ivy-xref-show-defs)
-  (xref-show-xrefs-function . #'ivy-xref-show-xrefs))
-
-;; Jump to definition, used as a fallback of lsp-find-definition
-(leaf dumb-jump
-  :straight t
-  :commands
-  (dumb-jump-go)
-  :init
-  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate t)
-  :bind (("M-g j" . dumb-jump-go)
-         ("M-g J" . dumb-jump-go-other-window))
-  :custom
-  (dumb-jump-quiet . t)
-  (dumb-jump-aggressive . t)
-  (dumb-jump-selector . 'ivy)
-  (dumb-jump-prefer-searcher . 'rg)
-  (dumb-jump-disable-obsolete-warnings . t))
-
 
 (provide 'init-completion)

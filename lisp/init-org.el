@@ -1,69 +1,52 @@
 ;;; -*- lexical-binding: t -*-
 
-(leaf easy-hugo
-  :straight t
-  :commands
-  (easy-hugo)
-  :pre-setq
-  ;; Set easy-hugo-server-flags to -D in order to preview drafts.
-  (easy-hugo-server-flags . "-D")
-  (easy-hugo-basedir . "~/bookshelf/")
-  (easy-hugo-previewtime . "300")
-  (easy-hugo-default-ext . ".org")
-  (easy-hugo-org-header . t))
 
-(leaf valigh
-  :straight
-  (valign :type git :host github :repo "casouri/valign")
-  :after org
-  :hook
-  (org-mode-hook . valign-mode))
+(straight-use-package 'easy-hugo)
 
-(leaf org)
+(setq
+ easy-hugo-server-flags "-D"
+ easy-hugo-basedir "~/bookshelf/"
+ easy-hugo-previewtime "300"
+ easy-hugo-default-ext ".org"
+ easy-hugo-org-header t)
 
-(leaf ob-go
-  :straight
-  (ob-go :type git
-         :host github
-         :repo "pope/ob-go")
-  :after org
-  :added "2021-03-30"
-  :doc "run go code in org src block")
+(autoload #'easy-hugo "easy-hugo" nil t)
 
-(leaf svg-tag-mode
-  :straight
-  (svg-tag-mode :type git
-                :host github
-                :repo "rougier/svg-tag-mode")
-  :commands
-  (svg-tag-mode))
 
-;; TODO
-(leaf org-super-agenda
-  :straight t
-  :doc "supercharge your Org daily/weekly agenda"
-  :added "2021-03-10"
-  :commands
-  (org-super-agenda-mode))
+(straight-use-package 'org-superstar)
 
-(leaf org-superstar
-  :straight t
-  :after org
-  :init
-  (setq org-superstar-leading-bullet ?\s)
-  :hook (org-mode-hook . org-superstar-mode))
+(setq org-superstar-leading-bullet ?\s)
 
-(leaf org-html-themify
-  :straight
-  (org-html-themify :type git
-                    :host github
-                    :repo "DogLooksGood/org-html-themify"
-                    :files ("*.el" "*.js" "*.css"))
-  :after org
-  :hook (org-mode-hook . org-html-themify-mode)
-  :custom
-  (org-html-themify-themes . '((dark .joker)
-                               (light . storybook))))
+(autoload #'org-superstar-mode "org-superstar")
+
+(add-hook 'org-mode-hook 'org-superstar-mode)
+
+(with-eval-after-load "org-superstar"
+  (setq org-superstar-headline-bullets-list
+        '("☰"
+          "☱"
+          "☲"
+          "☳"
+          "☴"
+          "☵"
+          "☶"
+          "☷")))
+
+
+(straight-use-package '(org-html-themify
+                        :type git
+                        :host github
+                        :repo "DogLooksGood/org-html-themify"
+                        :files ("*.el " "*.js" "*.css")))
+
+(setq
+ org-html-themify-themes '((dark . lazycat-dark)
+                           (light . lazycat-light)))
+
+(autoload #'org-html-themify-mode "org-html-themify")
+
+(add-hook 'org-mode-hook 'org-html-themify-mode)
+
 
 (leaf org-roam
   :straight t
