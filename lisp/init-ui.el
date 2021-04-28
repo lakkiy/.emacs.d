@@ -40,20 +40,18 @@
     (add-hook 'after-make-frame-functions #'+reload-ui-in-daemon)
   (+init-ui))
 
-(leaf ligature
-  :straight
-  (ligature :type git
-            :host github
-            :repo "mickeynp/ligature.el")
-  :config
-  ;; https://htmlpreview.github.io/?https://github.com/kiliman/operator-mono-lig/blob/master/images/preview/normal/index.html
-  ;; for operator mono lig
-  (ligature-set-ligatures 'prog-mode
-                          '("&&" "||" "|>" ":=" "==" "===" "==>" "=>"
-                            "=<<" "!=" "!==" ">=" ">=>" ">>=" "->" "--"
-                            "-->" "<|" "<=" "<==" "<=>" "<=<" "<!--" "<-"
-                            "<->" "<--" "</" "+=" "++" "??" "/>" "__" "WWW"))
-  :global-minor-mode
-  (global-ligature-mode))
+(straight-use-package '(ligature :type git :host github :repo "mickeynp/ligature.el"))
+(when window-system
+
+  (require 'ligature)
+  (global-ligature-mode t)
+
+  (with-eval-after-load "ligature"
+    ;; https://htmlpreview.github.io/?https://github.com/kiliman/operator-mono-lig/blob/master/images/preview/normal/index.html
+    (ligature-set-ligatures 'prog-mode
+                            '("&&" "||" "|>" ":=" "==" "===" "==>" "=>"
+                              "=<<" "!=" "!==" ">=" ">=>" ">>=" "->" "--"
+                              "-->" "<|" "<=" "<==" "<=>" "<=<" "<!--" "<-"
+                              "<->" "<--" "</" "+=" "++" "??" "/>" "__" "WWW"))))
 
 (provide 'init-ui)

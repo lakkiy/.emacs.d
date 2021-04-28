@@ -136,12 +136,14 @@
    '("<f4>" . meow-end-or-call-kmacro)
    '("<escape>" . meow-last-buffer)))
 
-(leaf meow
-  :straight
-  (meow :type git :host github :repo "DogLooksGood/meow")
-  :require t
-  :global-minor-mode meow-global-mode
-  :config
+
+(straight-use-package '(meow :type git :host github :repo "DogLooksGood/meow"))
+
+(require 'meow)
+
+(meow-global-mode 1)
+
+(with-eval-after-load "meow"
   (meow-setup-line-number)
   (meow-setup))
 

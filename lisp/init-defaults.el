@@ -41,7 +41,7 @@
  visible-cursor t
  ;; Window divider setup
  window-divider-default-right-width 1
- window-divider-default-bottom-width 1
+ window-divider-default-bottom-width 0
  window-divider-default-places t
  ;; allow resize by pixels
  frame-resize-pixelwise t

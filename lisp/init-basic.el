@@ -6,7 +6,6 @@
 (add-hook 'conf-mode-hook 'hl-line-mode)
 (add-hook 'prog-mode-hook 'subword-mode)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
-(add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
 (setq use-short-answers t)
 
 ;;; project.el use C-x p
