@@ -1,29 +1,11 @@
 ;;; -*- lexical-binding: t -*-
 
-(leaf joker-theme
-  :straight
-  (joker-theme :type git
-               :host github
-               :repo "DogLooksGood/joker-theme")
-  :setq
-  (joker-theme-main-color . "#B762DE")
-  :require t)
-(leaf modus-themes
-  :straight
-  (modus-themes :type git
-                :host gitlab
-                :repo "protesilaos/modus-themes"))
+(straight-use-package '(nasy-theme    :type git :host github :repo "404cn/nasy-theme.el"))
+(straight-use-package '(lazycat-theme :type git :host github :repo "404cn/lazycat-theme"))
+(straight-use-package '(modus-theme   :type git :host github :repo "protesilaos/modus-themes"))
+(straight-use-package '(joker-theme   :type git :host github :repo "DogLooksGood/joker-theme"))
 
-(leaf nasy-theme
-  :straight
-  (nasy-theme :type git
-              :host github
-              :repo "404cn/nasy-theme.el"))
-(leaf lazycat-theme
-  :straight
-  (lazycat-theme :type git
-                 :host github
-                 :repo "404cn/lazycat-theme"))
+(require 'joker-theme)
 
 (load-theme 'lazycat-dark t)
 
