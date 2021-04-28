@@ -1,6 +1,15 @@
 ;;; -*- lexical-binding: t -*-
 
 
+(setq org-html-checkbox-type 'unicode)
+
+(with-eval-after-load "org"
+  (require 'org-tempo)
+  (require 'ob)
+  (require 'ob-dot))
+
+
+
 (straight-use-package 'easy-hugo)
 
 (setq
@@ -13,6 +22,7 @@
 (autoload #'easy-hugo "easy-hugo" nil t)
 
 
+
 (straight-use-package 'org-superstar)
 
 (setq org-superstar-leading-bullet ?\s)
@@ -21,63 +31,29 @@
 
 (add-hook 'org-mode-hook 'org-superstar-mode)
 
-(with-eval-after-load "org-superstar"
-  (setq org-superstar-headline-bullets-list
-        '("☰"
-          "☱"
-          "☲"
-          "☳"
-          "☴"
-          "☵"
-          "☶"
-          "☷")))
 
 
-(straight-use-package '(org-html-themify
-                        :type git
-                        :host github
-                        :repo "DogLooksGood/org-html-themify"
-                        :files ("*.el " "*.js" "*.css")))
+(straight-use-package 'org-roam)
 
-(setq
- org-html-themify-themes '((dark . lazycat-dark)
-                           (light . lazycat-light)))
+(setq org-roam-directory "~/Dropbox/org")
 
-(autoload #'org-html-themify-mode "org-html-themify")
+(with-eval-after-load "org-roam"
+  (define-key org-roam-mode-map (kbd "C-x C-r l") 'org-roam)
+  (define-key org-roam-mode-map (kbd "C-x C-r f") 'org-roam-find-file)
+  (define-key org-roam-mode-map (kbd "C-x C-r g") 'org-roam-graph)
+  (define-key org-roam-mode-map (kbd "C-x C-r c") 'org-roam-db-build-cache)
 
-(add-hook 'org-mode-hook 'org-html-themify-mode)
+  (define-key org-mode-map (kbd "<f7>") 'org-roam-insert)
+  (define-key org-mode-map (kbd "C-x C-r i") 'org-roam-insert)
+  (define-key org-mode-map (kbd "C-x C-r I") 'org-roam-insert-immediate)
+
+  ;; https://www.orgroam.com/manual.html#Roam-Protocol
+  (require 'org-roam-protocol))
 
 
-(leaf org-roam
-  :straight t
-  :after org
-  :hook (after-init-hook . org-roam-mode)
-  :bind ((org-roam-mode-map
-          ("C-c n l" . org-roam)
-          ("C-c n f" . org-roam-find-file)
-          ("C-c n g" . org-roam-graph))
-         (org-mode-map
-          ("C-c n i" . org-roam-insert)
-          ("C-c n I" . org-roam-insert-immediate)))
-  :custom
-  `(org-roam-directory . ,(expand-file-name "~/Dropbox/org"))
-  :require org-roam-protocol)
 
-(leaf org-roam-server
-  :straight t
-  :commands
-  (org-roam-server-mode)
-  :config
-  (setq org-roam-server-host "127.0.0.1"
-        org-roam-server-port 8080
-        org-roam-server-authenticate nil
-        org-roam-server-export-inline-images t
-        org-roam-server-serve-files t
-        org-roam-server-served-file-extensions '("pdf" "mp4" "ogv")
-        org-roam-server-network-poll t
-        org-roam-server-network-arrows nil
-        org-roam-server-network-label-truncate t
-        org-roam-server-network-label-truncate-length 60
-        org-roam-server-network-label-wrap-length 20))
+(straight-use-package 'org-roam-server)
+
+
 
 (provide 'init-org)

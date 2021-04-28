@@ -1,24 +1,30 @@
 ;;; -*- lexical-binding: t -*-
 
-(leaf flymake
-  :tag "builtin"
-  :commands flymake-mode
-  :bind ((flymake-mode-map
-          ("M-n" . flymake-goto-next-error)
-          ("M-p" . flymake-goto-prev-error))))
+(straight-use-package 'flymake)
 
-(leaf eglot
-  :straight t
-  :commands (eglot-ensure eglot)
-  :hook
-  ((go-mode-hook python-mode-hook rust-mode-hook) . eglot-ensure)
-  :custom
-  (eglot-stay-out-of . '())
-  (eglot-ignored-server-capabilites . '(:documentHighlightProvider))
-  :config
-  (add-to-list 'eglot-server-programs
-               '(python-mode . ("pyright-langserver" "--stdio")))
+(autoload #'flymake-mode "flymake" nil t)
+
+(with-eval-after-load "flymake"
+  (define-key flymake-mode-map (kbd "M-n") 'flymake-goto-next-error)
+  (define-key flymake-mode-map (kbd "M-p") 'flymake-goto-prev-error))
+
+
+
+(straight-use-package 'eglot)
+
+(setq
+ eglot-stay-out-of nil
+ eglot-ignored-server-capabilites '(:documentHighlightProvider))
+
+(autoload #'eglot-ensure "eglot" nil t)
+(autoload #'eglot "eglot" nil t)
+
+(add-hook 'go-mode-hook 'eglot-ensure)
+
+(with-eval-after-load "eglot"
   (add-to-list 'eglot-server-programs
 			   '(rust-mode "rust-analyzer")))
+
+
 
 (provide 'init-lsp)

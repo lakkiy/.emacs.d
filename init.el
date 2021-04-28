@@ -24,8 +24,5 @@
 
 (require 'init-lsp)
 (require 'init-go)
-(require 'init-lua)
-(require 'init-python)
-(require 'init-haskell)
 
 (require 'init-fun)
