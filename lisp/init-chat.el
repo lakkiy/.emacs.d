@@ -1,11 +1,9 @@
 ;; -*- lexical-binding: t; -*-
 
-(leaf telega
-  :straight
-  (telega :type git
-          :host github
-          :branch "releases")
-  :commands
-  (telega))
+(straight-use-package '(telega :type git :host github :branch "releases"))
+
+(autoload #'telega "telega")
+
+
 
 (provide 'init-chat)
