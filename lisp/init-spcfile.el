@@ -1,19 +1,13 @@
 ;; -*- lexical-binding: t; -*-
 
-(leaf docker
-  :straight t
-  :commands docker)
+(straight-use-package 'docker)
+(straight-use-package 'docker-compose-mode)
+(straight-use-package 'dockerfile-mode)
 
-(leaf docker-compose-mode :straight t)
-(leaf dockerfile-mode
-  :straight t
-  :mode "Dockerfile\\'")
 
-(leaf protobuf-mode
-  :straight
-  (protobuf-mode :type git
-                 :host github
-                 :repo "protocolbuffers/protobuf")
-  :mode "\\.proto\\'")
+(autoload 'docker "docker" nil t)
+
+;; TODO protobuf mode
+
 
 (provide 'init-spcfile)
