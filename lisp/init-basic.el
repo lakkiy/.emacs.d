@@ -42,50 +42,48 @@
       ispell-program-name "hunspell"
       ispell-personal-dictionary (expand-file-name "hunspell_dict.txt" user-emacs-directory))
 
-(leaf saveplace :tag "builtin" :doc "save latest edit place" :hook (after-init-hook . save-place-mode))
-(leaf hideshow :tag "builtin" :doc "flod code" :hook (prog-mode-hook . hs-minor-mode))
-(leaf autorevert :tag "builtin" :hook (after-init-hook . global-auto-revert-mode))
-(leaf so-long :tag "builtin" :config (global-so-long-mode 1))
-(leaf winner-mode :tag "builtin" :hook (after-init-hook . winner-mode))
+(add-hook 'after-init-hook 'save-place-mode)
+(add-hook 'prog-mode-hook 'hs-minor-mode)
+(add-hook 'after-init-hook 'global-auto-revert-mode)
+(add-hook 'after-init-hook 'global-so-long-mode)
+(add-hook 'after-init-hook 'winner-mode)
 
-(leaf elec-pair
-  :tag "builtin"
-  :hook (after-init-hook . electric-pair-mode)
-  :init
-  (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
+(setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
+(add-hook 'after-init-hook 'electric-pair-mode)
 
-(leaf paren
-  :tag "builtin"
-  :doc "highlight paren"
-  :hook (after-init-hook . show-paren-mode)
-  :config
-  (setq show-paren-when-point-inside-paren t
-        show-paren-when-point-in-periphery t))
+(add-hook 'after-init-hook 'show-paren-mode)
+(setq
+ show-paren-when-point-in-periphery t
+ show-paren-when-point-inside-paren t)
 
-(leaf which-key
-  :straight t
-  :init
-  (setq which-key-idle-delay 1)
-  (setq which-key-idle-secondary-delay 0.05)
-  :global-minor-mode t)
 
-(leaf auto-save
-  :straight
-  (auto-save :type git
-             :host github
-             :repo "manateelazycat/auto-save")
-  :require t
-  :init
-  (setq auto-save-silent t)
-  :custom
-  (auto-save-idle . 3)
-  :config
-  (auto-save-enable))
 
-(leaf exec-path-from-shell
-  :straight t
-  :when (memq window-system '(mac ns x))
-  :config
+(straight-use-package 'which-key)
+
+(setq
+ which-key-idle-delay 1
+ which-key-idle-secondary-delay 0.05)
+
+(add-hook 'after-init-hook 'which-key-mode)
+
+
+
+(straight-use-package '(auto-save :type git :host github :repo "manateelazycat/auto-save"))
+
+(setq auto-save-silent t
+      auto-save-idle 3)
+
+;; FIXME
+(require 'auto-save)
+(auto-save-enable)
+
+
+
+(when (memq window-system '(mac ns x))
+  (straight-use-package 'exec-path-from-shell)
+  (require 'exec-path-from-shell)
   (exec-path-from-shell-initialize))
+
+
 
 (provide 'init-basic)
