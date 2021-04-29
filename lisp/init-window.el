@@ -1,16 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(setq
- tab-bar-show nil
- tab-bar-new-tab-choice "*scratch*")
-
-(global-set-key (kbd "C-c M-t t") 'tab-bar-mode)
-(global-set-key (kbd "C-c M-t r") 'tab-bar-rename-tab)
-(global-set-key (kbd "C-c M-t n") 'tab-bar-new-tab)
-(global-set-key (kbd "C-c M-t d") 'tab-bar-close-tab)
-
-
-
 (straight-use-package 'yascroll)
 
 (add-hook 'prog-mode-hook 'yascroll-bar-mode)

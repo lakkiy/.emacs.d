@@ -65,12 +65,15 @@
  pgtk-use-im-context-on-new-connection nil
  ;; Don't display compile warnings
  warning-suppress-log-types '((comp))
-  ;; prefer y or n
+ ;; prefer y or n
  y-or-n-p-use-read-key t
  ;; Don't truncate lines in a window narrower than 65 chars.
  truncate-partial-width-windows 65
-  ;; always follow link
- vc-follow-symlinks t)
+ ;; always follow link
+ vc-follow-symlinks t
+ ;; tab bar
+ tab-bar-show nil
+ tab-bar-new-tab-choice "*scratch*")
 
 
 (setq package-enable-at-startup nil

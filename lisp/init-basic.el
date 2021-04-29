@@ -24,6 +24,11 @@
 (global-unset-key (kbd "C-<down-mouse-1>"))
 (global-set-key (kbd "C-<mouse-1>") #'xref-find-definitions-at-mouse)
 
+(global-set-key (kbd "C-c M-t t") 'tab-bar-mode)
+(global-set-key (kbd "C-c M-t r") 'tab-bar-rename-tab)
+(global-set-key (kbd "C-c M-t n") 'tab-bar-new-tab)
+(global-set-key (kbd "C-c M-t d") 'tab-bar-close-tab)
+
 ;; Vertical Scroll
 (setq scroll-step 1)
 (setq scroll-margin 15)
