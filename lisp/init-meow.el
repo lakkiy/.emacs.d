@@ -1,5 +1,6 @@
 ;;; -*- lexical-binding: t -*-
 
+;; TODO narrow widen
 (defun meow-setup ()
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
   (meow-motion-overwrite-define-key
