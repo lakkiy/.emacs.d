@@ -81,7 +81,7 @@
       *font* "Operator Mono SSm Lig"
       *font-cn* "WenQuanYi Micro Hei"
       *font-unicode* "Apple Color Emoji"
-      *font-height* (cond ((eq system-type 'darwin) 130)
+      *font-height* (cond ((eq system-type 'darwin) 150)
                           (t 110)))
 
 (provide 'init-defaults)
