@@ -1,6 +1,8 @@
 ;;; -*- lexical-binding: t -*-
 
 (setq-default
+ ;; turn the bell in macos
+ ring-bell-function 'ignore
  ;; no start messages
  inhibit-startup-message t
  ;; don't read x resource file
