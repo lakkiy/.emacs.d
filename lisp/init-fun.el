@@ -1,6 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-
 (straight-use-package 'ibuffer-vc)
 (straight-use-package 'olivetti)
 (straight-use-package 'rainbow-mode)
@@ -10,6 +9,14 @@
 (straight-use-package 'vterm)
 (straight-use-package 'leetcode)
 (straight-use-package 'restclient)
+(straight-use-package '(insert-translated-name :type git :host github :repo "manateelazycat/insert-translated-name"))
+(straight-use-package '(company-english-helper :type git :host github :repo "manateelazycat/company-english-helper"))
+
+;; company-english-helper
+(autoload 'toggle-company-english-helper "company-english-helper" nil t)
+
+;; insert-translated-name
+(autoload 'insert-translated-name-insert "insert-translated-name" nil t)
 
 ;; olivetti
 (autoload 'olivetti-mode "olivetti" nil t)
