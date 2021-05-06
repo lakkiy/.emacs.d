@@ -8,6 +8,7 @@
 (straight-use-package 'selectrum-prescient)
 (straight-use-package 'marginalia)
 (straight-use-package 'embark)
+(straight-use-package 'company)
 
 
 ;; yasnippet
@@ -19,33 +20,40 @@
   (let ((inhibit-message t))
     (yas-reload-all)))
 
-;; TODO company
-(leaf company
-  :straight t
-  :bind (("M-/" . company-complete)
-         ("C-M-i" . company-complete)
-         (:company-mode-map
-          ("<backtab>" . company-yasnippet))
-         (:company-active-map
-          ("C-p" . company-select-previous)
-          ("C-n" . company-select-next)
-          ("<tab>" . company-complete-common-or-cycle))
-         (:company-search-map
-          ("C-p" . company-select-previous)
-          ("C-n" . company-select-next)))
-  :hook (after-init-hook . global-company-mode)
-  :setq
-  ;; company-capf ignore case completion
-  ;; (completion-ignore-case . t)
-  :custom
-  (company-idle-delay . 0.2)
-  (company-tooltip-idle-delay . 0.1)
-  (company-tooltip-limit . 10)
-  (company-tooltip-align-annotations . t)
-  (company-tooltip-width-grow-only . t)
-  (company-dabbrev-downcase . nil)
-  (company-global-modes . '(not org-mode dired-mode dired-sidebar-mode))
-  (company-require-match . nil))
+;; company
+(setq
+ company-tng-auto-configure nil
+ company-frontends '(company-tng-frontend
+                     company-pseudo-tooltip-frontend
+                     company-echo-metadata-frontend)
+ company-begin-commands '(self-insert-command)
+ company-idle-delay 0
+ company-tooltip-limit 10
+ company-tooltip-align-annotations t
+ company-tooltip-width-grow-only t
+ company-tooltip-idle-delay 0.4
+ company-minimum-prefix-length 3
+ company-dabbrev-downcase nil
+ company-abort-manual-when-too-short t
+ company-require-match nil
+ company-global-modes '(not dired-mode dired-sidebar-mode)
+ company-tooltip-margin 0)
+
+(autoload #'company-mode "company")
+
+(add-hook 'prog-mode-hook 'company-mode)
+(add-hook 'conf-mode-hook 'company-mode)
+(add-hook 'eshell-mode-hook 'company-mode)
+
+(with-eval-after-load "company"
+  (require 'company-tng)
+  (require 'company-template)
+  (add-hook 'company-mode-hook 'company-tng-mode)
+
+  (define-key company-active-map [tab] 'company-complete-common-or-cycle)
+  (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
+  (define-key company-active-map (kbd "C-p") #'company-select-previous)
+  (define-key company-active-map (kbd "C-n") #'company-select-next))
 
 ;; deadgrep
 (autoload #'deadgrep "deadgrep" nil t)

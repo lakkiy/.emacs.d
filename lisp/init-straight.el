@@ -18,10 +18,6 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-(straight-use-package 'leaf)
-(straight-use-package 'leaf-keywords)
-(leaf-keywords-init)
-
 (straight-use-package 'gcmh)
 (require 'gcmh)
 (gcmh-mode 1)
