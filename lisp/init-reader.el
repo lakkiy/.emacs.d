@@ -9,6 +9,7 @@
 (add-hook 'markdown-mode-hook 'markdown-toggle-markup-hidding)
 
 ;; go-translate
+;; FIXME
 (setq
  go-translate-token-current (cons 430675 2721866130)
  go-translate-inputs-function #'go-translate-inputes-current-or-prompt

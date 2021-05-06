@@ -22,19 +22,12 @@
 
 ;; company
 (setq
- company-tng-auto-configure nil
- company-frontends '(company-tng-frontend
-                     company-pseudo-tooltip-frontend
-                     company-echo-metadata-frontend)
- company-begin-commands '(self-insert-command)
  company-idle-delay 0
  company-tooltip-limit 10
  company-tooltip-align-annotations t
  company-tooltip-width-grow-only t
  company-tooltip-idle-delay 0.4
- company-minimum-prefix-length 3
  company-dabbrev-downcase nil
- company-abort-manual-when-too-short t
  company-require-match nil
  company-global-modes '(not dired-mode dired-sidebar-mode)
  company-tooltip-margin 0)
@@ -46,10 +39,6 @@
 (add-hook 'eshell-mode-hook 'company-mode)
 
 (with-eval-after-load "company"
-  (require 'company-tng)
-  (require 'company-template)
-  (add-hook 'company-mode-hook 'company-tng-mode)
-
   (define-key company-active-map [tab] 'company-complete-common-or-cycle)
   (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
   (define-key company-active-map (kbd "C-p") #'company-select-previous)
