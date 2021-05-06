@@ -1,6 +1,8 @@
 ;;; -*- lexical-binding: t -*-
 ;; modeline and font
 
+(straight-use-package '(ligature :type git :host github :repo "mickeynp/ligature.el"))
+
 (require 'init-utils)
 (require 'init-const)
 
@@ -40,7 +42,7 @@
     (add-hook 'after-make-frame-functions #'+reload-ui-in-daemon)
   (+init-ui))
 
-(straight-use-package '(ligature :type git :host github :repo "mickeynp/ligature.el"))
+;; ligature
 (when window-system
 
   (require 'ligature)

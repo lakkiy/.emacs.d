@@ -1,14 +1,13 @@
 ;;; -*- lexical-binding: t -*-
 
 (straight-use-package 'yascroll)
+(straight-use-package 'ace-window)
 
+;; yascroll
 (add-hook 'prog-mode-hook 'yascroll-bar-mode)
 (add-hook 'conf-mode-hook 'yascroll-bar-mode)
 
-
-
-(straight-use-package 'ace-window)
-
+;; ace-window
 (setq
  aw-keys '(?a ?o ?e ?u ?i)
  aw-scope 'frame)

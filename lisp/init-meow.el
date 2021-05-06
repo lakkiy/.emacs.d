@@ -141,6 +141,7 @@
 
 (straight-use-package '(meow :type git :host github :repo "DogLooksGood/meow"))
 
+;; meow
 (require 'meow)
 
 (meow-global-mode 1)

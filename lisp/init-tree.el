@@ -2,6 +2,7 @@
 
 (straight-use-package 'treemacs)
 
+;; treemacs
 (defun +treemacs-scale-font-size ()
   (face-remap-add-relative 'default :height 0.8))
 
@@ -17,7 +18,5 @@
 (with-eval-after-load "treemacs"
   (define-key treemacs-mode-map (kbd "<f1>") 'treemacs)
   (add-hook 'treemacs-mode-hook #'+treemacs-scale-font-size))
-
-
 
 (provide 'init-tree)

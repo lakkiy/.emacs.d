@@ -2,6 +2,7 @@
 
 (straight-use-package '(rime :type git :host github :repo "DogLooksGood/emacs-rime"))
 
+;; rime
 (setq
  rime-disable-predicates '(meow-normal-mode-p
                            meow-motion-mode-p
@@ -13,7 +14,7 @@
  default-input-method "rime"
  rime-cursor "|"
  rime-show-candidate 'minibuffer
- rime-title "ㄓ")
+ rime-title "rime")
 
 (if (eq system-type 'darwin)
     (setq rime-librime-root (expand-file-name "librime/dist" user-emacs-directory)

@@ -2,53 +2,37 @@
 
 
 (straight-use-package 'ibuffer-vc)
-
-
 (straight-use-package 'olivetti)
+(straight-use-package 'rainbow-mode)
+(straight-use-package 'docstr)
+(straight-use-package 'parrot)
+(straight-use-package '(vundo :type git :host github :repo "casouri/vundo"))
+(straight-use-package 'vterm)
+(straight-use-package 'leetcode)
+(straight-use-package 'restclient)
+
+;; olivetti
 (autoload 'olivetti-mode "olivetti" nil t)
 
-
-(straight-use-package 'rainbow-mode)
+;; rainbow-mode
 (autoload 'rainbow-mode "rainbow-mode")
 
-
-(straight-use-package 'docstr)
+;; docstr
 (add-hook 'prog-mode-hook (lambda () (docstr-mode 1)))
 
 
-;; TODO
-(straight-use-package 'parrot)
+;; TODO parrot
+;; add to modeline
 
-(leaf eaf
-  :doc "monkeytype in company (, don't forget run npm install"
-  :straight
-  (eaf :type git
-       :host github
-       :repo "manateelazycat/emacs-application-framework"
-       :files ("*"))
-  :init
-  (leaf epc :straight t :leaf-defer t)
-  (leaf ctable :straight t :leaf-defer t)
-  (leaf deferred :straight t :leaf-defer t)
-  (leaf s :straight t :leaf-defer t)
-  :commands
-  (eaf-open-browser eaf-open eaf-open-bookmark)
-  :config
-  (require 'eaf-org)
-  (eaf-setq eaf-browser-enable-adblocker "true")
-  (eaf-setq eaf-browser-enable-autofill "true"))
-
-
-(straight-use-package '(vundo :type git :host github :repo "casouri/vundo"))
+;; vundo
+;; TODO add to normal config file
 (autoload 'vundo "vundo" nil t)
 
-
-(straight-use-package 'vterm)
+;; vterm
 (autoload 'vterm "vterm" nil t)
 
-
-(straight-use-package 'leetcode)
-
+;; leetcode
+;; TODO add to normal config
 (setq
  leetcode-prefer-language "golang"
  leetcode-prefer-sql "mysql"
@@ -57,8 +41,8 @@
 
 (autoload 'leetcode "leetcode" nil t)
 
-
-(straight-use-package 'restclient)
+;; restclient
+;; TODO find other packages like this or add to to normal config
 (autoload 'restclient-mode "restclient" nil t)
 
 (provide 'init-fun)

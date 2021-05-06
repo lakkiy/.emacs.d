@@ -1,6 +1,11 @@
 ;;; -*- lexical-binding: t -*-
 
+(straight-use-package 'easy-hugo)
+(straight-use-package 'org-superstar)
+(straight-use-package 'org-roam)
+(straight-use-package 'org-roam-server)
 
+;; org
 (setq org-html-checkbox-type 'unicode)
 
 (with-eval-after-load "org"
@@ -8,10 +13,7 @@
   (require 'ob)
   (require 'ob-dot))
 
-
-
-(straight-use-package 'easy-hugo)
-
+;; easy-hugo
 (setq
  easy-hugo-server-flags "-D"
  easy-hugo-basedir "~/bookshelf/"
@@ -21,20 +23,14 @@
 
 (autoload #'easy-hugo "easy-hugo" nil t)
 
-
-
-(straight-use-package 'org-superstar)
-
+;; org-superstar
 (setq org-superstar-leading-bullet ?\s)
 
 (autoload #'org-superstar-mode "org-superstar")
 
 (add-hook 'org-mode-hook 'org-superstar-mode)
 
-
-
-(straight-use-package 'org-roam)
-
+;; org-roam
 (setq org-roam-directory "~/Dropbox/org")
 
 (with-eval-after-load "org-roam"
@@ -50,10 +46,6 @@
   ;; https://www.orgroam.com/manual.html#Roam-Protocol
   (require 'org-roam-protocol))
 
-
-
-(straight-use-package 'org-roam-server)
-
-
+;; TODO org-roam-server
 
 (provide 'init-org)
