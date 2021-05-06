@@ -2,7 +2,7 @@
 
 (straight-use-package '(telega :type git :host github :branch "releases"))
 
-(autoload #'telega "telega")
+(autoload #'telega "telega" nil t)
 
 
 
