@@ -7,17 +7,18 @@
    '("j" . meow-next)
    '("k" . meow-prev))
   (meow-leader-define-key
+   ;; completion
+   '("SPC" . execute-extended-command)
+   '("i" . consult-imenu)
+   '("b" . consult-buffer)
+   '("p s" . consult-git-grep)
    ;; basic
    '("v" . magit)
-   '("b" . switch-to-buffer)
    '("t" . tab-bar-select-tab-by-name)
-   '("i" . counsel-imenu)
-   '("SPC" . counsel-M-x)
    '("d" . dired)
    '("L" . display-line-numbers-mode)
    '("S" . ispell-word)
    ;; project
-   '("p s" . counsel-git-grep)
    '("p p" . project-switch-project)
    '("p f" . project-find-file)
    '("p b" . project-switch-to-buffer)
