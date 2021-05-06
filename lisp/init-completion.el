@@ -22,12 +22,15 @@
 
 ;; company
 (setq
+ company-begin-commands '(self-insert-command)
  company-idle-delay 0
  company-tooltip-limit 10
  company-tooltip-align-annotations t
  company-tooltip-width-grow-only t
  company-tooltip-idle-delay 0.4
+ company-minimum-prefix-length 5
  company-dabbrev-downcase nil
+ company-abort-manual-when-too-short t
  company-require-match nil
  company-global-modes '(not dired-mode dired-sidebar-mode)
  company-tooltip-margin 0)
