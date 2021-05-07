@@ -75,15 +75,40 @@
  vc-follow-symlinks t
  ;; tab bar
  tab-bar-show nil
- tab-bar-new-tab-choice "*scratch*")
-
-
-(setq package-enable-at-startup nil
-      custom-file (expand-file-name "custom.el" user-emacs-directory)
-      *font* "Operator Mono SSm Lig"
-      *font-cn* "WenQuanYi Micro Hei"
-      *font-unicode* "Apple Color Emoji"
-      *font-height* (cond ((eq system-type 'darwin) 150)
-                          (t 110)))
+ tab-bar-new-tab-choice "*scratch*"
+ ;; Vertical Scroll
+ scroll-step 1
+ scroll-margin 15
+ scroll-conservatively 101
+ scroll-up-aggressively 0.01
+ scroll-down-aggressively 0.01
+ auto-window-vscroll nil
+ fast-but-imprecise-scrolling nil
+ mouse-wheel-scroll-amount '(1 ((shift) . 1))
+ mouse-wheel-progressive-speed nil
+ ;; Horizontal Scroll
+ hscroll-step 1
+ hscroll-margin 10
+ ;; install hunspell and hunspell-en_US
+ ispell-dictionary "en_US"
+ ispell-program-name "hunspell"
+ ispell-personal-dictionary (expand-file-name "hunspell_dict.txt" user-emacs-directory)
+ ;; TODO move to early init
+ package-enable-at-startup nil
+ ;; custom file
+ custom-file (expand-file-name "custom.el" user-emacs-directory)
+ ;; font
+ *font* "Operator Mono SSm Lig"
+ *font-cn* "WenQuanYi Micro Hei"
+ *font-unicode* "Apple Color Emoji"
+ *font-height* (cond ((eq system-type 'darwin) 150)
+                     (t 110))
+ ;; electric-pair-mode
+ electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit
+ ;; show-paren-mode
+ show-paren-when-point-in-periphery t
+ show-paren-when-point-inside-paren t
+ ;; yse-or-no -> y-or-n
+ use-short-answers t)
 
 (provide 'init-defaults)
