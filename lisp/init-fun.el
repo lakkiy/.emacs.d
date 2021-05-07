@@ -1,6 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(straight-use-package 'ibuffer-vc)
 (straight-use-package 'olivetti)
 (straight-use-package 'rainbow-mode)
 (straight-use-package 'docstr)
@@ -13,6 +12,20 @@
 (straight-use-package '(company-english-helper :type git :host github :repo "manateelazycat/company-english-helper"))
 (straight-use-package '(emacs-calfw :type git :host github :repo "kiwanami/emacs-calfw"))
 (straight-use-package 'insert-char-preview)
+(straight-use-package 'major-mode-hydra)
+(straight-use-package 'ibuffer-projectile)
+
+;; ibuffer-projectile
+(add-hook 'ibuffer-mode-hook (lambda ()
+                               (ibuffer-projectile-set-filter-groups)
+                               (unless (eq ibuffer-sorting-mode 'alphabetic)
+                                 (ibuffer-do-sort-by-alphabetic))))
+
+;; major-mode-hydra
+;; TODO maybe just need pretty-hydra
+(global-set-key (kbd "<f6>") #'major-mode-hydra)
+(autoload #'major-mode-hydra "major-mode-hydra" nil t)
+
 
 ;; insert-char-preview
 (autoload 'insert-char-preview "insert-char-preview" nil t)

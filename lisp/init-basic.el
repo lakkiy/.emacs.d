@@ -22,6 +22,9 @@
 ;; use mouse left click to find definitions
 (global-unset-key (kbd "C-<down-mouse-1>"))
 (global-set-key (kbd "C-<mouse-1>") #'xref-find-definitions-at-mouse)
+;; ibuffer
+(global-unset-key (kbd "C-x C-b"))
+(global-set-key (kbd "C-x C-b") 'ibuffer)
 ;;; project.el use C-x p
 (global-unset-key (kbd "C-x C-p"))
 (global-set-key (kbd "C-x C-d") #'dired)
