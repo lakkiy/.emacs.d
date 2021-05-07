@@ -13,13 +13,19 @@
 (straight-use-package '(emacs-calfw :type git :host github :repo "kiwanami/emacs-calfw"))
 (straight-use-package 'insert-char-preview)
 (straight-use-package 'major-mode-hydra)
-(straight-use-package 'ibuffer-projectile)
+(straight-use-package 'projectile)
 
-;; ibuffer-projectile
-(add-hook 'ibuffer-mode-hook (lambda ()
-                               (ibuffer-projectile-set-filter-groups)
-                               (unless (eq ibuffer-sorting-mode 'alphabetic)
-                                 (ibuffer-do-sort-by-alphabetic))))
+;; projectile
+(setq
+ projectile-use-git-grep t
+ projectile-indexing-method 'alien
+ projectile-globally-ignored-files '("TAGS", ".DS_Store")
+ projectile-globally-ignored-file-suffixes '(".elc" ".pyc" ".o" ".swp" ".so" ".a"))
+
+(add-hook 'after-init-hook 'projectile-mode)
+
+(with-eval-after-load "projectile"
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
 
 ;; major-mode-hydra
 ;; TODO maybe just need pretty-hydra
