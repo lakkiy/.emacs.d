@@ -11,6 +11,13 @@
 (straight-use-package 'restclient)
 (straight-use-package '(insert-translated-name :type git :host github :repo "manateelazycat/insert-translated-name"))
 (straight-use-package '(company-english-helper :type git :host github :repo "manateelazycat/company-english-helper"))
+(straight-use-package '(emacs-calfw :type git :host github :repo "kiwanami/emacs-calfw"))
+
+;; emacs-calfw
+(setq cfw:org-overwrite-default-keybinding t)
+
+(autoload 'cfw:open-calendar-buffer "calfw" nil t)
+(autoload 'cfw:open-org-calendar "calfw-org" nil t)
 
 ;; company-english-helper
 (autoload 'toggle-company-english-helper "company-english-helper" nil t)
