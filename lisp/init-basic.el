@@ -61,20 +61,18 @@
  show-paren-when-point-in-periphery t
  show-paren-when-point-inside-paren t)
 
-
-
 (straight-use-package 'which-key)
+(straight-use-package 'exec-path-from-shell)
+(straight-use-package '(auto-save :type git :host github :repo "manateelazycat/auto-save"))
 
+;; which-key
 (setq
  which-key-idle-delay 1
  which-key-idle-secondary-delay 0.05)
 
 (add-hook 'after-init-hook 'which-key-mode)
 
-
-
-(straight-use-package '(auto-save :type git :host github :repo "manateelazycat/auto-save"))
-
+;; auto-save
 (setq auto-save-silent t
       auto-save-idle 3)
 
@@ -82,13 +80,9 @@
 (require 'auto-save)
 (auto-save-enable)
 
-
-
+;; exec-path-from-shell
 (when (memq window-system '(mac ns x))
-  (straight-use-package 'exec-path-from-shell)
   (require 'exec-path-from-shell)
   (exec-path-from-shell-initialize))
-
-
 
 (provide 'init-basic)
