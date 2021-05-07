@@ -3,11 +3,10 @@
 (straight-use-package 'magit)
 (straight-use-package 'hl-todo)
 (straight-use-package '(gitmoji :type git :host github :repo "Tiv0w/gitmoji"))
-(straight-use-package 'dired-git-info)
 (straight-use-package 'diff-hl)
 
 ;; magit
-(autoload #'magit "magit")
+(autoload #'magit "magit" nil t)
 
 ;; gitmoji
 (setq
@@ -16,15 +15,6 @@
 
 (with-eval-after-load "magit"
   (require 'gitmoji))
-
-;; dired-git-info
-(setq
- dgi-auto-hide-details-p nil)
-
-(autoload #'dired-git-info "dired-git-info")
-
-(with-eval-after-load "dired-git-info"
-  (define-key dired-mode-map (kbd "v") 'dired-git-info-mode))
 
 ;; diff-hl
 (autoload #'diff-hl-mode "diff-hl")

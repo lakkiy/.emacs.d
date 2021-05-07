@@ -31,7 +31,6 @@
 (let ((alpha 100))
   (add-to-list 'default-frame-alist (cons 'alpha alpha)))
 
-
 (load-theme 'joker t)
 
 (provide 'init-themes)

@@ -5,8 +5,6 @@
 (straight-use-package 'yasnippet-snippets)
 (straight-use-package 'deadgrep)
 (straight-use-package 'selectrum)
-(straight-use-package 'selectrum-prescient)
-(straight-use-package 'marginalia)
 (straight-use-package 'embark)
 (straight-use-package 'company)
 
@@ -56,9 +54,7 @@
 
 ;; selectrum
 (require 'selectrum)
-(require 'selectrum-prescient)
 (selectrum-mode t)
-(selectrum-prescient-mode t)
 
 ;; consult
 (setq xref-show-xrefs-function #'consult-xref
@@ -68,12 +64,6 @@
 
 (with-eval-after-load "consult"
   (global-set-key (kbd "C-s") 'consult-line))
-
-;; marginalia
-(marginalia-mode)
-
-(with-eval-after-load "marginalia"
-  (define-key minibuffer-local-map (kbd "M-A") 'marginalia-cycle))
 
 ;; TODO embark
 

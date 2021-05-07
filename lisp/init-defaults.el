@@ -1,7 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
 (setq-default
- ;; turn the bell in macos
+ ;; Close up of MacOs
  ring-bell-function 'ignore
  ;; no start messages
  inhibit-startup-message t
@@ -93,8 +93,6 @@
  ispell-dictionary "en_US"
  ispell-program-name "hunspell"
  ispell-personal-dictionary (expand-file-name "hunspell_dict.txt" user-emacs-directory)
- ;; TODO move to early init
- package-enable-at-startup nil
  ;; custom file
  custom-file (expand-file-name "custom.el" user-emacs-directory)
  ;; font
