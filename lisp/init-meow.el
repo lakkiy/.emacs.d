@@ -17,7 +17,7 @@
    '("d" . dired)
    '("L" . display-line-numbers-mode)
    '("S" . ispell-word)
-   ;; project
+   ;; projectile
    '("p s" . consult-git-grep)
    '("p p" . projectile-switch-project)
    '("p f" . projectile-find-file)
@@ -26,11 +26,12 @@
    '("p B" . projectile-switch-to-buffer-other-window)
    '("p K" . projectile-kill-buffers)
    '("p e" . projectile-run-eshell)
+   '("p v" . projectile-run-vterm)
    '("p r" . projectile-replace-regexp)
    '("p d" . projectile-dired)
    '("p D" . projectile-dired-other-window)
    '("p R" . projectile-recentf)
-   '("p v" . projectile-vc)
+   '("p V" . projectile-vc)
    '("p o" . projectile-multi-occur)
    '("p I" . projectile-ibuffer)
    ;; xref
