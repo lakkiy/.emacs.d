@@ -20,6 +20,7 @@
 (autoload 'cfw:open-org-calendar "calfw-org" nil t)
 
 (with-eval-after-load "calfw"
+  ;; SPC-SPC is used in Motion mode to run M-X
   (define-key cfw:calendar-mode-map (kbd "RET") 'cfw:show-details-command))
 
 ;; company-english-helper
