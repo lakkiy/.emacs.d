@@ -19,6 +19,9 @@
 (autoload 'cfw:open-calendar-buffer "calfw" nil t)
 (autoload 'cfw:open-org-calendar "calfw-org" nil t)
 
+(with-eval-after-load "calfw"
+  (define-key cfw:calendar-mode-map (kbd "RET") 'cfw:show-details-command))
+
 ;; company-english-helper
 (autoload 'toggle-company-english-helper "company-english-helper" nil t)
 
