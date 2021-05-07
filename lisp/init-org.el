@@ -25,6 +25,8 @@
 
 ;; org-superstar
 (setq org-superstar-leading-bullet ?\s)
+(if (and (display-graphic-p) (char-displayable-p ?⚫))
+    (setq org-superstar-headline-bullets-list '("⚫" "⚫" "⚫" "⚫")))
 
 (autoload #'org-superstar-mode "org-superstar")
 
