@@ -5,7 +5,6 @@
 (straight-use-package 'docstr)
 (straight-use-package 'parrot)
 (straight-use-package '(vundo :type git :host github :repo "casouri/vundo"))
-(straight-use-package 'vterm)
 (straight-use-package 'leetcode)
 (straight-use-package 'restclient)
 (straight-use-package '(insert-translated-name :type git :host github :repo "manateelazycat/insert-translated-name"))
@@ -68,9 +67,6 @@
 ;; vundo
 ;; TODO add to normal config file
 (autoload 'vundo "vundo" nil t)
-
-;; vterm
-(autoload 'vterm "vterm" nil t)
 
 ;; leetcode
 ;; TODO add to normal config

@@ -26,7 +26,7 @@
    '("p B" . projectile-switch-to-buffer-other-window)
    '("p K" . projectile-kill-buffers)
    '("p e" . projectile-run-eshell)
-   '("p v" . projectile-run-vterm)
+   '("p t" . projectile-run-term)
    '("p r" . projectile-replace-regexp)
    '("p d" . projectile-dired)
    '("p D" . projectile-dired-other-window)
