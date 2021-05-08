@@ -5,6 +5,7 @@
 (straight-use-package 'yasnippet-snippets)
 (straight-use-package 'deadgrep)
 (straight-use-package 'selectrum)
+(straight-use-package 'selectrum-prescient)
 (straight-use-package 'embark)
 (straight-use-package 'company)
 
@@ -55,6 +56,7 @@
 ;; selectrum
 (require 'selectrum)
 (selectrum-mode t)
+(selectrum-prescient-mode t)
 
 ;; consult
 (setq xref-show-xrefs-function #'consult-xref
