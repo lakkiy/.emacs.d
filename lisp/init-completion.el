@@ -6,9 +6,7 @@
 (straight-use-package 'deadgrep)
 (straight-use-package 'selectrum)
 (straight-use-package 'selectrum-prescient)
-(straight-use-package 'embark)
 (straight-use-package 'company)
-
 
 ;; yasnippet
 (autoload #'yas-minor-mode "yasnippet")
@@ -66,7 +64,5 @@
 
 (with-eval-after-load "consult"
   (global-set-key (kbd "C-s") 'consult-line))
-
-;; TODO embark
 
 (provide 'init-completion)
