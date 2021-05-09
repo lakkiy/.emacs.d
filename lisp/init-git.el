@@ -7,9 +7,6 @@
 ;; magit
 (autoload #'magit "magit" nil t)
 
-(with-eval-after-load "magit"
-  (require 'gitmoji))
-
 ;; diff-hl
 (autoload #'diff-hl-mode "diff-hl")
 

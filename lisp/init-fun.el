@@ -24,7 +24,7 @@
   (define-key cfw:calendar-mode-map (kbd "RET") 'cfw:show-details-command))
 
 ;; rainbow-mode
-(autoload 'rainbow-mode "rainbow-mode")
+(autoload 'rainbow-mode "rainbow-mode" nil t)
 
 ;; docstr
 ;; FIXME go-mode, don't know how to use
