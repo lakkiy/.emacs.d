@@ -23,14 +23,6 @@
             (set-window-fringes
              (minibuffer-window frame) 0 0 nil t)))
 
-;;; Margin
-(let ((margin 0))
-  (add-to-list 'default-frame-alist (cons 'internal-border-width margin)))
-
-;;; Transparency
-(let ((alpha 100))
-  (add-to-list 'default-frame-alist (cons 'alpha alpha)))
-
-(load-theme 'joker t)
+(load-theme 'lazycat-dark t)
 
 (provide 'init-themes)

@@ -1,6 +1,6 @@
 ;;; -*- lexical-binding: t -*-
 
-;; core/core-packages.el#L87-L90
+;; DOOM core/core-packages.el#L87-L90
 ;; https://www.reddit.com/r/emacs/comments/mtb05k/emacs_init_time_decreased_65_after_i_realized_the/
 (setq straight-check-for-modifications nil)
 (setq straight-vc-git-default-clone-depth 1)
