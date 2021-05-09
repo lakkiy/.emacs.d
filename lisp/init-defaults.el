@@ -98,7 +98,7 @@
  *font-cn* "WenQuanYi Micro Hei"
  *font-unicode* "Apple Color Emoji"
  *font-height* (cond ((eq system-type 'darwin) 150)
-                     (t 110))
+                     (t 130))
  ;; electric-pair-mode
  electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit
  ;; show-paren-mode

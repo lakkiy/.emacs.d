@@ -9,6 +9,7 @@
 
 ;; major-mode-hydra
 ;; TODO maybe just need pretty-hydra
+;; TODO add to basic file
 (global-set-key (kbd "<f6>") #'major-mode-hydra)
 (autoload #'major-mode-hydra "major-mode-hydra" nil t)
 
