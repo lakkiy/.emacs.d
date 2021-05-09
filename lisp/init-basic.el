@@ -33,9 +33,6 @@
 (global-set-key (kbd "C-c M-t r") 'tab-bar-rename-tab)
 (global-set-key (kbd "C-c M-t n") 'tab-bar-new-tab)
 (global-set-key (kbd "C-c M-t d") 'tab-bar-close-tab)
-;; https://emacs.stackexchange.com/questions/14755/how-to-remove-bindings-to-the-esc-prefix-key
-(define-key key-translation-map (kbd "ESC") (kbd "C-g"))
-(define-key key-translation-map (kbd "C-<escape>") (kbd "ESC"))
 
 (straight-use-package 'which-key)
 (straight-use-package 'exec-path-from-shell)
