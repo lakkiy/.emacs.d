@@ -161,6 +161,7 @@
   (meow-setup-line-number)
   (meow-setup))
 
+
 ;; rime
 (setq
  rime-disable-predicates '(meow-normal-mode-p
