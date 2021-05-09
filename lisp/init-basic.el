@@ -36,7 +36,7 @@
 
 (straight-use-package 'which-key)
 (straight-use-package 'exec-path-from-shell)
-(straight-use-package '(auto-save :type git :host github :repo "manateelazycat/auto-save"))
+(straight-use-package 'projectile)
 
 ;; which-key
 (setq
@@ -45,17 +45,21 @@
 
 (add-hook 'after-init-hook 'which-key-mode)
 
-;; auto-save
-(setq auto-save-silent t
-      auto-save-idle 3)
-
-;; FIXME
-(require 'auto-save)
-(auto-save-enable)
-
 ;; exec-path-from-shell
 (when (memq window-system '(mac ns x))
   (require 'exec-path-from-shell)
   (exec-path-from-shell-initialize))
+
+;; projectile
+(setq
+ projectile-use-git-grep t
+ projectile-indexing-method 'alien
+ projectile-globally-ignored-files '("TAGS", ".DS_Store")
+ projectile-globally-ignored-file-suffixes '(".elc" ".pyc" ".o" ".swp" ".so" ".a"))
+
+(add-hook 'after-init-hook 'projectile-mode)
+
+(with-eval-after-load "projectile"
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
 
 (provide 'init-basic)
