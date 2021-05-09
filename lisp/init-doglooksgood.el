@@ -156,6 +156,8 @@
 (meow-global-mode 1)
 
 (with-eval-after-load "meow"
+  ;; 狗哥说这个 gui 下也能 C-[ 退回到 normal
+  (add-hook 'meow-mode-hook #'meow-esc-mode)
   (meow-setup-line-number)
   (meow-setup))
 
