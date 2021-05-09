@@ -2,16 +2,10 @@
 
 (straight-use-package 'magit)
 (straight-use-package 'hl-todo)
-(straight-use-package '(gitmoji :type git :host github :repo "Tiv0w/gitmoji"))
 (straight-use-package 'diff-hl)
 
 ;; magit
 (autoload #'magit "magit" nil t)
-
-;; gitmoji
-(setq
- gitmoji--insert-utf8-emoji t
- gitmoji--display-utf8-emoji t)
 
 (with-eval-after-load "magit"
   (require 'gitmoji))
