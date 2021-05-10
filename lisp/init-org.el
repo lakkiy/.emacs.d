@@ -7,6 +7,7 @@
 
 ;; org
 (setq
+ org-log-done t
  org-directory "~/Dropbox/org"
  org-html-checkbox-type 'unicode
  org-todo-keywords        (quote ((sequence "TODO(t)" "WIP(w/!)" "WAIT(W@/!)" "HOLD(h)" "|" "CANCELLED(c@/!)" "DONE(d!/!)")))
@@ -20,7 +21,11 @@
   (require 'ob-dot))
 
 ;; org-agenda
-(setq org-agenda-files '("~/Dropbox/org/agenda"))
+(setq
+ org-agenda-files (list org-directory)
+ org-agenda-diary-file (expand-file-name "diary.org" org-directory))
+
+(global-set-key (kbd "<f12>") 'org-agenda)
 
 ;; easy-hugo
 (setq
