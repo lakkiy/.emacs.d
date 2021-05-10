@@ -45,6 +45,9 @@
 
 (add-hook 'after-init-hook 'which-key-mode)
 
+(with-eval-after-load "which-key"
+  (global-set-key (kbd "<f5>") 'which-key-show-major-mode))
+
 ;; exec-path-from-shell
 (when (memq window-system '(mac ns x))
   (require 'exec-path-from-shell)
