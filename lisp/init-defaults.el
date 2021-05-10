@@ -90,7 +90,7 @@
  ;; install hunspell and hunspell-en_US
  ispell-dictionary "en_US"
  ispell-program-name "hunspell"
- ispell-personal-dictionary (expand-file-name "hunspell_dict.txt" user-emacs-directory)
+ ispell-personal-dictionary (expand-file-name ".hunspell_dict.txt" user-emacs-directory)
  ;; custom file
  custom-file (expand-file-name "custom.el" user-emacs-directory)
  ;; font
