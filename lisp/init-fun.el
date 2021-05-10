@@ -6,6 +6,10 @@
 (straight-use-package 'restclient)
 (straight-use-package '(emacs-calfw :type git :host github :repo "kiwanami/emacs-calfw"))
 (straight-use-package 'major-mode-hydra)
+(straight-use-package '(twidget :type git :host github :repo "Kinneyzhang/twidget"))
+
+;; TODO twidget
+(straight-use-package 'ov)
 
 ;; major-mode-hydra
 ;; TODO maybe just need pretty-hydra
