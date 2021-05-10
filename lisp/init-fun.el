@@ -38,7 +38,14 @@
 ;; add to modeline
 
 ;; restclient
-;; TODO find other packages like this or add to to normal config
 (autoload 'restclient-mode "restclient" nil t)
+
+(defun my/restclient-new ()
+  (interactive)
+  (get-buffer-create "*restclient*")
+  (switch-to-buffer "*restclient*")
+  (with-current-buffer "*restclient*"
+    (restclient-mode)))
+
 
 (provide 'init-fun)

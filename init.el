@@ -7,6 +7,11 @@
                               (time-subtract after-init-time before-init-time)))
                      gcs-done)))
 
+;;; Personal configuration may override some variables
+(let ((private-conf (expand-file-name "private.el" user-emacs-directory)))
+  (when (file-exists-p private-conf)
+    (load-file private-conf)))
+
 (require 'init-basic)
 (require 'init-editor)
 (require 'init-doglooksgood)
