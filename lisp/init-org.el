@@ -6,12 +6,21 @@
 (straight-use-package 'org-roam-server)
 
 ;; org
-(setq org-html-checkbox-type 'unicode)
+(setq
+ org-directory "~/Dropbox/org"
+ org-html-checkbox-type 'unicode
+ org-todo-keywords        (quote ((sequence "TODO(t)" "WIP(w/!)" "WAIT(W@/!)" "HOLD(h)" "|" "CANCELLED(c@/!)" "DONE(d!/!)")))
+ org-todo-repeat-to-state "NEXT"
+ org-todo-keyword-faces   (quote (("NEXT" :inherit warning)
+  				                  ("WAIT" :inherit font-lock-string-face))))
 
 (with-eval-after-load "org"
   (require 'org-tempo)
   (require 'ob)
   (require 'ob-dot))
+
+;; org-agenda
+(setq org-agenda-files '("~/Dropbox/org/agenda"))
 
 ;; easy-hugo
 (setq
@@ -24,9 +33,10 @@
 (autoload #'easy-hugo "easy-hugo" nil t)
 
 ;; org-superstar
-(setq org-superstar-leading-bullet ?\s)
-(if (and (display-graphic-p) (char-displayable-p ?⚫))
-    (setq org-superstar-headline-bullets-list '("⚫" "⚫" "⚫" "⚫")))
+(setq
+ org-superstar-leading-bullet ?\s
+ org-superstar-headline-bullets-list '("♥" "✿" "❀" "☢" "✸" "◉")
+ org-superstar-item-bullet-alist '((?* . ?☯) (?+ . ?✚) (?- . ?▶)))
 
 (autoload #'org-superstar-mode "org-superstar")
 

@@ -105,6 +105,9 @@
  show-paren-when-point-in-periphery t
  show-paren-when-point-inside-paren t
  ;; yse-or-no -> y-or-n
- use-short-answers t)
+ use-short-answers t
+ ;; prefer horizental split
+ split-height-threshold nil
+ split-width-threshold 120)
 
 (provide 'init-defaults)
