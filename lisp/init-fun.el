@@ -40,6 +40,13 @@
 ;; restclient
 (autoload 'restclient-mode "restclient" nil t)
 
+(defun my/tab-bar-new-restclient-tab ()
+  (interactive)
+  (let ((inhibit-message t))
+    (tab-bar-new-tab)
+    (tab-bar-rename-tab "*restclient*")
+    (my/restclient-new)))
+
 (defun my/restclient-new ()
   (interactive)
   (get-buffer-create "*restclient*")
