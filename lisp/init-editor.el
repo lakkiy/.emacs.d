@@ -8,10 +8,6 @@
 (straight-use-package 'treemacs)
 (straight-use-package '(auto-save :type git :host github :repo "manateelazycat/auto-save"))
 (straight-use-package 'insert-char-preview)
-(straight-use-package 'olivetti)
-
-;; olivetti
-(autoload 'olivetti-mode "olivetti" nil t)
 
 ;; insert-char-preview
 (autoload 'insert-char-preview "insert-char-preview" nil t)
