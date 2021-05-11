@@ -10,4 +10,7 @@
 (autoload 'ace-swap-window "ace-window")
 (autoload 'ace-window "ace-window")
 
+(custom-set-faces
+ '(aw-leading-char-face ((t (:inherit font-lock-keyword-face :bold t :height 2.0)))))
+
 (provide 'init-window)
