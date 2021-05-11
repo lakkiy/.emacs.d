@@ -18,7 +18,7 @@
    '("L" . display-line-numbers-mode)
    '("S" . ispell-word)
    ;; projectile
-   '("p s" . consult-git-grep)
+   '("p s" . consult-ripgrep)
    '("p p" . projectile-switch-project)
    '("p f" . projectile-find-file)
    '("p F" . projectile-find-file-other-window)
