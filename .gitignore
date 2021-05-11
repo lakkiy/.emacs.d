@@ -13,6 +13,7 @@ rime
 librime
 recentf
 tramp
+request
 .cache
 private.el
 org-roam.db
