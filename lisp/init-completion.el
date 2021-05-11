@@ -6,6 +6,7 @@
 (straight-use-package 'selectrum)
 (straight-use-package 'selectrum-prescient)
 (straight-use-package 'company)
+(straight-use-package 'marginalia)
 
 ;; yasnippet
 (autoload #'yas-minor-mode "yasnippet")
@@ -65,5 +66,8 @@
 
 (with-eval-after-load "consult"
   (global-set-key (kbd "C-s") 'consult-line))
+
+;; marginalia
+(marginalia-mode)
 
 (provide 'init-completion)
