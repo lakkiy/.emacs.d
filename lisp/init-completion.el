@@ -19,6 +19,7 @@
 
 ;; company
 (setq
+ company-vscode-icons-mapping nil
  company-begin-commands '(self-insert-command)
  company-idle-delay 0
  company-tooltip-limit 10
