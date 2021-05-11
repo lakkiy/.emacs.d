@@ -61,7 +61,7 @@
 
 (require 'consult)
 
-(setq consult-project-root-function #'projectile-project-root)
+(setq consult-project-root-function #'vc-root-dir)
 
 (with-eval-after-load "consult"
   (global-set-key (kbd "C-s") 'consult-line))

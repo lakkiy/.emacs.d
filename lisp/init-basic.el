@@ -36,7 +36,6 @@
 
 (straight-use-package 'which-key)
 (straight-use-package 'exec-path-from-shell)
-(straight-use-package 'projectile)
 
 ;; which-key
 (setq
@@ -52,17 +51,5 @@
 (when (memq window-system '(mac ns x))
   (require 'exec-path-from-shell)
   (exec-path-from-shell-initialize))
-
-;; projectile
-(setq
- projectile-use-git-grep t
- projectile-indexing-method 'alien
- projectile-globally-ignored-files '("TAGS", ".DS_Store")
- projectile-globally-ignored-file-suffixes '(".elc" ".pyc" ".o" ".swp" ".so" ".a"))
-
-(add-hook 'after-init-hook 'projectile-mode)
-
-(with-eval-after-load "projectile"
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
 
 (provide 'init-basic)
