@@ -2,7 +2,6 @@
 
 (straight-use-package 'rainbow-mode)
 (straight-use-package 'docstr)
-(straight-use-package 'parrot)
 (straight-use-package 'restclient)
 (straight-use-package '(emacs-calfw :type git :host github :repo "kiwanami/emacs-calfw"))
 (straight-use-package 'major-mode-hydra)
@@ -33,9 +32,6 @@
 ;; docstr
 ;; FIXME go-mode, don't know how to use
 (add-hook 'prog-mode-hook (lambda () (docstr-mode 1)))
-
-;; TODO parrot
-;; add to modeline
 
 ;; restclient
 (autoload 'restclient-mode "restclient" nil t)
