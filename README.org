@@ -1,18 +1,3 @@
-* Install
-~git clone --depth 1 https://github.com/404cn/fooemacs.git ~/.emacs.d~
-
-or
-
-~git clone --depth 1 https//github.com/404cn/fooemacs.git ~/.config/emacs~
-
-*Not test on windows*
-
-* Font
-
-The default font is used by *Operator Mono Ssm Lig*, unicode font is
-
-used by *Apple Color Emoji*, you can change these in *lisp/init-defaults.el*.
-
 * Features
 
 Currently this configuration is mainly used for GOLANG programming.
@@ -22,5 +7,19 @@ If you want to use ispell: install *hunspell* and *hunspell-en_US*.
 Arch:
 
 ~sudo pacman -S hunspell hunspell-en_us~
+* Quick start
+~git clone --depth 1 https://github.com/404cn/fooemacs.git ~/.emacs.d~
+
+or
+
+~git clone --depth 1 https//github.com/404cn/fooemacs.git ~/.config/emacs~
+
+*Not test on windows*
+
+* Custom
+
+The default font is *Operator Mono Ssm Lig*, unicode font is
+
+*Apple Color Emoji*, you can change these in *lisp/init-defaults.el*.
 
 * TODO Screenshots

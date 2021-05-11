@@ -1,8 +1,8 @@
 ;;; -*- lexical-binding: t -*-
 
 (straight-use-package 'leetcode)
-(straight-use-package 'elfeed)
-(straight-use-package 'elfeed-protocol)
+;; (straight-use-package 'elfeed)
+;; (straight-use-package 'elfeed-protocol)
 
 ;; leetcode
 (setq
@@ -14,13 +14,13 @@
 (autoload 'leetcode "leetcode" nil t)
 
 ;; elfeed
-(setq elfeed-curl-extra-arguments '("--insecure"))
-
-(autoload 'elfeed "elfeed" nil t)
-
-(with-eval-after-load "elfeed"
-  (elfeed-set-timeout 36000)
-  ;; elfeed-protocol
-  (elfeed-protocol-enable))
+;; (setq elfeed-curl-extra-arguments '("--insecure"))
+;;
+;; (autoload 'elfeed "elfeed" nil t)
+;;
+;; (with-eval-after-load "elfeed"
+;;   (elfeed-set-timeout 36000)
+;;   ;; elfeed-protocol
+;;   (elfeed-protocol-enable))
 
 (provide 'init-mole)
