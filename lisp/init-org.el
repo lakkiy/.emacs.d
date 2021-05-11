@@ -23,7 +23,7 @@
 
   ;; org-transclusion
   (require 'org-transclusion)
-  (define-key global-map (kbd "<f12>") #'org-transclusion-mode))
+  (define-key global-map (kbd "<f11>") #'org-transclusion-mode))
 
 ;; org-agenda
 (setq
