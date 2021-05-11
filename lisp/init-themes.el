@@ -19,6 +19,6 @@
             (set-window-fringes
              (minibuffer-window frame) 0 0 nil t)))
 
-(load-theme 'lazycat-dark t)
+(load-theme 'printed t)
 
 (provide 'init-themes)
