@@ -4,6 +4,7 @@
 (straight-use-package 'org-superstar)
 (straight-use-package 'org-roam)
 (straight-use-package 'org-roam-server)
+(straight-use-package '(org-transclusion :type git :host github :repo "nobiot/org-transclusion"))
 
 ;; org
 (setq
@@ -18,7 +19,11 @@
 (with-eval-after-load "org"
   (require 'org-tempo)
   (require 'ob)
-  (require 'ob-dot))
+  (require 'ob-dot)
+
+  ;; org-transclusion
+  (require 'org-transclusion)
+  (define-key global-map (kbd "<f12>") #'org-transclusion-mode))
 
 ;; org-agenda
 (setq
