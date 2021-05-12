@@ -7,7 +7,6 @@
 (straight-use-package 'orderless)
 (straight-use-package 'company)
 (straight-use-package 'marginalia)
-;; TODO
 (straight-use-package 'embark)
 
 ;; yasnippet
@@ -58,12 +57,6 @@
 (require 'selectrum)
 (selectrum-mode t)
 
-;; orderless
-(require 'orderless)
-(setq completion-styles '(orderless))
-(setq selectrum-refine-candidates-function #'orderless-filter)
-(setq selectrum-highlight-candidates-function #'orderless-highlight-matches)
-
 ;; consult
 (require 'consult)
 
@@ -72,7 +65,27 @@
 (with-eval-after-load "consult"
   (global-set-key (kbd "C-s") 'consult-line))
 
+;; orderless
+(require 'orderless)
+(setq completion-styles '(orderless))
+(setq selectrum-refine-candidates-function #'orderless-filter)
+(setq selectrum-highlight-candidates-function #'orderless-highlight-matches)
+
 ;; marginalia
 (marginalia-mode)
+
+;; embark
+(setq prefix-help-command #'embark-prefix-help-command)
+
+(with-eval-after-load 'embark
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none))))
+
+  (global-set-key (kbd "C-S-a") 'embark-act)
+  (global-set-key (kbd "C-h B") 'embark-bindings)
+  (with-eval-after-load 'consult
+    (add-hook 'embark-collect-mode-hook 'embark-consult-preview-minor-mode)))
 
 (provide 'init-completion)
