@@ -53,7 +53,7 @@
    ("b" "Book" entry (file+olp+datetree org-default-notes-file)
     "* Topic: %^{Description}  %^g %? Added: %U")))
 
-;; easy-hugo
+;;; easy-hugo
 (setq
  easy-hugo-server-flags "-D"
  easy-hugo-basedir "~/bookshelf/"
@@ -63,7 +63,7 @@
 
 (autoload #'easy-hugo "easy-hugo" nil t)
 
-;; org-superstar
+;;; org-superstar
 (setq
  org-superstar-leading-bullet ?\s
  org-superstar-headline-bullets-list '("♥" "✿" "❀" "☢" "✸" "◉")
@@ -73,7 +73,7 @@
 
 (add-hook 'org-mode-hook 'org-superstar-mode)
 
-;; org-roam
+;;; org-roam
 (setq org-roam-directory "~/Dropbox/org")
 
 (with-eval-after-load "org-roam"
@@ -89,6 +89,6 @@
   ;; https://www.orgroam.com/manual.html#Roam-Protocol
   (require 'org-roam-protocol))
 
-;; TODO org-roam-server
+;;; TODO org-roam-server
 
 (provide 'init-org)
