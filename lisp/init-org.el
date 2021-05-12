@@ -36,16 +36,17 @@
 (global-set-key (kbd "C-c c") 'org-capture)
 
 (setq
+ org-default-notes-file (concat org-directory "/cap.org")
  org-capture-templates
- `(("i" "Idea" entry (file ,(concat org-directory "/cap-idea.org"))
+ '(("i" "Idea" entry (file org-default-notes-file)
     "*  %^{Title} %?\n%U\n%a\n")
-   ("t" "Todo" entry (file ,(concat org-directory "/cap-gtd.org"))
+   ("t" "Todo" entry (file org-default-notes-file)
     "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
-   ("n" "Note" entry (file ,(concat org-directory "/cap-note.org"))
+   ("n" "Note" entry (file org-default-notes-file)
     "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
-   ("j" "Journal" entry (file+olp+datetree ,(concat org-directory "/cap-journal.org"))
+   ("j" "Journal" entry (file+olp+datetree org-default-notes-file)
     "*  %^{Title} %?\n%U\n%a\n" :clock-in t :clock-resume t)
-   ("b" "Book" entry (file+olp+datetree ,(concat org-directory "/cap-book.org"))
+   ("b" "Book" entry (file+olp+datetree org-default-notes-file)
     "* Topic: %^{Description}  %^g %? Added: %U")))
 
 ;; easy-hugo
