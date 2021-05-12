@@ -4,9 +4,11 @@
 (straight-use-package 'yasnippet)
 (straight-use-package 'deadgrep)
 (straight-use-package 'selectrum)
-(straight-use-package 'selectrum-prescient)
+(straight-use-package 'orderless)
 (straight-use-package 'company)
 (straight-use-package 'marginalia)
+;; TODO
+(straight-use-package 'embark)
 
 ;; yasnippet
 (autoload #'yas-minor-mode "yasnippet")
@@ -55,12 +57,14 @@
 ;; selectrum
 (require 'selectrum)
 (selectrum-mode t)
-(selectrum-prescient-mode t)
+
+;; orderless
+(require 'orderless)
+(setq completion-styles '(orderless))
+(setq selectrum-refine-candidates-function #'orderless-filter)
+(setq selectrum-highlight-candidates-function #'orderless-highlight-matches)
 
 ;; consult
-(setq xref-show-xrefs-function #'consult-xref
-      xref-show-definitions-function #'consult-xref)
-
 (require 'consult)
 
 (setq consult-project-root-function #'vc-root-dir)
