@@ -60,7 +60,9 @@
 ;; consult
 (require 'consult)
 
-(setq consult-project-root-function #'vc-root-dir)
+(setq xref-show-xrefs-function #'consult-xref
+      xref-show-definitions-function #'consult-xref
+      consult-project-root-function #'vc-root-dir)
 
 (with-eval-after-load "consult"
   (global-set-key (kbd "C-s") 'consult-line))
