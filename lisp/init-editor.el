@@ -9,6 +9,18 @@
 (straight-use-package '(auto-save :type git :host github :repo "manateelazycat/auto-save"))
 (straight-use-package 'insert-char-preview)
 (straight-use-package 'ibuffer-vc)
+(straight-use-package 'visual-fill-column)
+(straight-use-package 'olivetti)
+
+;;; olivetti
+(setq
+ olivetti-body-width 80)
+
+(autoload 'olivetti-mode "olivetti" nil t)
+
+;;; visual-fill-column
+(with-eval-after-load "visual-line"
+  (add-hook 'visual-line-mode-hook #'visual-fill-column-mode))
 
 ;; ibuffer-vc
 (setq ibuffer-formats
