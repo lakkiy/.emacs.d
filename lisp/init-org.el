@@ -6,7 +6,7 @@
 (straight-use-package 'org-roam-server)
 (straight-use-package '(org-transclusion :type git :host github :repo "nobiot/org-transclusion"))
 
-;; org
+;;; org
 (setq
  org-log-done t
  org-directory "~/Dropbox/org"
@@ -25,12 +25,28 @@
   (require 'org-transclusion)
   (define-key global-map (kbd "<f11>") #'org-transclusion-mode))
 
-;; org-agenda
+;;; org-agenda
 (setq
  org-agenda-files (list org-directory)
  org-agenda-diary-file (expand-file-name "diary.org" org-directory))
 
 (global-set-key (kbd "<f12>") 'org-agenda)
+
+;;; org-capture
+(global-set-key (kbd "C-c c") 'org-capture)
+
+(setq
+ org-capture-templates
+ `(("i" "Idea" entry (file ,(concat org-directory "/cap-idea.org"))
+    "*  %^{Title} %?\n%U\n%a\n")
+   ("t" "Todo" entry (file ,(concat org-directory "/cap-gtd.org"))
+    "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
+   ("n" "Note" entry (file ,(concat org-directory "/cap-note.org"))
+    "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
+   ("j" "Journal" entry (file+olp+datetree ,(concat org-directory "/cap-journal.org"))
+    "*  %^{Title} %?\n%U\n%a\n" :clock-in t :clock-resume t)
+   ("b" "Book" entry (file+olp+datetree ,(concat org-directory "/cap-book.org"))
+    "* Topic: %^{Description}  %^g %? Added: %U")))
 
 ;; easy-hugo
 (setq
