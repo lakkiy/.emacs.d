@@ -5,6 +5,7 @@
 (straight-use-package 'org-roam)
 (straight-use-package 'org-roam-server)
 (straight-use-package '(org-transclusion :type git :host github :repo "nobiot/org-transclusion"))
+(straight-use-package 'valign)
 
 ;;; org
 (setq
@@ -17,6 +18,9 @@
   				                  ("WAIT" :inherit font-lock-string-face))))
 
 (with-eval-after-load "org"
+  ;;; valign
+  (add-hook 'org-mode-hook #'valign-mode)
+
   (require 'org-tempo)
   (require 'ob)
   (require 'ob-dot)
