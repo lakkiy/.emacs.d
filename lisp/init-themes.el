@@ -19,6 +19,6 @@
             (set-window-fringes
              (minibuffer-window frame) 0 0 nil t)))
 
-(load-theme 'printed t)
+(load-theme footheme t)
 
 (provide 'init-themes)

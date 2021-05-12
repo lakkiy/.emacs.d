@@ -93,12 +93,6 @@
  ispell-personal-dictionary (expand-file-name ".hunspell_dict.txt" user-emacs-directory)
  ;; custom file
  custom-file (expand-file-name "custom.el" user-emacs-directory)
- ;; font
- *font* "Operator Mono SSm Lig"
- *font-cn* "WenQuanYi Micro Hei"
- *font-unicode* "Apple Color Emoji"
- *font-height* (cond ((eq system-type 'darwin) 150)
-                     (t 130))
  ;; electric-pair-mode
  electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit
  ;; show-paren-mode
@@ -109,5 +103,15 @@
  ;; prefer horizental split
  split-height-threshold nil
  split-width-threshold 120)
+
+;; for customize
+(setq-default
+  ;; font
+ *font* "Operator Mono SSm Lig"
+ *font-cn* "WenQuanYi Micro Hei"
+ *font-unicode* "Apple Color Emoji"
+ *font-height* (cond ((eq system-type 'darwin) 150)
+                     (t 130))
+ footheme 'paperlike)
 
 (provide 'init-defaults)
