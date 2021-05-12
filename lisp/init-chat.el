@@ -5,7 +5,7 @@
 
 ;; olivetti
 (setq
- olivetti-body-width 90)
+ olivetti-body-width 80)
 
 (autoload 'olivetti-mode "olivetti" nil t)
 
