@@ -3,6 +3,12 @@
 (straight-use-package '(lazycat-theme :type git :host github :repo "404cn/lazycat-theme"))
 (straight-use-package '(modus-theme   :type git :host github :repo "protesilaos/modus-themes"))
 
+(setq modus-themes-slanted-constructs t
+      modus-themes-bold-constructs t
+      modus-themes-syntax 'green-strings
+      modus-themes-no-mixed-fonts t
+      modus-themes-paren-match 'intense-bold)
+
 ;;; Use window divider
 (window-divider-mode 1)
 ;;; Nice window divider
