@@ -11,6 +11,16 @@
 (straight-use-package 'ibuffer-vc)
 (straight-use-package 'visual-fill-column)
 (straight-use-package 'olivetti)
+(straight-use-package 'separedit)
+
+;;; separedit
+(setq
+ separedit-default-mode 'org-mode
+ separedit-remove-trailing-spaces-in-comment t)
+
+(autoload #'separedit "separedit" nil t)
+
+(global-set-key (kbd "C-c '") #'separedit)
 
 ;;; olivetti
 (setq
