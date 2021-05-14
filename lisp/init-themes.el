@@ -4,11 +4,23 @@
 (straight-use-package '(modus-theme   :type git :host github :repo "protesilaos/modus-themes"))
 (straight-use-package 'spacemacs-theme)
 
-(setq modus-themes-slanted-constructs t
-      modus-themes-bold-constructs t
-      modus-themes-syntax 'green-strings
-      modus-themes-no-mixed-fonts t
-      modus-themes-paren-match 'intense-bold)
+(setq
+ spacemacs-theme-comment-italic t
+ spacemacs-theme-keyword-italic t
+ spacemacs-theme-org-agenda-height t
+ spacemacs-theme-org-bold t
+ spacemacs-theme-org-height t
+ spacemacs-theme-org-highlight t
+ spacemacs-theme-org-priority-bold t
+ spacemacs-theme-org-bold t
+ spacemacs-theme-underline-parens t)
+
+(setq
+ modus-themes-slanted-constructs t
+ modus-themes-bold-constructs t
+ modus-themes-syntax 'green-strings
+ modus-themes-no-mixed-fonts t
+ modus-themes-paren-match 'intense-bold)
 
 ;;; Use window divider
 (window-divider-mode 1)
