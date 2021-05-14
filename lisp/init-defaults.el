@@ -112,6 +112,6 @@
  *font-unicode* "Apple Color Emoji"
  *font-height* (cond ((eq system-type 'darwin) 150)
                      (t 130))
- footheme 'paperlike)
+ footheme 'spacemacs-light)
 
 (provide 'init-defaults)

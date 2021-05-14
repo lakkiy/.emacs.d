@@ -153,7 +153,8 @@
   ;; 狗哥说这个 gui 下也能 C-[ 退回到 normal
   (add-hook 'meow-mode-hook #'meow-esc-mode)
   (meow-setup-line-number)
-  (meow-setup))
+  (meow-setup)
+  (meow-setup-indicator))
 
 
 ;; rime
@@ -168,7 +169,7 @@
  default-input-method "rime"
  rime-cursor "|"
  rime-show-candidate 'minibuffer
- rime-title "rime")
+ rime-title "ㄓ ")
 
 (if (eq system-type 'darwin)
     (setq rime-librime-root (expand-file-name "librime/dist" user-emacs-directory)
