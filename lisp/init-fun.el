@@ -6,6 +6,26 @@
 (straight-use-package '(emacs-calfw :type git :host github :repo "kiwanami/emacs-calfw"))
 (straight-use-package 'major-mode-hydra)
 (straight-use-package '(twidget :type git :host github :repo "Kinneyzhang/twidget"))
+(straight-use-package '(emacs-application-framework
+                        :type git
+                        :host github
+                        :repo "manateelazycat/emacs-application-framework"
+                        :files ("*")))
+
+;;; eaf
+(straight-use-package 'epc)
+(straight-use-package 'deferred)
+(straight-use-package 'ctable)
+
+(setq
+ eaf-browser-continue-where-left-off t)
+
+(with-eval-after-load "eaf"
+  (eaf-setq eaf-browser-enable-adblocker "true")
+  (eaf-bind-key scroll_up "C-n" eaf-pdf-viewer-keybinding)
+  (eaf-bind-key scroll_down "C-p" eaf-pdf-viewer-keybinding)
+  (eaf-bind-key take_photo "p" eaf-camera-keybinding)
+  (eaf-bind-key nil "M-q" eaf-browser-keybinding))
 
 ;; TODO twidget
 (straight-use-package 'ov)
