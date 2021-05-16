@@ -3,8 +3,9 @@
 (push '(fullscreen . maximized) default-frame-alist)
 (push '(scroll-bar-mode . 0) default-frame-alist)
 (push '(vertical-scroll-bars) default-frame-alist)
-;; (when (featurep 'ns)
-;;   (push '(ns-transparent-titlebar . t) default-frame-alist))
+(when (featurep 'ns)
+  (push '(ns-transparent-titlebar . t) default-frame-alist))
+;; TODO check system type macos
 (when (not (featurep 'ns))
   (push '(tool-bar-lines . 0) default-frame-alist)
   (push '(menu-bar-lines . 0) default-frame-alist))

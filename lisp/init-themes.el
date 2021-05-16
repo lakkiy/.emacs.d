@@ -38,6 +38,7 @@
             (set-window-fringes
              (minibuffer-window frame) 0 0 nil t)))
 
-(load-theme footheme t)
+(add-hook 'after-init-hook (lambda ()
+                             (load-theme footheme t)))
 
 (provide 'init-themes)
