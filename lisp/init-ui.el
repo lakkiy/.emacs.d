@@ -56,4 +56,15 @@
                               "-->" "<|" "<=" "<==" "<=>" "<=<" "<!--" "<-"
                               "<->" "<--" "</" "+=" "++" "??" "/>" "__" "WWW"))))
 
+;;; tool-bar for mac
+(define-key tool-bar-map [copy] nil)
+(define-key tool-bar-map [cut] nil)
+(define-key tool-bar-map [new-file] nil)
+(define-key tool-bar-map [open-file] nil)
+(define-key tool-bar-map [dired] nil)
+(define-key tool-bar-map [save-buffer] nil)
+(define-key tool-bar-map [undo] nil)
+(define-key tool-bar-map [paste] nil)
+(define-key tool-bar-map [isearch-forward] nil)
+
 (provide 'init-ui)
