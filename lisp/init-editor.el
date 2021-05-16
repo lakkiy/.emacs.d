@@ -12,6 +12,13 @@
 (straight-use-package 'visual-fill-column)
 (straight-use-package 'olivetti)
 (straight-use-package 'separedit)
+(straight-use-package 'imenu-list)
+
+;;; imenu-list
+(setq
+ imenu-list-auto-resize t)
+
+(global-set-key (kbd "C-.") #'imenu-list-smart-toggle)
 
 ;;; separedit
 (setq
