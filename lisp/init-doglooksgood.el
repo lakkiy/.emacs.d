@@ -10,6 +10,7 @@
    ;; completion
    '("SPC" . execute-extended-command)
    '("i" . consult-imenu)
+   '("I" . imenu-list-smart-toggle)
    '("b" . consult-buffer)
    ;; basic
    '("v" . magit)
