@@ -11,6 +11,13 @@
                         :host github
                         :repo "manateelazycat/emacs-application-framework"
                         :files ("*")))
+(straight-use-package 'imenu-list)
+
+;;; imenu-list
+(setq
+ imenu-list-auto-resize t)
+
+(global-set-key (kbd "C-.") #'imenu-list-smart-toggle)
 
 ;;; eaf
 (straight-use-package 'epc)

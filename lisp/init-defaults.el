@@ -60,9 +60,6 @@
  read-process-output-max (* 1024 1024)
  ;; Default line number width.
  display-line-numbers-width 3
- ;; Disable title bar text and icon for macos
- ns-use-proxy-icon  nil
- frame-title-format nil
  ;; Don't use Fcitx5 in Emacs in PGTK build
  pgtk-use-im-context-on-new-connection nil
  ;; Don't display compile warnings
