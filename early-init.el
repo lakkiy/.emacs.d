@@ -16,4 +16,3 @@
 
 (require 'init-straight)
 (require 'init-defaults)
-(require 'init-themes)
