@@ -84,6 +84,8 @@
  ;; Horizontal Scroll
  hscroll-step 1
  hscroll-margin 10
+ ;; no client startup messages
+ server-client-instructions nil
  ;; install hunspell and hunspell-en_US
  ispell-dictionary "en_US"
  ispell-program-name "hunspell"

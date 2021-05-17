@@ -57,6 +57,7 @@
                               "<->" "<--" "</" "+=" "++" "??" "/>" "__" "WWW"))))
 
 ;;; tool-bar for mac
+;; TODO disable icon in *Help* buffer
 (define-key tool-bar-map [copy] nil)
 (define-key tool-bar-map [cut] nil)
 (define-key tool-bar-map [new-file] nil)
