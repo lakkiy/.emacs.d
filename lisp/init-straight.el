@@ -2,7 +2,7 @@
 
 ;; DOOM core/core-packages.el#L87-L90
 ;; https://www.reddit.com/r/emacs/comments/mtb05k/emacs_init_time_decreased_65_after_i_realized_the/
-(setq straight-check-for-modifications nil)
+(setq straight-check-for-modifications '(check-on-save find-when-checking))
 (setq straight-vc-git-default-clone-depth 1)
 
 (defvar bootstrap-version)
