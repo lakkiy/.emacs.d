@@ -7,6 +7,10 @@
 ;;; elpy
 (advice-add 'python-mode :before 'elpy-enable)
 
+;;; blacken
+(setq
+ blacken-skip-string-normalization t)
+
 (with-eval-after-load "python"
   ;;; live-py-mode
   ;; pip install twisted ?
