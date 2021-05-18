@@ -5,6 +5,11 @@
 (straight-use-package 'live-py-mode)
 
 ;;; elpy
+;; pip install pylint
+;; pip install flake8 ?
+(setq
+ elpy-rpc-python-command "python3")
+
 (advice-add 'python-mode :before 'elpy-enable)
 
 ;;; blacken
