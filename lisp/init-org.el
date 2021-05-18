@@ -24,7 +24,6 @@
   (require 'org-tempo)
   (require 'ob)
   (require 'ob-dot)
-  (require 'ob-go)
 
   ;; org-transclusion
   (require 'org-transclusion)
