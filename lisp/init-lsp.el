@@ -12,7 +12,6 @@
 
 ;; eglot
 (setq
- read-process-output-max (* 1024 1024)
  eglot-stay-out-of nil
  eglot-ignored-server-capabilites '(:documentHighlightProvider))
 
