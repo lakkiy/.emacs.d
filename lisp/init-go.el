@@ -17,6 +17,14 @@
 (with-eval-after-load "exec-path-from-shell"
   (exec-path-from-shell-copy-envs '("GOPATH" "GO111MODULE" "GOPROXY")))
 
+(with-eval-after-load "go-mode"
+  (define-key go-mode-map (kbd "C-c t g") #'go-gen-test-dwim)
+  (define-key go-mode-map (kbd "C-c t m") #'go-test-current-file)
+  (define-key go-mode-map (kbd "C-c t .") #'go-test-current-test)
+  (define-key go-mode-map (kbd "C-c t t") #'go-tag-add)
+  (define-key go-mode-map (kbd "C-c t T") #'go-tag-remove)
+  (define-key go-mode-map (kbd "C-c t x") #'go-run))
+
 ;; flymake-golangci
 (add-hook 'go-mode-hook 'flymake-golangci-load)
 
