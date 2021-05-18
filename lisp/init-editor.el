@@ -36,8 +36,7 @@
 (autoload 'olivetti-mode "olivetti" nil t)
 
 ;;; visual-fill-column
-(with-eval-after-load "visual-line"
-  (add-hook 'visual-line-mode-hook #'visual-fill-column-mode))
+(add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
 
 ;; ibuffer-vc
 (setq ibuffer-formats
