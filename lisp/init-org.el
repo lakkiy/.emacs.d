@@ -6,7 +6,6 @@
 (straight-use-package 'org-roam-server)
 (straight-use-package '(org-transclusion :type git :host github :repo "nobiot/org-transclusion"))
 (straight-use-package 'valign)
-(straight-use-package 'ob-go)
 
 ;;; org
 (setq
@@ -25,6 +24,7 @@
   (require 'org-tempo)
   (require 'ob)
   (require 'ob-dot)
+  (require 'ob-go)
 
   ;; org-transclusion
   (require 'org-transclusion)
