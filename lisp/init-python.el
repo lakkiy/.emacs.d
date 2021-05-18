@@ -3,6 +3,7 @@
 (straight-use-package 'elpy)
 (straight-use-package 'blacken)
 (straight-use-package 'live-py-mode)
+(straight-use-package '(python-isort :type git :host github :repo "wyuenho/emacs-python-isort"))
 
 ;;; elpy
 ;; pip install pylint
@@ -17,6 +18,9 @@
  blacken-skip-string-normalization t)
 
 (with-eval-after-load "python"
+  ;;; python-isort
+  ;; pip install isort
+  (add-hook 'python-mode-hook 'python-isort-on-save-mode)
   ;;; live-py-mode
   ;; pip install twisted ?
   (define-key python-mode-map (kbd "C-c l") 'live-py-mode)
