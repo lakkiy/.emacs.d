@@ -4,6 +4,9 @@
 (straight-use-package 'blacken)
 (straight-use-package 'live-py-mode)
 
+;;; elpy
+(advice-add 'python-mode :before 'elpy-enable)
+
 (with-eval-after-load "python"
   ;;; live-py-mode
   ;; pip install twisted ?
@@ -11,9 +14,7 @@
   ;;; blacken - reformat python buffer
   ;; format evere time you save
   ;; pip install black
-  (add-hook 'python-mode-hook 'blacken-mode)
-  ;;; elpy
-  (add-hook 'python-mode-hook (lambda () (elpy-enable))))
+  (add-hook 'python-mode-hook 'blacken-mode))
 
 (setq
  python-indent-offset 4
