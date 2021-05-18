@@ -104,6 +104,8 @@
 (define-key tool-bar-map [save-buffer] nil)
 (define-key tool-bar-map [undo] nil)
 (define-key tool-bar-map [paste] nil)
-(define-key tool-bar-map [isearch-forward] nil)
+(define-key help-mode-tool-bar-map [search] nil)
+(define-key help-mode-tool-bar-map [Previous\ Topic] nil)
+(define-key help-mode-tool-bar-map [Next\ Topic] nil)
 
 (provide 'init-ui)
