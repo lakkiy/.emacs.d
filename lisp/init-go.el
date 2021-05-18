@@ -18,6 +18,7 @@
   (exec-path-from-shell-copy-envs '("GOPATH" "GO111MODULE" "GOPROXY")))
 
 (with-eval-after-load "go-mode"
+  (add-hook 'go-mode-hook 'eglot-ensure)
   (define-key go-mode-map (kbd "C-c t g") #'go-gen-test-dwim)
   (define-key go-mode-map (kbd "C-c t m") #'go-test-current-file)
   (define-key go-mode-map (kbd "C-c t .") #'go-test-current-test)
