@@ -1,6 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
 (straight-use-package 'magit)
+(straight-use-package 'magit-todos)
 (straight-use-package 'hl-todo)
 (straight-use-package 'diff-hl)
 
