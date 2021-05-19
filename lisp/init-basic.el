@@ -33,7 +33,23 @@
 (global-set-key (kbd "C-c M-t r") 'tab-bar-rename-tab)
 (global-set-key (kbd "C-c M-t n") 'tab-bar-new-tab)
 (global-set-key (kbd "C-c M-t d") 'tab-bar-close-tab)
+;;; recentf
+(setq
+ recentf-max-saved-items 300
+ recentf-exclude '("\\.?cache" ".cask" "url" "COMMIT_EDITMSG\\'" "bookmarks"
+                   "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\|bmp\\|xpm\\)$"
+                   "\\.?ido\\.last$" "\\.revive$" "/G?TAGS$" "/.elfeed/"
+                   "^/tmp/" "^/var/folders/.+$" "^/ssh:" "/persp-confs/"
+                   (lambda (file) (file-in-directory-p file package-user-dir))))
 
+(global-set-key (kbd "C-x C-r") 'recentf-open-files)
+(add-hook 'after-init-hook 'recentf-mode)
+
+(with-eval-after-load "recentf"
+  (push (expand-file-name recentf-save-file) recentf-exclude)
+  (add-to-list 'recentf-filename-handlers #'abbreviate-file-name))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (straight-use-package 'which-key)
 (straight-use-package 'exec-path-from-shell)
 
