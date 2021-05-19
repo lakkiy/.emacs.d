@@ -4,7 +4,6 @@
 (straight-use-package '(insert-translated-name :type git :host github :repo "manateelazycat/insert-translated-name"))
 (straight-use-package '(company-english-helper :type git :host github :repo "manateelazycat/company-english-helper"))
 (straight-use-package 'markdown-mode)
-(straight-use-package 'go-translate)
 (straight-use-package 'treemacs)
 (straight-use-package '(auto-save :type git :host github :repo "manateelazycat/auto-save"))
 (straight-use-package 'insert-char-preview)
@@ -13,6 +12,15 @@
 (straight-use-package 'olivetti)
 (straight-use-package 'separedit)
 (straight-use-package 'imenu-list)
+(straight-use-package '(multi-translate
+                        :type git
+                        :host github
+                        :repo "twlz0ne/multi-translate.el"
+                        :files ("multi-translate.el")))
+
+;;; multi-translate
+(setq
+ multi-translate-accumulate-results t)
 
 ;;; imenu-list
 (setq
@@ -80,12 +88,6 @@
 ;; markdown-mode
 (setq markdown-fontify-code-blocks-natively t)
 (add-hook 'markdown-mode-hook 'markdown-toggle-markup-hidding)
-
-;; go-translate
-(setq go-translate-base-url "https://translate.google.cn")
-(setq go-translate-local-language "zh-CN")
-(setq go-translate-inputs-function #'go-translate-inputs-current-or-prompt)
-(setq go-translate-token-current (cons 430675 2721866130))
 
 ;; treemacs
 (defun +treemacs-scale-font-size ()
