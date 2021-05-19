@@ -55,7 +55,8 @@
 
 ;; selectrum
 (require 'selectrum)
-(selectrum-mode t)
+
+(add-hook 'after-init-hook 'selectrum-mode)
 
 ;; consult
 (require 'consult)
@@ -74,7 +75,7 @@
 (setq selectrum-highlight-candidates-function #'orderless-highlight-matches)
 
 ;; marginalia
-(marginalia-mode)
+(add-hook 'after-init-hook 'marginalia-mode)
 
 ;; embark
 (setq prefix-help-command #'embark-prefix-help-command)
