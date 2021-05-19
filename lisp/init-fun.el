@@ -11,6 +11,11 @@
                         :host github
                         :repo "manateelazycat/emacs-application-framework"
                         :files ("*")))
+(straight-use-package 'pretty-hydra)
+(straight-use-package 'emojify)
+
+;;; emojify
+(add-hook 'after-init-hook #'global-emojify-mode)
 
 ;;; eaf
 (straight-use-package 'epc)

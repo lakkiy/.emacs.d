@@ -18,6 +18,7 @@ elpy
 .cache
 private.el
 org-roam.db
+emojis
 bookmarks
 newsticker
 hackernews
