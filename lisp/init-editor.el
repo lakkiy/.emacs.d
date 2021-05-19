@@ -12,15 +12,6 @@
 (straight-use-package 'olivetti)
 (straight-use-package 'separedit)
 (straight-use-package 'imenu-list)
-(straight-use-package '(multi-translate
-                        :type git
-                        :host github
-                        :repo "twlz0ne/multi-translate.el"
-                        :files ("multi-translate.el")))
-
-;;; multi-translate
-(setq
- multi-translate-accumulate-results t)
 
 ;;; imenu-list
 (setq
