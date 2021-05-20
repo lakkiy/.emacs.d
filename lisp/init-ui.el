@@ -80,7 +80,7 @@
     (add-hook 'after-make-frame-functions #'+reload-ui-in-daemon)
   (+init-ui))
 
-;; ligature
+;;; ligature
 (when window-system
 
   (require 'ligature)
