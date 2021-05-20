@@ -66,6 +66,7 @@
       consult-project-root-function #'vc-root-dir)
 
 (with-eval-after-load "consult"
+  (global-set-key (kbd "C-x C-r") 'consult-recent-file)
   (global-set-key (kbd "C-s") 'consult-line))
 
 ;; orderless

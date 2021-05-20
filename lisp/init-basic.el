@@ -42,7 +42,6 @@
                    "^/tmp/" "^/var/folders/.+$" "^/ssh:" "/persp-confs/"
                    (lambda (file) (file-in-directory-p file package-user-dir))))
 
-(global-set-key (kbd "C-x C-r") 'recentf-open-files)
 (add-hook 'after-init-hook 'recentf-mode)
 
 (with-eval-after-load "recentf"
