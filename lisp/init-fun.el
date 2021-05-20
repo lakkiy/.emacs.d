@@ -11,10 +11,13 @@
                         :repo "manateelazycat/emacs-application-framework"
                         :files ("*")))
 (straight-use-package 'pretty-hydra)
-(straight-use-package 'emojify)
+(straight-use-package '(affe :type git :host github :repo "minad/affe"))
 
-;;; emojify
-(add-hook 'after-init-hook #'global-emojify-mode)
+;;; affe
+(with-eval-after-load "affe"
+  (setq affe-regexp-function #'orderless-pattern-compiler
+        affe-highlight-function #'orderless-highlight-matches)
+  (setf (alist-get #'affe-grep consult-config) `(:preview-key ,(kbd "M-."))))
 
 ;;; eaf
 (straight-use-package 'epc)

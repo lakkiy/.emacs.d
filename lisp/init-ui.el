@@ -5,6 +5,10 @@
 (straight-use-package '(lazycat-theme :type git :host github :repo "404cn/lazycat-theme"))
 (straight-use-package '(modus-theme   :type git :host github :repo "protesilaos/modus-themes"))
 (straight-use-package 'spacemacs-theme)
+(straight-use-package 'emojify)
+
+;;; emojify
+(add-hook 'after-init-hook #'global-emojify-mode)
 
 (setq
  spacemacs-theme-comment-italic t
