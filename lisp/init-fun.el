@@ -4,7 +4,6 @@
 (straight-use-package 'docstr)
 (straight-use-package 'restclient)
 (straight-use-package '(emacs-calfw :type git :host github :repo "kiwanami/emacs-calfw"))
-(straight-use-package 'major-mode-hydra)
 (straight-use-package '(twidget :type git :host github :repo "Kinneyzhang/twidget"))
 (straight-use-package '(emacs-application-framework
                         :type git
@@ -34,12 +33,6 @@
 
 ;; TODO twidget
 (straight-use-package 'ov)
-
-;; major-mode-hydra
-;; TODO maybe just need pretty-hydra
-;; TODO add to basic file
-(global-set-key (kbd "<f6>") #'major-mode-hydra)
-(autoload #'major-mode-hydra "major-mode-hydra" nil t)
 
 ;; emacs-calfw
 (setq cfw:org-overwrite-default-keybinding t)
