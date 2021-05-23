@@ -19,7 +19,9 @@
  popper-reference-buffers
  '("\\*Messages\\*"
    "Outout\\*$"
-   help-mode)
+   help-mode
+   ielm-mode
+   eshell-mode)
  popper-group-function #'popper-group-by-directory)
 
 (autoload 'popper-toggle-latest "popper" nil t)
