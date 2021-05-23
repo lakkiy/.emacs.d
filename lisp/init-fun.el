@@ -12,6 +12,23 @@
                         :files ("*")))
 (straight-use-package 'pretty-hydra)
 (straight-use-package '(affe :type git :host github :repo "minad/affe"))
+(straight-use-package '(popper :type git :host github :repo "karthink/popper"))
+
+;;; popper
+(setq
+ popper-reference-buffers
+ '("\\*Messages\\*"
+   "Outout\\*$"
+   help-mode)
+ popper-group-function #'popper-group-by-directory)
+
+(autoload 'popper-toggle-latest "popper" nil t)
+(autoload 'popper-cycle "popper" nil t)
+
+(global-set-key (kbd "C-`") 'popper-toggle-latest)
+(global-set-key (kbd "M-`") 'popper-cycle)
+
+(add-hook 'after-init-hook 'popper-mode)
 
 ;;; affe
 (with-eval-after-load "affe"
