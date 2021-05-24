@@ -67,7 +67,10 @@
                       " ")))))
   ;; load font
   (when (display-graphic-p)
+    ;;; FIXME olivetti-mode not work
+    ;; 只有t好使
     (set-face-attribute 'default frame :font *font* :height *font-height*)
+    ;;;
     (set-fontset-font t 'unicode *font-unicode* nil 'prepend)
     (set-fontset-font t '(#x4e00 . #x9fff) *font-cn*)
     (set-fontset-font t 'symbol (font-spec :family *font-unicode*) frame 'prepend)
