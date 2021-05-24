@@ -77,4 +77,4 @@ If `\\[universal-argument]' is given, then attach clipboard as document."
   (require 'telega-mnz)
   (global-telega-mnz-mode 1))
 
-(provide 'init-chat)
+(provide 'init-telega)

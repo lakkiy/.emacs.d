@@ -14,14 +14,16 @@
 
 (require 'init-core)
 (require 'init-editor)
+(require 'init-meow)
 (require 'init-rime)
 (require 'init-ui)
 (require 'init-completion)
 (require 'init-git)
 (require 'init-org)
 (require 'init-window)
-(require 'init-chat)
+(require 'init-telega)
 (require 'init-spcfile)
+(require 'init-flycheck)
 (require 'init-lisp)
 (require 'init-mole)
 

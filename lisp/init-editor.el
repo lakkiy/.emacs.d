@@ -12,6 +12,23 @@
 (straight-use-package 'olivetti)
 (straight-use-package 'separedit)
 (straight-use-package 'imenu-list)
+(straight-use-package 'exec-path-from-shell)
+(straight-use-package 'which-key)
+
+;; which-key
+(setq
+ which-key-idle-delay 1
+ which-key-idle-secondary-delay 0.05)
+
+(add-hook 'after-init-hook 'which-key-mode)
+
+(with-eval-after-load "which-key"
+  (global-set-key (kbd "<f5>") 'which-key-show-major-mode))
+
+;; exec-path-from-shell
+(when (memq window-system '(mac ns x))
+  (require 'exec-path-from-shell)
+  (exec-path-from-shell-initialize))
 
 ;;; imenu-list
 (setq
