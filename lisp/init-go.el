@@ -19,6 +19,8 @@
   (add-hook 'go-mode-hook 'eglot-ensure)
   (add-hook 'before-save-hook 'gofmt-before-save)
 
+  (add-hook 'go-test-mode-hook 'visual-line-mode)
+
   ;;; flymake-golangci
   (add-hook 'go-mode-hook 'flymake-golangci-load)
 
