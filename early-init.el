@@ -10,9 +10,10 @@
 (when (not (featurep 'ns))
   (push '(tool-bar-lines . 0) default-frame-alist))
 
+(setq package-enable-at-startup nil)
+
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 (add-to-list 'load-path (expand-file-name "site-lisp" user-emacs-directory))
 (add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))
 
 (require 'init-straight)
-(require 'init-defaults)

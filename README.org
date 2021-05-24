@@ -1,3 +1,6 @@
+* Requirements
+Emacs Version > 27.1
+
 * Features
 
 Currently this configuration is mainly used for GOLANG programming.

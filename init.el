@@ -12,9 +12,9 @@
   (when (file-exists-p private-conf)
     (load-file private-conf)))
 
-(require 'init-basic)
+(require 'init-core)
 (require 'init-editor)
-(require 'init-doglooksgood)
+(require 'init-rime)
 (require 'init-ui)
 (require 'init-completion)
 (require 'init-git)
