@@ -13,6 +13,11 @@
 (straight-use-package 'pretty-hydra)
 (straight-use-package '(affe :type git :host github :repo "minad/affe"))
 (straight-use-package '(popper :type git :host github :repo "karthink/popper"))
+(straight-use-package 'company-tabnine)
+
+;;; company-tabnine
+(with-eval-after-load "company"
+  (add-to-list 'company-backends #'company-tabnine))
 
 ;;; popper
 (setq
