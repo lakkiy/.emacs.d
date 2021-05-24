@@ -8,6 +8,7 @@
 (straight-use-package 'company)
 (straight-use-package 'marginalia)
 (straight-use-package 'embark)
+(straight-use-package 'company-tabnine)
 
 ;; yasnippet
 (autoload #'yas-minor-mode "yasnippet")
@@ -41,6 +42,9 @@
 (add-hook 'eshell-mode-hook 'company-mode)
 
 (with-eval-after-load "company"
+  ;;; company-tabnine run company-tabnine-install-binary at the first time
+  (add-to-list 'company-backends #'company-tabnine)
+
   (define-key company-active-map [tab] 'company-complete-common-or-cycle)
   (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
   (define-key company-active-map (kbd "C-p") #'company-select-previous)

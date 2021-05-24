@@ -11,16 +11,10 @@
                         :repo "manateelazycat/emacs-application-framework"
                         :files ("*")))
 (straight-use-package 'pretty-hydra)
-(straight-use-package '(affe :type git :host github :repo "minad/affe"))
 (straight-use-package '(popper :type git :host github :repo "karthink/popper"))
-(straight-use-package 'company-tabnine)
 (straight-use-package '(oca :type git :host github :repo "lepisma/oca"))
 
 ;;; TODO oca
-
-;;; company-tabnine
-(with-eval-after-load "company"
-  (add-to-list 'company-backends #'company-tabnine))
 
 ;;; popper
 (setq
@@ -39,12 +33,6 @@
 (global-set-key (kbd "M-`") 'popper-cycle)
 
 (add-hook 'after-init-hook 'popper-mode)
-
-;;; affe
-(with-eval-after-load "affe"
-  (setq affe-regexp-function #'orderless-pattern-compiler
-        affe-highlight-function #'orderless-highlight-matches)
-  (setf (alist-get #'affe-grep consult-config) `(:preview-key ,(kbd "M-."))))
 
 ;;; eaf
 (straight-use-package 'epc)
