@@ -14,6 +14,9 @@
 (straight-use-package '(affe :type git :host github :repo "minad/affe"))
 (straight-use-package '(popper :type git :host github :repo "karthink/popper"))
 (straight-use-package 'company-tabnine)
+(straight-use-package '(oca :type git :host github :repo "lepisma/oca"))
+
+;;; TODO oca
 
 ;;; company-tabnine
 (with-eval-after-load "company"
