@@ -28,3 +28,4 @@ url
 eaf
 .emacs.desktop
 .emacs.desktop.lock
+.nrepl-port
