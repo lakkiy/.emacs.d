@@ -2,7 +2,6 @@
 ;; modeline and font
 
 (straight-use-package '(ligature :type git :host github :repo "mickeynp/ligature.el"))
-(straight-use-package '(lazycat-theme :type git :host github :repo "404cn/lazycat-theme"))
 (straight-use-package '(modus-theme   :type git :host github :repo "protesilaos/modus-themes"))
 (straight-use-package 'spacemacs-theme)
 (straight-use-package 'emojify)
