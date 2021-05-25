@@ -97,7 +97,7 @@
 (setq markdown-fontify-code-blocks-natively t)
 (add-hook 'markdown-mode-hook 'markdown-toggle-markup-hidding)
 
-;; treemacs
+;;; treemacs
 (defun +treemacs-scale-font-size ()
   (face-remap-add-relative 'default :height 0.8))
 
