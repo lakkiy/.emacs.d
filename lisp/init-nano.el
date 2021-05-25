@@ -27,6 +27,9 @@
    `(meow-normal-indicator ((t (:inherit nano-face-header-faded))))
    `(meow-motion-indicator ((t (:inherit nano-face-header-popout)))))
 
+  ;; TODO FIXME
+  ;; cursot color and line number
+  ;; and font on macos
   (when (eq system-type 'darwin)
     (tool-bar-mode -1)))
 
