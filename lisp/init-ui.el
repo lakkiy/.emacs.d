@@ -45,10 +45,12 @@
 
 (require 'init-utils)
 (require 'init-const)
+(require 'init-nano)
 
 ;; Init or reload functions
 (defun +init-ui (&optional frame)
-  (load-theme footheme t)
+  ;; (load-theme footheme t)
+  (my/load-nano)
   ;; modeline
   (setq-default mode-line-format
                 '((:eval
