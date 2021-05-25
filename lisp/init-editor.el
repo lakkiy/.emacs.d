@@ -9,11 +9,16 @@
 (straight-use-package 'insert-char-preview)
 (straight-use-package 'ibuffer-vc)
 (straight-use-package 'visual-fill-column)
-(straight-use-package 'olivetti)
 (straight-use-package 'separedit)
 (straight-use-package 'imenu-list)
 (straight-use-package 'exec-path-from-shell)
 (straight-use-package 'which-key)
+(straight-use-package 'writeroom-mode)
+
+;;; writeroom-mode
+(setq
+ writeroom-fullscreen-effect 'maximized
+ writeroom-bottom-divider-width 0)
 
 ;; which-key
 (setq
@@ -44,12 +49,6 @@
 (autoload #'separedit "separedit" nil t)
 
 (global-set-key (kbd "C-c '") #'separedit)
-
-;;; olivetti
-(setq
- olivetti-body-width 80)
-
-(autoload 'olivetti-mode "olivetti" nil t)
 
 ;;; visual-fill-column
 (add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
