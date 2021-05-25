@@ -49,23 +49,23 @@
 
 ;; Init or reload functions
 (defun +init-ui (&optional frame)
-  ;; (load-theme footheme t)
   (my/load-nano)
+  ;; (load-theme footheme t)
   ;; modeline
-  (setq-default mode-line-format
-                '((:eval
-                   (+simple-mode-line-render
-                    ;; left
-                    '((:eval (meow-indicator))
-                      " %l:%C "
-                      (:propertize (-3 "%p") face +modeline-dim-face))
-                    ;; right
-                    '((:eval (rime-lighter))
-                      " "
-                      (:propertize mode-name face font-lock-keyword-face)
-                      " "
-                      (:eval (+smart-file-name-with-propertize))
-                      " ")))))
+  ;; (setq-default mode-line-format
+  ;;               '((:eval
+  ;;                  (+simple-mode-line-render
+  ;;                   ;; left
+  ;;                   '((:eval (meow-indicator))
+  ;;                     " %l:%C "
+  ;;                     (:propertize (-3 "%p") face +modeline-dim-face))
+  ;;                   ;; right
+  ;;                   '((:eval (rime-lighter))
+  ;;                     " "
+  ;;                     (:propertize mode-name face font-lock-keyword-face)
+  ;;                     " "
+  ;;                     (:eval (+smart-file-name-with-propertize))
+  ;;                     " ")))))
   ;; load font
   (when (display-graphic-p)
     ;;; FIXME olivetti-mode not work
