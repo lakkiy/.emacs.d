@@ -6,8 +6,8 @@
  *font* "Operator Mono SSm Lig"
  *font-cn* "WenQuanYi Micro Hei"
  *font-unicode* "Apple Color Emoji"
- *font-height* (cond ((eq system-type 'darwin) 150)
-                     (t 130))
+ *font-height* (cond ((eq system-type 'darwin) 130)
+                     (t 110))
  footheme 'spacemacs-light)
 
 ;; (add-hook 'prog-mode-hook 'display-line-numbers-mode)
