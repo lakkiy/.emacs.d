@@ -1,7 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(straight-use-package 'mini-frame)
-
 (defun my/load-nano ()
   (interactive)
   (if (eq footheme 'nano-light)
