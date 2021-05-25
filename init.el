@@ -23,7 +23,6 @@
 (require 'init-window)
 (require 'init-telega)
 (require 'init-spcfile)
-(require 'init-flycheck)
 (require 'init-lisp)
 (require 'init-mole)
 

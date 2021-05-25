@@ -3,7 +3,6 @@
 (straight-use-package 'smartparens)
 (straight-use-package 'clojure-mode)
 (straight-use-package 'cider)
-(straight-use-package 'flycheck-clj-kondo)
 
 ;;; smartparens
 (autoload #'smartparens-mode "smartparens" nil t)
@@ -21,9 +20,7 @@
 (autoload 'clojure-mode "clojure-mode")
 
 (with-eval-after-load "clojure"
-  (require 'smartparens-clojure)
-  (add-hook 'clojure-mode-hook 'flycheck-mode)
-  (require 'flycheck-clj-kondo))
+  (require 'smartparens-clojure))
 
 ;;; cider
 (autoload #'cider-jack-in "cider" nil t)

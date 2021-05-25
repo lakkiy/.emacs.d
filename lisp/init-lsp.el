@@ -1,6 +1,14 @@
 ;;; -*- lexical-binding: t -*-
 
+(straight-use-package 'flymake)
 (straight-use-package 'eglot)
+
+;;; flymake
+(autoload #'flymake-mode "flymake" nil t)
+
+(with-eval-after-load "flymake"
+  (define-key flymake-mode-map (kbd "M-n") 'flymake-goto-next-error)
+  (define-key flymake-mode-map (kbd "M-p") 'flymake-goto-prev-error))
 
 ;;; eglot
 (setq
