@@ -8,7 +8,8 @@
  *font-unicode* "Apple Color Emoji"
  *font-height* (cond ((eq system-type 'darwin) 130)
                      (t 110))
- footheme 'spacemacs-light)
+ ;; nano-light nano-dark etc
+ footheme 'nano-dark)
 
 ;; (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 ;; (add-hook 'conf-mode-hook 'display-line-numbers-mode)

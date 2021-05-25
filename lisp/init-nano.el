@@ -4,8 +4,9 @@
 
 (defun my/load-nano ()
   (interactive)
-  (require 'nano-theme-light)
-  ;; (require 'nano-theme-dark)
+  (if (eq footheme 'nano-light)
+      (require 'nano-theme-light)
+    (require 'nano-theme-dark))
   (require 'nano-faces)
   (nano-faces)
   (require 'nano-theme)
