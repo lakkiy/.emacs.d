@@ -55,16 +55,13 @@
                                          :style nil)))
 
 ;; TODO FIXME
-;; cursot color
-;; and font on macos
-;; it seems nano face redefine font to roboto
+;; dark cursor color not work as excpeted
 (defun my/load-nano ()
   (interactive)
-  (cond ((eq footheme 'nano-light) (require 'nano-theme-light))
-        ((eq footheme 'nano-dark)) (require 'nano-theme-dark))
-
+  (if (eq footheme 'nano-light) (require 'nano-theme-light))
+  (if (eq footheme 'nano-dark) (require 'nano-theme-dark))
   (when (called-interactively-p 'any)
-    (require 'nano-theme-light))
+    (require 'nano-theme-dark))
 
   (require 'nano-faces)
   (nano-faces)
