@@ -27,13 +27,6 @@
  modus-themes-no-mixed-fonts t
  modus-themes-paren-match 'intense-bold)
 
-;;; Use window divider
-(window-divider-mode 1)
-;;; Nice window divider
-(set-display-table-slot standard-display-table
-                        'vertical-border
-                        (make-glyph-code ?┃))
-
 ;; no cursor blink
 (add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
 
