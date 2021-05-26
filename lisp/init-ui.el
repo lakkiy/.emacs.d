@@ -34,7 +34,7 @@
                         'vertical-border
                         (make-glyph-code ?┃))
 
-;;; No cursor blink
+;; no cursor blink
 (add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
 
 ;;; No fringe in minibuffer
@@ -49,29 +49,28 @@
 
 ;; Init or reload functions
 (defun +init-ui (&optional frame)
-  (my/load-nano)
-  ;; (load-theme footheme t)
+  (if (or (eq footheme 'nano-light)
+          (eq footheme 'nano-dark))
+      (my/load-nano)
+    (load-theme footheme t))
   ;; modeline
-  ;; (setq-default mode-line-format
-  ;;               '((:eval
-  ;;                  (+simple-mode-line-render
-  ;;                   ;; left
-  ;;                   '((:eval (meow-indicator))
-  ;;                     " %l:%C "
-  ;;                     (:propertize (-3 "%p") face +modeline-dim-face))
-  ;;                   ;; right
-  ;;                   '((:eval (rime-lighter))
-  ;;                     " "
-  ;;                     (:propertize mode-name face font-lock-keyword-face)
-  ;;                     " "
-  ;;                     (:eval (+smart-file-name-with-propertize))
-  ;;                     " ")))))
+  (setq-default mode-line-format
+                '((:eval
+                   (+simple-mode-line-render
+                    ;; left
+                    '((:eval (meow-indicator))
+                      " %l:%C "
+                      (:propertize (-3 "%p") face +modeline-dim-face))
+                    ;; right
+                    '((:eval (rime-lighter))
+                      " "
+                      (:propertize mode-name face font-lock-keyword-face)
+                      " "
+                      (:eval (+smart-file-name-with-propertize))
+                      " ")))))
   ;; load font
   (when (display-graphic-p)
-    ;;; FIXME olivetti-mode not work
-    ;; 只有t好使
     (set-face-attribute 'default frame :font *font* :height *font-height*)
-    ;;;
     (set-fontset-font t 'unicode *font-unicode* nil 'prepend)
     (set-fontset-font t '(#x4e00 . #x9fff) *font-cn*)
     (set-fontset-font t 'symbol (font-spec :family *font-unicode*) frame 'prepend)
