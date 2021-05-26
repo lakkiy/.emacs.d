@@ -4,43 +4,39 @@
   "Override some nano face or it will chnage some font family to Roboto Mono"
   (set-face-attribute 'nano-face-strong nil
                       :foreground (face-foreground 'nano-face-default)
-                      :weight 'medium)
+                      :weight 'bold)
   (set-face-attribute 'nano-face-tag-default nil
                       :foreground nano-color-foreground
                       :background nano-color-background
-                      :weight 'regular
-                      :height (if (display-graphic-p) 120 1)
+                      :weight 'bold
                       :box `(:line-width 1
                                          :color ,nano-color-foreground
                                          :style nil))
   (set-face-attribute 'nano-face-tag-strong nil
                       :foreground nano-color-strong
                       :background nano-color-subtle
-                      :weight 'regular
-                      :height (if (display-graphic-p) 120 1)
+                      :weight 'bold
                       :box `(:line-width 1
                                          :color ,nano-color-strong
                                          :style nil))
   (set-face-attribute 'nano-face-tag-salient nil
                       :foreground nano-color-background
                       :background nano-color-salient
-                      :weight 'regular
-                      :height (if (display-graphic-p) 120 1)
+                      :weight 'bold
                       :box `(:line-width 1
                                          :color ,nano-color-salient
                                          :style nil))
   (set-face-attribute 'nano-face-tag-popout nil
                       :foreground nano-color-background
                       :background nano-color-popout
-                      :weight 'regular
-                      :height (if (display-graphic-p) 120 1)
+                      :weight 'bold
                       :box `(:line-width 1
                                          :color ,nano-color-popout
                                          :style nil))
   (set-face-attribute 'nano-face-tag-faded nil
                       :foreground nano-color-background
                       :background nano-color-faded
-                      :weight 'regular
+                      :weight 'bold
                       :height (if (display-graphic-p) 120 1)
                       :box `(:line-width 1
                                          :color ,nano-color-faded
@@ -48,7 +44,7 @@
   (set-face-attribute 'nano-face-tag-critical nil
                       :foreground nano-color-background
                       :background nano-color-critical
-                      :weight 'regular
+                      :weight 'bold
                       :height (if (display-graphic-p) 120 1)
                       :box `(:line-width 1
                                          :color ,nano-color-critical
