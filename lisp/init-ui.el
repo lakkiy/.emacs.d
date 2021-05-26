@@ -68,7 +68,20 @@
     (set-fontset-font t '(#x4e00 . #x9fff) *font-cn*)
     (set-fontset-font t 'symbol (font-spec :family *font-unicode*) frame 'prepend)
     (set-frame-font *font* nil (if frame (list frame) t))
-    (set-face-attribute 'fixed-pitch frame :font *font* :height *font-height*)))
+    (set-face-attribute 'fixed-pitch frame :font *font* :height *font-height*))
+  ;;; ligature
+  (when window-system
+
+    (require 'ligature)
+    (global-ligature-mode t)
+
+    (with-eval-after-load "ligature"
+      ;; https://htmlpreview.github.io/?https://github.com/kiliman/operator-mono-lig/blob/master/images/preview/normal/index.html
+      (ligature-set-ligatures 'prog-mode
+                              '("&&" "||" "|>" ":=" "==" "===" "==>" "=>"
+                                "=<<" "!=" "!==" ">=" ">=>" ">>=" "->" "--"
+                                "-->" "<|" "<=" "<==" "<=>" "<=<" "<!--" "<-"
+                                "<->" "<--" "</" "+=" "++" "??" "/>" "__" "WWW")))))
 
 (defun +reload-ui-in-daemon (frame)
   "Reload the modeline and font in an daemon frame."
@@ -80,19 +93,6 @@
     (add-hook 'after-make-frame-functions #'+reload-ui-in-daemon)
   (+init-ui))
 
-;;; ligature
-(when window-system
-
-  (require 'ligature)
-  (global-ligature-mode t)
-
-  (with-eval-after-load "ligature"
-    ;; https://htmlpreview.github.io/?https://github.com/kiliman/operator-mono-lig/blob/master/images/preview/normal/index.html
-    (ligature-set-ligatures 'prog-mode
-                            '("&&" "||" "|>" ":=" "==" "===" "==>" "=>"
-                              "=<<" "!=" "!==" ">=" ">=>" ">>=" "->" "--"
-                              "-->" "<|" "<=" "<==" "<=>" "<=<" "<!--" "<-"
-                              "<->" "<--" "</" "+=" "++" "??" "/>" "__" "WWW"))))
 
 ;;; tool-bar for mac
 (when (eq system-type 'darwin)
