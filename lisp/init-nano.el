@@ -30,6 +30,7 @@
   ;; TODO FIXME
   ;; cursot color and line number
   ;; and font on macos
+  ;; 右边表示行号的没有了
   (when (eq system-type 'darwin)
     (tool-bar-mode -1)))
 

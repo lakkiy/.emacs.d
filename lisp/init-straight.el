@@ -5,6 +5,10 @@
 (setq straight-check-for-modifications '(check-on-save find-when-checking))
 (setq straight-vc-git-default-clone-depth 1)
 
+(setq straight-disable-native-compile
+      (when (fboundp 'native-comp-available-p)
+	(not (native-comp-available-p))))
+
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
