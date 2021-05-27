@@ -14,6 +14,12 @@
 (straight-use-package 'exec-path-from-shell)
 (straight-use-package 'which-key)
 (straight-use-package 'writeroom-mode)
+(straight-use-package 'major-mode-hydra)
+
+;;; major-mode-hydra
+(autoload #'major-mode-hydra "major-mode-hydra" nil t)
+
+(global-set-key (kbd "C-h C-h") #'major-mode-hydra)
 
 ;;; writeroom-mode
 (setq

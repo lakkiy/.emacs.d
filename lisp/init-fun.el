@@ -10,7 +10,6 @@
                         :host github
                         :repo "manateelazycat/emacs-application-framework"
                         :files ("*")))
-(straight-use-package 'pretty-hydra)
 (straight-use-package '(popper :type git :host github :repo "karthink/popper"))
 (straight-use-package '(oca :type git :host github :repo "lepisma/oca"))
 
