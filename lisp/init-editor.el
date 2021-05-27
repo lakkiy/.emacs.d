@@ -93,6 +93,8 @@
 ;; insert-translated-name
 (autoload 'insert-translated-name-insert "insert-translated-name" nil t)
 
+(global-set-key (kbd "C-c i") 'insert-translated-name-insert)
+
 ;; markdown-mode
 (setq markdown-fontify-code-blocks-natively t)
 (add-hook 'markdown-mode-hook 'markdown-toggle-markup-hidding)
