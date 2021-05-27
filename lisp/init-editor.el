@@ -16,7 +16,7 @@
 (straight-use-package 'pretty-hydra)
 
 ;;; pretty-hydra
-(defun +change-theme(theme)
+(defun +change-theme (theme)
   "Disable other themes and load new one"
   (mapc #'disable-theme custom-enabled-themes)
   (load-theme theme t)
