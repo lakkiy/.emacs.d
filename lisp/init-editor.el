@@ -2,7 +2,6 @@
 
 (straight-use-package '(vundo :type git :host github :repo "casouri/vundo"))
 (straight-use-package '(insert-translated-name :type git :host github :repo "manateelazycat/insert-translated-name"))
-(straight-use-package '(company-english-helper :type git :host github :repo "manateelazycat/company-english-helper"))
 (straight-use-package 'markdown-mode)
 (straight-use-package 'treemacs)
 (straight-use-package '(auto-save :type git :host github :repo "manateelazycat/auto-save"))
