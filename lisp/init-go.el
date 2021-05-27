@@ -28,16 +28,7 @@
   (define-key go-mode-map (kbd "C-c t .") #'go-test-current-test)
   (define-key go-mode-map (kbd "C-c t t") #'go-tag-add)
   (define-key go-mode-map (kbd "C-c t T") #'go-tag-remove)
-  (define-key go-mode-map (kbd "C-c t x") #'go-run)
-
-  (with-eval-after-load "major-mode-hydra"
-    (major-mode-hydra-define go-mode nil
-      ( "Test && Tag"
-       (("g" go-gen-test-dwim "gen-dwim")
-        ("m" go-test-current-file "test-file")
-        ("." go-test-current-test "test-cur")
-        ("t" go-tag-add "tag-add")
-        ("T" go-tag-remove "tag-remove"))))))
+  (define-key go-mode-map (kbd "C-c t x") #'go-run))
 
 ;;; go-tag
 (setq go-tag-args (list "-transform" "camelcase"))
