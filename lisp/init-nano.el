@@ -52,6 +52,7 @@
 
 ;; TODO FIXME
 ;; dark cursor color not work as excpeted
+;; func face is robot mono?
 (defun my/load-nano ()
   (interactive)
   (if (eq footheme 'nano-light) (require 'nano-theme-light))

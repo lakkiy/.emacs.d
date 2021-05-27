@@ -18,6 +18,8 @@
 
 ;;; popper
 (setq
+ popper-modeline nil
+ popper-mode-line nil
  popper-reference-buffers
  '("\\*Messages\\*"
    "Outout\\*$"
