@@ -27,18 +27,30 @@
       (faded      (--l?d "#B0BEC5" "#677691")))
   (custom-theme-set-faces
    `nano
-   `(default               ((t (:foreground ,foreground :background ,background))))
-   `(cursor                ((t (:background ,foreground))))
+   `(default                          ((t (:foreground ,foreground :background ,background))))
+   `(cursor                           ((t (:background ,foreground))))
+   ;; Font Locks
+   `(font-lock-comment-face           ((t (:foreground ,faded :weight bold :slant italic))))
+   `(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment :weight bold))))
+   `(font-lock-string-face            ((t (:foreground ,popout))))
+   `(font-lock-doc-face               ((t (:foreground ,faded :extend t))))
+   `(font-lock-builtin-face           ((t (:foreground ,salient :slant italic))))
+   `(font-lock-type-face              ((t (:foreground ,salient :weight bold :slant italic))))
+   `(font-lock-variable-name-face     ((t (:foreground ,strong))))
+   `(font-lock-keyword-face           ((t (:foreground ,salient :weight bold))))
+   `(font-lock-constant-face          ((t (:foreground ,salient :weight bold))))
+   `(font-lock-function-name-face     ((t (:foreground ,strong :underline t))))
+   `(font-lock-warning-face           ((t (:foreground ,popout :weight bold))))
    ;; mode-line
    ;; TODO add box
-   `(mode-line             ((t (:background ,highlight))))
-   `(mode-line-inactive    ((t (:background ,subtle))))
+   `(mode-line                        ((t (:background ,highlight))))
+   `(mode-line-inactive               ((t (:background ,subtle))))
    ;; meow
    ;; TODO add box
-   `(meow-keypad-indicator ((t (:foreground ,background :background ,popout :box t))))
-   `(meow-insert-indicator ((t (:foreground ,background :background ,critical :box t))))
-   `(meow-normal-indicator ((t (:foreground ,background :background ,faded :box t))))
-   `(meow-motion-indicator ((t (:foreground ,background :background ,popout :box t))))))
+   `(meow-keypad-indicator            ((t (:foreground ,background :background ,popout :box t))))
+   `(meow-insert-indicator            ((t (:foreground ,background :background ,critical :box t))))
+   `(meow-normal-indicator            ((t (:foreground ,background :background ,faded :box t))))
+   `(meow-motion-indicator            ((t (:foreground ,background :background ,popout :box t))))))
 
 ;;;###autoload
 (and load-file-name
