@@ -4,7 +4,20 @@
 (straight-use-package '(ligature :type git :host github :repo "mickeynp/ligature.el"))
 (straight-use-package '(modus-theme   :type git :host github :repo "protesilaos/modus-themes"))
 (straight-use-package 'spacemacs-theme)
+(straight-use-package 'atom-one-dark-theme)
+(straight-use-package 'dracula-theme)
+(straight-use-package 'gruvbox-theme)
+(straight-use-package 'monokai-theme)
 (straight-use-package 'emojify)
+(straight-use-package 'solaire-mode)
+
+;;; solaire-mode
+(defun +solaire-global-mode ()
+  (interactive)
+  (let ((themes custom-enabled-themes))
+    (mapc #'disable-theme custom-enabled-themes)
+    (solaire-global-mode +1)
+    (load-theme (car themes) t)))
 
 ;;; emojify
 (add-hook 'after-init-hook #'global-emojify-mode)

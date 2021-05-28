@@ -23,7 +23,8 @@
         ("b" display-battery-mode "battery" :toggle t)
         ("i" display-time-mode "time" :toggle t)
         ("r" repeat-mode "repeat" :toggle t)
-        ("f" follow-mode "follow" :toggle t))
+        ("f" follow-mode "follow" :toggle t)
+        ("l" +solaire-global-mode "solaire" :toggle t))
        "Highlight"
        (("h l" global-hl-line-mode "line" :toggle t)
         ("h p" show-paren-mode "paren" :toggle t)
@@ -52,6 +53,10 @@
         ("t M" (+change-theme 'modus-operandi) "modus-light" :toggle t)
         ("t l" (+change-theme 'lazycat-dark) "lazycat-dark" :toggle t)
         ("t L" (+change-theme 'lazycat-light) "lazycat-light" :toggle t)
+        ("t o" (+change-theme 'atom-one-dark) "one dark" :toggle t)
+        ("t D" (+change-theme 'dracula) "dracula" :toggle t)
+        ("t g" (+change-theme 'gruvbox) "gruvbox" :toggle t)
+        ("t k" (+change-theme 'monokai) "monokai" :toggle t)
         ("t n" (+change-theme 'nasy) "nasy" :toggle t))))
 
 (pretty-hydra-define tab-bar (:title "Tab Bar" :quit-key "q")
