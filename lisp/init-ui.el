@@ -8,11 +8,33 @@
 (straight-use-package 'dracula-theme)
 (straight-use-package 'gruvbox-theme)
 (straight-use-package 'monokai-theme)
+(straight-use-package 'solarized-theme)
+(straight-use-package 'doom-themes)
 (straight-use-package 'emojify)
 (straight-use-package 'solaire-mode)
 
+;;; solarized-theme
+(setq
+ solarized-use-variable-pitch nil
+ solarized-distinct-fringe-background t
+ solarized-use-more-italic t)
+
+;;; doom-themes
+(setq doom-themes-enable-bold t
+      doom-themes-enable-italic t)
+
+(defun +change-doom-theme (theme)
+  "Change theme and enable solaire-global-mode"
+  (interactive)
+  (mapc #'disable-theme custom-enabled-themes)
+  (if (bound-and-true-p solaire-global-mode)
+      (solaire-global-mode -1))
+  (solaire-global-mode +1)
+  (load-theme theme t))
+
 ;;; solaire-mode
 (defun +solaire-global-mode ()
+  "Reload current theme after enable solaire-global-mode"
   (interactive)
   (let ((themes custom-enabled-themes))
     (if (bound-and-true-p solaire-global-mode)
@@ -107,7 +129,6 @@
 (if (daemonp)
     (add-hook 'after-make-frame-functions #'+reload-ui-in-daemon)
   (+init-ui))
-
 
 ;;; tool-bar for mac
 (when (eq system-type 'darwin)

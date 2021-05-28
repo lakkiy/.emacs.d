@@ -2,13 +2,13 @@
 
 (straight-use-package 'pretty-hydra)
 
-;;; pretty-hydra
 (defun +change-theme (theme)
   "Disable other themes and load new one"
   (interactive)
   (mapc #'disable-theme custom-enabled-themes)
   (load-theme theme t))
 
+;;; pretty-hydra
 ;; FIXME
 (pretty-hydra-define toggles-hydra (:title "Toggles" :quit-key "q")
       ("Basic"
@@ -57,7 +57,26 @@
         ("t D" (+change-theme 'dracula) "dracula" :toggle t)
         ("t g" (+change-theme 'gruvbox) "gruvbox" :toggle t)
         ("t k" (+change-theme 'monokai) "monokai" :toggle t)
-        ("t n" (+change-theme 'nasy) "nasy" :toggle t))))
+        ("t a" (+change-theme 'solarized-dark) "solarized-dark" :toggle t)
+        ("t A" (+change-theme 'solarized-light) "solarized-light" :toggle t)
+        ("t n" (+change-theme 'nasy) "nasy" :toggle t))
+       "Doom Theme"
+       (("d c" (+change-doom-theme 'doom-city-lights) "city-lights" :toggle t)
+        ("d o" (+change-doom-theme 'doom-one) "one dark" :toggle t)
+        ("d O" (+change-doom-theme 'doom-one-light) "one light" :toggle t)
+        ("d t" (+change-doom-theme 'doom-tomorrow-night) "tomorrow night" :toggle t)
+        ("d T" (+change-doom-theme 'doom-tomorrow-day) "tomorrow day" :toggle t)
+        ("d i" (+change-doom-theme 'doom-Iosvkem) "Iosvkem" :toggle t)
+        ("d v" (+change-doom-theme 'doom-vibrant) "vibrant" :toggle t)
+        ("d a" (+change-doom-theme 'doom-ayu-mirage) "ayu dark" :toggle t)
+        ("d A" (+change-doom-theme 'doom-ayu-light) "ayu light" :toggle t)
+        ("d d" (+change-doom-theme 'doom-dracula) "dracula" :toggle t)
+        ("d n" (+change-doom-theme 'doom-nord) "nord" :toggle t)
+        ("d N" (+change-doom-theme 'doom-nord-light) "nord light" :toggle t)
+        ("d s" (+change-doom-theme 'doom-solarized-dark) "solarized dark" :toggle t)
+        ("d S" (+change-doom-theme 'doom-solarized-light) "solarized light" :toggle t)
+        ("d p" (+change-doom-theme 'doom-spacegrey) "spacegrey" :toggle t)
+        ("d z" (+change-doom-theme 'doom-zenburn) "zenburn" :toggle t))))
 
 (pretty-hydra-define tab-bar (:title "Tab Bar" :quit-key "q")
   ("Options"
