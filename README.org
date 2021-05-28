@@ -1,5 +1,5 @@
 * Requirements
-Emacs Version > 27.1
+Emacs Version > 28
 
 * Features
 
