@@ -15,6 +15,8 @@
 (defun +solaire-global-mode ()
   (interactive)
   (let ((themes custom-enabled-themes))
+    (if (bound-and-true-p solaire-global-mode)
+        (solaire-global-mode -1))
     (mapc #'disable-theme custom-enabled-themes)
     (solaire-global-mode +1)
     (load-theme (car themes) t)))
