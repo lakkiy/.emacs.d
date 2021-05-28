@@ -96,19 +96,19 @@
 
 ;; Init or reload functions
 (defun +init-ui (&optional frame)
-  (load-theme footheme t)
+  (load-theme +theme t)
   ;; modeline
   (setq-default
    mode-line-format nil
    header-line-format '(:eval (+format-mode-line)))
   ;; load font
   (when (display-graphic-p)
-    (set-face-attribute 'default frame :font *font* :height *font-height*)
-    (set-fontset-font t 'unicode *font-unicode* nil 'prepend)
-    (set-fontset-font t '(#x4e00 . #x9fff) *font-cn*)
-    (set-fontset-font t 'symbol (font-spec :family *font-unicode*) frame 'prepend)
-    (set-frame-font *font* nil (if frame (list frame) t))
-    (set-face-attribute 'fixed-pitch frame :font *font* :height *font-height*))
+    (set-face-attribute 'default frame :font +font :height +font-height)
+    (set-fontset-font t 'unicode +font-unicode nil 'prepend)
+    (set-fontset-font t '(#x4e00 . #x9fff) +font-cn)
+    (set-fontset-font t 'symbol (font-spec :family +font-unicode) frame 'prepend)
+    (set-frame-font +font nil (if frame (list frame) t))
+    (set-face-attribute 'fixed-pitch frame :font +font :height +font-height))
   ;;; ligature
   (when window-system
 

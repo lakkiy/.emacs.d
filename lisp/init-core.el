@@ -1,19 +1,12 @@
 ;;; -*- lexical-binding: t -*-
 
 ;; for customize
-(setq-default
- ;; font
- *font* "Operator Mono SSm Lig"
- *font-cn* "WenQuanYi Micro Hei"
- *font-unicode* "Apple Color Emoji"
- ;; *font* "PxPlus IBM VGA8"
- ;; *font-cn* "Unifont"
- ;; *font-unicode* "Unifont"
- *font-height* (cond ((eq system-type 'darwin) 130)
-                     (t 110))
- footheme 'doom-Iosvkem)
-
-;; (setq face-font-rescale-alist '("Unifont" 0.85))
+(defvar +font "Operator Mono SSm Lig")
+(defvar +font-cn "WenQuanYi Micro Hei")
+(defvar +font-unicode "Apple Color Emoji")
+(defvar +font-size (cond ((eq system-type 'darwin) 130)
+                         (t 110)))
+(defvar +theme 'doom-Iosvkem)
 
 ;; (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 ;; (add-hook 'conf-mode-hook 'display-line-numbers-mode)
