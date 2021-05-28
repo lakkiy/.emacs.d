@@ -3,6 +3,13 @@
 (straight-use-package 'docker)
 (straight-use-package 'docker-compose-mode)
 (straight-use-package 'dockerfile-mode)
+(straight-use-package 'fish-mode)
+
+;;; fish-mode
+(with-eval-after-load "fish-mode"
+  (add-hook 'fish-mode-hook (lambda ()
+                              (add-hook 'before-save-hook
+                                        #'fish_indent-before-save))))
 
 ;; docker
 (autoload 'docker "docker" nil t)
