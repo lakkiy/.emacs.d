@@ -20,7 +20,7 @@
    '("S" . ispell-word)
    '("B" . ibuffer)
    ;; project
-   '("p s" . consult-git-grep)
+   '("p s" . consult-ripgrep)
    '("p p" . project-switch-project)
    '("p f" . project-find-file)
    '("p F" . project-find-regexp)
