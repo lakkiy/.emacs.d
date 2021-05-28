@@ -76,24 +76,31 @@
 (require 'init-utils)
 (require 'init-const)
 
+(defun +format-mode-line ()
+  (let* ((lhs '((:eval (meow-indicator))
+                (:eval (rime-lighter))
+                (:eval (+smart-file-name-cached))
+                " Ln %l Col %C"))
+         (rhs '("%m"
+                (vc-mode vc-mode)))
+         (ww (window-width))
+         (lhs-str (format-mode-line lhs))
+         (rhs-str (format-mode-line rhs))
+         (rhs-w (string-width rhs-str)))
+    (format "%s%s%s"
+            lhs-str
+            (propertize " " 'display `((space :align-to (- (+ right right-fringe right-margin) (+ 1 ,rhs-w)))))
+            rhs-str)))
+
+(setq-default header-line-format nil)
+
 ;; Init or reload functions
 (defun +init-ui (&optional frame)
   (load-theme footheme t)
   ;; modeline
-  (setq-default mode-line-format
-                '((:eval
-                   (+simple-mode-line-render
-                    ;; left
-                    '((:eval (meow-indicator))
-                      " %l:%C "
-                      (:propertize (-3 "%p") face +modeline-dim-face))
-                    ;; right
-                    '((:eval (rime-lighter))
-                      " "
-                      (:propertize mode-name face font-lock-keyword-face)
-                      " "
-                      (:eval (+smart-file-name-with-propertize))
-                      " ")))))
+  (setq-default
+   mode-line-format nil
+   header-line-format '(:eval (+format-mode-line)))
   ;; load font
   (when (display-graphic-p)
     (set-face-attribute 'default frame :font *font* :height *font-height*)

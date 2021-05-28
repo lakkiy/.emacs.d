@@ -14,7 +14,7 @@
  default-input-method "rime"
  rime-cursor "|"
  rime-show-candidate 'minibuffer
- rime-title "ㄓ")
+ rime-title "ㄓ ")
 
 (if (eq system-type 'darwin)
     (setq rime-librime-root (expand-file-name "librime/dist" user-emacs-directory)
