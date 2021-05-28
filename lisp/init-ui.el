@@ -75,14 +75,10 @@
 
 (require 'init-utils)
 (require 'init-const)
-(require 'init-nano)
 
 ;; Init or reload functions
 (defun +init-ui (&optional frame)
-  (if (or (eq footheme 'nano-light)
-          (eq footheme 'nano-dark))
-      (my/load-nano)
-    (load-theme footheme t))
+  (load-theme footheme t)
   ;; modeline
   (setq-default mode-line-format
                 '((:eval
