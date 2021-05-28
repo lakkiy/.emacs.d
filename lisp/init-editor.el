@@ -19,8 +19,7 @@
 (defun +change-theme (theme)
   "Disable other themes and load new one"
   (mapc #'disable-theme custom-enabled-themes)
-  (load-theme theme t)
-  (message "Loaded theme `%s'" theme))
+  (load-theme theme t))
 
 ;; FIXME
 (pretty-hydra-define toggles-hydra (:title "Toggles" :quit-key "q")
@@ -62,6 +61,23 @@
         ("t M" (+change-theme 'modus-operandi) "modus-light" :toggle t)
         ("t n" (+change-theme 'nasy) "nasy" :toggle t))))
 
+(pretty-hydra-define tab-bar (:title "Tab Bar Operations" :quit-key "q")
+  ("Options"
+   (("n" tab-bar-new-tab "New")
+    ("r" tab-rename "Rename")
+    ("0" tab-bar-close-tab "Close current")
+    ("1" tab-bar-close-other "Close other")
+    ("u" tab-undo "Undo"))
+   "Other Tab"
+   (("b" switch-to-buffer-other-tab "Switch buffer")
+    ("f" find-file-other-tab "Find file")
+    ("d" dired-other-tab "Dired"))
+   "Select"
+   (("t" tab-bar-select-tab-by-name "Select by name")
+    ("l" tab-next "Next Tab")
+    ("h" tab-previous "Previous Tab"))))
+
+(global-set-key (kbd "C-x t") 'tab-bar/body)
 (global-set-key (kbd "C-h C-h") 'toggles-hydra/body)
 
 ;;; writeroom-mode
