@@ -2,6 +2,7 @@
 
 (straight-use-package 'consult)
 (straight-use-package 'yasnippet)
+(straight-use-package 'yasnippet-snippets)
 (straight-use-package 'deadgrep)
 (straight-use-package 'selectrum)
 (straight-use-package 'orderless)
