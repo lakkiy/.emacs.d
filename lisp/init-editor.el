@@ -102,6 +102,7 @@
   (face-remap-add-relative 'default :height 0.8))
 
 (setq
+ treemacs-user-mode-line-format 'none
  treemacs-no-png-images t
  treemacs-width 30)
 
