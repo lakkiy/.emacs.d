@@ -14,21 +14,21 @@
     dark))
 (defalias '--l?d #'nano-theme--light?dark)
 
-(deftheme nano "Theme split from nano-emacs")
+(deftheme nano "Theme splited from nano-emacs")
 
 (let ((foreground (--l?d "#37474F" "#ECEFF4"))
       (background (--l?d "#FFFFFF" "#2E3440"))
-      (highlight (--l?d "#FAFAFA" "#3B4252"))
-      (critical (--l?d "#FF6F00" "#EBCB8B"))
-      (salient (--l?d "#673AB7" "#81A1C1"))
-      (strong (--l?d "#000000" "#ECEFF4"))
-      (popout (--l?d "#FFAB91" "#D08770"))
-      (subtle (--l?d "#ECEFF1" "#434C5E"))
-      (faded (--l?d "#B0BEC5" "#677691")))
+      (highlight  (--l?d "#FAFAFA" "#3B4252"))
+      (critical   (--l?d "#FF6F00" "#EBCB8B"))
+      (salient    (--l?d "#673AB7" "#81A1C1"))
+      (strong     (--l?d "#000000" "#ECEFF4"))
+      (popout     (--l?d "#FFAB91" "#D08770"))
+      (subtle     (--l?d "#ECEFF1" "#434C5E"))
+      (faded      (--l?d "#B0BEC5" "#677691")))
   (custom-theme-set-faces
    `nano
    `(default ((t (:foreground ,foreground :background ,background))))
-   `(cursor                         ((t (:background ,foreground))))
+   `(cursor  ((t (:background ,foreground))))
    ))
 
 ;;;###autoload
