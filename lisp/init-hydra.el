@@ -21,7 +21,8 @@
         ("s" prettify-symbols-mode "pretty symbol" :toggle t)
         ("b" display-battery-mode "battery" :toggle t)
         ("i" display-time-mode "time" :toggle t)
-        ("r" repeat-mode "repeat" :toggle t))
+        ("r" repeat-mode "repeat" :toggle t)
+        ("f" follow-mode "follow" :toggle t))
        "Highlight"
        (("h l" global-hl-line-mode "line" :toggle t)
         ("h p" show-paren-mode "paren" :toggle t)
