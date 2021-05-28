@@ -34,6 +34,7 @@
    `(mode-line             ((t (:background ,highlight))))
    `(mode-line-inactive    ((t (:background ,subtle))))
    ;; meow
+   ;; TODO add box
    `(meow-keypad-indicator ((t (:foreground ,background :background ,popout :box t))))
    `(meow-insert-indicator ((t (:foreground ,background :background ,critical :box t))))
    `(meow-normal-indicator ((t (:foreground ,background :background ,faded :box t))))
