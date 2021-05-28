@@ -4,7 +4,7 @@
 (defvar +font "Operator Mono SSm Lig")
 (defvar +font-cn "WenQuanYi Micro Hei")
 (defvar +font-unicode "Apple Color Emoji")
-(defvar +font-size (cond ((eq system-type 'darwin) 130)
+(defvar +font-height (cond ((eq system-type 'darwin) 130)
                          (t 110)))
 (defvar +theme 'doom-Iosvkem)
 
