@@ -29,6 +29,7 @@
 (global-set-key (kbd "C-c Y") 'youdao-dictionary-search-at-point+)
 
 (with-eval-after-load "youdao-dictionary"
+  (add-hook 'youdao-dictionary-mode-hook (lambda () (meow-mode -1)))
   (define-key youdao-dictionary-mode-map (kbd "h") 'youdao-hydra/body)
   (define-key youdao-dictionary-mode-map (kbd "?") 'youdao-hydra/body))
 
