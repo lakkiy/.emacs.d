@@ -5,6 +5,7 @@
 ;;; pretty-hydra
 (defun +change-theme (theme)
   "Disable other themes and load new one"
+  (interactive)
   (mapc #'disable-theme custom-enabled-themes)
   (load-theme theme t))
 
@@ -46,8 +47,11 @@
         ("t j" (+change-theme 'joker) "joker" :toggle t)
         ("t p" (+change-theme 'printed) "printed" :toggle t)
         ("t b" (+change-theme 'storybook) "storybook" :toggle t)
+        ("t d" (+change-theme 'minidark) "minidark" :toggle t)
         ("t m" (+change-theme 'modus-vivendi) "modus-dark" :toggle t)
         ("t M" (+change-theme 'modus-operandi) "modus-light" :toggle t)
+        ("t l" (+change-theme 'lazycat-dark) "lazycat-dark" :toggle t)
+        ("t L" (+change-theme 'lazycat-light) "lazycat-light" :toggle t)
         ("t n" (+change-theme 'nasy) "nasy" :toggle t))))
 
 (pretty-hydra-define tab-bar (:title "Tab Bar" :quit-key "q")
