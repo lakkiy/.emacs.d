@@ -27,9 +27,17 @@
       (faded      (--l?d "#B0BEC5" "#677691")))
   (custom-theme-set-faces
    `nano
-   `(default ((t (:foreground ,foreground :background ,background))))
-   `(cursor  ((t (:background ,foreground))))
-   ))
+   `(default               ((t (:foreground ,foreground :background ,background))))
+   `(cursor                ((t (:background ,foreground))))
+   ;; mode-line
+   ;; TODO add box
+   `(mode-line             ((t (:background ,highlight))))
+   `(mode-line-inactive    ((t (:background ,subtle))))
+   ;; meow
+   `(meow-keypad-indicator ((t (:foreground ,background :background ,popout :box t))))
+   `(meow-insert-indicator ((t (:foreground ,background :background ,critical :box t))))
+   `(meow-normal-indicator ((t (:foreground ,background :background ,faded :box t))))
+   `(meow-motion-indicator ((t (:foreground ,background :background ,popout :box t))))))
 
 ;;;###autoload
 (and load-file-name
