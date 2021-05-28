@@ -13,6 +13,24 @@
 (straight-use-package 'exec-path-from-shell)
 (straight-use-package 'which-key)
 (straight-use-package 'writeroom-mode)
+(straight-use-package 'youdao-dictionary)
+
+;;; youdao-dictionary
+(setq url-automatic-caching t
+      youdao-dictionary-search-history-file (expand-file-name ".youdao" user-emacs-directory)
+      youdao-dictionary-use-chinese-word-segmentation t)
+
+(pretty-hydra-define youdao-hydra (:title "Youdao Dictionary Operations" :quit-key "q")
+  ("Operations"
+   (("p" youdao-dictionary-play-voice-of-current-word "play voice of current word")
+    ("y" youdao-dictionary-play-voice-at-point "play voice at point"))))
+
+(global-set-key (kbd "C-c y") 'youdao-dictionary-search-at-point)
+(global-set-key (kbd "C-c Y") 'youdao-dictionary-search-at-point+)
+
+(with-eval-after-load "youdao-dictionary"
+  (define-key youdao-dictionary-mode-map (kbd "h") 'youdao-hydra/body)
+  (define-key youdao-dictionary-mode-map (kbd "?") 'youdao-hydra/body))
 
 ;;; writeroom-mode
 (setq

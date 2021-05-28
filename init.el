@@ -13,8 +13,8 @@
     (load-file private-conf)))
 
 (require 'init-core)
-(require 'init-editor)
 (require 'init-hydra)
+(require 'init-editor)
 (require 'init-meow)
 (require 'init-rime)
 (require 'init-ui)

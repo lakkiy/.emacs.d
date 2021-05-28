@@ -1,16 +1,13 @@
 * Requirements
+
 Emacs Version > 28
 
 * Features
 
 Currently this configuration is mainly used for GOLANG programming.
 
-If you want to use ispell: install *hunspell* and *hunspell-en_US*.
-
-Arch:
-
-~sudo pacman -S hunspell hunspell-en_us~
 * Quick start
+
 ~git clone --depth 1 https://github.com/404cn/fooemacs.git ~/.emacs.d~
 
 or
@@ -23,12 +20,24 @@ or
 
 The default font is *Operator Mono Ssm Lig*, unicode font is
 
-*Apple Color Emoji*, you can change these in *lisp/init-defaults.el*.
+*Apple Color Emoji*, you can change these in *lisp/private-example.el*
+
+and rename this file to *private.el*.
 
 * Option
 
-#+begin_src bash
-yay -S pxplus-ibm-vga8
+If you use youdao-dictionary
+
+#+begin_src sh
+  npm install fanyi -g
+
+  pip3 install jieba
+#+end_src
+
+For ispell
+
+#+begin_src sh
+  sudo pacman -S hunspell hunspell-en_us
 #+end_src
 
 * TODO Screenshots
