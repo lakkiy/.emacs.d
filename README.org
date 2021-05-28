@@ -25,4 +25,10 @@ The default font is *Operator Mono Ssm Lig*, unicode font is
 
 *Apple Color Emoji*, you can change these in *lisp/init-defaults.el*.
 
+* Option
+
+#+begin_src bash
+yay -S pxplus-ibm-vga8
+#+end_src
+
 * TODO Screenshots

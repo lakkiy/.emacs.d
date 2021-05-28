@@ -2,14 +2,18 @@
 
 ;; for customize
 (setq-default
-  ;; font
+ ;; font
  *font* "Operator Mono SSm Lig"
  *font-cn* "WenQuanYi Micro Hei"
  *font-unicode* "Apple Color Emoji"
+ ;; *font* "PxPlus IBM VGA8"
+ ;; *font-cn* "Unifont"
+ ;; *font-unicode* "Unifont"
  *font-height* (cond ((eq system-type 'darwin) 130)
                      (t 110))
- ;; nano-light nano-dark etc
  footheme 'atom-one-dark)
+
+;; (setq face-font-rescale-alist '("Unifont" 0.85))
 
 ;; (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 ;; (add-hook 'conf-mode-hook 'display-line-numbers-mode)
