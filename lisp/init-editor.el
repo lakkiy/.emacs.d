@@ -61,7 +61,7 @@
         ("t M" (+change-theme 'modus-operandi) "modus-light" :toggle t)
         ("t n" (+change-theme 'nasy) "nasy" :toggle t))))
 
-(pretty-hydra-define tab-bar (:title "Tab Bar Operations" :quit-key "q")
+(pretty-hydra-define tab-bar (:title "Tab Bar" :quit-key "q")
   ("Options"
    (("n" tab-bar-new-tab "New")
     ("r" tab-rename "Rename")
