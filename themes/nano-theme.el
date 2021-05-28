@@ -27,8 +27,10 @@
       (faded      (--l?d "#B0BEC5" "#677691")))
   (custom-theme-set-faces
    `nano
+   ;; Basic
    `(default                          ((t (:foreground ,foreground :background ,background))))
    `(cursor                           ((t (:background ,foreground))))
+
    ;; Font Locks
    `(font-lock-comment-face           ((t (:foreground ,faded :weight bold :slant italic))))
    `(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment :weight bold))))
@@ -41,12 +43,24 @@
    `(font-lock-constant-face          ((t (:foreground ,salient :weight bold))))
    `(font-lock-function-name-face     ((t (:foreground ,strong :underline t))))
    `(font-lock-warning-face           ((t (:foreground ,popout :weight bold))))
-   ;; mode-line
-   ;; TODO add box
+
+   ;; Mode Line TODO add box
    `(mode-line                        ((t (:background ,highlight))))
    `(mode-line-inactive               ((t (:background ,subtle))))
-   ;; meow
-   ;; TODO add box
+
+   ;; Header Line
+   `(header-line                      ((t (:background ,highlight))))
+
+   ;; Solaire Mode TODO
+   ;; solaire-default-face
+   ;; solaire-minibuffer-face
+   ;; solaire-line-number-face
+   ;; solaire-hl-line-face
+   ;; solaire-org-hide-face
+   ;; solaire-mode-line-face
+   ;; solaire-mode-line-inactive-face
+
+   ;; Meow TODO add box
    `(meow-keypad-indicator            ((t (:foreground ,background :background ,popout :box t))))
    `(meow-insert-indicator            ((t (:foreground ,background :background ,critical :box t))))
    `(meow-normal-indicator            ((t (:foreground ,background :background ,faded :box t))))

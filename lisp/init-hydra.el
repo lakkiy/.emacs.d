@@ -9,7 +9,6 @@
   (load-theme theme t))
 
 ;;; pretty-hydra
-;; FIXME
 (pretty-hydra-define toggles-hydra (:title "Toggles" :quit-key "q")
       ("Basic"
        (("n" (if (fboundp 'display-line-numbers-mode)
@@ -42,6 +41,7 @@
         ("V" diff-hl-flydiff-mode "live gutter" :toggle t)
         ("M" diff-hl-margin-mode "margin gutter" :toggle t)
         ("D" diff-hl-dired-mode "dired gutter" :toggle t))
+       ;; FIXME
        "Theme"
        (("t s" (+change-theme 'spacemacs-light) "space-light" :toggle t)
         ("t S" (+change-theme 'spacemacs-dark) "space-dark" :toggle t)
