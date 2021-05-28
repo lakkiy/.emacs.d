@@ -11,7 +11,7 @@
  ;; *font-unicode* "Unifont"
  *font-height* (cond ((eq system-type 'darwin) 130)
                      (t 110))
- footheme 'atom-one-dark)
+ footheme 'doom-Iosvkem)
 
 ;; (setq face-font-rescale-alist '("Unifont" 0.85))
 
