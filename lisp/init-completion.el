@@ -4,12 +4,13 @@
 (straight-use-package 'yasnippet)
 (straight-use-package 'yasnippet-snippets)
 (straight-use-package 'deadgrep)
-(straight-use-package 'selectrum)
 (straight-use-package 'orderless)
 (straight-use-package 'company)
 (straight-use-package 'marginalia)
 (straight-use-package 'embark)
 (straight-use-package 'company-tabnine)
+(straight-use-package '(vertico :type git :host github :repo "minad/vertico"))
+(straight-use-package '(affe :type git :host github :repo "minad/affe"))
 
 ;; yasnippet
 (autoload #'yas-minor-mode "yasnippet")
@@ -58,43 +59,42 @@
   (define-key deadgrep-mode-map (kbd "w") 'deadgrep-edit-mode)
   (define-key deadgrep-edit-mode-map (kbd "C-x C-s") 'deadgrep-mode))
 
-;; selectrum
-(require 'selectrum)
+;;; vertico
+(add-hook 'after-init-hook 'vertico-mode)
+;; disable the automatic *Completions* buffer
+(advice-add #'vertico--setup :after
+            (lambda (&rest _)
+              (setq-local completion-auto-help nil
+                          completion-show-inline-help nil)))
 
-(add-hook 'after-init-hook 'selectrum-mode)
+;;; orderless
+(setq
+ completion-styles '(substring orderless))
 
-;; consult
-(require 'consult)
+(with-eval-after-load "vertico"
+  (require 'orderless))
 
+;;; consult
 (setq xref-show-xrefs-function #'consult-xref
       xref-show-definitions-function #'consult-xref
       consult-project-root-function #'vc-root-dir)
 
 (with-eval-after-load "consult"
-  (global-set-key (kbd "C-x C-r") 'consult-recent-file)
-  (global-set-key (kbd "C-s") 'consult-line))
+  (global-set-key (kbd "C-s") 'consult-line)
+  (dolist (cmd '(consult-ripgrep affe-grep))
+    (add-to-list 'consult-config
+                 `(,cmd :preview-key ,(kbd "M-P")))))
 
-;; orderless
-(require 'orderless)
-(setq completion-styles '(orderless))
-(setq selectrum-refine-candidates-function #'orderless-filter)
-(setq selectrum-highlight-candidates-function #'orderless-highlight-matches)
-
-;; marginalia
-(add-hook 'after-init-hook 'marginalia-mode)
-
-;; embark
-(setq prefix-help-command #'embark-prefix-help-command)
+;;; embark
+(with-eval-after-load "vertico"
+  (define-key vertico-map (kbd "C-c C-o") 'embark-export)
+  (define-key vertico-map (kbd "C-c C-c") 'embark-act))
 
 (with-eval-after-load 'embark
-  (add-to-list 'display-buffer-alist
-               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                 nil
-                 (window-parameters (mode-line-format . none))))
+  (require 'embark-consult)
+  (add-hook 'embark-collect-mode-hook 'embark-consult-preview-minor-mode))
 
-  (global-set-key (kbd "C-S-a") 'embark-act)
-  (global-set-key (kbd "C-h B") 'embark-bindings)
-  (with-eval-after-load 'consult
-    (add-hook 'embark-collect-mode-hook 'embark-consult-preview-minor-mode)))
+;;; marginalia
+(add-hook 'after-init-hook 'marginalia-mode)
 
 (provide 'init-completion)

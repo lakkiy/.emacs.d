@@ -22,6 +22,8 @@
 (add-hook 'after-init-hook 'electric-pair-mode)
 (add-hook 'after-init-hook 'show-paren-mode)
 (add-hook 'after-init-hook 'repeat-mode)
+;; Persist history over Emacs restarts. Vertico sorts by history position.
+(add-hook 'after-init-hook 'savehist-mode)
 
 (defun +reopen-file-with-sudo ()
   (interactive)
