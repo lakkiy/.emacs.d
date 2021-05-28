@@ -8,6 +8,14 @@
 ;; magit
 (autoload #'magit "magit" nil t)
 
+(with-eval-after-load "magit"
+  ;;; magit-todos
+  (setq magit-todos-nice (if (executable-find "nice") t nil))
+  (let ((inhibit-message t)) (magit-todos-mode 1))
+  (with-eval-after-load "magit-todos"
+    (transient-append-suffix 'magit-status-jump '(0 0 -1)
+      '("T " "Todos" magit-todos-jump-to-todos))))
+
 ;; diff-hl
 (autoload #'diff-hl-mode "diff-hl")
 
