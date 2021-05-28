@@ -11,6 +11,7 @@
 (straight-use-package 'company-tabnine)
 (straight-use-package '(vertico :type git :host github :repo "minad/vertico"))
 (straight-use-package '(affe :type git :host github :repo "minad/affe"))
+;; (straight-use-package '(corfu :type git :host github :repo "minad/corfu"))
 
 ;; yasnippet
 (autoload #'yas-minor-mode "yasnippet")
