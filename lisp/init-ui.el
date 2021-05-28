@@ -13,12 +13,6 @@
 (straight-use-package 'emojify)
 (straight-use-package 'solaire-mode)
 
-;;; solarized-theme
-(setq
- solarized-use-variable-pitch nil
- solarized-distinct-fringe-background t
- solarized-use-more-italic t)
-
 ;;; doom-themes
 (setq doom-themes-enable-bold t
       doom-themes-enable-italic t)
@@ -46,6 +40,7 @@
 ;;; emojify
 (add-hook 'after-init-hook #'global-emojify-mode)
 
+;;; spacemacs-theme
 (setq
  spacemacs-theme-comment-italic t
  spacemacs-theme-keyword-italic t
@@ -57,6 +52,7 @@
  spacemacs-theme-org-bold t
  spacemacs-theme-underline-parens t)
 
+;;; modus-theme
 (setq
  modus-themes-slanted-constructs t
  modus-themes-bold-constructs t
