@@ -9,4 +9,10 @@
 
 ;; TODO protobuf mode
 
+;;; protobuf-mode
+(with-eval-after-load "protobuf-mode"
+  (add-hook 'protobuf-mode-hook (lambda ()
+                                  (setq imenu-generic-expression
+                                        '((nil "^[[:space:]]*\\(message\\|service\\|enum\\)[[:space:]]+\\([[:alnum:]]+\\)" 2))))))
+
 (provide 'init-spcfile)
