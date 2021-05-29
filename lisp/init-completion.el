@@ -10,8 +10,6 @@
 (straight-use-package 'embark)
 (straight-use-package 'embark-consult)
 (straight-use-package 'company-tabnine)
-;; (straight-use-package '(vertico :type git :host github :repo "minad/vertico"))
-(straight-use-package '(affe :type git :host github :repo "minad/affe"))
 (straight-use-package 'selectrum)
 
 ;; yasnippet
@@ -61,14 +59,6 @@
   (define-key deadgrep-mode-map (kbd "w") 'deadgrep-edit-mode)
   (define-key deadgrep-edit-mode-map (kbd "C-x C-s") 'deadgrep-mode))
 
-;; ;;; vertico
-;; (add-hook 'after-init-hook 'vertico-mode)
-;; ;; disable the automatic *Completions* buffer
-;; (advice-add #'vertico--setup :after
-;;             (lambda (&rest _)
-;;               (setq-local completion-auto-help nil
-;;                           completion-show-inline-help nil)))
-
 ;;; selectrum
 (add-hook 'after-init-hook 'selectrum-mode)
 
@@ -108,7 +98,7 @@
 (global-set-key (kbd "C-s") 'consult-line)
 
 (with-eval-after-load "consult"
-  (dolist (cmd '(consult-ripgrep affe-grep))
+  (dolist (cmd '(consult-ripgrep))
     (add-to-list 'consult-config
                  `(,cmd :preview-key ,(kbd "M-P")))))
 
