@@ -142,6 +142,11 @@
   (define-key tool-bar-map [isearch-forward] nil)
   (define-key help-mode-tool-bar-map [search] nil)
   (define-key help-mode-tool-bar-map [Previous\ Topic] nil)
-  (define-key help-mode-tool-bar-map [Next\ Topic] nil))
+  (define-key help-mode-tool-bar-map [Next\ Topic] nil)
+  (setq
+   info-tool-bar-map nil
+   isearch-tool-bar-map nil)
+  (with-eval-after-load "vc-dir"
+    (setq vc-dir-tool-bar-map nil)))
 
 (provide 'init-ui)
