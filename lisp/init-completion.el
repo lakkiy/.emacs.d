@@ -105,6 +105,7 @@
 ;;; embark
 (with-eval-after-load "selectrum"
   (define-key selectrum-minibuffer-map (kbd "C-c C-o") 'embark-export)
+  ;; C-h show embark-act key bindings
   (define-key selectrum-minibuffer-map (kbd "C-c C-c") 'embark-act)
   (define-key selectrum-minibuffer-map (kbd "C-h B") 'embark-bindings))
 
