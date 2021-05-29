@@ -87,12 +87,13 @@
 
 ;;; embark
 (with-eval-after-load "vertico"
-  (define-key vertico-map (kbd "C-c C-o") 'embark-export)
-  (define-key vertico-map (kbd "C-c C-c") 'embark-act))
+  (require 'embark))
 
 (with-eval-after-load 'embark
   (require 'embark-consult)
-  (add-hook 'embark-collect-mode-hook 'embark-consult-preview-minor-mode))
+  (add-hook 'embark-collect-mode-hook 'embark-consult-preview-minor-mode)
+  (define-key vertico-map (kbd "C-c C-o") 'embark-export)
+  (define-key vertico-map (kbd "C-c C-c") 'embark-act))
 
 ;;; marginalia
 (add-hook 'after-init-hook 'marginalia-mode)
