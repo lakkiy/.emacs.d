@@ -10,8 +10,9 @@
 (straight-use-package 'embark)
 (straight-use-package 'embark-consult)
 (straight-use-package 'company-tabnine)
-(straight-use-package '(vertico :type git :host github :repo "minad/vertico"))
+;; (straight-use-package '(vertico :type git :host github :repo "minad/vertico"))
 (straight-use-package '(affe :type git :host github :repo "minad/affe"))
+(straight-use-package 'selectrum)
 
 ;; yasnippet
 (autoload #'yas-minor-mode "yasnippet")
@@ -60,25 +61,49 @@
   (define-key deadgrep-mode-map (kbd "w") 'deadgrep-edit-mode)
   (define-key deadgrep-edit-mode-map (kbd "C-x C-s") 'deadgrep-mode))
 
-;;; vertico
-(add-hook 'after-init-hook 'vertico-mode)
-;; disable the automatic *Completions* buffer
-(advice-add #'vertico--setup :after
-            (lambda (&rest _)
-              (setq-local completion-auto-help nil
-                          completion-show-inline-help nil)))
+;; ;;; vertico
+;; (add-hook 'after-init-hook 'vertico-mode)
+;; ;; disable the automatic *Completions* buffer
+;; (advice-add #'vertico--setup :after
+;;             (lambda (&rest _)
+;;               (setq-local completion-auto-help nil
+;;                           completion-show-inline-help nil)))
+
+;;; selectrum
+(add-hook 'after-init-hook 'selectrum-mode)
+
+(defun +minibuffer-backward-delete ()
+  (interactive)
+  (delete-region
+   (or
+    (save-mark-and-excursion
+      (while (equal ?/ (char-before)) (backward-char))
+      (when-let ((p (re-search-backward "/" (line-beginning-position) t)))
+        (1+ p)))
+    (save-mark-and-excursion (backward-word) (point)))
+   (point)))
+
+(with-eval-after-load "selectrum"
+  (define-key selectrum-minibuffer-map (kbd "M-DEL") #'+minibuffer-backward-delete)
+  (define-key selectrum-minibuffer-map (kbd "{") #'selectrum-previous-candidate)
+  (define-key selectrum-minibuffer-map (kbd "}") #'selectrum-next-candidate)
+  (define-key selectrum-minibuffer-map (kbd "[") #'previous-history-element)
+  (define-key selectrum-minibuffer-map (kbd "]") #'next-history-element))
 
 ;;; orderless
 (setq
+ selectrum-highlight-candidates-function #'orderless-highlight-matches
+ selectrum-refine-candidates-function #'orderless-filter
  completion-styles '(substring orderless))
 
-(with-eval-after-load "vertico"
+(with-eval-after-load "selectrum"
   (require 'orderless))
 
 ;;; consult
-(setq xref-show-xrefs-function #'consult-xref
-      xref-show-definitions-function #'consult-xref
-      consult-project-root-function #'vc-root-dir)
+(setq
+ xref-show-xrefs-function #'consult-xref
+ xref-show-definitions-function #'consult-xref
+ consult-project-root-function #'vc-root-dir)
 
 (global-set-key (kbd "C-s") 'consult-line)
 
@@ -88,10 +113,10 @@
                  `(,cmd :preview-key ,(kbd "M-P")))))
 
 ;;; embark
-(with-eval-after-load "vertico"
-  (define-key vertico-map (kbd "C-c C-o") 'embark-export)
-  (define-key vertico-map (kbd "C-c C-c") 'embark-act)
-  (define-key vertico-map (kbd "C-h B") 'embark-bindings))
+(with-eval-after-load "selectrum"
+  (define-key selectrum-minibuffer-map (kbd "C-c C-o") 'embark-export)
+  (define-key selectrum-minibuffer-map (kbd "C-c C-c") 'embark-act)
+  (define-key selectrum-minibuffer-map (kbd "C-h B") 'embark-bindings))
 
 ;;; embark-consult
 (with-eval-after-load 'embark
