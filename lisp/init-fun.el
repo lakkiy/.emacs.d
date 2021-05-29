@@ -14,6 +14,9 @@
 (straight-use-package '(oca :type git :host github :repo "lepisma/oca"))
 (straight-use-package '(devdocs-browser :type git :host github :repo "blahgeek/emacs-devdocs-browser"))
 
+;;; devdocs-browser
+(global-set-key (kbd "C-c C-d") 'devdocs-browser-open)
+
 ;;; TODO oca
 
 ;;; popper
