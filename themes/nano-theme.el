@@ -30,6 +30,16 @@
    ;; Basic
    `(default                          ((t (:foreground ,foreground :background ,background))))
    `(cursor                           ((t (:background ,foreground))))
+   `(region                           ((t (:background ,subtle))))
+   `(highlight                        ((t (:background ,subtle))))
+   `(show-paren-match                 ((t (:foreground ,popout))))
+   `(hl-line                          ((t (:background ,highlight))))
+   `(line-number                      ((t (:foreground ,faded))))
+   `(line-number-current-line         ((t (:foreground ,foreground))))
+   `(isearch                          ((t (:foreground ,foreground))))
+   `(isearch-fail                     ((t (:foreground ,faded))))
+   `(fringe                           ((t (:foreground ,faded))))
+   `(minibuffer-prompt                ((t (:foreground ,foreground))))
 
    ;; Font Locks
    `(font-lock-comment-face           ((t (:foreground ,faded :weight bold :slant italic))))
