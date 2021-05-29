@@ -12,6 +12,7 @@
                         :files ("*")))
 (straight-use-package '(popper :type git :host github :repo "karthink/popper"))
 (straight-use-package '(oca :type git :host github :repo "lepisma/oca"))
+(straight-use-package '(devdocs-browser :type git :host github :repo "blahgeek/emacs-devdocs-browser"))
 
 ;;; TODO oca
 
