@@ -85,6 +85,7 @@
   (dolist (cmd '(consult-ripgrep affe-grep))
     (add-to-list 'consult-config
                  `(,cmd :preview-key ,(kbd "M-P")))))
+
 ;;; embark
 (with-eval-after-load "vertico"
   (require 'embark)
