@@ -9,10 +9,6 @@
 (straight-use-package 'ob-go)
 (straight-use-package 'org-journal)
 
-;;; org-journal
-(setq
- org-journal-dir (expand-file-name "journal" org-directory))
-
 ;;; org
 (setq
  org-log-done t
@@ -97,6 +93,10 @@ prepended to the element after the #+HEADER: tag."
                                        (if (or (region-active-p) (looking-back "^\s*" 1))
                                            (org-hydra/body)
                                          (self-insert-command 1)))))
+
+;;; org-journal
+(setq
+ org-journal-dir (expand-file-name "journal" org-directory))
 
 ;;; org-agenda
 (setq
