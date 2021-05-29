@@ -56,6 +56,11 @@
 ;; no cursor blink
 ;; (add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
 
+;; Nice window divider
+(set-display-table-slot standard-display-table
+                        'vertical-border
+                        (make-glyph-code ?┃))
+
 ;;; No fringe in minibuffer
 (add-hook 'after-make-frame-functions
           (lambda (frame)
