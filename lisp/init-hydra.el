@@ -23,7 +23,7 @@
         ("i" display-time-mode "time" :toggle t)
         ("r" repeat-mode "repeat" :toggle t)
         ("f" follow-mode "follow" :toggle t)
-        ("l" +solaire-global-mode "solaire" :toggle t))
+        ("l" solaire-global-mode "solaire" :toggle t))
        "Highlight"
        (("h l" global-hl-line-mode "line" :toggle t)
         ("h p" show-paren-mode "paren" :toggle t)

@@ -27,15 +27,8 @@
   (load-theme theme t))
 
 ;;; solaire-mode
-(defun +solaire-global-mode ()
-  "Reload current theme after enable solaire-global-mode"
-  (interactive)
-  (let ((themes custom-enabled-themes))
-    (if (bound-and-true-p solaire-global-mode)
-        (solaire-global-mode -1))
-    (mapc #'disable-theme custom-enabled-themes)
-    (solaire-global-mode +1)
-    (load-theme (car themes) t)))
+(add-hook 'after-init-hook (lambda ()
+                             (solaire-global-mode 1)))
 
 ;;; emojify
 (add-hook 'after-init-hook #'global-emojify-mode)
@@ -61,7 +54,7 @@
  modus-themes-paren-match 'intense-bold)
 
 ;; no cursor blink
-(add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
+;; (add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
 
 ;;; No fringe in minibuffer
 (add-hook 'after-make-frame-functions

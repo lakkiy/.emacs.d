@@ -80,15 +80,15 @@
       xref-show-definitions-function #'consult-xref
       consult-project-root-function #'vc-root-dir)
 
+(global-set-key (kbd "C-s") 'consult-line)
+
 (with-eval-after-load "consult"
-  (global-set-key (kbd "C-s") 'consult-line)
   (dolist (cmd '(consult-ripgrep affe-grep))
     (add-to-list 'consult-config
                  `(,cmd :preview-key ,(kbd "M-P")))))
 
 ;;; embark
 (with-eval-after-load "vertico"
-  (require 'embark)
   (define-key vertico-map (kbd "C-c C-o") 'embark-export)
   (define-key vertico-map (kbd "C-c C-c") 'embark-act)
   (define-key vertico-map (kbd "C-h B") 'embark-bindings))
