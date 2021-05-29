@@ -28,51 +28,57 @@
   (custom-theme-set-faces
    `nano
    ;; Basic
-   `(default                          ((t (:foreground ,foreground :background ,background))))
-   `(cursor                           ((t (:background ,foreground))))
-   `(region                           ((t (:background ,subtle))))
-   `(highlight                        ((t (:background ,subtle))))
-   `(show-paren-match                 ((t (:foreground ,popout))))
-   `(hl-line                          ((t (:background ,highlight))))
-   `(line-number                      ((t (:foreground ,faded))))
-   `(line-number-current-line         ((t (:foreground ,foreground))))
-   `(isearch                          ((t (:foreground ,foreground))))
-   `(isearch-fail                     ((t (:foreground ,faded))))
-   `(fringe                           ((t (:foreground ,faded))))
-   `(minibuffer-prompt                ((t (:foreground ,foreground))))
+   `(default                              ((t (:foreground ,foreground :background ,background))))
+   `(cursor                               ((t (:background ,foreground))))
+   `(region                               ((t (:background ,subtle))))
+   `(hl-line                              ((t (:background ,subtle))))
+   `(fringe                               ((t (:foreground ,faded))))
+   `(show-paren-match                     ((t (:foreground ,popout))))
+   `(highlight                            ((t (:background ,subtle))))
+   `(line-number                          ((t (:background ,highlight :foreground ,faded))))
+   `(line-number-current-line             ((t (:background ,subtle :foreground ,strong))))
+   `(minibuffer-prompt                    ((t (:foreground ,popout))))
+
+   ;; ISearch
+   `(isearch                              ((t (:foreground ,foreground))))
+   `(isearch-fail                         ((t (:foreground ,faded))))
 
    ;; Font Locks
-   `(font-lock-comment-face           ((t (:foreground ,faded :weight bold :slant italic))))
-   `(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment :weight bold))))
-   `(font-lock-string-face            ((t (:foreground ,popout))))
-   `(font-lock-doc-face               ((t (:foreground ,faded :extend t))))
-   `(font-lock-builtin-face           ((t (:foreground ,salient :slant italic))))
-   `(font-lock-type-face              ((t (:foreground ,salient :weight bold :slant italic))))
-   `(font-lock-variable-name-face     ((t (:foreground ,strong))))
-   `(font-lock-keyword-face           ((t (:foreground ,salient :weight bold))))
-   `(font-lock-constant-face          ((t (:foreground ,salient :weight bold))))
-   `(font-lock-function-name-face     ((t (:foreground ,strong :underline t))))
-   `(font-lock-warning-face           ((t (:foreground ,popout :weight bold))))
+   `(font-lock-comment-face               ((t (:foreground ,faded :weight bold :slant italic))))
+   `(font-lock-comment-delimiter-face     ((t (:inherit font-lock-comment :weight bold))))
+   `(font-lock-string-face                ((t (:foreground ,popout))))
+   `(font-lock-doc-face                   ((t (:foreground ,faded :extend t))))
+   `(font-lock-builtin-face               ((t (:foreground ,salient :slant italic))))
+   `(font-lock-type-face                  ((t (:foreground ,salient :weight bold :slant italic))))
+   `(font-lock-variable-name-face         ((t (:foreground ,strong))))
+   `(font-lock-keyword-face               ((t (:foreground ,salient :weight bold))))
+   `(font-lock-constant-face              ((t (:foreground ,salient :weight bold))))
+   `(font-lock-function-name-face         ((t (:foreground ,strong :underline t))))
+   `(font-lock-warning-face               ((t (:foreground ,popout :weight bold))))
 
    ;; Company
-   `(company-tooltip-selection        ((t (:background ,popout))))
-   `(company-tooltip-annotation       ((t (:foreground ,foreground))))
-   `(company-scrollbar-bg             ((t (:background ,faded))))
-   `(company-scrollbar-fg             ((t (:background ,foreground))))
+   `(company-tooltip                      ((t (:background ,subtle :foreground ,foreground))))
+   `(company-tooltip-selection            ((t (:background ,popout :foreground ,strong))))
+   `(company-tooltip-annotation           ((t (:foreground ,foreground))))
+   `(company-tooltip-annotation-selection ((t (:foreground ,strong))))
+   ;; TODO
+   `(company-tooltip-common               ((t (:foreground ,faded))))
+   `(company-scrollbar-bg                 ((t (:background ,faded))))
+   `(company-scrollbar-fg                 ((t (:background ,foreground))))
 
    ;; Mode Line
-   `(mode-line                        ((t (:background ,highlight))))
-   `(mode-line-inactive               ((t (:background ,subtle))))
-   `(header-line                      ((t (:background ,highlight))))
-   `(header-line-inactive             ((t (:background ,subtle))))
+   `(mode-line                            ((t (:background ,highlight))))
+   `(mode-line-inactive                   ((t (:background ,subtle))))
+   `(header-line                          ((t (:background ,highlight))))
+   `(header-line-inactive                 ((t (:background ,subtle))))
 
    ;; Solaire Mode TODO
 
    ;; Meow
-   `(meow-keypad-indicator            ((t (:foreground ,background :background ,popout :box t))))
-   `(meow-insert-indicator            ((t (:foreground ,background :background ,critical :box t))))
-   `(meow-normal-indicator            ((t (:foreground ,background :background ,faded :box t))))
-   `(meow-motion-indicator            ((t (:foreground ,background :background ,popout :box t))))))
+   `(meow-keypad-indicator                ((t (:foreground ,background :background ,popout :box t))))
+   `(meow-insert-indicator                ((t (:foreground ,background :background ,critical :box t))))
+   `(meow-normal-indicator                ((t (:foreground ,background :background ,faded :box t))))
+   `(meow-motion-indicator                ((t (:foreground ,background :background ,popout :box t))))))
 
 ;;;###autoload
 (and load-file-name
