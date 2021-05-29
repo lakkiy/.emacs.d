@@ -7,6 +7,11 @@
 (straight-use-package '(org-transclusion :type git :host github :repo "nobiot/org-transclusion"))
 (straight-use-package 'valign)
 (straight-use-package 'ob-go)
+(straight-use-package 'org-journal)
+
+;;; org-journal
+(setq
+ org-journal-dir (expand-file-name "journal" org-directory))
 
 ;;; org
 (setq
