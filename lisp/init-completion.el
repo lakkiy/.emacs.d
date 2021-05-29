@@ -8,6 +8,7 @@
 (straight-use-package 'company)
 (straight-use-package 'marginalia)
 (straight-use-package 'embark)
+(straight-use-package 'embark-consult)
 (straight-use-package 'company-tabnine)
 (straight-use-package '(vertico :type git :host github :repo "minad/vertico"))
 (straight-use-package '(affe :type git :host github :repo "minad/affe"))
@@ -84,16 +85,18 @@
   (dolist (cmd '(consult-ripgrep affe-grep))
     (add-to-list 'consult-config
                  `(,cmd :preview-key ,(kbd "M-P")))))
-
 ;;; embark
 (with-eval-after-load "vertico"
-  (require 'embark))
-
-(with-eval-after-load 'embark
-  (require 'embark-consult)
-  (add-hook 'embark-collect-mode-hook 'embark-consult-preview-minor-mode)
+  (require 'embark)
   (define-key vertico-map (kbd "C-c C-o") 'embark-export)
-  (define-key vertico-map (kbd "C-c C-c") 'embark-act))
+  (define-key vertico-map (kbd "C-c C-c") 'embark-act)
+  (define-key vertico-map (kbd "C-h B") 'embark-bindings))
+
+;;; embark-consult
+(with-eval-after-load 'embark
+  (with-eval-after-load "consult"
+    (require 'embark-consult)
+    (add-hook 'embark-collect-mode-hook 'embark-consult-preview-minor-mode)))
 
 ;;; marginalia
 (add-hook 'after-init-hook 'marginalia-mode)
