@@ -15,7 +15,7 @@
 (straight-use-package '(devdocs-browser :type git :host github :repo "blahgeek/emacs-devdocs-browser"))
 
 ;;; devdocs-browser
-(global-set-key (kbd "C-c C-d") 'devdocs-browser-open)
+(global-set-key (kbd "C-c D") 'devdocs-browser-open)
 
 ;;; TODO oca
 
