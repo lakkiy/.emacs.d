@@ -62,13 +62,14 @@
    ;; Basic
    `(default                              ((t (:foreground ,foreground :background ,background))))
    `(cursor                               ((t (:background ,foreground))))
-   `(region                               ((t (:background ,faded))))
-   `(hl-line                              ((t (:background ,subtle))))
    `(fringe                               ((t (:foreground ,faded))))
    `(show-paren-match                     ((t (:foreground ,popout))))
+   `(hl-line                              ((t (:background ,highlight))))
    `(highlight                            ((t (:background ,subtle))))
+   `(lazy-highlight                       ((t (:background ,subtle))))
+   `(region                               ((t (:background ,subtle))))
    `(line-number                          ((t (:background ,highlight :foreground ,faded))))
-   `(line-number-current-line             ((t (:background ,subtle :foreground ,strong))))
+   `(line-number-current-line             ((t (:background ,highlight :foreground ,strong))))
    `(minibuffer-prompt                    ((t (:foreground ,popout))))
    `(vertical-border                      ((t (:foreground ,subtle))))
    `(window-divider                       ((t (:foreground ,subtle))))
@@ -81,7 +82,6 @@
    `(error                                ((t (:foreground ,critical))))
    `(match                                ((t (:foreground ,popout))))
    `(link                                 ((t (:foreground ,salient))))
-   `(lazy-highlight                       ((t (:background ,faded))))
    `(trailing-whitespace                  ((t (:background ,subtle))))
    `(completions-common-part              ((t (:foreground ,faded))))
    `(secondary-selection                  ((t (:background ,subtle))))
@@ -426,10 +426,10 @@
    `(calendar-today                       ((t (:foreground ,foreground :bold t))))
 
    ;; Mode Line
-   `(mode-line                            ((t (:background ,highlight))))
-   `(mode-line-inactive                   ((t (:background ,subtle))))
-   `(header-line                          ((t (:background ,highlight))))
-   `(header-line-inactive                 ((t (:background ,subtle))))
+   `(mode-line                            ((t (:background ,subtle))))
+   `(mode-line-inactive                   ((t (:background ,faded))))
+   `(header-line                          ((t (:background ,subtle))))
+   `(header-line-inactive                 ((t (:background ,faded))))
 
    ;; Solaire Mode
    `(solaire-default-face                 ((t (:inherit default :background ,highlight))))
