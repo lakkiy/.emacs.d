@@ -27,7 +27,8 @@
  '("\\*Messages\\*"
    "Outout\\*$"
    help-mode
-   eshell-mode)
+   eshell-mode
+   ielm-mode)
  popper-group-function #'popper-group-by-directory)
 
 (autoload 'popper-toggle-latest "popper" nil t)

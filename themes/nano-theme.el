@@ -30,7 +30,7 @@
    ;; Basic
    `(default                              ((t (:foreground ,foreground :background ,background))))
    `(cursor                               ((t (:background ,foreground))))
-   `(region                               ((t (:background ,subtle))))
+   `(region                               ((t (:background ,faded))))
    `(hl-line                              ((t (:background ,subtle))))
    `(fringe                               ((t (:foreground ,faded))))
    `(show-paren-match                     ((t (:foreground ,popout))))
