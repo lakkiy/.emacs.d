@@ -1,9 +1,13 @@
 ;;; nano-theme.el --- A theme split from nano-emacs  -*- lexical-binding: t; -*-
 
-;; Author: LiuBo
-;; Keywords: theme
-;; Package-Requires: ((emacs "28.0.50"))
+;; Copyright (C) 2021 LiuBo
+
+;; Author: LiuBo <https://github.com/404cn>
+;; Created: May 30, 2021
 ;; Version: 1.0.0
+;; Keywords: theme
+;; Homepage: https://github.com/404cn/nano-theme.el
+;; Package-Requires: ((emacs "28.0.50"))
 
 ;;
 ;; This file is not part of GNU Emacs.
