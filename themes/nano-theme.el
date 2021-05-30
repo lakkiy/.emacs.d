@@ -56,7 +56,7 @@
 
    ;; Font Locks
    `(font-lock-comment-face               ((t (:foreground ,faded :weight bold :slant italic))))
-   `(font-lock-comment-delimiter-face     ((t (:inherit font-lock-comment :weight bold))))
+   `(font-lock-comment-delimiter-face     ((t (:foreground ,faded :weight bold :slant italic))))
    `(font-lock-string-face                ((t (:foreground ,popout))))
    `(font-lock-doc-face                   ((t (:foreground ,faded :extend t))))
    `(font-lock-builtin-face               ((t (:foreground ,salient :slant italic))))
