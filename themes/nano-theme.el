@@ -49,7 +49,7 @@
    `(error                                ((t (:foreground ,critical))))
    `(match                                ((t (:foreground ,popout))))
    `(link                                 ((t (:foreground ,salient))))
-   `(lazy-highlight                       ((t (:background ,subtle))))
+   `(lazy-highlight                       ((t (:background ,faded))))
    `(trailing-whitespace                  ((t (:background ,subtle))))
    `(completions-common-part              ((t (:foreground ,faded))))
    `(secondary-selection                  ((t (:background ,subtle))))
