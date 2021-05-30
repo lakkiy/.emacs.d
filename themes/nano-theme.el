@@ -399,17 +399,24 @@
    `(header-line                          ((t (:background ,highlight))))
    `(header-line-inactive                 ((t (:background ,subtle))))
 
-   ;; Solaire Mode TODO
-   ;; Selectrum TODO
+   ;; Solaire Mode
+   `(solaire-default-face                 ((t (:inherit default :background ,highlight))))
+   `(solaire-minibuffer-face              ((t (:inherit default :background ,highlight))))
+
+   ;; Orderless
+   `(orderless-match-face-0               ((t (:foreground ,popout :bold t))))
+   `(orderless-match-face-1               ((t (:foreground ,popout :bold t))))
+   `(orderless-match-face-2               ((t (:foreground ,popout :bold t))))
+   `(orderless-match-face-3               ((t (:foreground ,popout :bold t))))
 
    ;;Eshell
    `(eshell-prompt                        ((t (:foreground ,popout :bold t))))
 
    ;; Meow
-   `(meow-keypad-indicator                ((t (:foreground ,background :background ,salient :box t))))
-   `(meow-insert-indicator                ((t (:foreground ,background :background ,critical :box t))))
-   `(meow-normal-indicator                ((t (:foreground ,background :background ,faded :box t))))
-   `(meow-motion-indicator                ((t (:foreground ,background :background ,popout :box t))))))
+   `(meow-keypad-indicator                ((t (:foreground ,background :background ,salient))))
+   `(meow-insert-indicator                ((t (:foreground ,background :background ,critical))))
+   `(meow-normal-indicator                ((t (:foreground ,background :background ,faded))))
+   `(meow-motion-indicator                ((t (:foreground ,background :background ,popout))))))
 
 ;;;###autoload
 (and load-file-name
