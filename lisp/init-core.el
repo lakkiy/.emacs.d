@@ -39,6 +39,8 @@
 ;;; project.el use C-x p
 (global-unset-key (kbd "C-x C-p"))
 (global-set-key (kbd "C-x C-d") #'dired)
+;; SPC x f to describe-funtion
+(global-set-key (kbd "C-h C-f") 'describe-funtion)
 
 (setq-default
  ;; Close up of MacOs
