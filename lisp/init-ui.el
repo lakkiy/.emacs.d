@@ -13,6 +13,11 @@
 (straight-use-package 'emojify)
 (straight-use-package 'solaire-mode)
 
+;;; nano-theme
+(setq
+ nano-theme-comment-italic t
+ nano-theme-keyword-italic t)
+
 ;;; doom-themes
 (setq doom-themes-enable-bold t
       doom-themes-enable-italic t)
@@ -72,7 +77,9 @@
 
 (defun +format-mode-line ()
   (let* ((lhs '((:eval (meow-indicator))
+                " "
                 (:eval (rime-lighter))
+                " "
                 (:eval (+smart-file-name-cached))
                 " Ln %l Col %C"))
          (rhs '("%m"

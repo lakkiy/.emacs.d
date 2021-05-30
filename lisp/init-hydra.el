@@ -60,6 +60,7 @@
         ("t G" (+change-theme 'gotham) "gotham" :toggle t)
         ("t i" (+change-theme 'minimal-dark) "minimal dark" :toggle t)
         ("t I" (+change-theme 'minimal-light) "minimal light" :toggle t)
+        ("t N" (+change-theme 'nano) "nano" :toggle t)
         ("t n" (+change-theme 'nasy) "nasy" :toggle t))
        "Doom Theme"
        (("d c" (+change-doom-theme 'doom-city-lights) "city-lights" :toggle t)
