@@ -41,6 +41,16 @@
   :type 'symbol
   :group 'nano-theme)
 
+(defcustom nano-theme-comment-italic nil
+  "Enable italics for comments."
+  :type 'boolean
+  :group 'nano-theme)
+
+(defcustom nano-theme-keyword-italic nil
+  "Enable italics for keywords."
+  :type 'boolean
+  :group 'nano-theme)
+
 (defun nano-theme--light?dark (light dark)
   "Determine using the LIGHT or the DARK color of nano-theme."
   (if (eq nano-theme-light/dark 'light)
@@ -87,14 +97,14 @@
    `(secondary-selection                  ((t (:background ,subtle))))
 
    ;; Font Locks
-   `(font-lock-comment-face               ((t (:foreground ,faded :weight bold :slant italic))))
-   `(font-lock-comment-delimiter-face     ((t (:foreground ,faded :weight bold :slant italic))))
+   `(font-lock-comment-face               ((t (:foreground ,faded :weight bold :slant ,(if nano-theme-comment-italic 'italic 'normal)))))
+   `(font-lock-comment-delimiter-face     ((t (:foreground ,faded :weight bold :slant ,(if nano-theme-comment-italic 'italic 'normal)))))
+   `(font-lock-keyword-face               ((t (:foreground ,salient :weight bold :slant ,(if nano-theme-keyword-italic 'italic 'normal)))))
    `(font-lock-string-face                ((t (:foreground ,popout))))
    `(font-lock-doc-face                   ((t (:foreground ,faded :extend t))))
-   `(font-lock-builtin-face               ((t (:foreground ,salient :slant italic))))
-   `(font-lock-type-face                  ((t (:foreground ,salient :weight bold :slant italic))))
+   `(font-lock-builtin-face               ((t (:foreground ,salient))))
+   `(font-lock-type-face                  ((t (:foreground ,salient :weight bold))))
    `(font-lock-variable-name-face         ((t (:foreground ,strong))))
-   `(font-lock-keyword-face               ((t (:foreground ,salient :weight bold))))
    `(font-lock-constant-face              ((t (:foreground ,salient :weight bold))))
    `(font-lock-function-name-face         ((t (:foreground ,strong))))
    `(font-lock-warning-face               ((t (:foreground ,popout :weight bold))))
