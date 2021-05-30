@@ -41,21 +41,6 @@
   :type 'symbol
   :group 'nano-theme)
 
-(defcustom spacemacs-theme-comment-bg nil
-  "Use a background for comment lines."
-  :type 'boolean
-  :group 'nano-theme)
-
-(defcustom spacemacs-theme-comment-italic nil
-  "Enable italics for comments."
-  :type 'boolean
-  :group 'nano-theme)
-
-(defcustom spacemacs-theme-keyword-italic nil
-  "Enable italics for keywords."
-  :type 'boolean
-  :group 'nano-theme)
-
 (defun nano-theme--light?dark (light dark)
   "Determine using the LIGHT or the DARK color of nano-theme."
   (if (eq nano-theme-light/dark 'light)
