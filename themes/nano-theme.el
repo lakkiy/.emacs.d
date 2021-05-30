@@ -38,8 +38,23 @@
 
 (defcustom nano-theme-light/dark 'light
   "Nano theme uses light theme or dark theme?"
-  :group 'nano-theme
-  :type 'symbol)
+  :type 'symbol
+  :group 'nano-theme)
+
+(defcustom spacemacs-theme-comment-bg nil
+  "Use a background for comment lines."
+  :type 'boolean
+  :group 'nano-theme)
+
+(defcustom spacemacs-theme-comment-italic nil
+  "Enable italics for comments."
+  :type 'boolean
+  :group 'nano-theme)
+
+(defcustom spacemacs-theme-keyword-italic nil
+  "Enable italics for keywords."
+  :type 'boolean
+  :group 'nano-theme)
 
 (defun nano-theme--light?dark (light dark)
   "Determine using the LIGHT or the DARK color of nano-theme."
@@ -426,10 +441,10 @@
    `(calendar-today                       ((t (:foreground ,foreground :bold t))))
 
    ;; Mode Line
-   `(mode-line                            ((t (:background ,subtle))))
-   `(mode-line-inactive                   ((t (:background ,faded))))
-   `(header-line                          ((t (:background ,subtle))))
-   `(header-line-inactive                 ((t (:background ,faded))))
+   `(mode-line                            ((t (:background ,highlight))))
+   `(mode-line-inactive                   ((t (:background ,subtle))))
+   `(header-line                          ((t (:background ,highlight))))
+   `(header-line-inactive                 ((t (:background ,subtle))))
 
    ;; Solaire Mode
    `(solaire-default-face                 ((t (:inherit default :background ,highlight))))
