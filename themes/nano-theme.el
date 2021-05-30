@@ -1,4 +1,4 @@
-;;; nano-theme.el --- A theme splited from nano-emacs  -*- lexical-binding: t; -*-
+;;; nano-theme.el --- A theme split from nano-emacs  -*- lexical-binding: t; -*-
 
 ;; Author: LiuBo
 ;; Keywords: theme
@@ -26,11 +26,11 @@
 
 ;;; Commentary:
 
-;;; A theme splited from nano-emacs.
+;;; A theme split from nano-emacs.
 
 ;;; Code:
 
-(deftheme nano "Theme splited from nano-emacs")
+(deftheme nano "Theme split from nano-emacs")
 
 (defgroup nano-theme nil
   "Options of nano theme."
