@@ -13,11 +13,28 @@
 (straight-use-package '(popper :type git :host github :repo "karthink/popper"))
 (straight-use-package '(oca :type git :host github :repo "lepisma/oca"))
 (straight-use-package '(devdocs-browser :type git :host github :repo "blahgeek/emacs-devdocs-browser"))
+(straight-use-package 'sr-speedbar)
+
+;;; sr-speedbar
+(setq
+ ;; speed bar
+ seedbar-use-images nil
+ speedbar-show-unknown-files t
+ speedbar-indentation-width 2
+ ;; sr-speedbar
+ sr-speedbar-default-width 20
+ sr-speedbar-max-width 30
+ sr-speedbar-right-side nil
+ sr-speedbar-skip-other-window-p nil)
+
+(global-set-key (kbd "<f8>") 'sr-speedbar-toggle)
 
 ;;; devdocs-browser
 (global-set-key (kbd "C-c D") 'devdocs-browser-open)
 
-;;; TODO oca
+;;; gnus TODO
+
+;;; oca TODO
 
 ;;; popper
 (setq

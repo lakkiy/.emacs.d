@@ -72,9 +72,6 @@
             (set-window-fringes
              (minibuffer-window frame) 0 0 nil t)))
 
-(require 'init-utils)
-(require 'init-const)
-
 (defun +format-mode-line ()
   (let* ((lhs '((:eval (meow-indicator))
                 " "
@@ -98,7 +95,7 @@
 (defun +init-ui (&optional frame)
   (load-theme +theme t)
   ;; modeline
-  (if (eq system-type 'darwin)
+  (if sys/macp
       (setq-default mode-line-format '(:eval (+format-mode-line)))
     (setq-default
      mode-line-format nil
@@ -136,7 +133,7 @@
   (+init-ui))
 
 ;;; tool-bar for mac
-(when (eq system-type 'darwin)
+(when sys/macp
   (define-key tool-bar-map [copy] nil)
   (define-key tool-bar-map [cut] nil)
   (define-key tool-bar-map [new-file] nil)

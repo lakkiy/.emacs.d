@@ -16,10 +16,10 @@
  rime-show-candidate 'minibuffer
  rime-title "ㄓ ")
 
-(if (eq system-type 'darwin)
+(if sys/macp
     (setq rime-librime-root (expand-file-name "librime/dist" user-emacs-directory)
           rime-user-data-dir "~/Library/Rime"))
-(if (eq system-type 'gnu/linux)
+(if sys/linuxp
     (setq rime-user-data-dir "~/.config/fcitx/rime"))
 
 (autoload #'toggle-input-method "rime" nil t)

@@ -39,7 +39,7 @@ If `\\[universal-argument]' is given, then attach clipboard as document."
          (temporary-file-directory telega-temp-dir)
          (tmpfile (telega-temp-name "clipboard" ".png"))
          (coding-system-for-write 'binary))
-    (if (eq system-type 'gnu/linux)
+    (if sys/linuxp
         (shell-command-to-string
          (format "xclip -selection clipboard -t image/png -o > %s"
                  tmpfile))
