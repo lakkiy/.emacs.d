@@ -15,6 +15,7 @@
 (require 'init-basic)
 (require 'init-hydra)
 (require 'init-editor)
+(require 'init-dired)
 (require 'init-meow)
 (require 'init-rime)
 (require 'init-ui)
