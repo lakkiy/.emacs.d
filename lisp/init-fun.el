@@ -16,7 +16,7 @@
 (straight-use-package 'sr-speedbar)
 (straight-use-package 'notmuch)
 
-;;; notmuch
+;;; notmuch TODO
 (setq
  notmuch-show-logo nil)
 
