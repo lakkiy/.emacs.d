@@ -40,4 +40,12 @@ For ispell
   sudo pacman -S hunspell hunspell-en_us
 #+end_src
 
+Mail
+
+#+begin_src sh
+  sudo pacman -S notmuch
+#+end_src
+
+Also take a look at [[https://notmuchmail.org/getting-started/][Get Started With Notmuch]]
+
 * TODO Screenshots

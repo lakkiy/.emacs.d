@@ -14,6 +14,13 @@
 (straight-use-package '(oca :type git :host github :repo "lepisma/oca"))
 (straight-use-package '(devdocs-browser :type git :host github :repo "blahgeek/emacs-devdocs-browser"))
 (straight-use-package 'sr-speedbar)
+(straight-use-package 'notmuch)
+
+;;; notmuch
+(setq
+ notmuch-show-logo nil)
+
+(autoload 'notmuch "notmuch" "notmuch mail" t)
 
 ;;; sr-speedbar
 (setq
