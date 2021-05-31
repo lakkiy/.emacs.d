@@ -68,4 +68,7 @@
 ;;; go-tag
 (setq go-tag-args (list "-transform" "camelcase"))
 
+;;; go-test
+(setq go-test-verbose t)
+
 (provide 'init-go)
