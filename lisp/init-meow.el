@@ -141,7 +141,7 @@
    '("<f4>" . meow-end-or-call-kmacro)
    '("<escape>" . meow-last-buffer)
    ;; for theme mother fucker man that turn around and look my monitor
-   '("X" . tab-bar-switch-to-recent-tab)))
+   '("/" . tab-bar-switch-to-recent-tab)))
 
 (straight-use-package '(meow :type git :host github :repo "DogLooksGood/meow"))
 
