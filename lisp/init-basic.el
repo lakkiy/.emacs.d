@@ -23,7 +23,9 @@
 (add-hook 'after-init-hook 'winner-mode)
 (add-hook 'after-init-hook 'electric-pair-mode)
 (add-hook 'after-init-hook 'show-paren-mode)
-(add-hook 'after-init-hook 'repeat-mode)
+(when emacs/>=28p
+  (add-hook 'after-init-hook 'repeat-mode))
+
 
 (defun +reopen-file-with-sudo ()
   (interactive)

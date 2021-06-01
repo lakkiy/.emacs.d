@@ -14,14 +14,14 @@
 (straight-use-package 'solaire-mode)
 
 (+pdump-packages 'ligature
-                 'modus-theme
-                 'spacemacs-theme
-                 'atom-one-dark-theme
-                 'dracula-theme
-                 'gotham-theme
-                 'minimal-theme
-                 'tao-theme
-                 'doom-themes
+                 ;; 'modus-theme
+                 ;; 'spacemacs-theme
+                 ;; 'atom-one-dark-theme
+                 ;; 'dracula-theme
+                 ;; 'gotham-theme
+                 ;; 'minimal-theme
+                 ;; 'tao-theme
+                 ;; 'doom-themes
                  'emojify
                  'solaire-mode)
 
@@ -143,32 +143,5 @@
 (if (daemonp)
     (add-hook 'after-make-frame-functions #'+reload-ui-in-daemon)
   (+init-ui))
-
-;;; tool-bar for mac
-(when sys/macp
-  (define-key tool-bar-map [copy] nil)
-  (define-key tool-bar-map [cut] nil)
-  (define-key tool-bar-map [new-file] nil)
-  (define-key tool-bar-map [open-file] nil)
-  (define-key tool-bar-map [dired] nil)
-  (define-key tool-bar-map [save-buffer] nil)
-  (define-key tool-bar-map [undo] nil)
-  (define-key tool-bar-map [paste] nil)
-  (define-key tool-bar-map [isearch-forward] nil)
-  (define-key help-mode-tool-bar-map [search] nil)
-  (define-key help-mode-tool-bar-map [Previous\ Topic] nil)
-  (define-key help-mode-tool-bar-map [Next\ Topic] nil)
-  (setq
-   info-tool-bar-map nil
-   isearch-tool-bar-map nil)
-  (with-eval-after-load "vc-dir"
-    (setq vc-dir-tool-bar-map nil))
-  (with-eval-after-load "eww"
-    (define-key eww-tool-bar-map [Reload] nil)
-    (define-key eww-tool-bar-map [Back\ to\ previous\ page] nil)
-    (define-key eww-tool-bar-map [Forward\ to\ next\ page] nil)
-    (define-key eww-tool-bar-map [View\ page\ source] nil)
-    (define-key eww-tool-bar-map [Copy\ page\ URL] nil)
-    (define-key eww-tool-bar-map [Add\ bookmark] nil)))
 
 (provide 'init-ui)

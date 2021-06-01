@@ -13,7 +13,7 @@
 (+pdump-packages 'go-mode
                  'gotest
                  'go-gen-test
-                 'go-dlv
+                 ;; 'go-dlv
                  'go-fill-struct
                  'go-impl
                  'go-tag

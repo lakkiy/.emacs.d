@@ -8,6 +8,10 @@
   (eq system-type 'gnu/linux)
   "Are we running on a GNU/Linux system?")
 
+(defconst emacs/>=28p
+  (>= emacs-major-version 28)
+  "Emacs is 28 or above.")
+
 (defun font-installed-p (font-name)
   "Check if font with FONT-NAME is available."
   (find-font (font-spec :name font-name)))
