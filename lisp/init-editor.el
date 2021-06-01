@@ -2,7 +2,6 @@
 
 (straight-use-package '(vundo :type git :host github :repo "casouri/vundo"))
 (straight-use-package '(insert-translated-name :type git :host github :repo "manateelazycat/insert-translated-name"))
-(straight-use-package 'treemacs)
 (straight-use-package '(auto-save :type git :host github :repo "manateelazycat/auto-save"))
 (straight-use-package 'insert-char-preview)
 (straight-use-package 'visual-fill-column)
@@ -89,23 +88,5 @@
 (autoload 'insert-translated-name-insert "insert-translated-name" nil t)
 
 (global-set-key (kbd "C-c i") 'insert-translated-name-insert)
-
-;;; treemacs
-(defun +treemacs-scale-font-size ()
-  (face-remap-add-relative 'default :height 0.8))
-
-(setq
- treemacs-user-mode-line-format 'none
- treemacs-no-png-images t
- treemacs-width 30)
-
-(autoload #'treemacs "treemacs")
-(autoload #'treemacs-select-window "treemacs")
-
-(global-set-key (kbd "<f1>") 'treemacs-select-window)
-
-(with-eval-after-load "treemacs"
-  (define-key treemacs-mode-map (kbd "<f1>") 'treemacs)
-  (add-hook 'treemacs-mode-hook #'+treemacs-scale-font-size))
 
 (provide 'init-editor)
