@@ -24,12 +24,21 @@
  speedbar-show-unknown-files t
  speedbar-indentation-width 2
  ;; sr-speedbar
- sr-speedbar-default-width 40
- sr-speedbar-max-width 60
+ sr-speedbar-default-width 30
+ sr-speedbar-max-width 40
  sr-speedbar-right-side nil
  sr-speedbar-skip-other-window-p nil)
 
-(global-set-key (kbd "<f8>") 'sr-speedbar-toggle)
+(global-set-key (kbd "<f1>") 'sr-speedbar-toggle)
+
+(with-eval-after-load "sr-speedbar"
+  (defun speedbar-set-mode-line-format ()
+    "Disable mode line and header line in speedbar"
+    (setq mode-line-format nil)
+    (setq header-line-format nil))
+  (add-hook 'sr-speedbar-mode-hook (lambda ()
+                                     (face-remap-add-relative 'default :height 0.8)
+                                     (face-remap-add-relative 'hl-line :box '(:line-width (-1 . -1))))))
 
 ;;; devdocs-browser
 (global-set-key (kbd "C-c D") 'devdocs-browser-open)

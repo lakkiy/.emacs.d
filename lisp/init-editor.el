@@ -52,9 +52,15 @@
 
 ;;; imenu-list
 (setq
- imenu-list-auto-resize t)
+ imenu-list-auto-resize t
+ imenu-list-mode-line-format nil)
 
 (global-set-key (kbd "C-.") #'imenu-list-smart-toggle)
+
+(with-eval-after-load "imenu-list"
+  ;; disable header line in imenu list
+  (add-hook 'imenu-list-major-mode-hook (lambda ()
+                                          (setq-local header-line-format nil))))
 
 ;;; separedit
 (setq
