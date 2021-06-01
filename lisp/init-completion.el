@@ -52,12 +52,6 @@
   (define-key company-active-map (kbd "C-p") #'company-select-previous)
   (define-key company-active-map (kbd "C-n") #'company-select-next))
 
-;;; rg
-(autoload #'rg-project "rg" nil t)
-
-(with-eval-after-load "wgrep"
-  (define-key wgrep-mode-map (kbd "C-c C-c") #'wgrep-finish-edit))
-
 ;;; selectrum
 (add-hook 'after-init-hook 'selectrum-mode)
 

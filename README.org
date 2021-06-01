@@ -2,6 +2,8 @@
 
 Emacs Version > 28
 
+▶ ripgrep
+
 * Features
 
 Currently this configuration is mainly used for GOLANG programming.
