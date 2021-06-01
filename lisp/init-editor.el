@@ -2,7 +2,6 @@
 
 (straight-use-package '(vundo :type git :host github :repo "casouri/vundo"))
 (straight-use-package '(insert-translated-name :type git :host github :repo "manateelazycat/insert-translated-name"))
-(straight-use-package 'markdown-mode)
 (straight-use-package 'treemacs)
 (straight-use-package '(auto-save :type git :host github :repo "manateelazycat/auto-save"))
 (straight-use-package 'insert-char-preview)
@@ -90,10 +89,6 @@
 (autoload 'insert-translated-name-insert "insert-translated-name" nil t)
 
 (global-set-key (kbd "C-c i") 'insert-translated-name-insert)
-
-;; markdown-mode
-(setq markdown-fontify-code-blocks-natively t)
-(add-hook 'markdown-mode-hook 'markdown-toggle-markup-hidding)
 
 ;;; treemacs
 (defun +treemacs-scale-font-size ()

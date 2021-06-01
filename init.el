@@ -28,6 +28,7 @@
 (require 'init-spcfile)
 (require 'init-lisp)
 (require 'init-mole)
+(require 'init-markdown)
 
 (require 'init-lsp)
 (require 'init-go)
