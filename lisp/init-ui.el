@@ -150,6 +150,13 @@
    info-tool-bar-map nil
    isearch-tool-bar-map nil)
   (with-eval-after-load "vc-dir"
-    (setq vc-dir-tool-bar-map nil)))
+    (setq vc-dir-tool-bar-map nil))
+  (with-eval-after-load "eww"
+    (define-key eww-tool-bar-map [Reload] nil)
+    (define-key eww-tool-bar-map [Back\ to\ previous\ page] nil)
+    (define-key eww-tool-bar-map [Forward\ to\ next\ page] nil)
+    (define-key eww-tool-bar-map [View\ page\ source] nil)
+    (define-key eww-tool-bar-map [Copy\ page\ URL] nil)
+    (define-key eww-tool-bar-map [Add\ bookmark] nil)))
 
 (provide 'init-ui)
