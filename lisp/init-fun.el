@@ -5,11 +5,6 @@
 (straight-use-package 'restclient)
 (straight-use-package '(emacs-calfw :type git :host github :repo "kiwanami/emacs-calfw"))
 (straight-use-package '(twidget :type git :host github :repo "Kinneyzhang/twidget"))
-(straight-use-package '(emacs-application-framework
-                        :type git
-                        :host github
-                        :repo "manateelazycat/emacs-application-framework"
-                        :files ("*")))
 (straight-use-package '(popper :type git :host github :repo "karthink/popper"))
 (straight-use-package '(oca :type git :host github :repo "lepisma/oca"))
 (straight-use-package '(devdocs-browser :type git :host github :repo "blahgeek/emacs-devdocs-browser"))
@@ -39,8 +34,6 @@
 ;;; devdocs-browser
 (global-set-key (kbd "C-c D") 'devdocs-browser-open)
 
-;;; gnus TODO
-
 ;;; oca TODO
 
 ;;; popper
@@ -62,21 +55,6 @@
 (global-set-key (kbd "M-`") 'popper-cycle)
 
 (add-hook 'after-init-hook 'popper-mode)
-
-;;; eaf
-(straight-use-package 'epc)
-(straight-use-package 'deferred)
-(straight-use-package 'ctable)
-
-(setq
- eaf-browser-continue-where-left-off t)
-
-(with-eval-after-load "eaf"
-  (eaf-setq eaf-browser-enable-adblocker "true")
-  (eaf-bind-key scroll_up "C-n" eaf-pdf-viewer-keybinding)
-  (eaf-bind-key scroll_down "C-p" eaf-pdf-viewer-keybinding)
-  (eaf-bind-key take_photo "p" eaf-camera-keybinding)
-  (eaf-bind-key nil "M-q" eaf-browser-keybinding))
 
 ;; TODO twidget
 (straight-use-package 'ov)
