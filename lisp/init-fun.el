@@ -10,9 +10,11 @@
 (straight-use-package '(devdocs-browser :type git :host github :repo "blahgeek/emacs-devdocs-browser"))
 (straight-use-package 'sr-speedbar)
 (straight-use-package 'notmuch)
+(straight-use-package 'esup)
 
 (+pdump-packages 'rainbow-mode
                  'docstr
+                 'esup
                  'restclient
                  'emacs-calfw
                  'twidget
