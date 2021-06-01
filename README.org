@@ -50,4 +50,10 @@ Mail
 
 Also take a look at [[https://notmuchmail.org/getting-started/][Get Started With Notmuch]]
 
+* Pdump
+
+Run =./pdump.sh= in =~/.config/emacs= and start emacs with =dmacs= .
+
+Ps: If you clone this to =~/.emacs.d= you need change dump file's emacs path.
+
 * TODO Screenshots
