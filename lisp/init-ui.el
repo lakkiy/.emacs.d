@@ -76,7 +76,7 @@
   (let* ((lhs '((:eval (meow-indicator))
                 " "
                 (:eval (rime-lighter))
-                (:eval (+smart-file-name-cached))
+                (:eval (propertize (+smart-file-name-cached) 'face 'bold))
                 " Ln %l Col %C"))
          (rhs '("%m"
                 (vc-mode vc-mode)))

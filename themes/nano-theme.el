@@ -445,12 +445,7 @@
    `(header-line                          ((t (:background ,subtle))))
 
    ;; Solaire Mode
-   `(solaire-default-face                 ((t (:background ,(color-darken-name background 3) :foreground ,(color-darken-name foreground 10)))))
-   `(solaire-hl-line-face                 ((t (:background ,(color-darken-name highlight 3)))))
-   `(solaire-line-number-face             ((t (:background ,(color-darken-name highlight 3)))))
-   `(solaire-header-line-face             ((t (:background ,(color-darken-name subtle 3)))))
-   `(solaire-mode-line-face               ((t (:background ,(color-darken-name subtle 3)))))
-   `(solaire-minibuffer-face              ((t (:background ,(color-darken-name highlight 3)))))
+   `(solaire-default-face                 ((t (:inherit default :background ,highlight))))
 
    ;; Orderless
    `(orderless-match-face-0               ((t (:foreground ,popout :bold t))))
