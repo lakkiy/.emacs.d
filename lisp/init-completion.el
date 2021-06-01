@@ -3,7 +3,6 @@
 (straight-use-package 'consult)
 (straight-use-package 'yasnippet)
 (straight-use-package 'yasnippet-snippets)
-(straight-use-package 'deadgrep)
 (straight-use-package 'orderless)
 (straight-use-package 'company)
 (straight-use-package 'marginalia)
@@ -11,6 +10,7 @@
 (straight-use-package 'embark-consult)
 (straight-use-package 'company-tabnine)
 (straight-use-package 'selectrum)
+(straight-use-package 'rg)
 
 ;; yasnippet
 (autoload #'yas-minor-mode "yasnippet")
@@ -52,12 +52,11 @@
   (define-key company-active-map (kbd "C-p") #'company-select-previous)
   (define-key company-active-map (kbd "C-n") #'company-select-next))
 
-;; deadgrep
-(autoload #'deadgrep "deadgrep" nil t)
+;;; rg
+(autoload #'rg-project "rg" nil t)
 
-(with-eval-after-load "deadgrep"
-  (define-key deadgrep-mode-map (kbd "w") 'deadgrep-edit-mode)
-  (define-key deadgrep-edit-mode-map (kbd "C-x C-s") 'deadgrep-mode))
+(with-eval-after-load "wgrep"
+  (define-key wgrep-mode-map (kbd "C-c C-c") #'wgrep-finish-edit))
 
 ;;; selectrum
 (add-hook 'after-init-hook 'selectrum-mode)
