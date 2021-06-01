@@ -45,7 +45,8 @@
     "Disable mode line and header line in speedbar"
     (setq mode-line-format nil)
     (setq header-line-format nil))
-  (add-hook 'sr-speedbar-mode-hook (lambda ()
+
+  (add-hook 'speedbar-mode-hook (lambda ()
                                      (face-remap-add-relative 'default :height 0.8)
                                      (face-remap-add-relative 'hl-line :box '(:line-width (-1 . -1))))))
 
