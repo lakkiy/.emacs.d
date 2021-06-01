@@ -1,0 +1,3 @@
+#!/bin/bash
+
+emacs --dump-file="$HOME/.config/emacs.pdmp" -l "$HOME/.config/pdump-init.el"

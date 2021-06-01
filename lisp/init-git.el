@@ -5,6 +5,11 @@
 (straight-use-package 'hl-todo)
 (straight-use-package 'diff-hl)
 
+(+pdump-packages 'magit
+                 'magit-todos
+                 'diff-hl
+                 'hl-todo)
+
 ;; magit
 (autoload #'magit "magit" nil t)
 

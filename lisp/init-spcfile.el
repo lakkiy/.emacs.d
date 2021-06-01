@@ -5,6 +5,11 @@
 (straight-use-package 'dockerfile-mode)
 (straight-use-package 'fish-mode)
 
+(+pdump-packages 'docker
+                 'docker-compose-mode
+                 'dockerfile-mode
+                 'fish-mode)
+
 ;;; fish-mode
 (with-eval-after-load "fish-mode"
   (add-hook 'fish-mode-hook (lambda ()

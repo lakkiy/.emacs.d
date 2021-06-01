@@ -145,6 +145,8 @@
 
 (straight-use-package '(meow :type git :host github :repo "DogLooksGood/meow"))
 
+(+pdump-packages 'meow)
+
 ;; meow
 (require 'meow)
 

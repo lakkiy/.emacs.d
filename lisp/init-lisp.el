@@ -4,6 +4,10 @@
 (straight-use-package 'clojure-mode)
 (straight-use-package 'cider)
 
+(+pdump-packages 'smartparens
+                 'clojure-mode
+                 'cider)
+
 ;;; smartparens
 (autoload #'smartparens-mode "smartparens" nil t)
 

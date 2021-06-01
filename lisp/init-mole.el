@@ -4,6 +4,8 @@
 ;; (straight-use-package 'elfeed)
 ;; (straight-use-package 'elfeed-protocol)
 
+(+pdump-packages 'leetcode)
+
 ;; leetcode
 (setq
  leetcode-prefer-language "golang"

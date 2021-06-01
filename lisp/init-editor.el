@@ -12,6 +12,18 @@
 (straight-use-package 'writeroom-mode)
 (straight-use-package 'youdao-dictionary)
 
+(+pdump-packages 'vundo
+                 'insert-char-preview
+                 'auto-save
+                 'insert-translated-name
+                 'visual-fill-column
+                 'separedit
+                 'imenu-list
+                 'exec-path-from-shell
+                 'which-key
+                 'writeroom-mode
+                 'youdao-dictionary)
+
 ;;; youdao-dictionary
 (setq url-automatic-caching t
       youdao-dictionary-search-history-file (expand-file-name ".youdao" user-emacs-directory)

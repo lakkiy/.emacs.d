@@ -9,6 +9,15 @@
 (straight-use-package 'ob-go)
 (straight-use-package 'org-journal)
 
+(+pdump-packages 'easy-hugo
+                 'org-superstar
+                 'org-roam
+                 'org-roam-server
+                 'org-transclusion
+                 'valign
+                 'ob-go
+                 'org-journal)
+
 ;;; org
 (setq
  org-log-done t

@@ -2,6 +2,8 @@
 
 (straight-use-package 'ace-window)
 
+(+pdump-packages 'ace-window)
+
 ;; ace-window
 (setq
  aw-keys '(?a ?o ?e ?u ?i)

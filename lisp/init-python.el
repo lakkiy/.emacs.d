@@ -6,6 +6,12 @@
 (straight-use-package '(python-isort :type git :host github :repo "wyuenho/emacs-python-isort"))
 (straight-use-package 'pyimport)
 
+(+pdump-packages 'elpy
+                 'blacken
+                 'live-py-mode
+                 'python-isort
+                 'pyimport)
+
 ;;; elpy
 ;; pip install pylint
 ;; pip install flake8 ?

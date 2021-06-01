@@ -11,6 +11,17 @@
 (straight-use-package 'sr-speedbar)
 (straight-use-package 'notmuch)
 
+(+pdump-packages 'rainbow-mode
+                 'docstr
+                 'restclient
+                 'emacs-calfw
+                 'twidget
+                 'popper
+                 'oca
+                 'devdocs-browser
+                 'sr-speedbar
+                 'notmuch)
+
 ;;; notmuch TODO
 (setq
  notmuch-show-logo nil)

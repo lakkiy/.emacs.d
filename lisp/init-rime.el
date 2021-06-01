@@ -2,6 +2,8 @@
 
 (straight-use-package '(rime :type git :host github :repo "DogLooksGood/emacs-rime"))
 
+(+pdump-packages 'rime)
+
 ;; rime
 (setq
  rime-disable-predicates '(meow-normal-mode-p

@@ -1,6 +1,9 @@
 ;;; -*- lexical-binding: t -*-
 
 (straight-use-package 'ibuffer-vc)
+
+(+pdump-packages 'ibuffer-vc)
+
 ;; ibuffer-vc
 (setq ibuffer-formats
       '((mark modified read-only vc-status-mini " "

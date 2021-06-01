@@ -13,6 +13,18 @@
 (straight-use-package 'emojify)
 (straight-use-package 'solaire-mode)
 
+(+pdump-packages 'ligature
+                 'modus-theme
+                 'spacemacs-theme
+                 'atom-one-dark-theme
+                 'dracula-theme
+                 'gotham-theme
+                 'minimal-theme
+                 'tao-theme
+                 'doom-themes
+                 'emojify
+                 'solaire-mode)
+
 ;;; nano-theme
 (setq
  nano-theme-comment-italic t

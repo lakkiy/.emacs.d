@@ -10,6 +10,16 @@
 (straight-use-package 'go-playground)
 (straight-use-package '(flymake-golangci :type git :host gitlab :repo "shackra/flymake-golangci"))
 
+(+pdump-packages 'go-mode
+                 'gotest
+                 'go-gen-test
+                 'go-dlv
+                 'go-fill-struct
+                 'go-impl
+                 'go-tag
+                 'go-playground
+                 'flymake-golangci)
+
 ;; Install or update tools
 (defvar go--tools '("golang.org/x/tools/cmd/goimports"
                     "golang.org/x/tools/gopls"

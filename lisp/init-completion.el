@@ -12,6 +12,18 @@
 (straight-use-package 'selectrum)
 (straight-use-package 'rg)
 
+(+pdump-packages 'consult
+                 'yasnippet
+                 'yasnippet-snippets
+                 'orderless
+                 'company
+                 'marginalia
+                 'embark
+                 'embark-consult
+                 'company-tabnine
+                 'selectrum
+                 'rg)
+
 ;; yasnippet
 (autoload #'yas-minor-mode "yasnippet")
 

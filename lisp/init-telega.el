@@ -2,6 +2,8 @@
 
 (straight-use-package '(telega :type git :host github :branch "releases"))
 
+(+pdump-packages 'telega)
+
 ;;; telega -- many config from shenglao
 (setq
  telega-chat-input-prompt "> "

@@ -2,6 +2,8 @@
 
 (straight-use-package 'pretty-hydra)
 
+(+pdump-packages 'pretty-hydra)
+
 (defun +change-theme (theme)
   "Disable other themes and load new one"
   (interactive)
