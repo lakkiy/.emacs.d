@@ -27,11 +27,20 @@
  sr-speedbar-default-width 30
  sr-speedbar-max-width 40
  sr-speedbar-right-side nil
- sr-speedbar-skip-other-window-p nil)
+ sr-speedbar-skip-other-window-p t)
 
-(global-set-key (kbd "<f1>") 'sr-speedbar-toggle)
+(defun +sr-speedbar-select-or-open()
+  "Select sr-speedbar window if it exist, or open sr-speedbar"
+  (interactive)
+  (if (and (fboundp 'sr-speedbar-exist-p) (sr-speedbar-exist-p))
+      (sr-speedbar-select-window)
+    (sr-speedbar-open)))
+
+(global-set-key (kbd "<f1>") #'+sr-speedbar-select-or-open)
 
 (with-eval-after-load "sr-speedbar"
+  (define-key speedbar-mode-map (kbd "<f1>") 'sr-speedbar-close)
+
   (defun speedbar-set-mode-line-format ()
     "Disable mode line and header line in speedbar"
     (setq mode-line-format nil)

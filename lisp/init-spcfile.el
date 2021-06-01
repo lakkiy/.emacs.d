@@ -11,10 +11,8 @@
                               (add-hook 'before-save-hook
                                         #'fish_indent-before-save))))
 
-;; docker
+;;; docker
 (autoload 'docker "docker" nil t)
-
-;; TODO protobuf mode
 
 ;;; protobuf-mode
 (with-eval-after-load "protobuf-mode"
