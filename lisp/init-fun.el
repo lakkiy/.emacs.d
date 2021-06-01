@@ -20,12 +20,12 @@
 ;;; sr-speedbar
 (setq
  ;; speed bar
- seedbar-use-images nil
+ speedbar-use-images nil
  speedbar-show-unknown-files t
  speedbar-indentation-width 2
  ;; sr-speedbar
- sr-speedbar-default-width 20
- sr-speedbar-max-width 30
+ sr-speedbar-default-width 40
+ sr-speedbar-max-width 60
  sr-speedbar-right-side nil
  sr-speedbar-skip-other-window-p nil)
 
