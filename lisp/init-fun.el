@@ -16,7 +16,7 @@
                  'docstr
                  'esup
                  'restclient
-                 'emacs-calfw
+                 'calfw
                  'twidget
                  'popper
                  'oca
