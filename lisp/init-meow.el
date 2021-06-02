@@ -143,6 +143,7 @@
    ;; for theme mother fucker man that turn around and look my monitor
    '("/" . tab-bar-switch-to-recent-tab)))
 
+;; FIXME docstr not work with meow
 (straight-use-package '(meow :type git :host github :repo "DogLooksGood/meow"))
 
 (+pdump-packages 'meow)

@@ -1,6 +1,8 @@
 ;;; -*- lexical-binding: t -*-
 
 (straight-use-package 'go-mode)
+(straight-use-package 'go-guru)
+(straight-use-package 'go-rename)
 (straight-use-package 'gotest)
 (straight-use-package 'go-gen-test)
 (straight-use-package 'go-dlv)
@@ -17,6 +19,8 @@
                  'go-fill-struct
                  'go-impl
                  'go-tag
+                 'go-guru
+                 'go-rename
                  'go-playground
                  'flymake-golangci)
 
@@ -27,6 +31,8 @@
                     "github.com/josharian/impl"
                     "github.com/cweill/gotests/..."
                     "github.com/fatih/gomodifytags"
+                    "golang.org/x/tools/cmd/guru"
+                    "golang.org/x/tools/cmd/gorename"
                     "github.com/davidrjenni/reftools/cmd/fillstruct")
   "All necessary go tools.")
 
