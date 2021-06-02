@@ -29,7 +29,7 @@
     ("e" ibuffer-mark-dissociated-buffers "dissociated")
     ("h" ibuffer-mark-help-buffers "help")
     ("z" ibuffer-mark-compressed-file-buffers "compressed")
-    ("b" hydra-ibuffer-main/body "back"))))
+    ("b" ibuffer-hydra/body "back"))))
 
 (pretty-hydra-define hydra-ibuffer-action (:title "Ibuffer Action" :quit-key "q")
   ("Action"
@@ -49,7 +49,7 @@
     ("V" ibuffer-do-revert "revert")
     ("W" ibuffer-do-view-and-eval "view-and-eval")
     ("X" ibuffer-do-shell-command-pipe "shell-command-pipe")
-    ("b" hydra-ibuffer-main/body "back"))))
+    ("b" ibuffer-hydra/body "back"))))
 
 (pretty-hydra-define hydra-ibuffer-sort (:title "Ibuffer Sort" :quit-key "q")
   ("Sort"
@@ -59,7 +59,7 @@
     ("s" ibuffer-do-sort-by-size "size")
     ("f" ibuffer-do-sort-by-filename/process "filename")
     ("m" ibuffer-do-sort-by-major-mode "mode")
-    ("b" hydra-ibuffer-main/body "back"))))
+    ("b" ibuffer-hydra/body "back"))))
 
 (pretty-hydra-define hydra-ibuffer-filter (:tiele "Ibuffer Filter" :quit-key "q")
   ("Filter"
@@ -72,7 +72,7 @@
     (">" ibuffer-filter-by-size-gt "size")
     ("<" ibuffer-filter-by-size-lt "size")
     ("/" ibuffer-filter-disable "disable")
-    ("b" hydra-ibuffer-main/body "back"))))
+    ("b" ibuffer-hydra/body "back"))))
 
 (pretty-hydra-define ibuffer-hydra (:title "Ibuffer" :quit-key "q")
   ("Mark"
