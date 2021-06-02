@@ -37,6 +37,7 @@
  speedbar-show-unknown-files t
  speedbar-indentation-width 2
  ;; sr-speedbar
+ sr-speedbar-auto-refresh nil
  sr-speedbar-default-width 30
  sr-speedbar-max-width 40
  sr-speedbar-right-side nil
