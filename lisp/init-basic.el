@@ -3,6 +3,7 @@
 (require 'init-utils)
 
 ;; for customize
+;; TODO Bookerly, overpass for variable pitch
 (defvar +font
   (cl-loop for font in '("Operator Mono SSm Lig" "SF Mono" "Monaco" "Sarasa Mono SC" "Consolas"
                          "DejaVu Sans Mono")
