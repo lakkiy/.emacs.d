@@ -4,7 +4,8 @@
 
 ;; for customize
 (defvar +font
-  (cl-loop for font in '("Operator Mono SSm Lig" "SF Mono" "Monaco" "Consolas")
+  (cl-loop for font in '("Operator Mono SSm Lig" "SF Mono" "Monaco" "Sarasa Mono SC" "Consolas"
+                         "DejaVu Sans Mono")
            when (font-installed-p font)
            return font))
 
