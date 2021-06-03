@@ -5,8 +5,10 @@
 (straight-use-package 'live-py-mode)
 (straight-use-package '(python-isort :type git :host github :repo "wyuenho/emacs-python-isort"))
 (straight-use-package 'pyimport)
+(straight-use-package 'jupyter)
 
 (+pdump-packages 'elpy
+                 'jupyter
                  'blacken
                  'live-py-mode
                  'python-isort
