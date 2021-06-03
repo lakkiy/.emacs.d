@@ -5,4 +5,5 @@
  +font-cn "Unifont"
  +font-unicode "Unifont"
  +font-height 130
+ +use-header-line nil
  +theme 'minidark)

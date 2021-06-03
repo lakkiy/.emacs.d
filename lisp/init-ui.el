@@ -102,11 +102,11 @@
 (defun +init-ui (&optional frame)
   (load-theme +theme t)
   ;; modeline
-  (if sys/macp
-      (setq-default mode-line-format '(:eval (+format-mode-line)))
-    (setq-default
-     mode-line-format nil
-     header-line-format '(:eval (+format-mode-line))))
+  (if +use-header-line
+      (setq-default
+       mode-line-format nil
+       header-line-format '(:eval (+format-mode-line)))
+    (setq-default mode-line-format '(:eval (+format-mode-line))))
   ;; load font
   (when (display-graphic-p)
     (set-face-attribute 'default frame :font +font :height +font-height)
