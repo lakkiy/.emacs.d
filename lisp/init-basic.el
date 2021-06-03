@@ -3,11 +3,24 @@
 (require 'init-utils)
 
 ;; for customize
-(defvar +font "Operator Mono SSm Lig")
-(defvar +font-cn "WenQuanYi Micro Hei")
-(defvar +font-unicode "Apple Color Emoji")
+(defvar +font
+  (cl-loop for font in '("Operator Mono SSm Lig" "SF Mono" "Monaco" "Consolas")
+           when (font-installed-p font)
+           return font))
+
+(defvar +font-cn
+  (cl-loop for font in '("WenQuanYi Micro Hei" "Microsoft Yahei")
+           when (font-installed-p font)
+           return font))
+
+(defvar +font-unicode
+  (cl-loop for font in '("Apple Color Emoji" "Segoe UI Symbol" "Symbola" "Symbol")
+           when (font-installed-p font)
+           return font))
+
 (defvar +font-height (cond (sys/macp 130)
                            (t 110)))
+
 (defvar +theme 'doom-Iosvkem)
 
 ;; (add-hook 'prog-mode-hook 'display-line-numbers-mode)
