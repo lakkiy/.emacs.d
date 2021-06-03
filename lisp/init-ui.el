@@ -25,11 +25,6 @@
                  'emojify
                  'solaire-mode)
 
-;;; nano-theme
-(setq
- nano-theme-comment-italic t
- nano-theme-keyword-italic t)
-
 ;;; doom-themes
 (setq doom-themes-enable-bold t
       doom-themes-enable-italic t)
