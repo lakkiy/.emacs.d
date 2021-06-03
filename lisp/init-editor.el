@@ -11,6 +11,7 @@
 (straight-use-package 'which-key)
 (straight-use-package 'writeroom-mode)
 (straight-use-package 'youdao-dictionary)
+(straight-use-package 'dumb-jump)
 
 (+pdump-packages 'vundo
                  'insert-char-preview
@@ -22,7 +23,21 @@
                  'exec-path-from-shell
                  'which-key
                  'writeroom-mode
+                 'dumb-jump
                  'youdao-dictionary)
+
+;;; dumb-jump
+(setq
+ dumb-jump-quiet t
+ dumb-jump-aggressive t
+ dumb-jump-prefer-search 'rg
+ dumb-jump-selector 'completing-read
+ dumb-jump-disable-obsolate-warning t)
+
+(global-set-key (kbd "M-g J") 'dumb-jump-go-other-window)
+(global-set-key (kbd "M-g j") 'dumb-jump-go)
+
+(add-hook 'xref-backend-functions #'dumb-jump-xref-activate t)
 
 ;;; youdao-dictionary
 (setq url-automatic-caching t
