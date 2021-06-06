@@ -21,6 +21,7 @@
 (setq elfeed-curl-extra-arguments '("--insecure"))
 
 (autoload 'elfeed "elfeed" "Rss reader in emacs." t)
+
 (pretty-hydra-define elfeed-show-hydra (:title "Elfeed Show" :quit-key "q")
   ("Show"
    (("+" elfeed-show-tag "tag")
@@ -47,7 +48,7 @@
     ("g" elfeed-search-update--force "force update")
     ("+" elfeed-search-tag-all "tag")
     ("-" elfeed-search-untag-all "untag")
-    ("b" elfeed-search-browse-url "browser" :exit t)
+    ("b" elfeed-search-browse-url "browse")
     (">" elfeed-search-last-entry "last")
     ("<" elfeed-search-first-entry "first")
     ("S" elfeed-search-set-filter "filter")
