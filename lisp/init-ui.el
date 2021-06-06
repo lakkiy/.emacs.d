@@ -114,6 +114,7 @@
     (set-fontset-font t '(#x4e00 . #x9fff) +font-cn)
     (set-fontset-font t 'symbol (font-spec :family +font-unicode) frame 'prepend)
     (set-frame-font +font nil (if frame (list frame) t))
+    (custom-set-faces `(variable-pitch ((t (:family +font-variable-pitch)))))
     (set-face-attribute 'fixed-pitch frame :font +font :height +font-height))
   ;;; ligature
   (when window-system

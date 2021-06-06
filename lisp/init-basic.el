@@ -17,6 +17,10 @@
   (cl-loop for font in '("Apple Color Emoji" "Segoe UI Symbol" "Symbola" "Symbol")
            when (font-installed-p font)
            return font))
+(defvar +font-variable-pitch
+  (cl-loop for font in '("Bookerly" "Overpass" "Verdana" "Lucida Grande")
+           when (font-installed-p font)
+           return font))
 (defvar +font-height (cond (sys/macp 130)
                            (t 110)))
 (defvar +use-header-line nil)
