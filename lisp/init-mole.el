@@ -68,12 +68,15 @@
     ("s" elfeed-search-live-filter "live filter")
     ("Q" elfeed-search-quit-window "quit" :exit t)
     ("c" elfeed-search-clear-filter "clear filter")
-    ("u" elfeed-search-tag-all-unread "tag all unread")
-    ("r" elfeed-search-untag-all-unread "untag all unread")
+    ("u" elfeed-search-tag-all-unread "unread")
+    ("r" elfeed-search-untag-all-unread "read")
     ("<tab>" elfeed-search-show-entry "show" :exit t))))
 
 (with-eval-after-load "elfeed"
-  (add-hook 'eww-mode-hook 'visual-line-mode)
+  (advice-add 'elfeed-search-browse-url
+              :before
+              #'elfeed-search-untag-all-unread)
+  (Add-hook 'eww-mode-hook 'visual-line-mode)
   (define-key elfeed-search-mode-map (kbd "C-c C-h") 'elfeed-search-hydra/body)
   (define-key elfeed-search-mode-map (kbd "t") '+elfeed-search-star-tag-all)
   (define-key elfeed-search-mode-map (kbd "T") '+elfeed-search-star-untag-all)
