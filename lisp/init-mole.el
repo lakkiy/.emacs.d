@@ -73,6 +73,7 @@
     ("<tab>" elfeed-search-show-entry "show" :exit t))))
 
 (with-eval-after-load "elfeed"
+  (add-hook 'eww-mode-hook 'visual-line-mode)
   (define-key elfeed-search-mode-map (kbd "C-c C-h") 'elfeed-search-hydra/body)
   (define-key elfeed-search-mode-map (kbd "t") '+elfeed-search-star-tag-all)
   (define-key elfeed-search-mode-map (kbd "T") '+elfeed-search-star-untag-all)
