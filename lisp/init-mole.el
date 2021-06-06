@@ -43,6 +43,14 @@
    (("k" elfeed-kill-buffer "buffer" :exit t)
     ("c" elfeed-kill-link-url-at-point "point url link" :exit t))))
 
+(defun +elfeed-search-star-tag-all ()
+  (interactive)
+  (elfeed-search-tag-all 'star))
+
+(defun +elfeed-search-star-untag-all ()
+  (interactive)
+  (elfeed-search-untag-all 'star))
+
 (pretty-hydra-define elfeed-search-hydra (:title "Elfeed Search" :quit-key "q")
   ("Search"
    (("y" elfeed-search-yank "yank")
@@ -50,6 +58,8 @@
     ("g" elfeed-search-update--force "force update")
     ("+" elfeed-search-tag-all "tag")
     ("-" elfeed-search-untag-all "untag")
+    ("t" +elfeed-search-star-tag-all "star")
+    ("T" +elfeed-search-star-untag-all "unstar")
     ("b" elfeed-search-browse-url "browse" :exit t)
     (">" elfeed-search-last-entry "last")
     ("<" elfeed-search-first-entry "first")
@@ -63,6 +73,8 @@
 
 (with-eval-after-load "elfeed"
   (define-key elfeed-search-mode-map (kbd "C-c C-h") 'elfeed-search-hydra/body)
+  (define-key elfeed-search-mode-map (kbd "t") '+elfeed-search-star-tag-all)
+  (define-key elfeed-search-mode-map (kbd "T") '+elfeed-search-star-untag-all)
   (define-key elfeed-show-mode-map (kbd "C-c C-h") 'elfeed-show-hydra/body)
   (elfeed-set-timeout 36000)
   ;; elfeed-protocol
