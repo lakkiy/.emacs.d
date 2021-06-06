@@ -24,6 +24,7 @@
  browse-url-browser-function 'eww-browse-url)
 
 (autoload 'elfeed "elfeed" "Rss reader in emacs." t)
+(global-set-key (kbd "C-x w") 'elfeed)
 
 (pretty-hydra-define elfeed-show-hydra (:title "Elfeed Show" :quit-key "q")
   ("Show"
