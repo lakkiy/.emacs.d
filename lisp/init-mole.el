@@ -18,7 +18,9 @@
 (autoload 'leetcode "leetcode" nil t)
 
 ;;; elfeed
-(setq elfeed-curl-extra-arguments '("--insecure"))
+(setq
+ elfeed-curl-extra-arguments '("--insecure")
+ browse-url-browser-function 'eww-browse-url)
 
 (autoload 'elfeed "elfeed" "Rss reader in emacs." t)
 
