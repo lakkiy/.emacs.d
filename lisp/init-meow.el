@@ -149,9 +149,9 @@
 (+pdump-packages 'meow)
 
 ;; meow
-(require 'meow)
-
-(meow-global-mode 1)
+(add-hook 'after-init-hook (lambda ()
+                             (require 'meow)
+                             (meow-global-mode 1)))
 
 (with-eval-after-load "meow"
   (add-to-list 'meow-mode-state-list '(jupyter-repl-mode . normal))
