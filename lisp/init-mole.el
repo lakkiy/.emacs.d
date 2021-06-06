@@ -19,6 +19,7 @@
 
 ;;; elfeed
 (setq
+ elfeed-search-filter "+unread "
  elfeed-curl-extra-arguments '("--insecure")
  browse-url-browser-function 'eww-browse-url)
 
