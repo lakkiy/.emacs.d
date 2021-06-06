@@ -7,6 +7,8 @@
  +font-height 130
  +use-header-line nil
  +theme 'minidark
+ +enable-proxy? nil
+ +proxy "127.0.0.1:7890"
  ;; for fever
  elfeed-feeds (list
                     (list "fever+https://user@myhost.com"

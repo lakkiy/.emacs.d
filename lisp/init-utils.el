@@ -12,10 +12,6 @@
   (>= emacs-major-version 28)
   "Emacs is 28 or above.")
 
-(defun font-installed-p (font-name)
-  "Check if font with FONT-NAME is available."
-  (find-font (font-spec :name font-name)))
-
 (defun +smart-file-name-cached ()
   (if (eq (buffer-name) (car +smart-file-name-cache))
       (cdr +smart-file-name-cache)
@@ -36,5 +32,25 @@ This function is slow, so we have to use cache."
       (file-relative-name bfn vc-dir))
      (bfn bfn)
      (t (buffer-name)))))
+
+(defun +proxy-http-enable ()
+  "Enable HTTP/HTTPS proxy."
+  (interactive)
+  (setq url-proxy-services
+        `(("http" . ,+proxy)
+          ("https" . ,+proxy)
+          ("no_proxy" . "^\\(localhost\\|192.168.*\\|10.*\\)"))))
+
+(defun proxy-http-disable ()
+  "Disable HTTP/HTTPS proxy."
+  (interactive)
+  (setq url-proxy-services nil))
+
+(defun proxy-http-toggle ()
+  "Toggle HTTP/HTTPS proxy."
+  (interactive)
+  (if (bound-and-true-p url-proxy-services)
+      (proxy-http-disable)
+    (proxy-http-enable)))
 
 (provide 'init-utils)
