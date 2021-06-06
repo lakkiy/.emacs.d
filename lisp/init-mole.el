@@ -50,7 +50,7 @@
     ("g" elfeed-search-update--force "force update")
     ("+" elfeed-search-tag-all "tag")
     ("-" elfeed-search-untag-all "untag")
-    ("b" elfeed-search-browse-url "browse")
+    ("b" elfeed-search-browse-url "browse" :exit t)
     (">" elfeed-search-last-entry "last")
     ("<" elfeed-search-first-entry "first")
     ("S" elfeed-search-set-filter "filter")
