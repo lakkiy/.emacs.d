@@ -65,7 +65,8 @@
                                      (face-remap-add-relative 'hl-line :box '(:line-width (-1 . -1))))))
 
 ;;; devdocs-browser
-(global-set-key (kbd "C-c D") 'devdocs-browser-open)
+(global-set-key (kbd "C-c b") 'devdocs-browser-open)
+(global-set-key (kbd "C-c B") 'devdocs-browser-open-in)
 
 ;;; oca TODO
 
