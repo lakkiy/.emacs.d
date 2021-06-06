@@ -76,7 +76,7 @@
   (advice-add 'elfeed-search-browse-url
               :before
               #'elfeed-search-untag-all-unread)
-  (Add-hook 'eww-mode-hook 'visual-line-mode)
+  (add-hook 'eww-mode-hook 'visual-line-mode)
   (define-key elfeed-search-mode-map (kbd "C-c C-h") 'elfeed-search-hydra/body)
   (define-key elfeed-search-mode-map (kbd "t") '+elfeed-search-star-tag-all)
   (define-key elfeed-search-mode-map (kbd "T") '+elfeed-search-star-untag-all)
