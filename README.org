@@ -20,11 +20,9 @@ or
 
 * Custom
 
-The default font is *Operator Mono Ssm Lig*, unicode font is
+See private-example.el
 
-*Apple Color Emoji*, you can change these in *lisp/private-example.el*
-
-and rename this file to *private.el*.
+Rename it to private.el.
 
 * Option
 
