@@ -53,6 +53,7 @@ If `\\[universal-argument]' is given, then attach clipboard as document."
 
 (defun yang/fixed-pitch-setup ()
   (interactive)
+  ;; TODO text-scale-increase is nice for look
   (setq buffer-face-mode-face '(:family "Sarasa Mono SC"))
   (buffer-face-mode +1))
 
