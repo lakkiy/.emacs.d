@@ -5,6 +5,7 @@
 (+pdump-packages 'notmuch)
 
 ;;; notmuch TODO
+;; add this to mbsyncrc on macos to fix AuthMechs PLAIN
 (setq
  notmuch-show-logo nil)
 
