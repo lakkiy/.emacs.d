@@ -91,7 +91,8 @@ If `\\[universal-argument]' is given, then attach clipboard as document."
  erc-lurker-hide-list '("JOIN" "PART" "QUIT")
  erc-auto-query 'bury
  erc-kill-buffer-on-part t
- erc-autojoin-channels-alist '(("irc.libera.chat" "#emacs")))
+ erc-autojoin-channels-alist '(("irc.libera.chat" "#emacs"))
+ erc-track-exclude '("#emacs"))
 
 (defun +erc ()
   (interactive)
