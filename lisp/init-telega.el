@@ -90,6 +90,6 @@ If `\\[universal-argument]' is given, then attach clipboard as document."
  erc-interpret-mirc-color t
  erc-lurker-hide-list '("JOIN" "PART" "QUIT")
  erc-auto-query 'bury
- erc-autojoin-channels-alist '(("irc-libera.chat" "#emacs")))
+ erc-autojoin-channels-alist '(("irc.libera.chat" "#emacs")))
 
 (provide 'init-telega)
