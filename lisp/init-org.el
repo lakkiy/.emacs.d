@@ -8,8 +8,10 @@
 (straight-use-package 'valign)
 (straight-use-package 'ob-go)
 (straight-use-package 'org-journal)
+(straight-use-package 'org-tree-slide)
 
 (+pdump-packages 'easy-hugo
+                 'org-tree-slide
                  'org-superstar
                  'org-roam
                  'org-roam-server
@@ -17,6 +19,29 @@
                  'valign
                  'ob-go
                  'org-journal)
+
+;;; org-tree-slide
+(setq org-tree-slide-header nil
+      org-tree-slide-slide-in-effect t
+      org-tree-slide-heading-emphasis nil
+      org-tree-slide-cursor-init t
+      org-tree-slide-modeline-display 'outside
+      org-tree-slide-skip-done nil
+      org-tree-slide-skip-comments t
+      org-tree-slide-skip-outline-level 3)
+
+(with-eval-after-load "org-tree-slide"
+  (define-key org-tree-slide-mode-map (kbd "<left>") 'org-tree-slide-move-previous-tree)
+  (define-key org-tree-slide-mode-map (kbd "<right>") 'org-tree-slide-move-next-tree)
+
+  (add-hook 'org-tree-slide-play-hook (lambda ()
+                                        (text-scale-increase 4)
+                                        (org-display-inline-images)
+                                        (read-only-mode 1)))
+  (add-hook 'org-tree-slide-stop-hook (lambda ()
+                                        (text-scale-increase 0)
+                                        (org-remove-inline-images)
+                                        (read-only-mode -1))))
 
 ;;; org
 (setq
