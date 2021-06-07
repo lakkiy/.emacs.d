@@ -9,7 +9,6 @@
 (straight-use-package '(oca :type git :host github :repo "lepisma/oca"))
 (straight-use-package '(devdocs :type git :host github :repo "astoff/devdocs.el"))
 (straight-use-package 'sr-speedbar)
-(straight-use-package 'notmuch)
 (straight-use-package 'esup)
 
 (+pdump-packages 'rainbow-mode
@@ -23,12 +22,6 @@
                  'devdocs-browser
                  'sr-speedbar
                  'notmuch)
-
-;;; notmuch TODO
-(setq
- notmuch-show-logo nil)
-
-(autoload 'notmuch "notmuch" "notmuch mail" t)
 
 ;;; sr-speedbar
 (setq

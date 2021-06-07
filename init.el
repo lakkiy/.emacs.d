@@ -29,6 +29,7 @@
 (require 'init-lisp)
 (require 'init-mole)
 (require 'init-markdown)
+(require 'init-mail)
 
 (require 'init-lsp)
 (require 'init-go)
