@@ -8,6 +8,7 @@
 ;; add this to mbsyncrc on macos to fix AuthMechs PLAIN
 (setq
  notmuch-show-logo nil
+ notmuch-search-oldest-first nil
  notmuch-search-result-format '(("date" . "%12s ")
                                 ("count" . "%-11s ")
                                 ("authors" . "%-20s ")
