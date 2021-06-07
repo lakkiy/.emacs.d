@@ -81,4 +81,15 @@ If `\\[universal-argument]' is given, then attach clipboard as document."
   (require 'telega-mnz)
   (global-telega-mnz-mode 1))
 
+;;; erc
+(setq
+ erc-server "irc.libera.chat"
+ erc-nick "Jack.L"
+ erc-user-full-name "Jack.L"
+ erc-rename-buffers t
+ erc-interpret-mirc-color t
+ erc-lurker-hide-list '("JOIN" "PART" "QUIT")
+ erc-auto-query 'bury
+ erc-autojoin-channels-alist '(("irc-libera.chat" "#emacs")))
+
 (provide 'init-telega)
