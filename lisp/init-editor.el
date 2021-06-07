@@ -12,8 +12,12 @@
 (straight-use-package 'writeroom-mode)
 (straight-use-package 'youdao-dictionary)
 (straight-use-package 'dumb-jump)
+(straight-use-package 'iscroll)
+(straight-use-package 'good-scroll)
 
 (+pdump-packages 'vundo
+                 'good-scroll
+                 'iscroll
                  'insert-char-preview
                  'auto-save
                  'insert-translated-name
@@ -25,6 +29,16 @@
                  'writeroom-mode
                  'dumb-jump
                  'youdao-dictionary)
+
+;;; good-scroll : Good pixel line scrolling
+(add-hook 'after-init-hook 'good-scroll-mode)
+
+(with-eval-after-load "good-scroll"
+  (global-set-key [remap next] 'good-scroll-up-full-screen)
+  (global-set-key [remap prior] 'good-scroll-down-full-screen))
+
+;;; iscroll : Smooth scrolling over images
+(add-hook 'after-init-hook 'iscroll-mode)
 
 ;;; dumb-jump
 (setq

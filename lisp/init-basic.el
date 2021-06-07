@@ -114,12 +114,14 @@
  ;; Vertical Scroll
  scroll-step 1
  scroll-margin 15
- scroll-conservatively 101
+ scroll-conservatively 100000
  scroll-up-aggressively 0.01
  scroll-down-aggressively 0.01
+ scroll-preserve-screen-position t
  auto-window-vscroll nil
  fast-but-imprecise-scrolling nil
- mouse-wheel-scroll-amount '(1 ((shift) . 1))
+ ;; use shift + mouse wheel to scrll horizontally
+ mouse-wheel-scroll-amount '(1 ((shift) . hscroll))
  mouse-wheel-progressive-speed nil
  ;; Horizontal Scroll
  hscroll-step 1
