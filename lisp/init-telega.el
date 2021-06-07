@@ -93,4 +93,11 @@ If `\\[universal-argument]' is given, then attach clipboard as document."
  erc-kill-buffer-on-part t
  erc-autojoin-channels-alist '(("irc.libera.chat" "#emacs")))
 
+(defun +erc ()
+  (interactive)
+  (erc-tls :server "irc.libera.chat"
+           :port 6697
+           :nick "Jack.L"
+           :password +erc-password))
+
 (provide 'init-telega)

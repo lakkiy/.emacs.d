@@ -36,4 +36,6 @@
 
 (defvar +proxy "127.0.0.1:7890")
 
+(defvar +erc-password "")
+
 (provide 'init-var)

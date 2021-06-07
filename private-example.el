@@ -9,6 +9,7 @@
  +theme 'minidark
  +enable-proxy? nil
  +proxy "127.0.0.1:7890"
+ +erc-password ""
  ;; for fever
  elfeed-feeds (list
                     (list "fever+https://user@myhost.com"
