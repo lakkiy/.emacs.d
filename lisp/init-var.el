@@ -17,8 +17,8 @@
   "Emacs is 28 or above.")
 
 (defvar +font
-  (cl-loop for font in '("Operator Mono SSm Lig" "SF Mono" "Monaco" "Sarasa Mono SC" "Consolas"
-                         "DejaVu Sans Mono")
+  (cl-loop for font in '("Operator Mono SSm Lig" "SF Mono" "Monaco"
+                         "Sarasa Mono SC" "Consolas" "DejaVu Sans Mono")
            when (font-installed-p font)
            return font))
 
@@ -32,6 +32,7 @@
            when (font-installed-p font)
            return font))
 
+;; FIXME didn't get this font in daemon
 (defvar +font-variable-pitch
   (cl-loop for font in '("Bookerly" "Overpass" "Verdana" "Lucida Grande")
            when (font-installed-p font)

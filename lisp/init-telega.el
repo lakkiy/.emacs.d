@@ -83,7 +83,7 @@ If `\\[universal-argument]' is given, then attach clipboard as document."
 
 ;;; erc
 (setq
- erc-server "irc.libera.chat"
+ erc-server "irc.ea.libera.chat"
  erc-nick "Jack.L"
  erc-user-full-name "Bo Liu"
  erc-rename-buffers t
@@ -91,12 +91,12 @@ If `\\[universal-argument]' is given, then attach clipboard as document."
  erc-lurker-hide-list '("JOIN" "PART" "QUIT")
  erc-auto-query 'bury
  erc-kill-buffer-on-part t
- erc-autojoin-channels-alist '(("irc.libera.chat" "#emacs"))
+ erc-autojoin-channels-alist '(("irc.ea.libera.chat" "#emacs"))
  erc-track-exclude '("#emacs"))
 
 (defun +erc ()
   (interactive)
-  (erc-tls :server "irc.libera.chat"
+  (erc-tls :server "irc.ea.libera.chat"
            :port 6697
            :nick "Jack.L"
            :password +erc-password))
