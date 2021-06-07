@@ -398,6 +398,8 @@
    `(markdown-url-face                    ((t (:foreground ,salient))))
 
    ;; Notmuch TODO
+   ;; TODO add color to tag and author
+   ;; TODO add color of notmuch-tree
    `(notmuch-tag-face                     ((t (:foreground ,faded))))
    `(notmuch-tag-unread                   ((t (:foreground ,faded))))
    `(notmuch-search-date                  ((t (:foreground ,faded))))

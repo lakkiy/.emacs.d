@@ -13,7 +13,8 @@
                                 ("count" . "%-11s ")
                                 ("authors" . "%-20s ")
                                 ("subject" . "%s ")
-                                ("tags" . "(%s)")))
+                                ("tags" . "(%s)"))
+ notmuch-show-empty-searches t)
 
 (autoload 'notmuch "notmuch" "notmuch mail" t)
 
