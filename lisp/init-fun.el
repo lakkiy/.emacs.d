@@ -7,7 +7,7 @@
 (straight-use-package '(twidget :type git :host github :repo "Kinneyzhang/twidget"))
 (straight-use-package '(popper :type git :host github :repo "karthink/popper"))
 (straight-use-package '(oca :type git :host github :repo "lepisma/oca"))
-(straight-use-package '(devdocs-browser :type git :host github :repo "blahgeek/emacs-devdocs-browser"))
+(straight-use-package '(devdocs :type git :host github :repo "astoff/devdocs.el"))
 (straight-use-package 'sr-speedbar)
 (straight-use-package 'notmuch)
 (straight-use-package 'esup)
@@ -64,9 +64,8 @@
                                      (face-remap-add-relative 'default :height 0.8)
                                      (face-remap-add-relative 'hl-line :box '(:line-width (-1 . -1))))))
 
-;;; devdocs-browser
-(global-set-key (kbd "C-c b") 'devdocs-browser-open)
-(global-set-key (kbd "C-c B") 'devdocs-browser-open-in)
+;;; devdocs
+(global-set-key (kbd "C-c b") 'devdocs-lookup)
 
 ;;; oca TODO
 
