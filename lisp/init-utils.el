@@ -1,17 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(defconst sys/macp
-  (eq system-type 'darwin)
-  "Are we running on a Mac system?")
-
-(defconst sys/linuxp
-  (eq system-type 'gnu/linux)
-  "Are we running on a GNU/Linux system?")
-
-(defconst emacs/>=28p
-  (>= emacs-major-version 28)
-  "Emacs is 28 or above.")
-
 (defun +smart-file-name-cached ()
   (if (eq (buffer-name) (car +smart-file-name-cache))
       (cdr +smart-file-name-cache)

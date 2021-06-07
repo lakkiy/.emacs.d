@@ -4,6 +4,18 @@
   "Check if font with FONT-NAME is available."
   (find-font (font-spec :name font-name)))
 
+(defconst sys/macp
+  (eq system-type 'darwin)
+  "Are we running on a Mac system?")
+
+(defconst sys/linuxp
+  (eq system-type 'gnu/linux)
+  "Are we running on a GNU/Linux system?")
+
+(defconst emacs/>=28p
+  (>= emacs-major-version 28)
+  "Emacs is 28 or above.")
+
 (defvar +font
   (cl-loop for font in '("Operator Mono SSm Lig" "SF Mono" "Monaco" "Sarasa Mono SC" "Consolas"
                          "DejaVu Sans Mono")
