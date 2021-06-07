@@ -85,7 +85,7 @@ If `\\[universal-argument]' is given, then attach clipboard as document."
 (setq
  erc-server "irc.libera.chat"
  erc-nick "Jack.L"
- erc-user-full-name "Jack.L"
+ erc-user-full-name "Bo Liu"
  erc-rename-buffers t
  erc-interpret-mirc-color t
  erc-lurker-hide-list '("JOIN" "PART" "QUIT")
