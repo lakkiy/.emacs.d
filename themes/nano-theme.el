@@ -401,7 +401,8 @@
    `(notmuch-tag-face                     ((t (:foreground ,faded))))
    `(notmuch-tag-unread                   ((t (:foreground ,faded))))
    `(notmuch-search-date                  ((t (:foreground ,faded))))
-   `(notmuch-tag-deleted                  ((t (:strike-through ,critical))))
+   `(notmuch-tag-deleted                  ((t (:strike-through ,popout))))
+   `(notmuch-tag-added                    ((t (:underline ,popout))))
 
    ;; Mu4e
    `(mu4e-attach-number-face              ((t (:foreground ,foreground :bold t))))
