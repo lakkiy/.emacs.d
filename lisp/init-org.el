@@ -162,7 +162,9 @@ prepended to the element after the #+HEADER: tag."
  org-agenda-files (list org-directory)
  org-agenda-diary-file (expand-file-name "diary.org" org-directory))
 
-(global-set-key (kbd "<f12>") 'org-agenda)
+(global-set-key (kbd "C-c a") 'org-agenda)
+
+;; TODO hydra for org agenda
 
 ;;; org-capture
 (global-set-key (kbd "C-c c") 'org-capture)
