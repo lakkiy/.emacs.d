@@ -38,7 +38,7 @@
   (global-set-key [remap prior] 'good-scroll-down-full-screen))
 
 ;;; iscroll : Smooth scrolling over images
-(add-hook 'after-init-hook 'iscroll-mode)
+(add-hook 'eww-mode-hook 'iscroll-mode)
 
 ;;; dumb-jump
 (setq
