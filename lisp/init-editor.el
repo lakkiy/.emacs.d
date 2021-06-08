@@ -34,8 +34,8 @@
 (add-hook 'after-init-hook 'good-scroll-mode)
 
 (with-eval-after-load "good-scroll"
-  (global-set-key [remap next] 'good-scroll-up-full-screen)
-  (global-set-key [remap prior] 'good-scroll-down-full-screen))
+  (global-set-key [next] #'good-scroll-up-full-screen)
+  (global-set-key [prior] #'good-scroll-down-full-screen))
 
 ;;; iscroll : Smooth scrolling over images
 (add-hook 'eww-mode-hook 'iscroll-mode)
