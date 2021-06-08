@@ -15,7 +15,7 @@
  telega-symbol-reply "↫"
  ;; set date format for old messages
  telega-old-date-format "%Y/%M/%D"
- telega-proxies '((:server "localhost" :port 7890 :enable t :type (:@type "proxyTypeSocks5"))))
+ telega-proxies '((:server "localhost" :port 7890 :enable nil :type (:@type "proxyTypeSocks5"))))
 
 (autoload #'telega "telega" nil t)
 
@@ -87,7 +87,7 @@ If `\\[universal-argument]' is given, then attach clipboard as document."
 (setq
  erc-server "irc.ea.libera.chat"
  erc-nick "Jack.L"
- erc-user-full-name "Bo Liu"
+ erc-user-full-name "Liu Bo"
  erc-rename-buffers t
  erc-interpret-mirc-color t
  erc-lurker-hide-list '("JOIN" "PART" "QUIT")

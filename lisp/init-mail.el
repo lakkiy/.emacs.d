@@ -31,7 +31,7 @@
 ;;; sendmail and smtpmail
 ;; TODO gpg encrypt gmail app password in ~/.authinfo
 (setq
- user-full-name "Bo Liu"
+ user-full-name "Liu Bo"
  user-mail-address "liubolovelife@gmail.com"
  send-mail-function #'smtpmail-send-it
  smtpmail-default-smtp-server "smtp.gmail.com"
