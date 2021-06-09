@@ -65,17 +65,19 @@
   :type 'boolean
   :group 'nano-theme)
 
-;; TODO
-(defcustom nano-theme-system-appearance nil
+(defcustom nano-theme-system-appearance t
   "Related the system appearance. Only available on macOS."
   :type 'boolean
   :group 'nano-theme)
 
 (defun nano-theme--light?dark (light dark)
   "Determine using the LIGHT or the DARK color of nano-theme."
-  (if (eq nano-theme-light/dark 'light)
-      light
-    dark))
+  (if (and (featurep 'ns) nano-theme-system-appearance)
+      (cond ((eq ns-system-appearance 'light) light)
+            ((eq ns-system-appearance 'dark) dark))
+    (if (eq nano-theme-light/dark 'light)
+        light
+      dark)))
 (defalias '--l?d #'nano-theme--light?dark)
 
 (let ((foreground (--l?d "#37474F" "#ECEFF4"))
