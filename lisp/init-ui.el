@@ -25,6 +25,20 @@
                  'emojify
                  'solaire-mode)
 
+;;; nano-theme.el
+(setq
+ nano-theme-light/dark 'light
+ nano-theme-comment-italic nil
+ nano-theme-keyword-italic nil
+ nano-theme-system-appearance t)
+
+;; auto change theme after system apearance changed
+(when (featurep 'ns)
+  (add-to-list 'ns-system-appearance-change-functions
+               (lambda (l?d)
+                 (setq nano-theme-light/dark 'l?d)
+                 (+change-theme 'nano))))
+
 ;;; doom-themes
 (setq doom-themes-enable-bold t
       doom-themes-enable-italic t)
