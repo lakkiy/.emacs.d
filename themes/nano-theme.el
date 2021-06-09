@@ -65,6 +65,12 @@
   :type 'boolean
   :group 'nano-theme)
 
+;; TODO
+(defcustom nano-theme-system-appearance nil
+  "Related the system appearance. Only available on macOS."
+  :type 'boolean
+  :group nano-theme)
+
 (defun nano-theme--light?dark (light dark)
   "Determine using the LIGHT or the DARK color of nano-theme."
   (if (eq nano-theme-light/dark 'light)
