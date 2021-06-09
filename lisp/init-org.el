@@ -155,6 +155,7 @@ prepended to the element after the #+HEADER: tag."
 
 ;;; org-journal
 (setq
+ org-journal-file-format "%Y-%m-%d"
  org-journal-enable-agenda-integration t
  org-journal-dir (expand-file-name "journal" org-directory))
 
