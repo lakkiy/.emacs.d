@@ -10,8 +10,10 @@
 (straight-use-package '(devdocs :type git :host github :repo "astoff/devdocs.el"))
 (straight-use-package 'sr-speedbar)
 (straight-use-package 'esup)
+(straight-use-package 'vterm)
 
 (+pdump-packages 'rainbow-mode
+                 'vterm
                  'docstr
                  'esup
                  'restclient

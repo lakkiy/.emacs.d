@@ -41,6 +41,10 @@
 (global-set-key (kbd "C-h C-f") 'describe-funtion)
 
 (setq-default
+ ;; Always use file cache when using tramp
+ remote-file-name-inhibit-cache nil
+ ;; C-x C-f /ssh:
+ tramp-default-method "ssh"
  ;; Close up of MacOs
  ring-bell-function 'ignore
  ;; no start messages
