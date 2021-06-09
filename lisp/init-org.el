@@ -157,6 +157,8 @@ prepended to the element after the #+HEADER: tag."
 (setq
  org-journal-dir (expand-file-name "journal" org-directory))
 
+(global-set-key (kbd "C-c C-j") 'org-journal-new-entry)
+
 ;;; org-agenda
 (setq
  org-agenda-files (list org-directory)
