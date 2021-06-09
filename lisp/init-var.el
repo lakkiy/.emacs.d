@@ -23,7 +23,7 @@
            return font))
 
 (defvar +font-cn
-  (cl-loop for font in '("WenQuanYi Micro Hei" "Microsoft Yahei")
+  (cl-loop for font in '("FZSuXinShiLiuKaiS-R-GB" "WenQuanYi Micro Hei" "Microsoft Yahei")
            when (font-installed-p font)
            return font))
 
