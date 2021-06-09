@@ -45,6 +45,15 @@
 
 ;;; org
 (setq
+ ;; hide markup for =monospace=, ~code~, /italic/, *bold* etc.
+ org-hide-emphasis-markers t
+ ;; fontify code in code blocks
+ org-src-fontify-natively t
+ ;; place tags directly after headline text, with only one space in between
+ org-tags-column 0
+ ;; Highlight latex text in org mode
+ org-highlight-latex-and-related '(latex script entities)
+ org-src-window-setup 'current-window
  org-log-done t
  org-directory "~/Dropbox/org"
  org-html-checkbox-type 'unicode
@@ -137,6 +146,7 @@ prepended to the element after the #+HEADER: tag."
 (with-eval-after-load "org"
   ;;; valign
   (add-hook 'org-mode-hook #'valign-mode)
+  (add-hook 'org-mode-hook #'visual-line-mode)
 
   (require 'org-tempo)
   (require 'ob)
