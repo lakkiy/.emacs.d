@@ -9,8 +9,10 @@
 (straight-use-package 'ob-go)
 (straight-use-package 'org-super-agenda)
 (straight-use-package 'doct)
+(straight-use-package 'org-journal)
 
 (+pdump-packages 'easy-hugo
+                 'org-journal
                  'doct
                  'org-superstar
                  'org-roam
@@ -147,30 +149,72 @@ prepended to the element after the #+HEADER: tag."
 (global-set-key (kbd "C-c a") 'org-agenda)
 
 ;; TODO hydra for org agenda
+;; TODO group journal and not display in default
 ;; TODO org super agenda
 
 ;;; doct : Declarative Org Capture Templates
 (autoload 'doct "doct")
 
+;;; org-journal
+(setq
+ org-journal-file-type 'yearly
+ org-journal-dir (concat org-directory "/journal/")
+ org-journal-file-format "%Y"
+ org-journal-date-format "%Y 年 %m 月 %d 日 %A")
+
+(defun org-journal-find-location ()
+  ;; Open today's journal, but specify a non-nil prefix argument in order to
+  ;; inhibit inserting the heading; org-capture will insert the heading.
+  (org-journal-new-entry t)
+  ;; Position point on the journal's top-level heading so that org-capture
+  ;; will add the new entry as a child entry.
+  (goto-char (point-min)))
+
 ;;; org-capture
-;; TODO use captura ro replacs org-journal
 (global-set-key (kbd "C-c c") 'org-capture)
 
+(defun get-year-and-month ()
+  (list (format-time-string "%Y年") (format-time-string "%m月")))
+
+(defun find-month-tree ()
+  (let* ((path (get-year-and-month))
+         (level 1)
+         end)
+    (unless (derived-mode-p 'org-mode)
+      (error "Target buffer \"%s\" should be in Org mode" (current-buffer)))
+    (goto-char (point-min))
+    (dolist (heading path)
+      (let ((re (format org-complex-heading-regexp-format
+                        (regexp-quote heading)))
+            (cnt 0))
+        (if (re-search-forward re end t)
+            (goto-char (point-at-bol))
+          (progn
+            (or (bolp) (insert "\n"))
+            (if (/= (point) (point-min)) (org-end-of-subtree t t))
+            (insert (make-string level ?*) " " heading "\n"))))
+      (setq level (1+ level))
+      (setq end (save-excursion (org-end-of-subtree t t))))
+    (org-end-of-subtree)))
+
 (setq
- org-default-notes-file (concat org-directory "/cap.org")
- ;;; TODO
- ;; journal 没必要连接到 file 的地方， 但是最好加上时间显示在 agenda 中
+ org-default-notes-file (concat org-directory "/default-notes.org")
  org-capture-templates
- '(("i" "Idea" entry (file org-default-notes-file)
-    "*  %^{Title} %?\n%U\n%a\n")
-   ("t" "Todo" entry (file org-default-notes-file)
-    "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
-   ("n" "Note" entry (file org-default-notes-file)
-    "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
-   ("j" "Journal" entry (file+olp+datetree org-default-notes-file)
-    "*  %^{Title} %?\n%U\n%a\n" :clock-in t :clock-resume t)
-   ("b" "Book" entry (file+olp+datetree org-default-notes-file)
-    "* Topic: %^{Description}  %^g %? Added: %U")))
+ (doct '(("Work" :keys "w" :file "~/Dropbox/org/work.org"
+          :datetree t
+          :tree-type week
+          :template ("* %^{Description}"
+                     ":PROPERITIES:"
+                     ":Created: %T" ;; used to create weekly report
+                     ":END:"))
+         ("Journal" :keys "j"
+          :function (lambda () (org-journal-find-location))
+          :clock-in t :clock-resume t
+          :template ("* %(format-time-string org-journal-time-format) %^{Title}"
+                     "  %i%?"))
+         ("Billing" :keys "b" :type plain :file "~/Dropbox/org/billing.org"
+          :function (lambda () (find-month-tree))
+          :template (" | %U | %^{类别} | %^{描述} | %^{金额} |")))))
 
 ;;; easy-hugo
 (setq
@@ -184,16 +228,14 @@ prepended to the element after the #+HEADER: tag."
 
 ;;; org-superstar
 (setq
- org-superstar-leading-bullet ?\s
- org-superstar-headline-bullets-list '("♥" "✿" "❀" "☢" "✸" "◉")
- org-superstar-item-bullet-alist '((?* . ?☯) (?+ . ?✚) (?- . ?▶)))
+ org-superstar-leading-bullet ?\s)
 
 (autoload #'org-superstar-mode "org-superstar")
 
 (add-hook 'org-mode-hook 'org-superstar-mode)
 
 ;;; org-roam
-(setq org-roam-directory "~/Dropbox/org")
+(setq org-roam-directory (concat org-directory "/roam/"))
 
 (with-eval-after-load "org-roam"
   (define-key org-roam-mode-map (kbd "C-x C-r l") 'org-roam)
