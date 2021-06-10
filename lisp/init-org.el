@@ -7,10 +7,14 @@
 (straight-use-package '(org-transclusion :type git :host github :repo "nobiot/org-transclusion"))
 (straight-use-package 'valign)
 (straight-use-package 'ob-go)
+(straight-use-package 'org-super-agenda)
+(straight-use-package 'doct)
 
 (+pdump-packages 'easy-hugo
+                 'doct
                  'org-superstar
                  'org-roam
+                 'org-super-agenda
                  'org-roam-server
                  'org-transclusion
                  'valign
@@ -143,6 +147,10 @@ prepended to the element after the #+HEADER: tag."
 (global-set-key (kbd "C-c a") 'org-agenda)
 
 ;; TODO hydra for org agenda
+;; TODO org super agenda
+
+;;; doct : Declarative Org Capture Templates
+(autoload 'doct "doct")
 
 ;;; org-capture
 ;; TODO use captura ro replacs org-journal
