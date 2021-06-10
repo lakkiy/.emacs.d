@@ -12,6 +12,7 @@
 (straight-use-package 'doom-themes)
 (straight-use-package 'emojify)
 (straight-use-package 'solaire-mode)
+(straight-use-package 'berrys-theme)
 
 (+pdump-packages 'ligature
                  ;; 'modus-theme
