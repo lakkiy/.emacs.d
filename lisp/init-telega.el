@@ -19,20 +19,6 @@
 
 (autoload #'telega "telega" nil t)
 
-;; set char width for certain characters
-(defun blaenk/set-char-widths (alist)
-  (while (char-table-parent char-width-table)
-    (setq char-width-table (char-table-parent char-width-table)))
-  (dolist (pair alist)
-    (let ((width (car pair))
-          (chars (cdr pair))
-          (table (make-char-table nil)))
-      (dolist (char chars)
-        (set-char-table-range table char width))
-      (optimize-char-table table)
-      (set-char-table-parent table char-width-table)
-      (setq char-width-table table))))
-
 ;; pgtk emacs does not support copying image from clipboard, a simple workaround
 (define-advice telega-chatbuf-attach-clipboard (:override (doc-p) yang)
   "Attach clipboard image to the chatbuf as photo.
@@ -65,20 +51,8 @@ If `\\[universal-argument]' is given, then attach clipboard as document."
   (add-hook 'telega-chat-mode-hook #'yang/fixed-pitch-setup)
   ;; ignore blocked user
   (add-hook 'telega-msg-ignore-predicates 'telega-msg-from-blocked-sender-p)
-
   (add-hook 'telega-chat-mode #'yas-minor-mode-on)
-  (add-hook 'telega-chat-mode (lambda ()
-                                (set-company-backend! 'telega-chat-mode
-                                                      (append '(telega-company-emoji
-                                                                telega-company-username
-                                                                telega-company-hashtag)
-                                                              (when (telega-chat-bot-p telega-chatbuf--chat)
-                                                                '(telega-company-botcmd))))))
 
-  (blaenk/set-char-widths
-   '((2 . (?— ?… ?🅥 ?⌕ ))
-     (3 . (?㊙ ?💉 ?🌊 ?🇨 ?🇳 ?🚴 ?🚗 ?📖
-               ?🏎 ))))
   ;; syntax highlighting in telega code
   (require 'telega-mnz)
   (global-telega-mnz-mode 1))
