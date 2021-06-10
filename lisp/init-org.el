@@ -7,18 +7,14 @@
 (straight-use-package '(org-transclusion :type git :host github :repo "nobiot/org-transclusion"))
 (straight-use-package 'valign)
 (straight-use-package 'ob-go)
-(straight-use-package 'org-journal)
-(straight-use-package 'org-tree-slide)
 
 (+pdump-packages 'easy-hugo
-                 'org-tree-slide
                  'org-superstar
                  'org-roam
                  'org-roam-server
                  'org-transclusion
                  'valign
-                 'ob-go
-                 'org-journal)
+                 'ob-go)
 
 ;;; org-tree-slide
 (setq org-tree-slide-header nil
@@ -163,14 +159,6 @@ prepended to the element after the #+HEADER: tag."
                                            (org-hydra/body)
                                          (self-insert-command 1)))))
 
-;;; org-journal
-(setq
- org-journal-file-format "%Y-%m-%d"
- org-journal-enable-agenda-integration t
- org-journal-dir (expand-file-name "journal" org-directory))
-
-(global-set-key (kbd "C-c C-j") 'org-journal-new-entry)
-
 ;;; org-agenda
 (setq
  org-agenda-files (list org-directory)
@@ -181,6 +169,7 @@ prepended to the element after the #+HEADER: tag."
 ;; TODO hydra for org agenda
 
 ;;; org-capture
+;; TODO use captura ro replacs org-journal
 (global-set-key (kbd "C-c c") 'org-capture)
 
 (setq
