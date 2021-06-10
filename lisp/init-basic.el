@@ -117,7 +117,7 @@
  tab-bar-new-tab-choice "*scratch*"
  ;; Vertical Scroll
  scroll-step 1
- scroll-margin 15
+ scroll-margin 0
  scroll-conservatively 100000
  scroll-up-aggressively 0.01
  scroll-down-aggressively 0.01
