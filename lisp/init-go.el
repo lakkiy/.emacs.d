@@ -66,13 +66,9 @@
   ;; Try to install go tools if `gopls' is not found
   (unless (executable-find "gopls")
     (go-update-tools))
+
   (add-hook 'go-mode-hook 'eglot-ensure)
   (add-hook 'before-save-hook 'gofmt-before-save)
-  ;; unbind godef-jump, it's too slow and this key for org journal
-  (add-hook 'go-mode-hook
-            (lambda()
-              (local-unset-key (kbd "C-c C-j"))))
-
   (add-hook 'go-test-mode-hook 'visual-line-mode)
 
   ;;; flymake-golangci
