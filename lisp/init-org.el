@@ -138,8 +138,7 @@ prepended to the element after the #+HEADER: tag."
 
 ;;; org-agenda
 (setq
- org-agenda-files (list org-directory)
- org-agenda-diary-file (expand-file-name "diary.org" org-directory))
+ org-agenda-files (list org-directory))
 
 (global-set-key (kbd "C-c a") 'org-agenda)
 
