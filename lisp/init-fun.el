@@ -11,9 +11,13 @@
 (straight-use-package 'sr-speedbar)
 (straight-use-package 'esup)
 (straight-use-package 'vterm)
+(straight-use-package 'tree-sitter)
+(straight-use-package 'tree-sitter-langs)
 
 (+pdump-packages 'rainbow-mode
                  'vterm
+                 'tree-sitter
+                 'tree-sitter-langs
                  'docstr
                  'esup
                  'restclient
