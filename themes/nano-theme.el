@@ -158,6 +158,7 @@
    `(speedbar-tag-face                    ((t (:foreground ,faded))))
 
    ;; Bookmark
+   `(bookmark-face                        ((t (:foreground ,salient))))
    `(bookmark-menu-heading                ((t (:foreground ,foreground :bold t))))
    `(bookmark-menu-bookmark               ((t (:foreground ,salient))))
 
