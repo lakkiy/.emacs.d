@@ -155,6 +155,7 @@
 
 (with-eval-after-load "meow"
   (add-to-list 'meow-mode-state-list '(debugger-mode . normal))
+  (add-to-list 'meow-mode-state-list '(ielm-mode . normal))
   ;; 狗哥说这个 gui 下也能 C-[ 退回到 normal
   (add-hook 'meow-mode-hook #'meow-esc-mode)
   (meow-setup-line-number)

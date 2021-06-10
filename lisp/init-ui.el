@@ -13,6 +13,7 @@
 (straight-use-package 'emojify)
 (straight-use-package 'solaire-mode)
 (straight-use-package 'berrys-theme)
+(straight-use-package 'nyan-mode)
 
 (+pdump-packages 'ligature
                  ;; 'modus-theme
@@ -23,6 +24,7 @@
                  ;; 'minimal-theme
                  ;; 'tao-theme
                  ;; 'doom-themes
+                 'nyan-mode
                  'emojify
                  'solaire-mode)
 
