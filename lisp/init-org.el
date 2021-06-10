@@ -200,19 +200,19 @@ prepended to the element after the #+HEADER: tag."
 (setq
  org-default-notes-file (concat org-directory "/default-notes.org")
  org-capture-templates
- (doct '(("Work" :keys "w" :file "~/Dropbox/org/work.org"
+ (doct '(("work" :keys "w" :file "~/Dropbox/org/work.org"
           :datetree t
           :tree-type week
           :template ("* %^{Description}"
                      ":PROPERITIES:"
                      ":Created: %T" ;; used to create weekly report
                      ":END:"))
-         ("Journal" :keys "j"
+         ("journal" :keys "j"
           :function (lambda () (org-journal-find-location))
           :clock-in t :clock-resume t
           :template ("* %(format-time-string org-journal-time-format) %^{Title}"
                      "  %i%?"))
-         ("Billing" :keys "b" :type plain :file "~/Dropbox/org/billing.org"
+         ("billing" :keys "b" :type plain :file "~/Dropbox/org/billing.org"
           :function (lambda () (find-month-tree))
           :template (" | %U | %^{类别} | %^{描述} | %^{金额} |")))))
 

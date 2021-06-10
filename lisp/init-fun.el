@@ -13,6 +13,8 @@
 (straight-use-package 'vterm)
 (straight-use-package 'tree-sitter)
 (straight-use-package 'tree-sitter-langs)
+(straight-use-package '(svg-tag-mode :type git :host github :repo "rougier/svg-tag-mode"))
+(straight-use-package '(svg-lib :type git :host github :repo "rougier/svg-lib"))
 
 (+pdump-packages 'rainbow-mode
                  'vterm
@@ -28,6 +30,8 @@
                  'devdocs-browser
                  'sr-speedbar
                  'notmuch)
+
+;;; TODO svg-lib/svg-tag-mode
 
 ;;; tree-sitter
 ;; (add-hook 'go-mode-hook 'tree-sitter-mode)
