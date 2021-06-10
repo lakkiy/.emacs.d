@@ -158,6 +158,8 @@ prepended to the element after the #+HEADER: tag."
 
 (setq
  org-default-notes-file (concat org-directory "/cap.org")
+ ;;; TODO
+ ;; journal 没必要连接到 file 的地方， 但是最好加上时间显示在 agenda 中
  org-capture-templates
  '(("i" "Idea" entry (file org-default-notes-file)
     "*  %^{Title} %?\n%U\n%a\n")
