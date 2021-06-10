@@ -29,6 +29,13 @@
                  'sr-speedbar
                  'notmuch)
 
+;;; tree-sitter
+;; (add-hook 'go-mode-hook 'tree-sitter-mode)
+;; (add-hook 'go-mode-hook 'tree-sitter-hl-mode)
+
+(with-eval-after-load "tree-sitter"
+  (require 'tree-sitter-langs))
+
 ;;; sr-speedbar
 (setq
  ;; speed bar
