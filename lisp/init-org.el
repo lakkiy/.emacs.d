@@ -4,15 +4,18 @@
 (straight-use-package 'org-superstar)
 (straight-use-package 'org-roam)
 (straight-use-package 'org-roam-server)
-(straight-use-package 'org-roam-bibtex)
 (straight-use-package '(org-transclusion :type git :host github :repo "nobiot/org-transclusion"))
 (straight-use-package 'valign)
 (straight-use-package 'ob-go)
 (straight-use-package 'org-super-agenda)
 (straight-use-package 'doct)
 (straight-use-package 'org-journal)
+(straight-use-package 'restclient)
+(straight-use-package 'ob-restclient)
 
 (+pdump-packages 'easy-hugo
+                 'restclient
+                 'ob-restclient
                  'org-journal
                  'doct
                  'org-superstar
@@ -23,6 +26,9 @@
                  'org-transclusion
                  'valign
                  'ob-go)
+
+;; restclient
+(autoload 'restclient-mode "restclient" nil t)
 
 ;;; org
 (setq
@@ -256,8 +262,5 @@ prepended to the element after the #+HEADER: tag."
 
   ;; https://www.orgroam.com/manual.html#Roam-Protocol
   (require 'org-roam-protocol))
-
-;;; TODO org-roam-server
-;;; TODO org-roam-bibtex
 
 (provide 'init-org)

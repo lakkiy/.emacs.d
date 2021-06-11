@@ -12,17 +12,19 @@
 
 ;;; fish-mode
 (with-eval-after-load "fish-mode"
-  (add-hook 'fish-mode-hook (lambda ()
-                              (add-hook 'before-save-hook
-                                        #'fish_indent-before-save))))
+  (add-hook 'fish-mode-hook
+            (lambda ()
+              (add-hook 'before-save-hook
+                        #'fish_indent-before-save))))
 
 ;;; docker
 (autoload 'docker "docker" nil t)
 
 ;;; protobuf-mode
 (with-eval-after-load "protobuf-mode"
-  (add-hook 'protobuf-mode-hook (lambda ()
-                                  (setq imenu-generic-expression
-                                        '((nil "^[[:space:]]*\\(message\\|service\\|enum\\)[[:space:]]+\\([[:alnum:]]+\\)" 2))))))
+  (add-hook 'protobuf-mode-hook
+            (lambda ()
+              (setq imenu-generic-expression
+                    '((nil "^[[:space:]]*\\(message\\|service\\|enum\\)[[:space:]]+\\([[:alnum:]]+\\)" 2))))))
 
 (provide 'init-spcfile)

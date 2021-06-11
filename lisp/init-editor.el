@@ -14,8 +14,14 @@
 (straight-use-package 'dumb-jump)
 (straight-use-package 'iscroll)
 (straight-use-package 'good-scroll)
+(straight-use-package 'sr-speedbar)
+(straight-use-package '(popper :type git :host github :repo "karthink/popper"))
+(straight-use-package '(emacs-calfw :type git :host github :repo "kiwanami/emacs-calfw"))
 
 (+pdump-packages 'vundo
+                 'calfw
+                 'popper
+                 'sr-speedbar
                  'good-scroll
                  'iscroll
                  'insert-char-preview
@@ -29,6 +35,66 @@
                  'writeroom-mode
                  'dumb-jump
                  'youdao-dictionary)
+
+;; emacs-calfw
+(setq cfw:org-overwrite-default-keybinding t)
+
+(autoload 'cfw:open-calendar-buffer "calfw" nil t)
+(autoload 'cfw:open-org-calendar "calfw-org" nil t)
+
+(with-eval-after-load "calfw"
+  ;; SPC-SPC is used in Motion mode to run M-X
+  (define-key cfw:calendar-mode-map (kbd "RET") 'cfw:show-details-command))
+
+;;; popper
+(setq
+ popper-modeline nil
+ popper-mode-line nil
+ popper-reference-buffers
+ '("\\*Messages\\*"
+   "Outout\\*$"
+   help-mode
+   eshell-mode
+   ielm-mode)
+ popper-group-function #'popper-group-by-directory)
+
+(autoload 'popper-toggle-latest "popper" nil t)
+(autoload 'popper-cycle "popper" nil t)
+
+(global-set-key (kbd "C-`") 'popper-toggle-latest)
+(global-set-key (kbd "M-`") 'popper-cycle)
+
+(add-hook 'after-init-hook 'popper-mode)
+
+;;; sr-speedbar
+(setq
+ sr-speedbar-auto-refresh nil
+ sr-speedbar-default-width 30
+ sr-speedbar-max-width 40
+ sr-speedbar-right-side nil
+ sr-speedbar-skip-other-window-p t)
+
+(defun +sr-speedbar-select-or-open()
+  "Select sr-speedbar window if it exist, or open sr-speedbar"
+  (interactive)
+  (if (and (fboundp 'sr-speedbar-exist-p) (sr-speedbar-exist-p))
+      (sr-speedbar-select-window)
+    (sr-speedbar-open)))
+
+(global-set-key (kbd "<f1>") #'+sr-speedbar-select-or-open)
+
+(with-eval-after-load "sr-speedbar"
+  (define-key speedbar-mode-map (kbd "<f1>") 'sr-speedbar-close)
+
+  (defun speedbar-set-mode-line-format ()
+    "Disable mode line and header line in speedbar"
+    (setq mode-line-format nil)
+    (setq header-line-format nil))
+
+  (add-hook 'speedbar-mode-hook
+            (lambda ()
+              (face-remap-add-relative 'default :height 0.8)
+              (face-remap-add-relative 'hl-line :box '(:line-width (-1 . -1))))))
 
 ;;; good-scroll : Good pixel line scrolling
 (add-hook 'after-init-hook 'good-scroll-mode)

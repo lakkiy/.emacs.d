@@ -6,27 +6,27 @@
 (straight-use-package 'spacemacs-theme)
 (straight-use-package 'atom-one-dark-theme)
 (straight-use-package 'dracula-theme)
-(straight-use-package 'gotham-theme)
 (straight-use-package 'minimal-theme)
 (straight-use-package 'tao-theme)
-(straight-use-package 'doom-themes)
 (straight-use-package 'emojify)
 (straight-use-package 'solaire-mode)
-(straight-use-package 'berrys-theme)
 (straight-use-package 'nyan-mode)
+(straight-use-package 'rainbow-mode)
 
 (+pdump-packages 'ligature
                  ;; 'modus-theme
                  ;; 'spacemacs-theme
                  ;; 'atom-one-dark-theme
                  ;; 'dracula-theme
-                 ;; 'gotham-theme
                  ;; 'minimal-theme
                  ;; 'tao-theme
-                 ;; 'doom-themes
+                 'rainbow-mode
                  'nyan-mode
                  'emojify
                  'solaire-mode)
+
+;; rainbow-mode
+(autoload 'rainbow-mode "rainbow-mode" nil t)
 
 ;;; nano-theme.el
 (setq
@@ -41,23 +41,6 @@
                (lambda (l?d)
                  (setq nano-theme-light/dark 'l?d)
                  (+change-theme 'nano))))
-
-;;; doom-themes
-(setq doom-themes-enable-bold t
-      doom-themes-enable-italic t)
-
-(defun +change-doom-theme (theme)
-  "Change theme and enable solaire-global-mode"
-  (interactive)
-  (mapc #'disable-theme custom-enabled-themes)
-  (if (bound-and-true-p solaire-global-mode)
-      (solaire-global-mode -1))
-  (solaire-global-mode +1)
-  (load-theme theme t))
-
-;;; solaire-mode
-(add-hook 'after-init-hook (lambda ()
-                             (solaire-global-mode 1)))
 
 ;;; emojify
 (add-hook 'after-init-hook #'global-emojify-mode)

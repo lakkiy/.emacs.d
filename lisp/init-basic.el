@@ -22,7 +22,6 @@
 (when emacs/>=28p
   (add-hook 'after-init-hook 'repeat-mode))
 
-
 (defun +reopen-file-with-sudo ()
   (interactive)
   (find-alternate-file (format "/sudo::%s" (buffer-file-name))))
@@ -41,6 +40,10 @@
 (global-set-key (kbd "C-h C-f") 'describe-funtion)
 
 (setq-default
+ ;; speedbar
+ speedbar-use-images nil
+ speedbar-show-unknown-files t
+ speedbar-indentation-width 2
  ;; Always use file cache when using tramp
  remote-file-name-inhibit-cache nil
  ;; C-x C-f /ssh:
