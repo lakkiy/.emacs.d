@@ -60,7 +60,7 @@ If `\\[universal-argument]' is given, then attach clipboard as document."
 ;;; erc
 (setq
  erc-server "irc.ea.libera.chat"
- erc-nick "Jack.L"
+ erc-nick "Artorias"
  erc-user-full-name "Liu Bo"
  erc-rename-buffers t
  erc-interpret-mirc-color t
