@@ -239,9 +239,11 @@ prepended to the element after the #+HEADER: tag."
 ;;; org-roam
 (setq
  org-roam-directory
-  (let ((p (expand-file-name (concat org-directory "/roam/"))))
+  (let ((p (expand-file-name (concat org-directory "/roam"))))
    (unless (file-directory-p p) (make-directory p))
    p))
+
+(add-hook 'after-init-hook 'org-roam-mode)
 
 (with-eval-after-load "org-roam"
   (define-key org-roam-mode-map (kbd "C-x C-r l") 'org-roam)
@@ -249,7 +251,6 @@ prepended to the element after the #+HEADER: tag."
   (define-key org-roam-mode-map (kbd "C-x C-r g") 'org-roam-graph)
   (define-key org-roam-mode-map (kbd "C-x C-r c") 'org-roam-db-build-cache)
 
-  (define-key org-mode-map (kbd "<f7>") 'org-roam-insert)
   (define-key org-mode-map (kbd "C-x C-r i") 'org-roam-insert)
   (define-key org-mode-map (kbd "C-x C-r I") 'org-roam-insert-immediate)
 
