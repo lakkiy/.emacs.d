@@ -158,7 +158,12 @@ prepended to the element after the #+HEADER: tag."
 
 ;; TODO hydra for org agenda
 ;; TODO group journal and not display in default
-;; TODO org super agenda
+
+;;; org super agenda
+(add-hook 'org-agenda-mode 'org-super-agenda-mode)
+
+(setq
+ org-super-agenda-group nil)
 
 ;;; doct : Declarative Org Capture Templates
 (autoload 'doct "doct")
