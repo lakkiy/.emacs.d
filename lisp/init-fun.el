@@ -6,17 +6,14 @@
 (straight-use-package '(emacs-calfw :type git :host github :repo "kiwanami/emacs-calfw"))
 (straight-use-package '(twidget :type git :host github :repo "Kinneyzhang/twidget"))
 (straight-use-package '(popper :type git :host github :repo "karthink/popper"))
-(straight-use-package '(oca :type git :host github :repo "lepisma/oca"))
 (straight-use-package '(devdocs :type git :host github :repo "astoff/devdocs.el"))
 (straight-use-package 'sr-speedbar)
 (straight-use-package 'esup)
-(straight-use-package 'vterm)
 (straight-use-package 'tree-sitter)
 (straight-use-package 'tree-sitter-langs)
 (straight-use-package '(svg-lib :type git :host github :repo "rougier/svg-lib"))
 
 (+pdump-packages 'rainbow-mode
-                 'vterm
                  'tree-sitter
                  'tree-sitter-langs
                  'docstr
@@ -25,7 +22,6 @@
                  'calfw
                  'twidget
                  'popper
-                 'oca
                  'devdocs-browser
                  'sr-speedbar
                  'svg-lib
@@ -76,8 +72,6 @@
 
 ;;; devdocs
 (global-set-key (kbd "C-c b") 'devdocs-lookup)
-
-;;; oca TODO
 
 ;;; popper
 (setq

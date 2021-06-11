@@ -4,6 +4,7 @@
 (straight-use-package 'org-superstar)
 (straight-use-package 'org-roam)
 (straight-use-package 'org-roam-server)
+(straight-use-package 'org-roam-bibtex)
 (straight-use-package '(org-transclusion :type git :host github :repo "nobiot/org-transclusion"))
 (straight-use-package 'valign)
 (straight-use-package 'ob-go)
@@ -18,6 +19,7 @@
                  'org-roam
                  'org-super-agenda
                  'org-roam-server
+                 'org-roam-bibtex
                  'org-transclusion
                  'valign
                  'ob-go)
@@ -235,7 +237,11 @@ prepended to the element after the #+HEADER: tag."
 (add-hook 'org-mode-hook 'org-superstar-mode)
 
 ;;; org-roam
-(setq org-roam-directory (concat org-directory "/roam/"))
+(setq
+ org-roam-directory
+  (let ((p (expand-file-name (concat org-directory "/roam/"))))
+   (unless (file-directory-p p) (make-directory p))
+   p))
 
 (with-eval-after-load "org-roam"
   (define-key org-roam-mode-map (kbd "C-x C-r l") 'org-roam)
@@ -251,5 +257,6 @@ prepended to the element after the #+HEADER: tag."
   (require 'org-roam-protocol))
 
 ;;; TODO org-roam-server
+;;; TODO org-roam-bibtex
 
 (provide 'init-org)
