@@ -12,6 +12,7 @@
 (straight-use-package 'solaire-mode)
 (straight-use-package 'nyan-mode)
 (straight-use-package 'rainbow-mode)
+(straight-use-package '(less-theme :type git :host github :repo "nobiot/less-theme"))
 
 (+pdump-packages 'ligature
                  ;; 'modus-theme
