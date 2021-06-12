@@ -11,8 +11,10 @@
 (straight-use-package 'org-journal)
 (straight-use-package 'restclient)
 (straight-use-package 'ob-restclient)
+(straight-use-package '(zeft :type git :host github :repo "casouri/zeft"))
 
 (+pdump-packages 'easy-hugo
+                 'zeft
                  'restclient
                  'ob-restclient
                  'org-journal
@@ -23,6 +25,10 @@
                  'org-transclusion
                  'valign
                  'ob-go)
+
+;;; zeft
+(setq
+ zeft-directory (expand-file-name "~/Dropbox/zeft"))
 
 ;; restclient
 (autoload 'restclient-mode "restclient" nil t)
@@ -208,21 +214,46 @@ prepended to the element after the #+HEADER: tag."
 (setq
  org-default-notes-file (concat org-directory "/default-notes.org")
  org-capture-templates
- (doct '(("work" :keys "w" :file "~/Dropbox/org/work.org"
+ (doct '(("Work" :keys "w" :file "~/Dropbox/org/work.org"
           :datetree t
           :tree-type week
           :template ("* %^{Description}"
                      ":PROPERITIES:"
                      ":Created: %T" ;; used to create weekly report
                      ":END:"))
-         ("journal" :keys "j"
+         ("Journal" :keys "j"
           :function (lambda () (org-journal-find-location))
           :clock-in t :clock-resume t
           :template ("* %(format-time-string org-journal-time-format) %^{Title}"
                      "  %i%?"))
-         ("billing" :keys "b" :type plain :file "~/Dropbox/org/billing.org"
+         ("Billing" :keys "b" :type plain :file "~/Dropbox/org/billing.org"
           :function (lambda () (find-month-tree))
-          :template (" | %U | %^{类别} | %^{描述} | %^{金额} |")))))
+          :template (" | %U | %^{类别} | %^{描述} | %^{金额} |"))
+         ("Web site" :keys "s" :file "~/Dropbox/org/Notes.org"
+          :headline "Inbox"
+          :template ("* %^{Title} :website:"
+                     ":PROPERTIES:"
+                     ":Created: %U"
+                     ":END:"
+                     "%?%:initial"))
+         ("Tasks" :keys "t" :file "~/Dropbox/org/Tasks.org"
+          :template ("* %{todo-state} %^{Description}"
+                     ":PROPERTIES:"
+                     ":Created: %U"
+                     ":END:")
+          :children
+          (("Computer"
+            :keys "c" :headline "Computer" :todo-state "TODO")
+           ("Food"
+            :keys "f" :headline "Food" :todo-state "TODO")
+           ("Research"
+            :keys "r" :headline "Research" :todo-state "TODO")
+           ("Idea"
+            :keys "i" :headline "Idea" :todo-state "TODO")
+           ("Not grouped"
+            :keys "n" :headline "Not grouped" :todo-state "TODO")
+           ("Books"
+            :keys "b" :headline "Book" :todo-state "TODO"))))))
 
 ;;; easy-hugo
 (setq
