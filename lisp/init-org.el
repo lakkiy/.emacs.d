@@ -241,16 +241,17 @@ prepended to the element after the #+HEADER: tag."
    (unless (file-directory-p p) (make-directory p))
    p))
 
-(add-hook 'after-init-hook 'org-roam-mode)
+(global-set-key (kbd "C-c C-r f") 'org-roam-find-file)
 
 (with-eval-after-load "org-roam"
-  (define-key org-roam-mode-map (kbd "C-x C-r l") 'org-roam)
-  (define-key org-roam-mode-map (kbd "C-x C-r f") 'org-roam-find-file)
-  (define-key org-roam-mode-map (kbd "C-x C-r g") 'org-roam-graph)
-  (define-key org-roam-mode-map (kbd "C-x C-r c") 'org-roam-db-build-cache)
+  (define-key org-roam-mode-map (kbd "C-c C-r l") 'org-roam)
+  ;; (define-key org-roam-mode-map (kbd "C-c C-r f") 'org-roam-find-file)
+  (define-key org-roam-mode-map (kbd "C-c C-r g") 'org-roam-graph)
+  (define-key org-roam-mode-map (kbd "C-c C-r c") 'org-roam-capture)
+  (define-key org-roam-mode-map (kbd "C-c C-r C") 'org-roam-db-build-cache)
 
-  (define-key org-mode-map (kbd "C-x C-r i") 'org-roam-insert)
-  (define-key org-mode-map (kbd "C-x C-r I") 'org-roam-insert-immediate)
+  (define-key org-mode-map (kbd "C-c C-r i") 'org-roam-insert)
+  (define-key org-mode-map (kbd "C-c C-r I") 'org-roam-insert-immediate)
 
   ;; https://www.orgroam.com/manual.html#Roam-Protocol
   (require 'org-roam-protocol))
