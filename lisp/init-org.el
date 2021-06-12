@@ -267,10 +267,21 @@ prepended to the element after the #+HEADER: tag."
 
 ;;; org-roam
 (setq
+ org-roam-capture-templates '(("d" "default" plain #'org-roam-capture--get-point "%?"
+                               :file-name "%<Y%m%d%H%M%S>-${slug}"
+                               :head "#+title: ${title}\n#+roam-tags:"
+                               :unnarrowed t)
+                              ("l" "leetcode" plain #'org-roam-capture--get-point
+                               "\n* Description\n* Code\n#+begin_src go :imports '(\"fmt\")\n\n#+end_src"
+                               :file-name "%<%Y%m%d%H%M%S>-${slug}"
+                               :head "#+title: ${title}\n#+roam-tags:"
+                               :unnarrowed t))
  org-roam-directory
   (let ((p (expand-file-name (concat org-directory "/roam"))))
    (unless (file-directory-p p) (make-directory p))
    p))
+
+(add-hook 'after-init-hook 'org-roam-mode)
 
 (with-eval-after-load "org-roam"
   (define-key org-roam-mode-map (kbd "C-x C-r l") 'org-roam)
