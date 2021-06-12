@@ -287,6 +287,7 @@ prepended to the element after the #+HEADER: tag."
   (define-key org-roam-mode-map (kbd "C-x C-r l") 'org-roam)
   (define-key org-roam-mode-map (kbd "C-x C-r f") 'org-roam-find-file)
   (define-key org-roam-mode-map (kbd "C-x C-r g") 'org-roam-graph)
+  (define-key org-roam-mode-map (kbd "C-x C-r s") 'org-store-link)
   (define-key org-roam-mode-map (kbd "C-x C-r c") 'org-roam-capture)
   (define-key org-roam-mode-map (kbd "C-x C-r C") 'org-roam-db-build-cache)
 
