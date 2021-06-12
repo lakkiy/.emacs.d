@@ -153,19 +153,6 @@ prepended to the element after the #+HEADER: tag."
                                            (org-hydra/body)
                                          (self-insert-command 1)))))
 
-;;; org-agenda
-(setq
- org-agenda-files (list org-directory org-roam-directory))
-
-(global-set-key (kbd "C-c a") 'org-agenda)
-
-;;; org super agenda
-(add-hook 'org-agenda-mode 'org-super-agenda-mode)
-
-;; TODO
-(setq
- org-super-agenda-groups nil)
-
 ;;; doct : Declarative Org Capture Templates
 (autoload 'doct "doct")
 
@@ -297,5 +284,19 @@ prepended to the element after the #+HEADER: tag."
 
   ;; https://www.orgroam.com/manual.html#Roam-Protocol
   (require 'org-roam-protocol))
+
+;;; org-agenda
+;; should be after org-directory and org-roam-directory
+(setq
+ org-agenda-files (list org-directory org-roam-directory))
+
+(global-set-key (kbd "C-c a") 'org-agenda)
+
+;;; org super agenda
+(add-hook 'org-agenda-mode 'org-super-agenda-mode)
+
+;; TODO
+(setq
+ org-super-agenda-groups nil)
 
 (provide 'init-org)
