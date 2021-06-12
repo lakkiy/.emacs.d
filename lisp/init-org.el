@@ -28,7 +28,7 @@
 
 ;;; zeft
 (setq
- zeft-directory (expand-file-name "~/Dropbox/zeft"))
+ zeft-directory (expand-file-name "~/Dropbox/org/roam"))
 
 ;; restclient
 (autoload 'restclient-mode "restclient" nil t)
@@ -155,7 +155,7 @@ prepended to the element after the #+HEADER: tag."
 
 ;;; org-agenda
 (setq
- org-agenda-files (list org-directory))
+ org-agenda-files (list org-directory org-roam-directory))
 
 (global-set-key (kbd "C-c a") 'org-agenda)
 
@@ -214,7 +214,7 @@ prepended to the element after the #+HEADER: tag."
 (setq
  org-default-notes-file (concat org-directory "/default-notes.org")
  org-capture-templates
- (doct '(("Work" :keys "w" :file "~/Dropbox/org/work.org"
+ (doct '(("Work" :keys "w" :file "~/Dropbox/org/Work.org"
           :datetree t
           :tree-type week
           :template ("* %^{Description}"
@@ -226,7 +226,7 @@ prepended to the element after the #+HEADER: tag."
           :clock-in t :clock-resume t
           :template ("* %(format-time-string org-journal-time-format) %^{Title}"
                      "  %i%?"))
-         ("Billing" :keys "b" :type plain :file "~/Dropbox/org/billing.org"
+         ("Billing" :keys "b" :type plain :file "~/Dropbox/org/Billing.org"
           :function (lambda () (find-month-tree))
           :template (" | %U | %^{类别} | %^{描述} | %^{金额} |"))
          ("Web site" :keys "s" :file "~/Dropbox/org/Notes.org"
@@ -272,17 +272,15 @@ prepended to the element after the #+HEADER: tag."
    (unless (file-directory-p p) (make-directory p))
    p))
 
-(global-set-key (kbd "C-c C-r f") 'org-roam-find-file)
-
 (with-eval-after-load "org-roam"
-  (define-key org-roam-mode-map (kbd "C-c C-r l") 'org-roam)
-  ;; (define-key org-roam-mode-map (kbd "C-c C-r f") 'org-roam-find-file)
-  (define-key org-roam-mode-map (kbd "C-c C-r g") 'org-roam-graph)
-  (define-key org-roam-mode-map (kbd "C-c C-r c") 'org-roam-capture)
-  (define-key org-roam-mode-map (kbd "C-c C-r C") 'org-roam-db-build-cache)
+  (define-key org-roam-mode-map (kbd "C-x C-r l") 'org-roam)
+  (define-key org-roam-mode-map (kbd "C-x C-r f") 'org-roam-find-file)
+  (define-key org-roam-mode-map (kbd "C-x C-r g") 'org-roam-graph)
+  (define-key org-roam-mode-map (kbd "C-x C-r c") 'org-roam-capture)
+  (define-key org-roam-mode-map (kbd "C-x C-r C") 'org-roam-db-build-cache)
 
-  (define-key org-mode-map (kbd "C-c C-r i") 'org-roam-insert)
-  (define-key org-mode-map (kbd "C-c C-r I") 'org-roam-insert-immediate)
+  (define-key org-mode-map (kbd "C-x C-r i") 'org-roam-insert)
+  (define-key org-mode-map (kbd "C-x C-r I") 'org-roam-insert-immediate)
 
   ;; https://www.orgroam.com/manual.html#Roam-Protocol
   (require 'org-roam-protocol))
