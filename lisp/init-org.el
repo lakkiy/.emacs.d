@@ -274,6 +274,7 @@ prepended to the element after the #+HEADER: tag."
                               ("l" "leetcode" plain #'org-roam-capture--get-point
                                "\n* Description\n* Code\n#+begin_src go :imports '(\"fmt\")\n\n#+end_src"
                                :file-name "%<%Y%m%d%H%M%S>-${slug}"
+                               :clock-in t :clock-resume t
                                :head "#+title: ${title}\n#+roam-tags:"
                                :unnarrowed t))
  org-roam-directory
