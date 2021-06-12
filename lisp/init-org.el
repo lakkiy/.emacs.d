@@ -1,7 +1,6 @@
 ;;; -*- lexical-binding: t -*-
 
 (straight-use-package 'easy-hugo)
-(straight-use-package 'org-superstar)
 (straight-use-package 'org-roam)
 (straight-use-package 'org-roam-server)
 (straight-use-package '(org-transclusion :type git :host github :repo "nobiot/org-transclusion"))
@@ -18,11 +17,9 @@
                  'ob-restclient
                  'org-journal
                  'doct
-                 'org-superstar
                  'org-roam
                  'org-super-agenda
                  'org-roam-server
-                 'org-roam-bibtex
                  'org-transclusion
                  'valign
                  'ob-go)
@@ -156,14 +153,12 @@ prepended to the element after the #+HEADER: tag."
 
 (global-set-key (kbd "C-c a") 'org-agenda)
 
-;; TODO hydra for org agenda
-;; TODO group journal and not display in default
-
 ;;; org super agenda
 (add-hook 'org-agenda-mode 'org-super-agenda-mode)
 
+;; TODO
 (setq
- org-super-agenda-group nil)
+ org-super-agenda-groups nil)
 
 ;;; doct : Declarative Org Capture Templates
 (autoload 'doct "doct")
@@ -171,7 +166,7 @@ prepended to the element after the #+HEADER: tag."
 ;;; org-journal
 (setq
  org-journal-file-type 'yearly
- org-journal-dir (concat org-directory "/journal/")
+ org-journal-dir (concat org-directory "/journal")
  org-journal-file-format "%Y"
  org-journal-date-format "%Y 年 %m 月 %d 日 %A")
 
@@ -238,14 +233,6 @@ prepended to the element after the #+HEADER: tag."
  easy-hugo-org-header t)
 
 (autoload #'easy-hugo "easy-hugo" nil t)
-
-;;; org-superstar
-(setq
- org-superstar-leading-bullet ?\s)
-
-(autoload #'org-superstar-mode "org-superstar")
-
-(add-hook 'org-mode-hook 'org-superstar-mode)
 
 ;;; org-roam
 (setq
