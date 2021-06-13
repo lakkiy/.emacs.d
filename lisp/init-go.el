@@ -71,7 +71,8 @@
 (autoload 'go-playground-mode "go-playground" nil t)
 
 ;;; go-mode
-(setq gofmt-command "goimports")
+(setq
+ gofmt-command "goimports")
 
 (with-eval-after-load "go-mode"
   (with-eval-after-load "exec-path-from-shell"

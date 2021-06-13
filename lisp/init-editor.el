@@ -53,6 +53,7 @@
  popper-reference-buffers
  '("\\*Messages\\*"
    "Outout\\*$"
+   "\\*Gofmt Errors\\*"
    help-mode
    eshell-mode
    ielm-mode)
