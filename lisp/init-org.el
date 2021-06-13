@@ -216,7 +216,13 @@ prepended to the element after the #+HEADER: tag."
          ("Billing" :keys "b" :type plain :file "~/Dropbox/org/Billing.org"
           :function (lambda () (find-month-tree))
           :template (" | %U | %^{类别} | %^{描述} | %^{金额} |"))
-         ("Web site" :keys "s" :file "~/Dropbox/org/Notes.org"
+         ("Schedule" :keys "s" :file "~/Dropbox/org/Schedule.org"
+          :datetree t
+          :template ("* %^{Description}"
+                     ":PROPERTIES:"
+                     ":Created: %U"
+                     ":END:"))
+         ("Web site" :keys "e" :file "~/Dropbox/org/Notes.org"
           :headline "Inbox"
           :template ("* %^{Title} :website:"
                      ":PROPERTIES:"
@@ -259,7 +265,7 @@ prepended to the element after the #+HEADER: tag."
                                :head "#+title: ${title}\n#+roam-tags:"
                                :unnarrowed t)
                               ("l" "leetcode" plain #'org-roam-capture--get-point
-                               "\n* References\n* Description\n* Code\n#+begin_src go :imports '(\"fmt\")\n\n#+end_src"
+                               "\n* References\n* Description\n* Code\n#+begin_src go :imports '(\"fmt\")\n\n#+end_src\n* Time & Space\n* Related & Recommend"
                                :file-name "%<%Y%m%d%H%M%S>-${slug}"
                                :clock-in t :clock-resume t
                                :head "#+title: ${title}\n#+roam-tags:"
