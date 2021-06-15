@@ -1,5 +1,9 @@
 ;;; -*- lexical-binding: t -*-
 
+(straight-use-package 'dired-hacks-utils)
+
+(+pdump-packages 'dired-hacks-utils)
+
 (pretty-hydra-define dired-hydra (:title "Dired" :quit-key "q")
   ("TODO One"
    (("(" dired-hide-details-mode)
