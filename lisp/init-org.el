@@ -12,8 +12,10 @@
 (straight-use-package 'restclient)
 (straight-use-package 'ob-restclient)
 (straight-use-package '(zeft :type git :host github :repo "casouri/zeft"))
+(straight-use-package 'pandoc-mode)
 
 (+pdump-packages 'easy-hugo
+                 'pandoc-mode
                  'zeft
                  'restclient
                  'ob-restclient

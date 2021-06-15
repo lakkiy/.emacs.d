@@ -2,9 +2,17 @@
 
 (straight-use-package 'elfeed)
 (straight-use-package 'elfeed-protocol)
+(straight-use-package 'leetcode)
 
 (+pdump-packages 'elfeed
-                 'elfeed-protocol)
+                 'elfeed-protocol
+                 'leetcode)
+
+;;; leetcode
+(setq
+ leetcode-prefer-language "golang")
+
+(autoload 'leetcode "leetcode" nil t)
 
 ;;; elfeed
 (setq
