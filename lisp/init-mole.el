@@ -1,21 +1,10 @@
 ;;; -*- lexical-binding: t -*-
 
-(straight-use-package 'leetcode)
 (straight-use-package 'elfeed)
 (straight-use-package 'elfeed-protocol)
 
-(+pdump-packages 'leetcode
-                 'elfeed
+(+pdump-packages 'elfeed
                  'elfeed-protocol)
-
-;; leetcode
-(setq
- leetcode-prefer-language "golang"
- leetcode-prefer-sql "mysql"
- leetcode-save-solutions t
- leetcode-directory "~/Dropbox/leetcode")
-
-(autoload 'leetcode "leetcode" nil t)
 
 ;;; elfeed
 (setq
