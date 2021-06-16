@@ -6,7 +6,6 @@
 (straight-use-package 'spacemacs-theme)
 (straight-use-package 'atom-one-dark-theme)
 (straight-use-package 'dracula-theme)
-(straight-use-package 'minimal-theme)
 (straight-use-package 'emojify)
 (straight-use-package 'solaire-mode)
 (straight-use-package 'nyan-mode)
@@ -24,9 +23,6 @@
                  'nyan-mode
                  'emojify
                  'solaire-mode)
-
-;;; timu-spacegrey-theme
-(setq timu-spacegrey-flavour "light")
 
 ;; rainbow-mode
 (autoload 'rainbow-mode "rainbow-mode" nil t)

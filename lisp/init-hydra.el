@@ -57,9 +57,6 @@
         ("t L" (+change-theme 'lazycat-light) "lazycat-light" :toggle t)
         ("t o" (+change-theme 'atom-one-dark) "one dark" :toggle t)
         ("t D" (+change-theme 'dracula) "dracula" :toggle t)
-        ("t G" (+change-theme 'gotham) "gotham" :toggle t)
-        ("t i" (+change-theme 'minimal-dark) "minimal dark" :toggle t)
-        ("t I" (+change-theme 'minimal-light) "minimal light" :toggle t)
         ("t N" (+change-theme 'nano) "nano" :toggle t)
         ("t n" (+change-theme 'nasy) "nasy" :toggle t))))
 
