@@ -53,7 +53,6 @@
 
 (add-hook 'prog-mode-hook 'company-mode)
 (add-hook 'conf-mode-hook 'company-mode)
-(add-hook 'eshell-mode-hook 'company-mode)
 
 (with-eval-after-load "company"
   ;;; company-tabnine run company-tabnine-install-binary at the first time
