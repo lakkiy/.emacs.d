@@ -4,12 +4,6 @@
 
 (+pdump-packages 'pretty-hydra)
 
-(defun +change-theme (theme)
-  "Disable other themes and load new one"
-  (interactive)
-  (mapc #'disable-theme custom-enabled-themes)
-  (load-theme theme t))
-
 ;;; pretty-hydra
 (pretty-hydra-define toggles-hydra (:title "Toggles" :quit-key "q")
       ("Basic"
@@ -45,20 +39,20 @@
         ("D" diff-hl-dired-mode "dired gutter" :toggle t))
        ;; FIXME
        "Theme"
-       (("t s" (+change-theme 'spacemacs-light) "space-light" :toggle t)
-        ("t S" (+change-theme 'spacemacs-dark) "space-dark" :toggle t)
-        ("t j" (+change-theme 'joker) "joker" :toggle t)
-        ("t p" (+change-theme 'printed) "printed" :toggle t)
-        ("t b" (+change-theme 'storybook) "storybook" :toggle t)
-        ("t d" (+change-theme 'minidark) "minidark" :toggle t)
-        ("t m" (+change-theme 'modus-vivendi) "modus-dark" :toggle t)
-        ("t M" (+change-theme 'modus-operandi) "modus-light" :toggle t)
-        ("t l" (+change-theme 'lazycat-dark) "lazycat-dark" :toggle t)
-        ("t L" (+change-theme 'lazycat-light) "lazycat-light" :toggle t)
-        ("t o" (+change-theme 'atom-one-dark) "one dark" :toggle t)
-        ("t D" (+change-theme 'dracula) "dracula" :toggle t)
-        ("t N" (+change-theme 'nano) "nano" :toggle t)
-        ("t n" (+change-theme 'nasy) "nasy" :toggle t))))
+       (("t s" (load-theme 'spacemacs-light t) "space-light" :toggle t)
+        ("t S" (load-theme 'spacemacs-dark t) "space-dark" :toggle t)
+        ("t j" (load-theme 'joker t) "joker" :toggle t)
+        ("t p" (load-theme 'printed t) "printed" :toggle t)
+        ("t b" (load-theme 'storybook t) "storybook" :toggle t)
+        ("t d" (load-theme 'minidark t) "minidark" :toggle t)
+        ("t m" (load-theme 'modus-vivendi t) "modus-dark" :toggle t)
+        ("t M" (load-theme 'modus-operandi t) "modus-light" :toggle t)
+        ("t l" (load-theme 'lazycat-dark t) "lazycat-dark" :toggle t)
+        ("t L" (load-theme 'lazycat-light t) "lazycat-light" :toggle t)
+        ("t o" (load-theme 'atom-one-dark t) "one dark" :toggle t)
+        ("t D" (load-theme 'dracula t) "dracula" :toggle t)
+        ("t N" (load-theme 'nano t) "nano" :toggle t)
+        ("t n" (load-theme 'nasy t) "nasy" :toggle t))))
 
 (pretty-hydra-define tab-bar (:title "Tab Bar" :quit-key "q")
   ("Options"
@@ -77,6 +71,6 @@
     ("h" tab-previous "Previous Tab"))))
 
 (global-set-key (kbd "C-x t") 'tab-bar/body)
-(global-set-key (kbd "C-h C-h") 'toggles-hydra/body)
+(global-set-key (kbd "<f6>") 'toggles-hydra/body)
 
 (provide 'init-hydra)

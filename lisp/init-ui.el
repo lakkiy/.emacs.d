@@ -24,6 +24,21 @@
                  'emojify
                  'solaire-mode)
 
+(defvar +theme-hooks nil
+  "((theme-id . function) ...)")
+
+(defun +load-theme-advice (f theme-id &optional no-confirm no-enable &rest args) ;
+  "Enhance `load-theme' by disabling other enabled themes & calling hooks"
+  (unless no-enable ;
+    (mapc #'disable-theme custom-enabled-themes))
+  (prog1
+      (apply f theme-id no-confirm no-enable args) ;
+    (unless no-enable ;
+      (pcase (assq theme-id +theme-hooks)
+        (`(,_ . ,f) (funcall f))))))
+
+(advice-add 'load-theme :around #'+load-theme-advice) ;
+
 ;; rainbow-mode
 (autoload 'rainbow-mode "rainbow-mode" nil t)
 
