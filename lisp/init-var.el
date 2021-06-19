@@ -43,7 +43,7 @@
 
 (defvar +use-header-line nil)
 
-(defvar +theme 'doom-Iosvkem)
+(defvar +theme 'less)
 
 (defvar +enable-proxy? nil)
 
