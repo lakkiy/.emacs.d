@@ -50,11 +50,11 @@
  nano-theme-system-appearance t)
 
 ;; auto change theme after system apearance changed
-(when (featurep 'ns)
-  (add-to-list 'ns-system-appearance-change-functions
-               (lambda (l?d)
-                 (setq nano-theme-light/dark 'l?d)
-                 (+change-theme 'nano))))
+;; (when (featurep 'ns)
+;;   (add-to-list 'ns-system-appearance-change-functions
+;;                (lambda (l?d)
+;;                  (setq nano-theme-light/dark 'l?d)
+;;                  (+change-theme 'nano))))
 
 ;;; emojify
 (add-hook 'after-init-hook #'global-emojify-mode)
