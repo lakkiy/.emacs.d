@@ -4,14 +4,10 @@
 (straight-use-package 'eglot)
 (straight-use-package 'docstr)
 (straight-use-package '(devdocs :type git :host github :repo "astoff/devdocs.el"))
-(straight-use-package 'tree-sitter)
-(straight-use-package 'tree-sitter-langs)
 
 (+pdump-packages 'flymake
                  'docstr
                  'devdocs
-                 'tree-sitter
-                 'tree-sitter-langs
                  'eglot)
 
 ;; pulse current line
@@ -32,13 +28,6 @@
 (add-hook 'dump-jump-after-jump-hook 'recenter-and-pulse)
 (add-hook 'bookmark-after-jump-hook 'recenter-and-pulse)
 (add-hook 'imenu-after-jump-hook 'recenter-and-pulse)
-
-;;; tree-sitter
-;; (add-hook 'go-mode-hook 'tree-sitter-mode)
-;; (add-hook 'go-mode-hook 'tree-sitter-hl-mode)
-
-(with-eval-after-load "tree-sitter"
-  (require 'tree-sitter-langs))
 
 ;;; devdocs
 (global-set-key (kbd "C-c b") 'devdocs-lookup)
