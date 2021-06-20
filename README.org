@@ -16,6 +16,8 @@ or
 
 ~git clone --depth 1 https//github.com/404cn/fooemacs.git ~/.config/emacs~
 
+runc M-x company-tabnine-install-binary at first time
+
 *Not test on windows*
 
 * Custom

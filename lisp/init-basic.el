@@ -40,8 +40,6 @@
 (global-set-key (kbd "C-h C-f") 'describe-funtion)
 
 (setq-default
- ;; desktop save
- desktop-save t
  ;; speedbar
  speedbar-use-images nil
  speedbar-show-unknown-files t
@@ -155,18 +153,5 @@
  split-width-threshold 120
  ;; disable "You can run the command balabala..."
  suggest-key-bindings nil)
-
-;; Restore desktop, should be worked in daemon too.
-(defun +restore-desktop()
-  (let ((inhibit-message t))
-    (run-at-time 1 nil
-                 (lambda()
-                   (desktop-read)
-                   (desktop-save-mode 1)))))
-(add-hook 'emacs-startup-hook
-              (lambda()
-                (if (daemonp)
-                    (add-hook 'server-after-make-frame-hook '+restore-desktop)
-                  (+restore-desktop))))
 
 (provide 'init-basic)
