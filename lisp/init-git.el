@@ -6,8 +6,10 @@
 (straight-use-package 'diff-hl)
 
 (+pdump-packages 'magit
+                 'magit-extras
                  'magit-todos
                  'diff-hl
+                 'diff-hl-dired
                  'hl-todo)
 
 ;; magit

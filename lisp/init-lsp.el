@@ -7,6 +7,8 @@
 
 (+pdump-packages 'flymake
                  'docstr
+                 'docstr-actionscript
+                 'docstr-c
                  'devdocs
                  'eglot)
 
