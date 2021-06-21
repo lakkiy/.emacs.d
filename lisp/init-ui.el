@@ -47,7 +47,7 @@
  nano-theme-light/dark 'light
  nano-theme-comment-italic nil
  nano-theme-keyword-italic nil
- nano-theme-system-appearance t)
+ nano-theme-system-appearance nil)
 
 ;; auto change theme after system apearance changed
 ;; (when (featurep 'ns)
