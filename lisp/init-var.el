@@ -43,7 +43,7 @@
 
 (defvar +use-header-line nil)
 
-(defvar +theme 'less)
+(defvar +theme 'spacemacs-light)
 
 (defvar +enable-proxy? nil)
 
