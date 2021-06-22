@@ -270,7 +270,7 @@ prepended to the element after the #+HEADER: tag."
                                "\n* References\n* Description\n* Code\n#+begin_src go :imports '(\"fmt\")\n\n#+end_src\n* Time & Space\n* Related & Recommend"
                                :file-name "%<%Y%m%d%H%M%S>-${slug}"
                                :clock-in t :clock-resume t
-                               :head "#+title: ${title}\n#+roam-tags:"
+                               :head "#+title: ${title}\n#+roam_tags:"
                                :unnarrowed t))
  org-roam-directory
   (let ((p (expand-file-name (concat org-directory "/roam"))))
