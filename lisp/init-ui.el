@@ -99,7 +99,7 @@
                 " "
                 (:eval (rime-lighter))
                 (:eval (propertize (+smart-file-name-cached) 'face 'bold))
-                " Ln %l Col %C"))
+                " Row %l Col %C"))
          (rhs '("%m"
                 (vc-mode vc-mode)))
          (ww (window-width))
