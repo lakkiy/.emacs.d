@@ -15,7 +15,7 @@
  telega-symbol-reply "↫"
  ;; set date format for old messages
  telega-old-date-format "%Y/%M/%D"
- telega-proxies '((:server "localhost" :port 7890 :enable nil :type (:@type "proxyTypeSocks5"))))
+ telega-proxies '((:server "localhost" :port 7890 :enable t :type (:@type "proxyTypeSocks5"))))
 
 (autoload #'telega "telega" nil t)
 
