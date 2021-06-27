@@ -14,6 +14,25 @@
                  'python-isort
                  'pyimport)
 
+(defvar python--tools '("isort"
+                        "black"))
+
+(defun python-update-tools ()
+  (interactive)
+  (unless (executable-find "pip3")
+    (user-error "Unable to find `pip3' in `exec-path'!"))
+  (message "Installing python tools...")
+  (let ((proc-name "python-tools")
+        (proc-buffer "*Python Tools*"))
+    (dolist (pkg python--tools)
+      (set-process-sentinel
+       (start-process proc-name proc-buffer "pip3" "install" pkg)
+       (lambda (proc _)
+         (let ((status (process-exit-status proc)))
+           (if (= 0 status)
+               (message "Installed %s" pkg)
+             (message "Failed to install %s: %d" pkg status))))))))
+
 ;;; elpy
 ;; pip install pylint
 ;; pip install flake8 ?

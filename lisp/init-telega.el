@@ -74,7 +74,7 @@ If `\\[universal-argument]' is given, then attach clipboard as document."
   (interactive)
   (erc-tls :server "irc.ea.libera.chat"
            :port 6697
-           :nick "Jack.L"
+           :nick "Artorias"
            :password +erc-password))
 
 (provide 'init-telega)

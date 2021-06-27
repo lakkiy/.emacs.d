@@ -5,16 +5,23 @@
 (straight-use-package 'docstr)
 (straight-use-package '(devdocs :type git :host github :repo "astoff/devdocs.el"))
 (straight-use-package '(citre :type git :host github :repo "universal-ctags/citre"))
-(straight-use-package 'ggtags)
 
 (+pdump-packages 'flymake
-                 'ggtags
                  'citre
                  'docstr
                  'docstr-actionscript
                  'docstr-c
                  'devdocs
                  'eglot)
+
+;;; citre
+(global-set-key (kbd "C-x c j") 'citre-jump)
+(global-set-key (kbd "C-x c J") 'citre-jump-back)
+(global-set-key (kbd "C-x c p") 'citre-ace-peek)
+(with-eval-after-load 'cc-mode
+  (require 'citre-lang-c)
+  (add-hook 'cc-mode-hook #'citre-auto-enable-citre-mode))
+(with-eval-after-load 'dired (require 'citre-lang-fileref))
 
 ;; pulse current line
 (defun pulse-region (beg end &rest _)
