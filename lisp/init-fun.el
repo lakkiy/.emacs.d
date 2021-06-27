@@ -2,6 +2,7 @@
 
 (straight-use-package '(twidget :type git :host github :repo "Kinneyzhang/twidget"))
 (straight-use-package '(svg-lib :type git :host github :repo "rougier/svg-lib"))
+(straight-use-package '(citre :type git :host github :repo "universal-ctags/citre"))
 (straight-use-package 'ggtags)
 
 (+pdump-packages 'twidget
