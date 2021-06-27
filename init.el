@@ -30,9 +30,5 @@
 (require 'init-mole)
 (require 'init-markdown)
 (require 'init-mail)
-
-(require 'init-lsp)
-(require 'init-go)
-(require 'init-python)
-
+(require 'init-dev)
 (require 'init-fun)
