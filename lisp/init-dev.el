@@ -61,6 +61,11 @@
  eglot-stay-out-of nil
  eglot-ignored-server-capabilites '(:documentHighlightProvider))
 
+;; auto expand function param for golang
+(setq-default eglot-workspace-configuration
+              '((gopls
+                 (usePlaceholders . t))))
+
 (autoload #'eglot-ensure "eglot" nil t)
 (autoload #'eglot "eglot" nil t)
 

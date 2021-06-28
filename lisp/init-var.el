@@ -51,4 +51,6 @@
 
 (defvar +erc-password "")
 
+(defvar +telega-proxy nil)
+
 (provide 'init-var)
