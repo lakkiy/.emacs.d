@@ -231,7 +231,28 @@ prepended to the element after the #+HEADER: tag."
                      ":Created: %U"
                      ":END:"
                      "%?%:initial"))
-         ("Tasks" :keys "t" :file "~/Dropbox/org/Tasks.org"
+         (:group "All Notes"
+                 :file "~/Dropbox/org/Notes.org"
+                 :template ("* %^{Description}"
+                            ":PROPERTIES:"
+                            ":Created: %U"
+                            ":END:"
+                            "%?")
+                 :children
+                 (("Notes" :keys "n" :olp ("Notes")
+                   :datetree t)
+                  ("Exercise" :keys "e" :olp ("Exercise"))
+                  ("Research" :keys "n" :olp ("Research")
+                   :clock-in t :clock-resume t :prepend t)
+                  ("Computer" :keys "c"
+                   :prepend t
+                   :children
+                   (("Emacs" :keys "e" :olp ("Computer" "Emacs"))
+                    ("Linux" :keys "l" :olp ("Computer" "Linux"))
+                    ("Golang" :keys "g" :olp ("Computer" "Golang"))
+                    ("Python" :keys "p" :olp ("Computer" "Python"))
+                    ("Windows" :keys "w" :olp ("Computer" "Windows"))))))
+        ("Tasks" :keys "t" :file "~/Dropbox/org/Tasks.org"
           :template ("* %{todo-state} %^{Description}"
                      ":PROPERTIES:"
                      ":Created: %U"
