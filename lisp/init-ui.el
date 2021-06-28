@@ -50,7 +50,7 @@
  nano-theme-system-appearance nil)
 
 ;; auto change theme after system apearance changed
-(when (featurep 'ns)
+(when (boundp 'ns-system-appearance)
   (add-to-list 'ns-system-appearance-change-functions
                (lambda (l?d)
                  (if (eq l?d 'light)
