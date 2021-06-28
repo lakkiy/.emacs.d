@@ -59,7 +59,8 @@
 
 (with-eval-after-load "company"
   ;;; company-tabnine run company-tabnine-install-binary at the first time
-  (add-to-list 'company-backends #'company-tabnine)
+  (with-eval-after-load "go-mode"
+    (add-to-list 'company-backends #'company-tabnine))
 
   (define-key company-active-map [tab] 'company-complete-common-or-cycle)
   (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)

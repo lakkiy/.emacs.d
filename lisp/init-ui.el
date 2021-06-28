@@ -115,7 +115,8 @@
 
 ;; Init or reload functions
 (defun +init-ui (&optional frame)
-  (load-theme +theme t)
+  (when (window-system)
+    (load-theme +theme t))
   ;; modeline
   (if +use-header-line
       (setq-default
