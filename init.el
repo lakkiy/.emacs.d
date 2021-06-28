@@ -16,7 +16,7 @@
               (insert (format ";; %s\n" (make-string 58 ?-)))
               (insert (format ";; Welcome to GNU Emacs %s. "
                               emacs-version))
-              (insert (format "Today is %s.\n"
+              (insert (format "Today is %s .\n"
                               (format-time-string "%A %Y.%-m.%-d")))
               (insert ";;\n")
               (lisp-interaction-mode)
