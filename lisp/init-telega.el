@@ -44,7 +44,6 @@ If `\\[universal-argument]' is given, then attach clipboard as document."
   (buffer-face-mode +1))
 
 (with-eval-after-load "telega"
-  (setq writeroom-width 82)
   (add-hook 'telega-root-mode-hook 'writeroom-mode)
   (add-hook 'telega-chat-mode-hook 'writeroom-mode)
   (add-hook 'telega-root-mode-hook #'yang/fixed-pitch-setup)
