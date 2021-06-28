@@ -47,6 +47,9 @@
  company-abort-manual-when-too-short t
  company-require-match nil
  company-global-modes '(not dired-mode dired-sidebar-mode)
+ company-backends '((company-capf :with company-yasnippet)
+                    (company-dabbrev-code company-keywords company-files)
+                    company-dabbrev)
  company-tooltip-margin 0)
 
 (autoload #'company-mode "company")

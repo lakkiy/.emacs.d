@@ -217,7 +217,7 @@ prepended to the element after the #+HEADER: tag."
                      "  %i%?"))
          ("Billing" :keys "b" :type plain :file "~/Dropbox/org/Billing.org"
           :function (lambda () (find-month-tree))
-          :template (" | %U | %^{Category}} | %^{Description} | %^{Amount}} |"))
+          :template (" | %U | %^{Category} | %^{Description} | %^{Amount} |"))
          ("Schedule" :keys "s" :file "~/Dropbox/org/Schedule.org"
           :datetree t
           :template ("* %^{Description}"
