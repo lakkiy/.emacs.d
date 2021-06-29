@@ -12,6 +12,7 @@
    '("i" . consult-imenu)
    '("I" . imenu-list-smart-toggle)
    '("b" . consult-buffer)
+   '("f" . find-file)
    ;; basic
    '("v" . magit)
    '("t" . tab-bar-select-tab-by-name)
