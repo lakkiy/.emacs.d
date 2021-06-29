@@ -15,13 +15,13 @@
                  'eglot)
 
 ;;; citre
+(global-set-key (kbd "C-x c p") 'citre-peek)
 (with-eval-after-load 'c-mode
   (require 'citre-lang-c)
   (add-hook 'c-mode-hook #'citre-auto-enable-citre-mode))
 (with-eval-after-load 'citre-mode
   (global-set-key (kbd "C-x c j") 'citre-jump)
   (global-set-key (kbd "C-x c J") 'citre-jump-back)
-  (global-set-key (kbd "C-x c p") 'citre-peek)
   (global-set-key (kbd "C-x c P") 'citre-ace-peek))
 (with-eval-after-load 'dired (require 'citre-lang-fileref))
 
