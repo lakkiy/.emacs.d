@@ -68,6 +68,9 @@
  python-shell-interpreter "python3"
  python-indent-guess-indent-offset nil)
 
-;;; conda TODO
+;;; conda TODO macos miniconda var setup
+(with-eval-after-load "conda"
+  (conda-env-initialize-interactive-shells)
+  (conda-env-initialize-eshell))
 
 (provide 'init-python)
