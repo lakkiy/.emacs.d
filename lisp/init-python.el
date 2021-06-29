@@ -6,8 +6,10 @@
 (straight-use-package '(python-isort :type git :host github :repo "wyuenho/emacs-python-isort"))
 (straight-use-package 'pyimport)
 (straight-use-package 'jupyter)
+(straight-use-package 'conda)
 
 (+pdump-packages 'elpy
+                 'conda
                  'jupyter
                  'blacken
                  'live-py-mode
@@ -65,5 +67,7 @@
  python-shell-completion-native-enable nil
  python-shell-interpreter "python3"
  python-indent-guess-indent-offset nil)
+
+;;; conda TODO
 
 (provide 'init-python)
