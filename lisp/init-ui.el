@@ -2,27 +2,7 @@
 ;; modeline and font
 
 (straight-use-package '(ligature :type git :host github :repo "mickeynp/ligature.el"))
-(straight-use-package '(modus-theme   :type git :host github :repo "protesilaos/modus-themes"))
-(straight-use-package 'spacemacs-theme)
-(straight-use-package 'atom-one-dark-theme)
-(straight-use-package 'dracula-theme)
-(straight-use-package 'emojify)
-(straight-use-package 'solaire-mode)
-(straight-use-package 'nyan-mode)
-(straight-use-package 'rainbow-mode)
 (straight-use-package '(less-theme :type git :host github :repo "nobiot/less-theme"))
-
-(+pdump-packages 'ligature
-                 ;; 'modus-theme
-                 ;; 'spacemacs-theme
-                 ;; 'atom-one-dark-theme
-                 ;; 'dracula-theme
-                 ;; 'minimal-theme
-                 ;; 'tao-theme
-                 'rainbow-mode
-                 'nyan-mode
-                 'emojify
-                 'solaire-mode)
 
 (defvar +theme-hooks nil
   "((theme-id . function) ...)")
@@ -39,15 +19,22 @@
 
 (advice-add 'load-theme :around #'+load-theme-advice) ;
 
-;; rainbow-mode
-(autoload 'rainbow-mode "rainbow-mode" nil t)
+(eat-package nyan-mode :straight t)
+(eat-package solaire-mode :straight t)
+(eat-package dracula-theme :straight t)
+(eat-package atom-one-dark-theme :straight t)
 
-;;; nano-theme.el
-(setq
- nano-theme-light/dark 'light
- nano-theme-comment-italic nil
- nano-theme-keyword-italic nil
- nano-theme-system-appearance nil)
+(eat-package rainbow-mode
+  :straight t
+  :commands rainbow-mode)
+
+(eat-package nano-theme
+  :init
+  (setq
+   nano-theme-light/dark 'light
+   nano-theme-comment-italic nil
+   nano-theme-keyword-italic nil
+   nano-theme-system-appearance nil))
 
 ;; auto change theme after system apearance changed
 (when (boundp 'ns-system-appearance)
@@ -57,28 +44,33 @@
                      (load-theme 'spacemacs-light t)
                    (load-theme 'spacemacs-dark t)))))
 
-;;; emojify
-(add-hook 'after-init-hook #'global-emojify-mode)
+(eat-package emojify
+  :straight t
+  :hook (after-init-hook . global-emojify-mode))
 
-;;; spacemacs-theme
-(setq
- spacemacs-theme-comment-italic t
- spacemacs-theme-keyword-italic t
- spacemacs-theme-org-agenda-height t
- spacemacs-theme-org-bold t
- spacemacs-theme-org-height t
- spacemacs-theme-org-highlight t
- spacemacs-theme-org-priority-bold t
- spacemacs-theme-org-bold t
- spacemacs-theme-underline-parens t)
+(eat-package spacemacs-theme
+  :straight t
+  :init
+  (setq
+   spacemacs-theme-comment-italic t
+   spacemacs-theme-keyword-italic t
+   spacemacs-theme-org-agenda-height t
+   spacemacs-theme-org-bold t
+   spacemacs-theme-org-height t
+   spacemacs-theme-org-highlight t
+   spacemacs-theme-org-priority-bold t
+   spacemacs-theme-org-bold t
+   spacemacs-theme-underline-parens t))
 
-;;; modus-theme
-(setq
- modus-themes-slanted-constructs t
- modus-themes-bold-constructs t
- modus-themes-syntax 'green-strings
- modus-themes-no-mixed-fonts t
- modus-themes-paren-match 'intense-bold)
+(eat-package modus-themes
+  :straight t
+  :init
+  (setq
+   modus-themes-slanted-constructs t
+   modus-themes-bold-constructs t
+   modus-themes-syntax 'green-strings
+   modus-themes-no-mixed-fonts t
+   modus-themes-paren-match 'intense-bold))
 
 ;; no cursor blink
 ;; (add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))

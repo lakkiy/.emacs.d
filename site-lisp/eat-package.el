@@ -25,12 +25,6 @@
 
 (require 'pcase)
 
-(defun eat-package-installed-p (package)
-  "Return t if PACKAGE is installed."
-  (and (locate-file (symbol-name package) load-path
-                    '(".el" ".el.gz" ".so" ".so.gz"))
-       t))
-
 (defun eat-package-split-command-args (args)
   "Split args into commands and args.
 If ARGS is (:command args args args :command args),
@@ -124,6 +118,7 @@ Available COMMAND:
   :commands     Add autoload for this command.
   :after        Require after this package loads.
   :reqire       Require this package right now.
+  :straight     Install package via straight
 
 Each COMMAND can take zero or more ARG. Among these commands,
 :hook, :commands, and :after expect literal arguments, :init,
@@ -144,7 +139,7 @@ ARGS.
              (let ((command (car arg))
                    (arg-list (cdr arg)))
                (pcase command
-                 ;; (:straight `((straight-use-package ',package)))
+                 (:straight `((straight-use-package ',package)))
                  (:init arg-list)
                  (:config `((with-eval-after-load ',package
                               ,@arg-list)))
@@ -168,9 +163,6 @@ ARGS.
                                (require ',package)))
                           arg-list)))))
            arg-list))
-         (load-path-form (mapcar (lambda (path)
-                                   `(add-to-list 'load-path ,path))
-                                 (alist-get :load-path arg-list)))
          (autoload-list (eat-package--collect-autoload arg-list
                                                              package))
          ;; Must :require explicitly if you want to require this package.
@@ -178,11 +170,6 @@ ARGS.
                     (or (memq :require commands)))))
     `(condition-case err
          (progn
-           ;; We need to add load-path before checking
-           ;; if the package is installed or not.
-           ,@load-path-form
-           (when (not (eat-package-installed-p ',package))
-             (error "%s not installed" ',package))
            ,@autoload-list
            ,@body
            ,(when require-p `(require ',package)))

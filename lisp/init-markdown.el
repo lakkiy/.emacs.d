@@ -4,4 +4,6 @@
 
 (+pdump-packages 'markdown-mode)
 
+(eat)
+
 (provide 'init-markdown)

@@ -43,7 +43,6 @@
 (require 'init-spcfile)
 (require 'init-lisp)
 (require 'init-mole)
-(require 'init-markdown)
 (require 'init-mail)
 (require 'init-dev)
 (require 'init-fun)

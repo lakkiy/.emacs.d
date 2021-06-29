@@ -1,38 +1,28 @@
 ;;; -*- lexical-binding: t -*-
 
-(straight-use-package 'magit)
-(straight-use-package 'magit-todos)
-(straight-use-package 'hl-todo)
-(straight-use-package 'diff-hl)
+(eat-package magit
+  :straight t
+  :commands magit)
 
-(+pdump-packages 'magit
-                 'magit-extras
-                 'magit-todos
-                 'diff-hl
-                 'diff-hl-dired
-                 'hl-todo)
-
-;; magit
-(autoload #'magit "magit" nil t)
-
-(with-eval-after-load "magit"
-  ;;; magit-todos
+(eat-package magit-todos
+  :straight t
+  :after magit
+  :config
   (setq magit-todos-nice (if (executable-find "nice") t nil))
   (let ((inhibit-message t)) (magit-todos-mode 1))
-  (with-eval-after-load "magit-todos"
-    (transient-append-suffix 'magit-status-jump '(0 0 -1)
-      '("T " "Todos" magit-todos-jump-to-todos))))
+  (transient-append-suffix 'magit-status-jump '(0 0 -1)
+    '("T " "Todos" magit-todos-jump-to-todos)))
 
-;; diff-hl
-(autoload #'diff-hl-mode "diff-hl")
+(eat-package diff-hl
+  :straight t
+  :commands diff-hl-mode
+  :hook
+  ((prog-mode-mode conf-mode-hook) . diff-hl-mode)
+  (dired-mode-hook . diff-hl-dired-mode))
 
-(add-hook 'dired-mode-hook 'diff-hl-dired-mode)
-(add-hook 'prog-mode-hook 'diff-hl-mode)
-(add-hook 'conf-mode-hook 'diff-hl-mode)
-
-;; hl-todo
-(add-hook 'dired-mode-hook 'hl-todo-mode)
-(add-hook 'prog-mode-hook 'hl-todo-mode)
-(add-hook 'conf-mode-hook 'hl-todo-mode)
+(eat-package hl-todo
+  :straight t
+  :hook
+  ((dired-mode-hook prog-mode-hook conf-mode-hook) . hl-todo-mode))
 
 (provide 'init-git)

@@ -1,25 +1,22 @@
 ;; -*- lexical-binding: t; -*-
 
-(straight-use-package 'docker)
-(straight-use-package 'docker-compose-mode)
-(straight-use-package 'dockerfile-mode)
-(straight-use-package 'fish-mode)
+(eat-package docker
+  :straight t
+  :commands docker)
 
-(+pdump-packages 'docker
-                 'docker-compose-mode
-                 'dockerfile-mode
-                 'fish-mode)
+(eat-package docker-compose-mode :straight t)
+(eat-package dockerfile-mode :straight t)
+(eat-package markdown-mode :straight t)
 
-;;; fish-mode
-(with-eval-after-load "fish-mode"
+(eat-package fish-mode
+  :straight t
+  :config
   (add-hook 'fish-mode-hook
             (lambda ()
               (add-hook 'before-save-hook
                         #'fish_indent-before-save))))
 
-;;; docker
-(autoload 'docker "docker" nil t)
-
+;; TODO download single file
 ;;; protobuf-mode
 (with-eval-after-load "protobuf-mode"
   (add-hook 'protobuf-mode-hook
