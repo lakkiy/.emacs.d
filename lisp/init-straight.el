@@ -35,8 +35,13 @@ This variable is non-nil when emacs is started with dump file.")
   (dolist (pkg pkgs)
     (push pkg +pdump-packages)))
 
-
 (require 'eat-package)
+(eat-package quelpa
+  :straight t
+  :init
+  (setq quelpa-git-clone-depth 1
+        quelpa-update-melpa-p nil
+        quelpa-checkout-melpa-p nil))
 (eat-package gcmh
   :straight t
   :init (+pdump-packages 'gcmh)

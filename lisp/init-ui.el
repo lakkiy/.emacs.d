@@ -51,12 +51,6 @@
                         'vertical-border
                         (make-glyph-code ?┃))
 
-;;; No fringe in minibuffer
-(add-hook 'after-make-frame-functions
-          (lambda (frame)
-            (set-window-fringes
-             (minibuffer-window frame) 0 0 nil t)))
-
 (defun +format-mode-line ()
   (let* ((lhs '((:eval (meow-indicator))
                 " "
