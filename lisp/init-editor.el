@@ -12,27 +12,25 @@
   (global-set-key (kbd "C-`") 'popper-toggle-latest)
   (global-set-key (kbd "M-`") 'popper-cycle)
 
-  (setq
-   popper-modeline nil
-   popper-mode-line nil
-   popper-reference-buffers
-   '("\\*Messages\\*"
-     "Outout\\*$"
-     "\\*Gofmt Errors\\*"
-     help-mode
-     eshell-mode
-     ielm-mode)
-   popper-group-function #'popper-group-by-directory))
+  (setq popper-modeline nil
+        popper-mode-line nil
+        popper-reference-buffers
+        '("\\*Messages\\*"
+          "Outout\\*$"
+          "\\*Gofmt Errors\\*"
+          help-mode
+          eshell-mode
+          ielm-mode)
+        popper-group-function #'popper-group-by-directory))
 
 (eat-package sr-speedbar
   :straight t
   :init
-  (setq
-   sr-speedbar-auto-refresh nil
-   sr-speedbar-default-width 30
-   sr-speedbar-max-width 40
-   sr-speedbar-right-side nil
-   sr-speedbar-skip-other-window-p t)
+  (setq sr-speedbar-auto-refresh nil
+        sr-speedbar-default-width 30
+        sr-speedbar-max-width 40
+        sr-speedbar-right-side nil
+        sr-speedbar-skip-other-window-p t)
   (defun +sr-speedbar-select-or-open()
     "Select sr-speedbar window if it exist, or open sr-speedbar"
     (interactive)
@@ -68,12 +66,11 @@
   :hook
   :init
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate t)
-  (setq
-   dumb-jump-quiet t
-   dumb-jump-aggressive t
-   dumb-jump-prefer-search 'rg
-   dumb-jump-selector 'completing-read
-   dumb-jump-disable-obsolate-warning t)
+  (setq dumb-jump-quiet t
+        dumb-jump-aggressive t
+        dumb-jump-prefer-search 'rg
+        dumb-jump-selector 'completing-read
+        dumb-jump-disable-obsolate-warning t)
 
   (global-set-key (kbd "M-g J") 'dumb-jump-go-other-window)
   (global-set-key (kbd "M-g j") 'dumb-jump-go))
@@ -82,10 +79,9 @@
   :straight t
   :hook (youdao-dictionary-mode-hook . (lambda () (meow-mode -1)))
   :init
-  (setq
-   url-automatic-caching t
-   youdao-dictionary-search-history-file (expand-file-name ".youdao" user-emacs-directory)
-   youdao-dictionary-use-chinese-word-segmentation t)
+  (setq url-automatic-caching t
+        youdao-dictionary-search-history-file (expand-file-name ".youdao" user-emacs-directory)
+        youdao-dictionary-use-chinese-word-segmentation t)
   (pretty-hydra-define youdao-hydra (:title "Youdao Dictionary Operations" :quit-key "q")
     ("Operations"
      (("p" youdao-dictionary-play-voice-of-current-word "play voice of current word")
@@ -100,17 +96,15 @@
 (eat-package writeroom-mode
   :straight t
   :init
-  (setq
-   writeroom-fullscreen-effect 'maximized
-   writeroom-bottom-divider-width 0))
+  (setq writeroom-fullscreen-effect 'maximized
+        writeroom-bottom-divider-width 0))
 
 (eat-package which-key
   :straight t
   :hook (after-init-hook . which-key-mode)
   :init
-  (setq
-   which-key-idle-delay 1
-   which-key-idle-secondary-delay 0.05)
+  (setq which-key-idle-delay 1
+        which-key-idle-secondary-delay 0.05)
   :config
   (global-set-key (kbd "<f5>") 'which-key-show-major-mode))
 
@@ -127,9 +121,8 @@
   (imenu-list-major-mode-hook . (lambda ()
                                   (setq-local header-line-format nil)))
   :init
-  (setq
-   imenu-list-auto-resize t
-   imenu-list-mode-line-format nil)
+  (setq imenu-list-auto-resize t
+        imenu-list-mode-line-format nil)
 
   (global-set-key (kbd "C-.") #'imenu-list-smart-toggle))
 
@@ -137,9 +130,8 @@
   :straight t
   :commands separedit
   :init
-  (setq
-   separedit-default-mode 'org-mode
-   separedit-remove-trailing-spaces-in-comment t)
+  (setq separedit-default-mode 'org-mode
+        separedit-remove-trailing-spaces-in-comment t)
   (global-set-key (kbd "C-c '") #'separedit))
 
 (eat-package visual-fill-column

@@ -6,23 +6,21 @@
 
 (eat-package org
   :init
-  (setq
-   ;; hide markup for =monospace=, ~code~, /italic/, *bold* etc.
-   org-hide-emphasis-markers t
-   ;; fontify code in code blocks
-   ;; org-src-fontify-natively t
-   ;; place tags directly after headline text, with only one space in between
-   org-tags-column 0
-   ;; Highlight latex text in org mode
-   org-highlight-latex-and-related '(latex script entities)
-   org-src-window-setup 'current-window
-   org-log-done t
-   org-directory "~/Dropbox/org"
-   org-html-checkbox-type 'unicode
-   org-todo-keywords        (quote ((sequence "TODO(t)" "WIP(w/!)" "WAIT(W@/!)" "HOLD(h)" "|" "CANCELLED(c@/!)" "DONE(d!/!)")))
-   org-todo-repeat-to-state "NEXT"
-   org-todo-keyword-faces   (quote (("NEXT" :inherit warning)
-  				                    ("WAIT" :inherit font-lock-string-face))))
+  (setq org-hide-emphasis-markers t
+        ;; fontify code in code blocks
+        ;; org-src-fontify-natively t
+        ;; place tags directly after headline text, with only one space in between
+        org-tags-column 0
+        ;; Highlight latex text in org mode
+        org-highlight-latex-and-related '(latex script entities)
+        org-src-window-setup 'current-window
+        org-log-done t
+        org-directory "~/Dropbox/org"
+        org-html-checkbox-type 'unicode
+        org-todo-keywords        (quote ((sequence "TODO(t)" "WIP(w/!)" "WAIT(W@/!)" "HOLD(h)" "|" "CANCELLED(c@/!)" "DONE(d!/!)")))
+        org-todo-repeat-to-state "NEXT"
+        org-todo-keyword-faces   (quote (("NEXT" :inherit warning)
+  				                         ("WAIT" :inherit font-lock-string-face))))
 
   ;; For hydra
   (defun hot-expand (str &optional mod)
@@ -108,11 +106,10 @@ prepended to the element after the #+HEADER: tag."
 (eat-package org-journal
   :straight t
   :init
-  (setq
-   org-journal-file-type 'yearly
-   org-journal-dir (concat org-directory "/journal")
-   org-journal-file-format "%Y"
-   org-journal-date-format "%Y 年 %m 月 %d 日 %A")
+  (setq org-journal-file-type 'yearly
+        org-journal-dir (concat org-directory "/journal")
+        org-journal-file-format "%Y"
+        org-journal-date-format "%Y 年 %m 月 %d 日 %A")
   (defun org-journal-find-location ()
     ;; Open today's journal, but specify a non-nil prefix argument in order to
     ;; inhibit inserting the heading; org-capture will insert the heading.
@@ -148,103 +145,102 @@ prepended to the element after the #+HEADER: tag."
         (setq end (save-excursion (org-end-of-subtree t t))))
       (org-end-of-subtree)))
 
-  (setq
-   org-default-notes-file (concat org-directory "/default-notes.org")
-   org-capture-templates
-   (doct '(("Work" :keys "w" :file "~/Dropbox/org/Work.org"
-            :datetree t
-            :tree-type week
-            :template ("* %^{Description}"
-                       ":PROPERITIES:"
-                       ":Created: %T" ;; used to create weekly report
-                       ":END:"))
-           ("Journal" :keys "j"
-            :function (lambda () (org-journal-find-location))
-            :clock-in t :clock-resume t
-            :template ("* %(format-time-string org-journal-time-format) %^{Title}"
-                       "  %i%?"))
-           ("Billing" :keys "b" :type plain :file "~/Dropbox/org/Billing.org"
-            :function (lambda () (find-month-tree))
-            :template (" | %U | %^{Category} | %^{Description} | %^{Amount} |"))
-           ("Schedule" :keys "s" :file "~/Dropbox/org/Schedule.org"
-            :datetree t
-            :template ("* %^{Description}"
-                       ":PROPERTIES:"
-                       ":Created: %U"
-                       ":END:"))
-           ("Web site" :keys "e" :file "~/Dropbox/org/Notes.org"
-            :headline "Inbox"
-            :template ("* %^{Title} :website:"
-                       ":PROPERTIES:"
-                       ":Created: %U"
-                       ":END:"
-                       "%?%:initial"))
-           (:group "All Notes"
-                   :file "~/Dropbox/org/Notes.org"
-                   :template ("* %^{Description}"
-                              ":PROPERTIES:"
-                              ":Created: %U"
-                              ":END:"
-                              "%?")
-                   :children
-                   (("Notes" :keys "n" :olp ("Notes")
-                     :datetree t)
-                    ("Exercise" :keys "e" :olp ("Exercise"))
-                    ("Research" :keys "n" :olp ("Research")
-                     :clock-in t :clock-resume t :prepend t)
-                    ("Computer" :keys "c"
-                     :prepend t
-                     :children
-                     (("Emacs" :keys "e" :olp ("Computer" "Emacs"))
-                      ("Linux" :keys "l" :olp ("Computer" "Linux"))
-                      ("Golang" :keys "g" :olp ("Computer" "Golang"))
-                      ("Python" :keys "p" :olp ("Computer" "Python"))
-                      ("Windows" :keys "w" :olp ("Computer" "Windows"))))))
-           ("Tasks" :keys "t" :file "~/Dropbox/org/Tasks.org"
-            :template ("* %{todo-state} %^{Description}"
-                       ":PROPERTIES:"
-                       ":Created: %U"
-                       ":END:")
-            :children
-            (("Computer"
-              :keys "c" :headline "Computer" :todo-state "TODO")
-             ("Food"
-              :keys "f" :headline "Food" :todo-state "TODO")
-             ("Research"
-              :keys "r" :headline "Research" :todo-state "TODO")
-             ("Idea"
-              :keys "i" :headline "Idea" :todo-state "TODO")
-             ("Not grouped"
-              :keys "n" :headline "Not grouped" :todo-state "TODO")
-             ("Books"
-              :keys "b" :headline "Book" :todo-state "TODO")))))))
+  (setq org-default-notes-file (concat org-directory "/default-notes.org")
+        org-capture-templates
+        (doct '(("Work" :keys "w" :file "~/Dropbox/org/Work.org"
+                 :datetree t
+                 :tree-type week
+                 :template ("* %^{Description}"
+                            ":PROPERITIES:"
+                            ":Created: %T" ;; used to create weekly report
+                            ":END:"))
+                ("Journal" :keys "j"
+                 :function (lambda () (org-journal-find-location))
+                 :clock-in t :clock-resume t
+                 :template ("* %(format-time-string org-journal-time-format) %^{Title}"
+                            "  %i%?"))
+                ("Billing" :keys "b" :type plain :file "~/Dropbox/org/Billing.org"
+                 :function (lambda () (find-month-tree))
+                 :template (" | %U | %^{Category} | %^{Description} | %^{Amount} |"))
+                ("Schedule" :keys "s" :file "~/Dropbox/org/Schedule.org"
+                 :datetree t
+                 :template ("* %^{Description}"
+                            ":PROPERTIES:"
+                            ":Created: %U"
+                            ":END:"))
+                ("Web site" :keys "e" :file "~/Dropbox/org/Notes.org"
+                 :headline "Inbox"
+                 :template ("* %^{Title} :website:"
+                            ":PROPERTIES:"
+                            ":Created: %U"
+                            ":END:"
+                            "%?%:initial"))
+                (:group "All Notes"
+                        :file "~/Dropbox/org/Notes.org"
+                        :template ("* %^{Description}"
+                                   ":PROPERTIES:"
+                                   ":Created: %U"
+                                   ":END:"
+                                   "%?")
+                        :children
+                        (("Notes" :keys "n" :olp ("Notes")
+                          :datetree t)
+                         ("Exercise" :keys "e" :olp ("Exercise"))
+                         ("Research" :keys "n" :olp ("Research")
+                          :clock-in t :clock-resume t :prepend t)
+                         ("Computer" :keys "c"
+                          :prepend t
+                          :children
+                          (("Emacs" :keys "e" :olp ("Computer" "Emacs"))
+                           ("Linux" :keys "l" :olp ("Computer" "Linux"))
+                           ("Golang" :keys "g" :olp ("Computer" "Golang"))
+                           ("Python" :keys "p" :olp ("Computer" "Python"))
+                           ("Windows" :keys "w" :olp ("Computer" "Windows"))))))
+                ("Tasks" :keys "t" :file "~/Dropbox/org/Tasks.org"
+                 :template ("* %{todo-state} %^{Description}"
+                            ":PROPERTIES:"
+                            ":Created: %U"
+                            ":END:")
+                 :children
+                 (("Computer"
+                   :keys "c" :headline "Computer" :todo-state "TODO")
+                  ("Food"
+                   :keys "f" :headline "Food" :todo-state "TODO")
+                  ("Research"
+                   :keys "r" :headline "Research" :todo-state "TODO")
+                  ("Idea"
+                   :keys "i" :headline "Idea" :todo-state "TODO")
+                  ("Not grouped"
+                   :keys "n" :headline "Not grouped" :todo-state "TODO")
+                  ("Books"
+                   :keys "b" :headline "Book" :todo-state "TODO")))))))
 
 (eat-package easy-hugo
   :straight t
   :commands easy-hugo
   :init
-  (setq
-   easy-hugo-server-flags "-D"
-   easy-hugo-basedir "~/bookshelf/"
-   easy-hugo-previewtime "300"
-   easy-hugo-default-ext ".org"
-   easy-hugo-org-header t))
+  (setq easy-hugo-server-flags "-D"
+        easy-hugo-basedir "~/bookshelf/"
+        easy-hugo-previewtime "300"
+        easy-hugo-default-ext ".org"
+        easy-hugo-org-header t))
 
 (eat-package org-roam
   :straight t
   :hook (after-init-hook . org-roam-mode)
   :init
   (setq
-   org-roam-capture-templates '(("d" "default" plain #'org-roam-capture--get-point "%?"
-                                 :file-name "%<Y%m%d%H%M%S>-${slug}"
-                                 :head "#+title: ${title}\n#+roam-tags:"
-                                 :unnarrowed t)
-                                ("l" "leetcode" plain #'org-roam-capture--get-point
-                                 "\n* References\n* Description\n* Code\n#+begin_src go :imports '(\"fmt\")\n\n#+end_src\n* Time & Space\n* Related & Recommend"
-                                 :file-name "%<%Y%m%d%H%M%S>-${slug}"
-                                 :clock-in t :clock-resume t
-                                 :head "#+title: ${title}\n#+roam_tags:"
-                                 :unnarrowed t))
+   org-roam-capture-templates
+   '(("d" "default" plain #'org-roam-capture--get-point "%?"
+      :file-name "%<Y%m%d%H%M%S>-${slug}"
+      :head "#+title: ${title}\n#+roam-tags:"
+      :unnarrowed t)
+     ("l" "leetcode" plain #'org-roam-capture--get-point
+      "\n* References\n* Description\n* Code\n#+begin_src go :imports '(\"fmt\")\n\n#+end_src\n* Time & Space\n* Related & Recommend"
+      :file-name "%<%Y%m%d%H%M%S>-${slug}"
+      :clock-in t :clock-resume t
+      :head "#+title: ${title}\n#+roam_tags:"
+      :unnarrowed t))
    org-roam-directory
    (let ((p (expand-file-name (concat org-directory "/roam"))))
      (unless (file-directory-p p) (make-directory p))
@@ -272,7 +268,6 @@ prepended to the element after the #+HEADER: tag."
   :hook (org-agenda-mode . org-super-agenda-mode)
   :init
   ;; TODO
-  (setq
-   org-super-agenda-groups nil))
+  (setq org-super-agenda-groups nil))
 
 (provide 'init-org)

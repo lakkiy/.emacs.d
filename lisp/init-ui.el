@@ -30,11 +30,10 @@
 
 (eat-package nano-theme
   :init
-  (setq
-   nano-theme-light/dark 'light
-   nano-theme-comment-italic nil
-   nano-theme-keyword-italic nil
-   nano-theme-system-appearance nil))
+  (setq nano-theme-light/dark 'light
+        nano-theme-comment-italic nil
+        nano-theme-keyword-italic nil
+        nano-theme-system-appearance nil))
 
 ;; auto change theme after system apearance changed
 (when (boundp 'ns-system-appearance)
@@ -51,26 +50,24 @@
 (eat-package spacemacs-theme
   :straight t
   :init
-  (setq
-   spacemacs-theme-comment-italic t
-   spacemacs-theme-keyword-italic t
-   spacemacs-theme-org-agenda-height t
-   spacemacs-theme-org-bold t
-   spacemacs-theme-org-height t
-   spacemacs-theme-org-highlight t
-   spacemacs-theme-org-priority-bold t
-   spacemacs-theme-org-bold t
-   spacemacs-theme-underline-parens t))
+  (setq spacemacs-theme-comment-italic t
+        spacemacs-theme-keyword-italic t
+        spacemacs-theme-org-agenda-height t
+        spacemacs-theme-org-bold t
+        spacemacs-theme-org-height t
+        spacemacs-theme-org-highlight t
+        spacemacs-theme-org-priority-bold t
+        spacemacs-theme-org-bold t
+        spacemacs-theme-underline-parens t))
 
 (eat-package modus-themes
   :straight t
   :init
-  (setq
-   modus-themes-slanted-constructs t
-   modus-themes-bold-constructs t
-   modus-themes-syntax 'green-strings
-   modus-themes-no-mixed-fonts t
-   modus-themes-paren-match 'intense-bold))
+  (setq modus-themes-slanted-constructs t
+        modus-themes-bold-constructs t
+        modus-themes-syntax 'green-strings
+        modus-themes-no-mixed-fonts t
+        modus-themes-paren-match 'intense-bold))
 
 ;; no cursor blink
 ;; (add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))

@@ -4,8 +4,7 @@
   :straight t
   :commands leetcode
   :init
-  (setq
-   leetcode-prefer-language "golang"))
+  (setq leetcode-prefer-language "golang"))
 
 (eat-package elfeed
   :straight t
@@ -13,10 +12,9 @@
   :init
   (global-set-key (kbd "C-x w") 'elfeed)
 
-  (setq
-   elfeed-search-filter "+unread "
-   elfeed-curl-extra-arguments '("--insecure")
-   browse-url-browser-function 'eww-browse-url)
+  (setq elfeed-search-filter "+unread "
+        elfeed-curl-extra-arguments '("--insecure")
+        browse-url-browser-function 'eww-browse-url)
 
   (defun +elfeed-search-star-tag-all ()
     (interactive)

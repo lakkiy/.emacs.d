@@ -50,17 +50,16 @@ If `\\[universal-argument]' is given, then attach clipboard as document."
 
 (eat-package erc
   :init
-  (setq
-   erc-server "irc.ea.libera.chat"
-   erc-nick "Artorias"
-   erc-user-full-name "Liu Bo"
-   erc-rename-buffers t
-   erc-interpret-mirc-color t
-   erc-lurker-hide-list '("JOIN" "PART" "QUIT")
-   erc-auto-query 'bury
-   erc-kill-buffer-on-part t
-   erc-autojoin-channels-alist '(("irc.ea.libera.chat" "#emacs"))
-   erc-track-exclude '("#emacs"))
+  (setq erc-server "irc.ea.libera.chat"
+        erc-nick "Artorias"
+        erc-user-full-name "Liu Bo"
+        erc-rename-buffers t
+        erc-interpret-mirc-color t
+        erc-lurker-hide-list '("JOIN" "PART" "QUIT")
+        erc-auto-query 'bury
+        erc-kill-buffer-on-part t
+        erc-autojoin-channels-alist '(("irc.ea.libera.chat" "#emacs"))
+        erc-track-exclude '("#emacs"))
 
   (defun +erc ()
     (interactive)

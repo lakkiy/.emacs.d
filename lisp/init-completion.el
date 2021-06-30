@@ -1,5 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
+(eat-package rg :straight t)
+
 (eat-package yasnippet
   :straight t
   :commands yas-minor-mode
@@ -14,23 +16,22 @@
   ((prog-mode-hook conf-mode-hook) . company-mode)
   :commands company-mode
   :init
-  (setq
-   company-vscode-icons-mapping nil
-   company-begin-commands '(self-insert-command)
-   company-idle-delay 0
-   company-tooltip-limit 10
-   company-tooltip-align-annotations t
-   company-tooltip-width-grow-only t
-   company-tooltip-idle-delay 0.4
-   company-minimum-prefix-length 5
-   company-dabbrev-downcase nil
-   company-abort-manual-when-too-short t
-   company-require-match nil
-   company-global-modes '(not dired-mode dired-sidebar-mode)
-   company-backends '((company-capf :with company-yasnippet)
-                      (company-dabbrev-code company-keywords company-files)
-                      company-dabbrev)
-   company-tooltip-margin 0)
+  (setq company-vscode-icons-mapping nil
+        company-begin-commands '(self-insert-command)
+        company-idle-delay 0
+        company-tooltip-limit 10
+        company-tooltip-align-annotations t
+        company-tooltip-width-grow-only t
+        company-tooltip-idle-delay 0.4
+        company-minimum-prefix-length 5
+        company-dabbrev-downcase nil
+        company-abort-manual-when-too-short t
+        company-require-match nil
+        company-global-modes '(not dired-mode dired-sidebar-mode)
+        company-backends '((company-capf :with company-yasnippet)
+                           (company-dabbrev-code company-keywords company-files)
+                           company-dabbrev)
+        company-tooltip-margin 0)
   :config
   (define-key company-active-map [tab] 'company-complete-common-or-cycle)
   (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
@@ -69,19 +70,17 @@
   :straight t
   :after selectrum
   :init
-  (setq
-   selectrum-highlight-candidates-function #'orderless-highlight-matches
-   selectrum-refine-candidates-function #'orderless-filter
-   completion-styles '(substring orderless)))
+  (setq selectrum-highlight-candidates-function #'orderless-highlight-matches
+        selectrum-refine-candidates-function #'orderless-filter
+        completion-styles '(substring orderless)))
 
 (eat-package consult
   :straight t
   :init
   (global-set-key (kbd "C-s") 'consult-line)
-  (setq
-   xref-show-xrefs-function #'consult-xref
-   xref-show-definitions-function #'consult-xref
-   consult-project-root-function #'vc-root-dir))
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref
+        consult-project-root-function #'vc-root-dir))
 
 (eat-package embark
   :straight t
