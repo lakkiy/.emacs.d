@@ -43,8 +43,9 @@
 ;; FIXME not work with meow in go mode
   :hook (prog-mode-hook . (lambda () (docstr-mode 1))))
 
-(eat-package flymake-mode
+(eat-package flymake
   :commands flymake-mode
+  :after prog-mode
   :config
   (define-key flymake-mode-map (kbd "C-c C-b") 'flymake-show-diagnostics-buffer)
   (define-key flymake-mode-map (kbd "M-n") 'flymake-goto-next-error)
