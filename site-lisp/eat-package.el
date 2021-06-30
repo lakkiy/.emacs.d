@@ -122,8 +122,8 @@ Available COMMAND:
 
 Each COMMAND can take zero or more ARG. Among these commands,
 :hook, :commands, and :after expect literal arguments, :init,
-:config, :load-path, :extern expect s-expressions, which are
-evaluated after expansion of the macro.
+:config expect s-expressions, which are evaluated after
+expansion of the macro.
 
 ARGS.
 
