@@ -46,7 +46,7 @@ This variable is non-nil when emacs is started with dump file.")
   :straight t
   :hook (after-init-hook . gcmh-mode)
   :init
-  (gcmh-idle-delay 10)
-  (gcmh-high-cons-threshold #x6400000)) ;; 100 MB
+  (setq gcmh-idle-delay 10
+        gcmh-high-cons-threshold #x6400000)) ;; 100 MB
 
 (provide 'init-straight)
