@@ -14,6 +14,10 @@
   :straight t
   :hook
   ((prog-mode-hook conf-mode-hook) . company-mode)
+  ;; Add `company-elisp' backend for elisp.
+  (emacs-lisp-mode-hook . (lambda ()
+                            (require 'company-elisp)
+                            (push 'company-elisp company-backends)))
   :commands company-mode
   :init
   (setq company-vscode-icons-mapping nil

@@ -35,13 +35,8 @@ This variable is non-nil when emacs is started with dump file.")
   (dolist (pkg pkgs)
     (push pkg +pdump-packages)))
 
-;; (straight-use-package 'gcmh)
-;; (+pdump-packages 'gcmh)
-;; (require 'gcmh)
-;; (gcmh-mode 1)
 
 (require 'eat-package)
-
 (eat-package gcmh
   :straight t
   :init (+pdump-packages 'gcmh)

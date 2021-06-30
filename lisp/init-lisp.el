@@ -1,11 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-;; Add `company-elisp' backend for elisp.
-(add-hook 'emacs-lisp-mode-hook
-          #'(lambda ()
-              (require 'company-elisp)
-              (push 'company-elisp company-backends)))
-
 (eat-package smartparens
   :straight t
   :commands smartparens-mode
