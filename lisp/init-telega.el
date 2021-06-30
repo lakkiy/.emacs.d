@@ -32,15 +32,7 @@ If `\\[universal-argument]' is given, then attach clipboard as document."
                           (error "No image in CLIPBOARD"))
                       nil tmpfile nil 'quiet))
       (telega-chatbuf--attach-tmp-photo tmpfile doc-p)))
-
-  (defun yang/fixed-pitch-setup ()
-    (interactive)
-    ;; TODO text-scale-increase is nice for look
-    (setq buffer-face-mode-face '(:family "Sarasa Mono SC"))
-    (buffer-face-mode +1))
   :hook
-  (telega-root-mode-hook . (writeroom-mode yang/fixed-pitch-setup))
-  (telega-chat-mode-hook . (writeroom-mode yang/fixed-pitch-setup))
   (telega-msg-ignore-predicates . telega-msg-from-blocked-sender-p)
   (telega-chat-mode . #'yas-minor-mode-on)
   :config
