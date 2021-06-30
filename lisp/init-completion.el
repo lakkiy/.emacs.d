@@ -51,7 +51,10 @@
 
 (eat-package selectrum
   :straight t
-  :require t
+  :hook
+  (after-init-hook . (lambda ()
+                       (require 'selectrum)
+                       (selectrum-mode)))
   :init
   (defun +minibuffer-backward-delete ()
     (interactive)
@@ -64,7 +67,6 @@
       (save-mark-and-excursion (backward-word) (point)))
      (point)))
   :config
-  (selectrum-mode)
   (define-key selectrum-minibuffer-map (kbd "M-DEL") #'+minibuffer-backward-delete)
   (define-key selectrum-minibuffer-map (kbd "{") #'selectrum-previous-candidate)
   (define-key selectrum-minibuffer-map (kbd "}") #'selectrum-next-candidate)
