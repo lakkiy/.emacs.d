@@ -44,9 +44,9 @@ This variable is non-nil when emacs is started with dump file.")
         quelpa-checkout-melpa-p nil))
 (eat-package gcmh
   :straight t
-  :init (+pdump-packages 'gcmh)
-  :require t
-  :config
-  (gcmh-mode 1))
+  :hook (after-init-hook . gcmh-mode)
+  :init
+  (gcmh-idle-delay 10)
+  (gcmh-high-cons-threshold #x6400000)) ;; 100 MB
 
 (provide 'init-straight)
