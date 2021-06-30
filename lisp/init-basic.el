@@ -1,11 +1,35 @@
 ;;; -*- lexical-binding: t -*-
 
-(require 'init-var)
+(require 'init-eat)
 (require 'init-utils)
+
+(defvar +theme-hooks nil
+  "((theme-id . function) ...)")
+
+(defun +load-theme-advice (f theme-id &optional no-confirm no-enable &rest args)
+  "Enhance `load-theme' by disabling other enabled themes & calling hooks"
+  (unless no-enable ;
+    (mapc #'disable-theme custom-enabled-themes))
+  (prog1
+      (apply f theme-id no-confirm no-enable args)
+    (unless no-enable ;
+      (pcase (assq theme-id +theme-hooks)
+        (`(,_ . ,f) (funcall f))))))
+
+(advice-add 'load-theme :around #'+load-theme-advice)
+
+;; auto change theme after system apearance changed
+(when (and (boundp 'ns-system-appearance) (display-graphic-p))
+  (add-to-list 'ns-system-appearance-change-functions
+               (lambda (l?d)
+                 (if (eq l?d 'light)
+                     (load-theme 'spacemacs-light t)
+                   (load-theme 'spacemacs-dark t)))))
 
 (when +enable-proxy?
   (add-hook 'after-init-hook (lambda () (+proxy-http-enable))))
 
+;; (add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
 ;; (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 ;; (add-hook 'conf-mode-hook 'display-line-numbers-mode)
 (add-hook 'prog-mode-hook 'hl-line-mode)

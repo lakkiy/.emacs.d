@@ -257,6 +257,8 @@ prepended to the element after the #+HEADER: tag."
   (define-key org-mode-map (kbd "C-x C-r I") 'org-roam-insert-immediate)
   (require 'org-roam-protocol))
 
+(eat-package org-roam-server :straight t)
+
 (eat-package org-agenda
   :init
   (setq

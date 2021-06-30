@@ -1,5 +1,17 @@
 ;;; -*- lexical-binding: t -*-
 
+(defgroup eat nil
+  "Eat Emacs customization"
+  :group 'convenience
+  :link '(url-link :tag "Homepage" "https://github.com/404cn/eatemacs"))
+
+(defcustom eat-system-themes '((light . spacemacs-light)
+                               (dark  . spacemacs-dark))
+  "List of themes related the system appearance. It's only available on macOS."
+  :group 'eat
+  :type '(alist :key-type (symbol :tag "Appearance")
+                :value-type (symbol :tag "Theme")))
+
 (defun font-installed-p (font-name)
   "Check if font with FONT-NAME is available."
   (find-font (font-spec :name font-name)))
@@ -53,4 +65,4 @@
 
 (defvar +telega-proxy nil)
 
-(provide 'init-var)
+(provide 'init-eat)

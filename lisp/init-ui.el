@@ -4,21 +4,6 @@
 (straight-use-package '(ligature :type git :host github :repo "mickeynp/ligature.el"))
 (straight-use-package '(less-theme :type git :host github :repo "nobiot/less-theme"))
 
-(defvar +theme-hooks nil
-  "((theme-id . function) ...)")
-
-(defun +load-theme-advice (f theme-id &optional no-confirm no-enable &rest args) ;
-  "Enhance `load-theme' by disabling other enabled themes & calling hooks"
-  (unless no-enable ;
-    (mapc #'disable-theme custom-enabled-themes))
-  (prog1
-      (apply f theme-id no-confirm no-enable args) ;
-    (unless no-enable ;
-      (pcase (assq theme-id +theme-hooks)
-        (`(,_ . ,f) (funcall f))))))
-
-(advice-add 'load-theme :around #'+load-theme-advice) ;
-
 (eat-package nyan-mode :straight t)
 (eat-package solaire-mode :straight t)
 (eat-package dracula-theme :straight t)
@@ -34,14 +19,6 @@
         nano-theme-comment-italic nil
         nano-theme-keyword-italic nil
         nano-theme-system-appearance nil))
-
-;; auto change theme after system apearance changed
-(when (boundp 'ns-system-appearance)
-  (add-to-list 'ns-system-appearance-change-functions
-               (lambda (l?d)
-                 (if (eq l?d 'light)
-                     (load-theme 'spacemacs-light t)
-                   (load-theme 'spacemacs-dark t)))))
 
 (eat-package emojify
   :straight t
@@ -68,9 +45,6 @@
         modus-themes-syntax 'green-strings
         modus-themes-no-mixed-fonts t
         modus-themes-paren-match 'intense-bold))
-
-;; no cursor blink
-;; (add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
 
 ;; Nice window divider
 (set-display-table-slot standard-display-table
@@ -104,7 +78,7 @@
 
 ;; Init or reload functions
 (defun +init-ui (&optional frame)
-  (when (window-system)
+  (when (display-graphic-p)
     (load-theme +theme t))
   ;; modeline
   (if +use-header-line
@@ -122,7 +96,7 @@
     (set-face-attribute 'variable-pitch frame :font +font-variable-pitch :height +font-height)
     (set-face-attribute 'fixed-pitch frame :font +font :height +font-height))
   ;;; ligature
-  (when window-system
+  (when (display-graphic-p)
 
     (require 'ligature)
     (global-ligature-mode t)
