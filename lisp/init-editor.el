@@ -87,8 +87,8 @@
      (("p" youdao-dictionary-play-voice-of-current-word "play voice of current word")
       ("y" youdao-dictionary-play-voice-at-point "play voice at point"))))
 
-  (global-set-key (kbd "C-c y") 'youdao-dictionary-search-at-point)
-  (global-set-key (kbd "C-c Y") 'youdao-dictionary-search-at-point+)
+  (global-set-key (kbd "C-c y") 'youdao-dictionary-search-at-point-posframe)
+  (global-set-key (kbd "C-c Y") 'youdao-dictionary-search-at-point)
   :config
   (define-key youdao-dictionary-mode-map (kbd "h") 'youdao-hydra/body)
   (define-key youdao-dictionary-mode-map (kbd "?") 'youdao-hydra/body))
