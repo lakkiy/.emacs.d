@@ -1,10 +1,9 @@
 ;; -*- lexical-binding: t; -*-
 
 (eat-package telega
+  :straight (telega :type git :host github :branch "releases")
   :commands telega
   :init
-  ;; FIXME
-  (straight-use-package '(telega :type git :host github :branch "releases"))
   (setq telega-chat-input-prompt "> "
         telega-animation-play-inline nil
         telega-video-play-inline nil

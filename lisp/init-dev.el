@@ -1,10 +1,8 @@
 ;;; -*- lexical-binding: t -*-
 
 (eat-package citre
-  ;; :straight t
+  :straight (citre :type git :host github :repo "universal-ctags/citre")
   :init
-  ;; FIXME
-  (straight-use-package '(citre :type git :host github :repo "universal-ctags/citre"))
   (global-set-key (kbd "C-x c p") 'citre-peek)
   :config
   (global-set-key (kbd "C-x c j") 'citre-jump)
@@ -34,8 +32,8 @@
   ((dump-jump-after-jump-hook bookmark-after-jump-hook imenu-after-jump-hook) . recenter-and-pulse))
 
 (eat-package devdocs
+  :straight (devdocs :type git :host github :repo "astoff/devdocs.el")
   :init
-  (straight-use-package '(devdocs :type git :host github :repo "astoff/devdocs.el"))
   (global-set-key (kbd "C-c b") 'devdocs-lookup))
 
 (eat-package docstr

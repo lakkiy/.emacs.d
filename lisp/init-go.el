@@ -62,11 +62,9 @@
   (define-key go-mode-map (kbd "C-c t x") #'go-run))
 
 (eat-package flymake-golangci
-  ;; :straight t
+  :straight (flymake-golangci :type git :host gitlab :repo "shackra/flymake-golangci")
   :after go-mode
   :init
-  ;; FIXME
-  (straight-use-package '(flymake-golangci :type git :host gitlab :repo "shackra/flymake-golangci"))
   :hook (go-mode-hook . flymake-golangci-load))
 
 (eat-package gotest

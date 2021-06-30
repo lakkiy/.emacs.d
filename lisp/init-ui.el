@@ -1,8 +1,10 @@
 ;;; -*- lexical-binding: t -*-
 ;; modeline and font
 
-(straight-use-package '(ligature :type git :host github :repo "mickeynp/ligature.el"))
-(straight-use-package '(less-theme :type git :host github :repo "nobiot/less-theme"))
+(eat-package ligature
+  :straight (ligature :type git :host github :repo "mickeynp/ligature.el"))
+(eat-package less-theme
+  :straight (less-theme :type git :host github :repo "nobiot/less-theme"))
 
 (eat-package nyan-mode :straight t)
 (eat-package solaire-mode :straight t)

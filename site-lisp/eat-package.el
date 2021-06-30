@@ -139,7 +139,9 @@ ARGS.
              (let ((command (car arg))
                    (arg-list (cdr arg)))
                (pcase command
-                 (:straight `((straight-use-package ',package)))
+                 (:straight `((if (listp ',@arg-list)
+                                  (straight-use-package ',@arg-list)
+                                (straight-use-package ',package))))
                  (:init arg-list)
                  (:config `((with-eval-after-load ',package
                               ,@arg-list)))

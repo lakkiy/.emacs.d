@@ -38,11 +38,9 @@
   (define-key python-mode-map (kbd "C-c C-r") #'pyimport-remove-unused))
 
 (eat-package python-isort
-  ;; :straight t
+  :straight (python-isort :type git :host github :repo "wyuenho/emacs-python-isort")
   :after python
   :init
-  ;; FIXME
-  (straight-use-package '(python-isort :type git :host github :repo "wyuenho/emacs-python-isort"))
   :config
   ;; pip install isort
   (add-hook 'python-mode-hook 'python-isort-on-save-mode))
