@@ -29,7 +29,7 @@
 (when +enable-proxy?
   (add-hook 'after-init-hook (lambda () (+proxy-http-enable))))
 
-;; (add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
+(add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
 ;; (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 ;; (add-hook 'conf-mode-hook 'display-line-numbers-mode)
 (add-hook 'prog-mode-hook 'hl-line-mode)
