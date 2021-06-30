@@ -51,7 +51,6 @@
   :init
   (setq gofmt-command "goimports")
   :hook
-  (go-mode-hook . eglot-ensure)
   (before-save-hook . gofmt-before-save)
   (go-test-mode-hook . visual-line-mode)
   :config
@@ -73,6 +72,8 @@
 (eat-package gotest
   :straight t
   :after go-mode
+  :init
+  (setq go-test-verbose t)
   :config
   (define-key go-mode-map (kbd "C-c t m") #'go-test-current-file)
   (define-key go-mode-map (kbd "C-c t .") #'go-test-current-test))
@@ -90,20 +91,16 @@
   (define-key go-mode-map (kbd "C-c t t") #'go-tag-add)
   (define-key go-mode-map (kbd "C-c t T") #'go-tag-remove))
 
-(eat-package go-fill-struct :straight t)
-(eat-package go-guru :straight t)
-(eat-package go-rename :straight t)
-(eat-package go-dlv :straight t)
-(eat-package go-impl :straight t)
+(eat-package go-fill-struct :straight t :after go-mode)
+(eat-package go-guru :straight t :after go-mode)
+(eat-package go-rename :straight t :after go-mode)
+(eat-package go-dlv :straight t :after go-mode)
+(eat-package go-impl :straight t :after go-mode)
 
 (eat-package go-tag
   :straight t
+  :after go-mode
   :init
   (setq go-tag-args (list "-transform" "camelcase")))
-
-(eat-package go-test
-  :straight t
-  :init
-  (setq go-test-verbose t))
 
 (provide 'init-go)

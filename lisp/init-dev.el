@@ -55,6 +55,7 @@
   :commands
   eglot-ensure
   eglot
+  :hook (go-mode-hook . eglot-ensure)
   :init
   (setq eglot-stay-out-of nil
         eglot-ignored-server-capabilites '(:documentHighlightProvider))
