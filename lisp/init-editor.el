@@ -142,33 +142,26 @@
   :straight t
   :commands insert-char-preview)
 
-(eat-package super-save
-  :straight t
+(eat-package auto-save
+  :straight (auto-save :type git :host github :repo "manateelazycat/auto-save")
   :init
-  (setq super-save-auto-save-when-idle t)
+  (setq
+   auto-save-silent t
+   auto-save-idle 3)
+  :require t
   :config
-  (super-save-mode +1))
+  (auto-save-enable))
 
-;; (eat-package auto-save
-;;   :straight (auto-save :type git :host github :repo "manateelazycat/auto-save")
-;;   :init
-;;   (setq
-;;    auto-save-silent t
-;;    auto-save-idle 3)
-;;   :require t
-;;   :config
-;;   (auto-save-enable))
+(eat-package vundo
+  :straight (vundo :type git :host github :repo "casouri/vundo")
+  :commands vundo)
 
-;; FIXME straight command
-;; (eat-package vundo
-;;   :straight (vundo :type git :host github :repo "casouri/vundo")
-;;   :commands vundo)
-;;
-;; (eat-package insert-translated-name
-;;   :straight
-;;   (insert-translated-name :type git :host github :repo "manateelazycat/insert-translated-name")
-;;   :commands insert-translated-name-insert
-;;   :init
-;;   (global-set-key (kbd "C-c i") 'insert-translated-name-insert))
+(eat-package insert-translated-name
+  :straight (insert-translated-name :type git
+                                    :host github
+                                    :repo "manateelazycat/insert-translated-name")
+  :commands insert-translated-name-insert
+  :init
+  (global-set-key (kbd "C-c i") 'insert-translated-name-insert))
 
 (provide 'init-editor)
