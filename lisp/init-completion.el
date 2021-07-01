@@ -97,7 +97,18 @@
   (define-key selectrum-minibuffer-map (kbd "C-c C-o") 'embark-export)
   ;; C-h show embark-act key bindings
   (define-key selectrum-minibuffer-map (kbd "C-c C-c") 'embark-act)
-  (define-key selectrum-minibuffer-map (kbd "C-h B") 'embark-bindings))
+  (define-key selectrum-minibuffer-map (kbd "C-h B") 'embark-bindings)
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none))))
+  ;; Show actions and keybindings with `which-key'
+  (setq embark-action-indicator
+        (lambda (map _target)
+          (which-key--show-keymap "Embark" map nil nil 'no-paging)
+          #'which-key--hide-popup-ignore-command)
+        embark-become-indicator embark-action-indicator))
 
 (eat-package embark-consult
   :straight t
@@ -108,5 +119,13 @@
 (eat-package marginalia
   :straight t
   :hook (after-init-hook . marginalia-mode))
+
+(eat-package bibtex-actions
+  :straight t
+  :after embark
+  :config
+  ;; Make the 'bibtex-actions' bindings available from `embark-act'.
+  (add-to-list 'embark-keymap-alist '(bibtex . bibtex-actions-map))
+  (setq bibtex-completion-bibliography "~/Dropbox/bib/references.bib"))
 
 (provide 'init-completion)
