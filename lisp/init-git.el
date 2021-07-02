@@ -17,7 +17,7 @@
   :straight t
   :commands diff-hl-mode
   :hook
-  ((prog-mode-mode conf-mode-hook) . diff-hl-mode)
+  ((prog-mode-hook conf-mode-hook) . diff-hl-mode)
   (dired-mode-hook . diff-hl-dired-mode))
 
 (eat-package hl-todo
