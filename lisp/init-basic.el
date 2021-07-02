@@ -29,50 +29,101 @@
 (when +enable-proxy?
   (add-hook 'after-init-hook (lambda () (+proxy-http-enable))))
 
-(add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
-;; (add-hook 'prog-mode-hook 'display-line-numbers-mode)
-;; (add-hook 'conf-mode-hook 'display-line-numbers-mode)
-(when (display-graphic-p)
-  (add-hook 'prog-mode-hook 'hl-line-mode)
-  (add-hook 'conf-mode-hook 'hl-line-mode))
-(add-hook 'prog-mode-hook 'subword-mode)
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-(add-hook 'after-init-hook 'save-place-mode)
-(add-hook 'prog-mode-hook 'hs-minor-mode)
-(add-hook 'after-init-hook 'global-auto-revert-mode)
-(add-hook 'after-init-hook 'global-so-long-mode)
-(add-hook 'after-init-hook 'winner-mode)
-(add-hook 'after-init-hook 'electric-pair-mode)
-(add-hook 'after-init-hook 'show-paren-mode)
-(when emacs/>=28p
-  (add-hook 'after-init-hook 'repeat-mode))
-
 (defun +reopen-file-with-sudo ()
   (interactive)
   (find-alternate-file (format "/sudo::%s" (buffer-file-name))))
-
 (global-set-key (kbd "C-x C-z") #'+reopen-file-with-sudo)
-;; use mouse left click to find definitions
-(global-unset-key (kbd "C-<down-mouse-1>"))
-(global-set-key (kbd "C-<mouse-1>") #'xref-find-definitions-at-mouse)
-;; ibuffer
-(global-unset-key (kbd "C-x C-b"))
-(global-set-key (kbd "C-x C-b") 'ibuffer)
-;;; project.el use C-x p
-(global-unset-key (kbd "C-x C-p"))
-(global-set-key (kbd "C-x C-d") #'dired)
-;; SPC x f to describe-funtion
-(global-set-key (kbd "C-h C-f") 'describe-funtion)
+
+(add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
+
+(eat-package ibuffer
+  :init
+  ;; ibuffer
+  (global-unset-key (kbd "C-x C-b"))
+  (global-set-key (kbd "C-x C-b") 'ibuffer))
+
+(eat-package xref
+  :init
+
+  (global-unset-key (kbd "C-<down-mouse-1>"))
+  (global-set-key (kbd "C-<mouse-1>") #'xref-find-definitions-at-mouse)
+  ;; Xref no prompt
+  (setq xref-prompt-for-identifier nil))
+
+(eat-package display-line-numbers
+  ;; :hook ((prog-mode-hook conf-mode-hook) . display-line-numbers-mode)
+  )
+
+(eat-package subword
+  :doc "handling capitalized subwords in a nomenclature"
+  :hook (prog-mode-hook . subword-mode))
+
+(eat-package hideshow
+  :doc "fold and display code/comment blocks"
+  :hook (prog-mode-hook . hs-minor-mode))
+
+(eat-package simple
+  :hook
+  (before-save-hook . delete-trailing-whitespace))
+
+(eat-package tab-bar
+  :init
+  (setq tab-bar-show nil
+        tab-bar-new-tab-choice "*scratch*"))
+
+(eat-package so-long
+  :hook (after-init-hook . global-so-long-mode))
+
+(eat-package repeat
+  :doc "repeat the previous command"
+  ;; HACK custom
+  :init
+  (setq repeat-mode t
+        repeat-keep-prefix t
+        repeat-exit-timeout 3
+        repeat-exit-key (kbd "RET")))
+
+(eat-package hl-line
+  :doc "Highlight current line, only enable in GUI"
+  ;; HACK when (display-graphic-p)
+  :hook
+  ((prog-mode-hook conf-mode-hook) . hl-line-mode))
+
+(eat-package autorevert
+  :doc "revert buffers when files on disk change"
+  :hook (after-init-hook . global-auto-revert-mode))
+
+(eat-package elec-pair
+  :doc "Automatic parenthesis pairing"
+  :hook (after-init-hook . electric-pair-mode)
+  :init
+  (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
+
+(eat-package saveplace
+  :hook (after-init-hook . save-place-mode))
+
+(eat-package paren
+  :hook (after-init-hook . show-paren-mode)
+  :init
+  (setq show-paren-when-point-in-periphery t
+        show-paren-when-point-inside-paren t))
+
+(eat-package tramp
+  :doc "transparent remote access"
+  :init
+  ;; Always use file cache when using tramp
+  (setq remote-file-name-inhibit-cache nil
+        ;; C-x C-f /ssh:
+        tramp-default-method "ssh"))
+
+(eat-package speedbar
+  :dock "quick access to files/tags"
+  :init
+  (setq  speedbar-use-images nil
+         speedbar-show-unknown-files t
+         speedbar-indentation-width 2))
 
 (setq-default
- ;; speedbar
- speedbar-use-images nil
- speedbar-show-unknown-files t
- speedbar-indentation-width 2
- ;; Always use file cache when using tramp
- remote-file-name-inhibit-cache nil
- ;; C-x C-f /ssh:
- tramp-default-method "ssh"
  ;; Close up of MacOs
  ring-bell-function 'ignore
  ;; no start messages
@@ -102,8 +153,6 @@
  make-backup-files nil
  auto-save-default nil
  auto-save-list-file-prefix nil
- ;; Xref no prompt
- xref-prompt-for-identifier nil
  ;; Mouse yank at point instead of click position.
  mouse-yank-at-point t
  ;; This fix the cursor movement lag
@@ -126,7 +175,6 @@
  bidi-paragraph-direction 'left-to-right
  ;; don't wait for keystrokes display
  echo-keystrokes 0.01
- show-paren-style 'parenthese
  ;; indent with whitespace by default
  indent-tabs-mode nil
  read-process-output-max (* 1024 1024)
@@ -140,9 +188,6 @@
  truncate-partial-width-windows 65
  ;; always follow link
  vc-follow-symlinks t
- ;; tab bar
- tab-bar-show nil
- tab-bar-new-tab-choice "*scratch*"
  ;; Vertical Scroll
  scroll-step 1
  scroll-margin 0
@@ -161,16 +206,8 @@
  ;; no client startup messages
  server-client-instructions nil
  ;; install hunspell and hunspell-en_US
- ispell-dictionary "en_US"
- ispell-program-name "hunspell"
- ispell-personal-dictionary (expand-file-name ".hunspell_dict.txt" user-emacs-directory)
  ;; custom file
  custom-file (expand-file-name "custom.el" user-emacs-directory)
- ;; electric-pair-mode
- electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit
- ;; show-paren-mode
- show-paren-when-point-in-periphery t
- show-paren-when-point-inside-paren t
  ;; yse-or-no -> y-or-n
  use-short-answers t
  ;; prefer horizental split
@@ -178,5 +215,13 @@
  split-width-threshold 120
  ;; disable "You can run the command balabala..."
  suggest-key-bindings nil)
+
+(eat-package ispell
+  :doc "install hunspell and hunspell-en_US on your system to use"
+  :init
+  (setq  ispell-dictionary "en_US"
+         ispell-program-name "hunspell"
+         ispell-personal-dictionary (expand-file-name ".hunspell_dict.txt" user-emacs-directory)
+         ))
 
 (provide 'init-basic)

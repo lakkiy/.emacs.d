@@ -8,8 +8,15 @@
                        (require 'meow)
                        (meow-global-mode 1)))
   :config
+  ;;; project.el use C-x p
+  (global-unset-key (kbd "C-x C-p"))
+  (global-set-key (kbd "C-x C-d") #'dired)
+  ;; SPC x f to describe-funtion
+  (global-set-key (kbd "C-h C-f") 'describe-funtion)
+
   (add-to-list 'meow-mode-state-list '(debugger-mode . normal))
   (add-to-list 'meow-mode-state-list '(ielm-mode . normal))
+
   (meow-setup-line-number)
   (meow-setup)
   :init
