@@ -169,7 +169,7 @@ ARGS.
                                                              package))
          ;; Must :require explicitly if you want to require this package.
          (require-p (let ((commands (mapcar #'car arg-list)))
-                    (or (memq :require commands)))))
+                      (or (memq :require commands)))))
     `(condition-case err
          (progn
            ,@autoload-list
