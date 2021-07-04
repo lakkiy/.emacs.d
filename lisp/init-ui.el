@@ -26,6 +26,15 @@
   :straight t
   :hook (after-init-hook . global-emojify-mode))
 
+(eat-package doom-themes
+  :straight t
+  :init
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic t)
+  :config
+  (doom-themes-visual-bell-config)
+  (doom-themes-org-config))
+
 (eat-package spacemacs-theme
   :straight t
   :init
