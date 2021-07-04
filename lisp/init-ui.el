@@ -8,8 +8,6 @@
 
 (eat-package nyan-mode :straight t)
 (eat-package solaire-mode :straight t)
-(eat-package dracula-theme :straight t)
-(eat-package atom-one-dark-theme :straight t)
 
 (eat-package rainbow-mode
   :straight t

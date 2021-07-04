@@ -18,5 +18,3 @@
  ;; font. By inhibiting this, we easily halve startup times with fonts that are
  ;; larger than the system default.
  frame-inhibit-implied-resize t)
-
-(require 'init-straight)

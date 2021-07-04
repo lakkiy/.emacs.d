@@ -27,6 +27,7 @@
   (when (file-exists-p private-conf)
     (load-file private-conf)))
 
+(require 'init-straight)
 (require 'init-basic)
 (require 'init-hydra)
 (require 'init-editor)

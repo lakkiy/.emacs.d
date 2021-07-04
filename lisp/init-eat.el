@@ -55,7 +55,7 @@
 
 (defvar +use-header-line nil)
 
-(defvar +theme 'spacemacs-light)
+(defvar +theme 'doom-spacegrey)
 
 (defvar +enable-proxy? nil)
 
