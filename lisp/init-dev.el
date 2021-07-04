@@ -1,5 +1,28 @@
 ;;; -*- lexical-binding: t -*-
 
+(eat-package tree-sitter
+  :straight t
+  :init
+  (eat-package tree-sitter-langs :straight t)
+  :hook
+  ((go-mode-hook
+    python-mode-hook
+    agda-mode-hook
+    c-mode-hook
+    c++-mode-hook
+    css-mode-hook
+    html-mode-hook
+    js-mode-hook
+    js2-mode-hook
+    son-mode-hook
+    ruby-mode-hook
+    rust-mode-hook
+    typescript-mode-hook)
+   . tree-sitter-mode)
+  (tree-sitter-after-on-hook . tree-sitter-hl-mode)
+  :config
+  (require 'tree-sitter-langs))
+
 (eat-package citre
   :straight (citre :type git :host github :repo "universal-ctags/citre")
   :init
