@@ -63,7 +63,7 @@
 
 (eat-package dumb-jump
   :straight t
-  :hook
+  :hook (dump-jump-after-jump-hook . recenter-and-pulse)
   :init
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate t)
   (setq dumb-jump-quiet t
