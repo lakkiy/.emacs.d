@@ -1,3 +1,14 @@
+;;; nasy-modeline.el --- Nasy's Emacs Configuration theme file.  -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2020  Nasy
+
+;; Author: Nasy <nasyxx@gmail.com>
+
+;;; Commentary:
+
+;; Nasy's Emacs UI theme.
+
+;;; Code:
 (defgroup nasy-theme nil
   "Options of Nasy's theme."
   :group 'faces)
@@ -79,7 +90,6 @@
           nasy-theme-variable-pitch-font-scale)))
 
 (nasy-theme--rescale-font)
-
 (deftheme nasy)
 
 (let* ((class '((class color) (min-colors 89)))
@@ -339,7 +349,7 @@
    `(org-block
      ((,class (:background ,n-蠟白 :foreground ,n/墨缟 :extend t))))
    `(org-block-begin-line
-     ((,class (:background ,n-米灰
+     ((,class (:background ,n-水黄
                            :box (:line-width 1 :style released-button)
                            :extend t
                            :foreground ,n/墨缟
@@ -462,12 +472,6 @@
    `(vterm-color-inverse-video
      ((,class (:background ,n-墨))))
 
-   ;; meow
-   `(meow-keypad-indicator          ((t (:foreground ,n-漆 :background ,n-品红))))
-   `(meow-insert-indicator          ((t (:foreground ,n-松绿 :background ,n-松花))))
-   `(meow-normal-indicator          ((t (:foreground ,n-墨 :background ,n-鹅黄))))
-   `(meow-motion-indicator          ((t (:foreground ,n-墨灰 :background ,n-霜))))
-
      ;;; tree sitter
    `(tree-sitter-hl-face:constructor
      ((,class (:inherit tree-sitter-hl-face:type :bold nil))))
@@ -483,7 +487,6 @@
                   (file-name-as-directory
                    (file-name-directory load-file-name))))
 
-(provide-theme 'nasy)
-
-(provide 'nasy-theme)
+  (provide-theme 'nasy)
+  (provide 'nasy-theme)
   ;;; nasy-theme.el ends here
