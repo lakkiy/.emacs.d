@@ -32,7 +32,6 @@
         doom-themes-padded-modeline t
         doom-spacegrey-brighter-comments t
         doom-spacegrey-brighter-modeline t
-        doom-spacegrey-padded-modeline t
         doom-spacegrey-comment-bg t)
   :config
   (doom-themes-visual-bell-config)
