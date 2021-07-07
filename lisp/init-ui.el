@@ -22,7 +22,7 @@
 
 (eat-package emojify
   :straight t
-  :hook (after-init-hook . global-emojify-mode))
+  :command emojify-mode)
 
 (eat-package doom-themes
   :straight t

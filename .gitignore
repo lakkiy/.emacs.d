@@ -2,6 +2,7 @@
 elpa
 *#
 quelpa
+.org-id-locations
 projectile*
 history
 custom.el
