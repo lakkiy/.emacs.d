@@ -25,6 +25,7 @@
 
 (eat-package citre
   :straight (citre :type git :host github :repo "universal-ctags/citre")
+  :commands citre-update-tags-file
   :init
   (global-set-key (kbd "C-x c p") 'citre-peek)
   :config
