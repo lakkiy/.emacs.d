@@ -261,9 +261,7 @@ prepended to the element after the #+HEADER: tag."
 
 (eat-package org-agenda
   :init
-  (setq org-agenda-span 10)
-  (setq org-agenda-files (list org-directory org-roam-directory)
-        org-agenda-start-day "-3d")
+  (setq org-agenda-files (list org-directory org-roam-directory))
   (global-set-key (kbd "C-c a") 'org-agenda))
 
 (eat-package org-super-agenda
