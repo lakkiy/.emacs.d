@@ -15,11 +15,8 @@
         rime-cursor "|"
         rime-show-candidate 'minibuffer
         rime-title "ㄓ ")
-  (if sys/macp
-      (setq rime-librime-root (expand-file-name "librime/dist" user-emacs-directory)
-            rime-user-data-dir "~/Library/Rime"))
-  (if sys/linuxp
-      (setq rime-user-data-dir "~/.config/fcitx/rime"))
+  (when sys/macp
+    (setq rime-librime-root (expand-file-name "librime/dist" user-emacs-directory)))
   :config
   (define-key rime-active-mode-map [tab] 'rime-inline-ascii)
   (define-key rime-mode-map (kbd "C-`") 'rime-send-keybinding)
