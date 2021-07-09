@@ -7,14 +7,13 @@
   (setq rime-disable-predicates '(meow-normal-mode-p
                                   meow-motion-mode-p
                                   meow-keypad-mode-p)
-        ;; rime-inline-predicates '(rime-predicate-space-after-cc-p
-        ;;                          rime-predicate-current-uppercase-letter-p)
+        rime-inline-predicates '(rime-predicate-space-after-cc-p
+                                 rime-predicate-current-uppercase-letter-p)
         rime-translate-keybindings '("C-f" "C-b" "C-n" "C-p" "C-g")
         rime-inline-ascii-holder ?a
         default-input-method "rime"
         rime-cursor "|"
-        rime-show-candidate 'sidewindow
-        window-min-height 1
+        rime-show-candidate 'minibuffer
         rime-title "ㄓ ")
   (if sys/macp
       (setq rime-librime-root (expand-file-name "librime/dist" user-emacs-directory)
