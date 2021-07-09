@@ -9,7 +9,7 @@
                                   meow-keypad-mode-p)
         rime-inline-predicates '(rime-predicate-space-after-cc-p
                                  rime-predicate-current-uppercase-letter-p)
-        rime-translate-keybindings '("C-f" "C-b" "C-n" "C-p" "C-g")
+        rime-translate-keybindings '("C-f" "C-b" "C-n" "C-p" "C-g" "C-v" "M-v")
         rime-inline-ascii-holder ?a
         default-input-method "rime"
         rime-cursor "|"
