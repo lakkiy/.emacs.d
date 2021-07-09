@@ -1,5 +1,8 @@
 ;;; -*- lexical-binding: t -*-
 
+(eat-package mbsync
+  :straight t)
+
 (eat-package notmuch
   :straight t
   :commands notmuch
