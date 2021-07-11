@@ -77,5 +77,7 @@
 
 (require 'init-go)
 (require 'init-python)
+(require 'init-c)
+(require 'init-web)
 
 (provide 'init-dev)
