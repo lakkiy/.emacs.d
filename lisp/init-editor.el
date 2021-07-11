@@ -111,6 +111,11 @@
 (eat-package exec-path-from-shell
   :straight t
   :init
+  (eat-package cache-path-from-shell
+    :straight (cache-path-from-shell :type git
+                                     :host github
+                                     :repo "manateelazycat/cache-path-from-shell")
+    :require t)
   (when (memq window-system '(mac ns x))
     (require 'exec-path-from-shell)
     (exec-path-from-shell-initialize)))
