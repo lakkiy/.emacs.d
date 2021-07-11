@@ -9,4 +9,10 @@
 (eat-package svg-lib
   :straight (svg-lib :type git :host github :repo "rougier/svg-lib"))
 
+(eat-package netease-cloud-music
+  :straight (netease-cloud-music
+             :type git
+             :host github
+             :repo "SpringHan/netease-cloud-music.el"))
+
 (provide 'init-fun)

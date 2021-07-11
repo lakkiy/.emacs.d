@@ -27,6 +27,9 @@
   :straight (citre :type git :host github :repo "universal-ctags/citre")
   :commands citre-update-tags-file
   :init
+  (setq citre-default-create-tags-file-location 'global-cache
+        citre-use-project-root-when-creating-tags t
+        citre-prompt-language-for-ctags-command t)
   (global-set-key (kbd "C-x c p") 'citre-peek)
   :config
   (global-set-key (kbd "C-x c j") 'citre-jump)

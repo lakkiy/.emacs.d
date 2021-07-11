@@ -24,7 +24,7 @@
                (lambda (l?d)
                  (if (eq l?d 'light)
                      (load-theme 'spacemacs-light t)
-                   (load-theme 'doom-spacegrey t)))))
+                   (load-theme 'doom-city-lights t)))))
 
 (when +enable-proxy?
   (add-hook 'after-init-hook (lambda () (+proxy-http-enable))))
