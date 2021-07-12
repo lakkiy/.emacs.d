@@ -85,6 +85,8 @@
 (eat-package go-tag
   :straight t
   :after go-mode
+  :init
+  (setq go-tag-args (list "-transform" "camelcase"))
   :config
   (define-key go-mode-map (kbd "C-c t t") #'go-tag-add)
   (define-key go-mode-map (kbd "C-c t T") #'go-tag-remove))
@@ -94,11 +96,5 @@
 (eat-package go-rename :straight t :after go-mode)
 (eat-package go-dlv :straight t :after go-mode)
 (eat-package go-impl :straight t :after go-mode)
-
-(eat-package go-tag
-  :straight t
-  :after go-mode
-  :init
-  (setq go-tag-args (list "-transform" "camelcase")))
 
 (provide 'init-go)
