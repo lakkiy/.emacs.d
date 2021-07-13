@@ -94,7 +94,8 @@
 (eat-package go-fill-struct :straight t :after go-mode)
 (eat-package go-guru :straight t :after go-mode)
 (eat-package go-rename :straight t :after go-mode)
-(eat-package go-dlv :straight t :after go-mode)
 (eat-package go-impl :straight t :after go-mode)
+;; FIXME bug in emacs-28
+(eat-package go-dlv :straight t)
 
 (provide 'init-go)
