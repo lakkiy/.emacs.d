@@ -22,25 +22,23 @@
       (user-error "Unable to find `go' in `exec-path'!"))
 
     (message "Installing go tools...")
-    (let ((proc-name "go-tools")
-          (proc-buffer "*Go Tools*"))
-      (dolist (pkg go--tools-no-update)
-        (set-process-sentinel
-         (start-process proc-name proc-buffer "go" "get" "-v" pkg)
-         (lambda (proc _)
-           (let ((status (process-exit-status proc)))
-             (if (= 0 status)
-                 (message "Installed %s" pkg)
-               (message "Failed to install %s: %d" pkg status))))))
 
-      (dolist (pkg go--tools)
-        (set-process-sentinel
-         (start-process proc-name proc-buffer "go" "get" "-u" "-v" pkg)
-         (lambda (proc _)
-           (let ((status (process-exit-status proc)))
-             (if (= 0 status)
-                 (message "Installed %s" pkg)
-               (message "Failed to install %s: %d" pkg status))))))))
+    ;; https://github.com/golang/tools/tree/master/gopls#installation
+    (async-shell-command
+     "GO111MODULE=on go get golang.org/x/tools/gopls@latest")
+
+    ;; https://staticcheck.io/docs/install
+    (async-shell-command
+     "go install honnef.co/go/tools/cmd/staticcheck@latest")
+
+    (dolist (pkg go--tools)
+      (set-process-sentinel
+       (start-process "go-tools" "*Go Tools*" "go" "get" "-u" "-v" pkg)
+       (lambda (proc _)
+         (let ((status (process-exit-status proc)))
+           (if (= 0 status)
+               (message "Installed %s" pkg)
+             (message "Failed to install %s: %d" pkg status)))))))
 
 (eat-package go-playground
   :straight t
@@ -66,6 +64,19 @@
   :after go-mode
   :init
   :hook (go-mode-hook . flymake-golangci-load))
+
+;; (eat-package flycheck-golangci-lint
+;;   :straight t
+;;   :after flycheck
+;;   :hook (go-mode . (lambda ()
+;;                      "Enable golangci-lint."
+;;                      (setq flycheck-disabled-checkers '(go-gofmt
+;;                                                         go-golint
+;;                                                         go-vet
+;;                                                         go-build
+;;                                                         go-test
+;;                                                         go-errcheck))
+;;                      (flycheck-golangci-lint-setup))))
 
 (eat-package gotest
   :straight t

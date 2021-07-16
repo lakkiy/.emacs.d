@@ -61,20 +61,6 @@
   :straight t
   :hook (eww-mode-hook . iscroll-mode))
 
-(eat-package dumb-jump
-  :straight t
-  :hook (dump-jump-after-jump-hook . recenter-and-pulse)
-  :init
-  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate t)
-  (setq dumb-jump-quiet t
-        dumb-jump-aggressive t
-        dumb-jump-prefer-search 'rg
-        dumb-jump-selector 'completing-read
-        dumb-jump-disable-obsolate-warning t)
-
-  (global-set-key (kbd "M-g J") 'dumb-jump-go-other-window)
-  (global-set-key (kbd "M-g j") 'dumb-jump-go))
-
 (eat-package youdao-dictionary
   :straight t
   :hook (youdao-dictionary-mode-hook . (lambda () (meow-mode -1)))
