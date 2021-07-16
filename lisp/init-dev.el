@@ -84,6 +84,8 @@
         citre-use-project-root-when-creating-tags t
         citre-prompt-language-for-ctags-command t)
   (global-set-key (kbd "C-x c p") 'citre-peek)
+  (global-set-key (kbd "C-x c c") 'citre-create-tags-file)
+  (global-set-key (kbd "C-x c u") 'citre-update-tags-file)
   :config
   (global-set-key (kbd "C-x c j") 'citre-jump)
   (global-set-key (kbd "C-x c J") 'citre-jump-back)
