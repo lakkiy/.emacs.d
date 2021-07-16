@@ -87,6 +87,12 @@
   (global-set-key (kbd "C-x c c") 'citre-create-tags-file)
   (global-set-key (kbd "C-x c u") 'citre-update-tags-file)
   :config
+  (defun citre-jump+ ()
+    (interactive)
+    (condition-case _
+        (citre-jump)
+      (error (call-interactively #'xref-find-definitions))))
+
   (global-set-key (kbd "C-x c j") 'citre-jump)
   (global-set-key (kbd "C-x c J") 'citre-jump-back)
   (global-set-key (kbd "C-x c P") 'citre-ace-peek)
