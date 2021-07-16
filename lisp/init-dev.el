@@ -68,9 +68,9 @@
   (setq eglot-stay-out-of nil
         eglot-ignored-server-capabilites '(:documentHighlightProvider))
   ;; auto expand function param for golang
-  (setq-default eglot-workspace-configuration
-                '((gopls
-                   (usePlaceholders . t))))
+  ;; (setq-default eglot-workspace-configuration
+  ;;               '((gopls
+  ;;                  (usePlaceholders . t))))
   :config
   (add-to-list 'eglot-server-programs
 			   '(rust-mode "rust-analyzer")))
