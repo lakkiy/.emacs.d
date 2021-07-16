@@ -76,28 +76,24 @@
 (eat-package citre
   :straight (citre :type git :host github :repo "universal-ctags/citre")
   :commands
-  citre-create-tags-file
-  citre-update-tags-file
-  citre-update-this-tags-file
   citre-mode
+  citre-update-this-tags-file
+  citre-jump-back
   :init
   (setq citre-default-create-tags-file-location 'global-cache
         citre-use-project-root-when-creating-tags t
         citre-prompt-language-for-ctags-command t)
-  (global-set-key (kbd "C-x c p") 'citre-peek)
   (global-set-key (kbd "C-x c x") 'citre-update-this-tags-file)
-  (global-set-key (kbd "C-x c c") 'citre-create-tags-file)
-  (global-set-key (kbd "C-x c u") 'citre-update-tags-file)
-  :config
+  (global-set-key (kbd "C-x c j") 'citre-jump)
+  (global-set-key (kbd "C-x c J") 'citre-jump-back)
+  (global-set-key (kbd "C-x c p") 'citre-peek)
+  (global-set-key (kbd "C-x c P") 'citre-ace-peek)
   (defun citre-jump+ ()
     (interactive)
     (condition-case _
         (citre-jump)
       (error (call-interactively #'xref-find-definitions))))
-
-  (global-set-key (kbd "C-x c j") 'citre-jump)
-  (global-set-key (kbd "C-x c J") 'citre-jump-back)
-  (global-set-key (kbd "C-x c P") 'citre-ace-peek)
+  :config
   (with-eval-after-load 'c-mode
     (require 'citre-lang-c)
     (add-hook 'c-mode-hook #'citre-auto-enable-citre-mode))
