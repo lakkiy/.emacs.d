@@ -153,6 +153,9 @@ prepended to the element after the #+HEADER: tag."
                  :template ("* %^{Description}"
                             ":PROPERITIES:"
                             ":Created: %T" ;; used to create weekly report
+                            ":Project: "
+                            ":Branch: "
+                            ":Jira: "
                             ":END:"))
                 ("Journal" :keys "j"
                  :function (lambda () (org-journal-find-location))
