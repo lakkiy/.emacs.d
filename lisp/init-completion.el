@@ -46,7 +46,12 @@
   :doc "run company-tabnine-install-binary at the first time"
   :after company-mode go-mode
   :config
-  (add-to-list 'company-backends #'company-tabnine))
+  (add-to-list 'company-backends #'company-tabnine)
+
+  (defun +remove-company-tabnine ()
+    "Remove company-tabnine from company-backends"
+    (interactive)
+    (setq-default company-backends (remove 'company-tabnine company-backends))))
 
 (eat-package selectrum
   :straight t
