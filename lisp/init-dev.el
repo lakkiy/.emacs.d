@@ -25,7 +25,10 @@
 
 (eat-package citre
   :straight (citre :type git :host github :repo "universal-ctags/citre")
-  :commands citre-update-tags-file
+  :commands
+  citre-create-tags-file
+  citre-update-tags-file
+  citre-mode
   :init
   (setq citre-default-create-tags-file-location 'global-cache
         citre-use-project-root-when-creating-tags t
