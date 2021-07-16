@@ -78,12 +78,14 @@
   :commands
   citre-create-tags-file
   citre-update-tags-file
+  citre-update-this-tags-file
   citre-mode
   :init
   (setq citre-default-create-tags-file-location 'global-cache
         citre-use-project-root-when-creating-tags t
         citre-prompt-language-for-ctags-command t)
   (global-set-key (kbd "C-x c p") 'citre-peek)
+  (global-set-key (kbd "C-x c x") 'citre-update-this-tags-file)
   (global-set-key (kbd "C-x c c") 'citre-create-tags-file)
   (global-set-key (kbd "C-x c u") 'citre-update-tags-file)
   :config
