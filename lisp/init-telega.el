@@ -1,7 +1,9 @@
 ;; -*- lexical-binding: t; -*-
 
 (eat-package telega
-  :straight t
+  :straight (telega :tyep git
+                    :host github
+                    :repo "zevlg/telega.el")
   :commands telega
   :init
   (setq telega-chat-input-prompt "> "
