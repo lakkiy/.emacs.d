@@ -126,6 +126,7 @@
         flycheck-emacs-lisp-load-path 'inherit
         flycheck-indication-mode 'right-fringe)
   :config
+  (define-key flycheck-mode-map (kbd "C-c C-b") 'flycheck-list-errors)
   (define-key flycheck-mode-map (kbd "M-n") 'flycheck-next-error)
   (define-key flycheck-mode-map (kbd "M-p") 'flycheck-previous-error))
 
@@ -134,7 +135,7 @@
   :commands
   eglot-ensure
   eglot
-  ;; :hook (go-mode-hook . eglot-ensure)
+  :hook (go-mode-hook . eglot-ensure)
   :init
   (setq eglot-stay-out-of nil
         eglot-ignored-server-capabilites '(:documentHighlightProvider))

@@ -65,18 +65,19 @@
   :init
   :hook (go-mode-hook . flymake-golangci-load))
 
-;; (eat-package flycheck-golangci-lint
-;;   :straight t
-;;   :after flycheck
-;;   :hook (go-mode . (lambda ()
-;;                      "Enable golangci-lint."
-;;                      (setq flycheck-disabled-checkers '(go-gofmt
-;;                                                         go-golint
-;;                                                         go-vet
-;;                                                         go-build
-;;                                                         go-test
-;;                                                         go-errcheck))
-;;                      (flycheck-golangci-lint-setup))))
+(eat-package flycheck-golangci-lint
+  :straight t
+  ;; :after flycheck
+  ;; :hook (go-mode . (lambda ()
+  ;;                    "Enable golangci-lint."
+  ;;                    (setq flycheck-disabled-checkers '(go-gofmt
+  ;;                                                       go-golint
+  ;;                                                       go-vet
+  ;;                                                       go-build
+  ;;                                                       go-test
+  ;;                                                       go-errcheck))
+  ;;                    (flycheck-golangci-lint-setup)))
+)
 
 (eat-package gotest
   :straight t
