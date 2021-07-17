@@ -1,7 +1,7 @@
 ;; -*- lexical-binding: t; -*-
 
 (eat-package telega
-  :straight (telega :type git :host github :branch "releases")
+  :straight t
   :commands telega
   :init
   (setq telega-chat-input-prompt "> "
