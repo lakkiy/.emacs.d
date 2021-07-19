@@ -43,7 +43,7 @@
       (fn "#c6a131")
       (st "#58bc7f")
       (str "#4594d1")
-      (num "#9445d1")
+      (num "#58bc7f")
       (doc "#d16145")
       (cur "#EFEFEF")
       (pop "#202020"))
@@ -54,7 +54,7 @@
                                      (((type graphic)) :background ,bg :foreground ,fg)))
    ;; Basics
    `(cursor                         ((t (:background ,cur))))
-   `(region                         ((t (:background ,hl))))
+   `(region                         ((t (:inverse-video t))))
    `(hl-line                        ((t)))
    `(fringe                         ((t (:background ,bg))))
    `(show-paren-match               ((t (:box (:line-width (-1 . -1))))))
@@ -73,8 +73,9 @@
    `(compilation-warning            ((t ())))
    `(warning                        ((t ())))
    `(match                          ((t (:inverse-video t))))
-   `(secondary-selection            ((t (:inverse-video t :foreground ,cm))))
+   `(secondary-selection            ((t (:inverse-video t :bold t))))
    `(help-key-binding               ((t ())))
+   `(shadow                         ((t ())))
 
    ;; ISearch
    `(isearch                        ((t (:inverse-video t))))
@@ -110,8 +111,8 @@
    ;; Mode Line
    `(mode-line                      ((t (:background ,fg :foreground ,hl))))
    `(mode-line-inactive             ((t (:background ,cm :foreground ,hl))))
-   `(header-line                    ((t (:background ,hl :foreground ,fg))))
-   `(header-line-inactive           ((t (:background ,hl :foreground ,cm))))
+   `(header-line                    ((t ())))
+   `(header-line-inactive           ((t ())))
 
    ;; Company
    `(company-tooltip-common         ((t ())))
@@ -145,7 +146,7 @@
    `(meow-position-highlight-reverse-number-3 ((t (:background "gray10" :foreground "gray60"))))
 
    ;; colorful paren
-   `(colorful-paren-round           ((t ())))
+   `(colorful-paren-round           ((t (:foreground "gray60"))))
    `(colorful-paren-square          ((t (:foreground "#07a2c1"))))
    `(colorful-paren-curly           ((t (:foreground "#40d119"))))
 
@@ -165,13 +166,12 @@
    `(magit-section-highlight           ((t (:background ,hl))))
    `(magit-section-heading             ((t ())))
    `(magit-section-selection           ((t ())))
-   ;; `(magit-diff-removed             ((t (:inherit font-lock-string-face))))
-   ;; `(magit-diff-added               ((t (:inherit font-lock-comment-face))))
-   ;; `(magit-diff-removed-highlight   ((t (:inherit font-lock-string-face :background ,bg+2))))
-   ;; `(magit-diff-added-highlight     ((t (:inherit font-lock-comment-face :background ,bg+2))))
-   ;; `(magit-diff-highlight           ((t (:background ,bg+1))))
-   ;; `(magit-diff-context-highlight   ((t (:background ,bg+1))))
-   ;;
+   `(magit-diff-removed                ((t (:background "#311"))))
+   `(magit-diff-removed-highlight      ((t (:background "#311"))))
+   `(magit-diff-added                  ((t (:background "#131"))))
+   `(magit-diff-added-highlight        ((t (:background "#131"))))
+   `(magit-diff-context-highlight      ((t (:background ,hl :foreground ,fg))))
+
    ;; ;; SMerge
    ;; `(smerge-refined-added           ((t (:background "#253325"))))
    ;; `(smerge-lower                   ((t (:background "#173017"))))
