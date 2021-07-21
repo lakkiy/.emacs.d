@@ -244,21 +244,23 @@ prepended to the element after the #+HEADER: tag."
                  (preserve-size . (t nil))
                  (window-parameters . ((no-other-window . t)
                                        (no-delete-other-windows . t)))))
-  (setq
-   org-roam-v2-ack t
-   org-roam-capture-templates '(("d" "default" plain #'org-roam-capture--get-point "%?"
-                                 :file-name "%<Y%m%d%H%M%S>-${slug}"
-                                 :head "#+title: ${title}\n#+filetags:"
-                                 :unnarrowed t)
-                                ("l" "leetcode" plain #'org-roam-capture--get-point
-                                 "\n* References\n* Description\n* Code\n#+begin_src go :imports '(\"fmt\")\n\n#+end_src\n* Time & Space\n* Related & Recommend"
-                                 :file-name "%<%Y%m%d%H%M%S>-${slug}"
-                                 :clock-in t :clock-resume t
-                                 :head "#+title: ${title}\n#+filetags:"
-                                 :unnarrowed t))
-   org-roam-directory (let ((p (expand-file-name (concat org-directory "/roam"))))
-                        (unless (file-directory-p p) (make-directory p))
-                        p))
+  (setq org-roam-v2-ack t
+        org-roam-capture-templates '(("d" "default" plain "%?"
+                                      ;; FIXME add head so that clock will work
+                                      :if-new (file+head "%<Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags:")
+                                      :clock-in t
+                                      :clock-resume t
+                                      :unnarrowed t)
+                                     ("l" "leetcode" plain "%?"
+                                      :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
+                                                             "#+title: ${title}\n#+filetags:"
+                                                             ("References\n* Description\n* Code\n* Time & Space\n* Related & Recommend"))
+                                      :clock-in t
+                                      :clock-resume t
+                                      :unnarrowed t))
+        org-roam-directory (let ((p (expand-file-name (concat org-directory "/roam"))))
+                             (unless (file-directory-p p) (make-directory p))
+                             p))
   (global-set-key (kbd "C-c n l") 'org-roam-buffer-toggle)
   (global-set-key (kbd "C-c n f") 'org-roam-node-find)
   (global-set-key (kbd "C-c n g") 'org-roam-graph)
