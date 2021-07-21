@@ -1,5 +1,6 @@
 ;;; -*- lexical-binding: t -*-
 
+;; TODO * - = 等直接上屏，或者在 org mode 中
 (eat-package rime
   :straight t
   :commands toggle-input-method
