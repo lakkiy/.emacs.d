@@ -64,7 +64,8 @@
     (dired-rainbow-define-chmod directory "#6cb2eb" "d.*")
     (dired-rainbow-define-chmod executable-unix "#38c172" "-.*x.*"))
   (eat-package dired-subtree
-    :init
+    :after dired
+    :config
     (define-key dired-mode-map (kbd "i") 'dired-subtree-insert)
     (define-key dired-mode-map (kbd ";") 'dired-subtree-remove)))
 
