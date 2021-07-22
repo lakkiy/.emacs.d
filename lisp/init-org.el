@@ -284,4 +284,13 @@ prepended to the element after the #+HEADER: tag."
   ;; TODO
   (setq org-super-agenda-groups nil))
 
+(eat-package org-download
+  :straight t
+  :commands
+  org-download-clipboard
+  org-download-yank
+  org-download-screenshot
+  :init
+  (setq org-download-image-org-width 800))
+
 (provide 'init-org)
