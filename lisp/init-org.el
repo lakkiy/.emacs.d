@@ -245,8 +245,7 @@ prepended to the element after the #+HEADER: tag."
                  (window-parameters . ((no-other-window . t)
                                        (no-delete-other-windows . t)))))
   (setq org-roam-v2-ack t
-        org-roam-capture-templates '(("d" "default" plain "%?"
-                                      ;; FIXME add head so that clock will work
+        org-roam-capture-templates '(("d" "default" plain "* %?"
                                       :if-new (file+head "%<Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags:")
                                       :clock-in t
                                       :clock-resume t
