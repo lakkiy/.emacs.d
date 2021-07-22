@@ -291,6 +291,8 @@ prepended to the element after the #+HEADER: tag."
   org-download-yank
   org-download-screenshot
   :init
-  (setq org-download-image-org-width 800))
+  (setq-default org-download-image-dir (concat org-directory "/pictures"))
+  (setq org-download-image-org-width 800
+        org-download-backend "curl"))
 
 (provide 'init-org)
