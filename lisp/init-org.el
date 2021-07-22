@@ -266,6 +266,7 @@ prepended to the element after the #+HEADER: tag."
   (global-set-key (kbd "C-c n i") 'org-roam-node-insert)
   (global-set-key (kbd "C-c n c") 'org-roam-capture)
   (global-set-key (kbd "C-c n j") 'org-roam-dailies-capture-today)
+  (global-set-key (kbd "C-c n s") 'org-roam-db-sync)
   :config
   (require 'org-roam-protocol))
 
