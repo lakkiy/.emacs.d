@@ -293,6 +293,9 @@ prepended to the element after the #+HEADER: tag."
   :init
   (setq-default org-download-image-dir (concat org-directory "/pictures"))
   (setq org-download-image-org-width 800
-        org-download-backend "curl"))
+        org-download-backend "curl"
+        org-download-screenshot-method (cond (sys/macp "screencapture -ci")
+                                             (sys/linuxp "flameshot gui --raw > %s")
+                                             (t ""))))
 
 (provide 'init-org)

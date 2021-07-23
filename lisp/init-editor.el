@@ -98,9 +98,7 @@
   :straight t
   :init
   (when (memq window-system '(mac ns x))
-    (eat-package cache-path-from-shell
-      :straight (cache-path-from-shell :type git :host github :repo "manateelazycat/cache-path-from-shell")
-      :require t)
+    (require 'exec-path-from-shell)
     (exec-path-from-shell-initialize)))
 
 (eat-package imenu-list
