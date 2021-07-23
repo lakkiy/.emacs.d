@@ -23,33 +23,6 @@
           ielm-mode)
         popper-group-function #'popper-group-by-directory))
 
-(eat-package sr-speedbar
-  :straight t
-  :init
-  (setq sr-speedbar-auto-refresh nil
-        sr-speedbar-default-width 30
-        sr-speedbar-max-width 40
-        sr-speedbar-right-side nil
-        sr-speedbar-skip-other-window-p t)
-  (defun +sr-speedbar-select-or-open()
-    "Select sr-speedbar window if it exist, or open sr-speedbar"
-    (interactive)
-    (if (and (fboundp 'sr-speedbar-exist-p) (sr-speedbar-exist-p))
-        (sr-speedbar-select-window)
-      (sr-speedbar-open)))
-
-  (global-set-key (kbd "<f1>") #'+sr-speedbar-select-or-open)
-  :hook
-  (speedbar-mode-hook . (lambda ()
-                          (face-remap-add-relative 'default :height 0.8)
-                          (face-remap-add-relative 'hl-line :box '(:line-width (-1 . -1)))))
-  :config
-  (defun speedbar-set-mode-line-format ()
-    "Override function to disable mode line and header line in speedbar"
-    (setq mode-line-format nil)
-    (setq header-line-format nil))
-  (define-key speedbar-mode-map (kbd "<f1>") 'sr-speedbar-close))
-
 (eat-package good-scroll
   :straight t
   :hook (after-init-hook . good-scroll-mode)

@@ -1,5 +1,11 @@
 ;;; -*- lexical-binding: t -*-
 
+(eat-package dired-sidebar
+  :straight t
+  :commands dired-sidebar-toggle-sidebar
+  :init
+  (global-set-key (kbd "<f1>") 'dired-sidebar-toggle-sidebar))
+
 (eat-package dired-hacks
   :straight (dired-hacks :type git
                          :host github

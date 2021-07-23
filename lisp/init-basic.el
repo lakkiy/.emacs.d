@@ -127,13 +127,6 @@
         ;; C-x C-f /ssh:
         tramp-default-method "ssh"))
 
-(eat-package speedbar
-  :dock "quick access to files/tags"
-  :init
-  (setq  speedbar-use-images nil
-         speedbar-show-unknown-files t
-         speedbar-indentation-width 2))
-
 (setq-default
  ;; Close up of MacOs
  ring-bell-function 'ignore
