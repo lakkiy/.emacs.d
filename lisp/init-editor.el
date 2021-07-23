@@ -97,12 +97,10 @@
 (eat-package exec-path-from-shell
   :straight t
   :init
-  (eat-package cache-path-from-shell
-    :straight (cache-path-from-shell :type git
-                                     :host github
-                                     :repo "manateelazycat/cache-path-from-shell")
-    :require t)
   (when (memq window-system '(mac ns x))
+    (eat-package cache-path-from-shell
+      :straight (cache-path-from-shell :type git :host github :repo "manateelazycat/cache-path-from-shell")
+      :require t)
     (require 'exec-path-from-shell)
     (exec-path-from-shell-initialize)))
 
@@ -154,5 +152,21 @@
   :commands insert-translated-name-insert
   :init
   (global-set-key (kbd "C-c i") 'insert-translated-name-insert))
+
+(eat-package helpful
+  :straight t
+  :init
+  (global-set-key (kbd "C-h f") #'helpful-callable)
+  (global-set-key (kbd "C-h v") #'helpful-variable)
+  (global-set-key (kbd "C-h k") #'helpful-key)
+  (global-set-key (kbd "C-c C-d") #'helpful-at-point)
+  (global-set-key (kbd "C-h F") #'helpful-function)
+  (global-set-key (kbd "C-h C") #'helpful-command))
+
+(eat-package elisp-demos
+  :straight t
+  :init
+  (advice-add 'describe-function-1 :after #'elisp-demos-advice-describe-function-1)
+  (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update))
 
 (provide 'init-editor)
