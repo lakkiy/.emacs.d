@@ -45,7 +45,8 @@
      '("S" . ispell-word)
      '("B" . ibuffer)
      ;; project
-     '("p s" . consult-ripgrep)
+     '("p S" . consult-ripgrep)
+     '("p s" . consult-git-grep)
      '("p p" . project-switch-project)
      '("p f" . project-find-file)
      '("p F" . project-find-regexp)
