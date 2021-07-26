@@ -270,8 +270,6 @@ prepended to the element after the #+HEADER: tag."
   :config
   (require 'org-roam-protocol))
 
-(eat-package org-roam-server :straight t)
-
 (eat-package org-agenda
   :init
   (setq org-agenda-files (list org-directory org-roam-directory))
