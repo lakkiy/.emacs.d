@@ -103,12 +103,6 @@
           #'which-key--hide-popup-ignore-command)
         embark-become-indicator embark-action-indicator))
 
-(eat-package embark-consult
-  :straight t
-  :after embark consult
-  :config
-  (add-hook 'embark-collect-mode-hook 'embark-consult-preview-minor-mode))
-
 (eat-package marginalia
   :straight t
   :hook (after-init-hook . marginalia-mode))
