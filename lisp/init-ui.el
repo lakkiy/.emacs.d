@@ -89,6 +89,9 @@
        header-line-format '(:eval (+format-mode-line)))
     (setq-default mode-line-format '(:eval (+format-mode-line))))
 
+  (when (not (display-graphic-p))
+    (load-theme +theme-tui t))
+
   (when (display-graphic-p)
     (load-theme +theme t)
 

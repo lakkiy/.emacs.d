@@ -53,13 +53,10 @@
     (interactive)
     (setq-default company-backends (remove 'company-tabnine company-backends))))
 
-(eat-package selectrum
+(eat-package vertico
   :straight t
-  :hook
-  (after-init-hook . (lambda ()
-                       (require 'selectrum)
-                       (selectrum-mode)))
   :init
+  (vertico-mode)
   (defun +minibuffer-backward-delete ()
     (interactive)
     (delete-region
@@ -71,19 +68,13 @@
       (save-mark-and-excursion (backward-word) (point)))
      (point)))
   :config
-  (define-key selectrum-minibuffer-map (kbd "M-DEL") #'+minibuffer-backward-delete)
-  (define-key selectrum-minibuffer-map (kbd "{") #'selectrum-previous-candidate)
-  (define-key selectrum-minibuffer-map (kbd "}") #'selectrum-next-candidate)
-  (define-key selectrum-minibuffer-map (kbd "[") #'previous-history-element)
-  (define-key selectrum-minibuffer-map (kbd "]") #'next-history-element))
+  (define-key vertico-map (kbd "M-DEL") #'+minibuffer-backward-delete))
 
 (eat-package orderless
   :straight t
   :after selectrum
   :init
-  (setq selectrum-highlight-candidates-function #'orderless-highlight-matches
-        selectrum-refine-candidates-function #'orderless-filter
-        completion-styles '(substring orderless)))
+  (setq completion-styles '(substring orderless)))
 
 (eat-package consult
   :straight t
@@ -95,12 +86,11 @@
 
 (eat-package embark
   :straight t
-  :after selectrum
+  :after vertico
   :config
-  (define-key selectrum-minibuffer-map (kbd "C-c C-o") 'embark-export)
-  ;; C-h show embark-act key bindings
-  (define-key selectrum-minibuffer-map (kbd "C-c C-c") 'embark-act)
-  (define-key selectrum-minibuffer-map (kbd "C-h B") 'embark-bindings)
+  (define-key vertico-map (kbd "C-c C-o") 'embark-export)
+  (define-key vertico-map (kbd "C-c C-c") 'embark-act)
+  (define-key vertico-map (kbd "C-h B") 'embark-bindings)
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"

@@ -17,10 +17,11 @@
 (defvar +font "Monaco")
 (defvar +font-cn "FZSuXinShiLiuKaiS-R-GB")
 (defvar +font-unicode "Apple Color Emoji")
-(defvar +font-variable-pitch "Bookerly")
+(defvar +font-variable-pitch "Bookerly" "Font use in variable-pitch-mode.")
 (defvar +font-height (cond (sys/macp 130) (t 110)))
-(defvar +use-header-line nil)
-(defvar +theme 'doom-spacegrey)
+(defvar +use-header-line nil "Wheather to use header line.")
+(defvar +theme 'doom-spacegrey "Theme use in gui.")
+(defvar +theme-tui 'minidark "Theme use in tui.")
 (defvar +enable-proxy? nil)
 (defvar +proxy "127.0.0.1:7890")
 (defvar +erc-password "")
@@ -28,7 +29,6 @@
 
 (defvar +theme-hooks nil
   "((theme-id . function) ...)")
-
 (defun +load-theme-advice (f theme-id &optional no-confirm no-enable &rest args)
   "Enhance `load-theme' by disabling other enabled themes & calling hooks"
   (unless no-enable ;
@@ -38,7 +38,6 @@
     (unless no-enable ;
       (pcase (assq theme-id +theme-hooks)
         (`(,_ . ,f) (funcall f))))))
-
 (advice-add 'load-theme :around #'+load-theme-advice)
 
 ;; auto change theme after system apearance changed
