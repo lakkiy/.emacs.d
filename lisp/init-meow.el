@@ -3,7 +3,6 @@
 (eat-package meow
   :straight t
   :hook
-  (meow-mode-hook . meow-esc-mode)
   (after-init-hook . (lambda ()
                        (require 'meow)
                        (meow-global-mode 1)))
