@@ -1,4 +1,4 @@
-;;; paperlike-theme.el --- A minimal light theme  -*- lexical-binding: t; -*-
+;;; grayscale-theme.el --- A gray light theme  -*- lexical-binding: t; -*-
 
 ;; Author: Shi Tianshu
 ;; Keywords: theme
@@ -26,25 +26,26 @@
 
 ;;; Commentary:
 
-;;; This is a minimal light theme.
+;;; This is a minimal gray light theme.
 
 ;;; Code:
 
-(deftheme paperlike "A minimal light theme.")
+(deftheme grayscale "A minimal light theme.")
 
-(defvar paperlike-theme-header-scales '(1.2 1.2 1.2 1.0 1.0 1.0 1.0)
+(defvar grayscale-theme-header-scales '(1.4 1.4 1.2 1.0 1.0 1.0 1.0)
   "Scales for headers.")
 
-(let ((bg "#FFFFFF")
-      (fg "#000000")
-      (cm "#595959")
-      (hl "#CCCCCC"))
+(let ((bg "#c4cdd3")
+      (fg "#4c5256")
+      (cm "#616b72")
+      (hl "#a9b5bd")
+      (cur "#202020"))
   (custom-theme-set-faces
-   `paperlike
+   `grayscale
    ;; We don't specify default foreground/background in TTY.
    `(default                        ((t :background ,bg :foreground ,fg)))
    ;; Basics
-   `(cursor                         ((t (:background ,fg))))
+   `(cursor                         ((t (:background ,cur))))
    `(region                         ((t (:background ,hl))))
    `(hl-line                        ((t)))
    `(fringe                         ((t (:background ,bg))))
@@ -73,15 +74,15 @@
    `(isearch-fail                   ((t (:inverse-video t))))
 
    ;; Font Locks
-   `(font-lock-comment-face         ((t (:foreground ,cm :italic t))))
-   `(font-lock-comment-delimiter-face         ((t (:foreground ,cm :italic t))))
-   `(font-lock-string-face          ((t (:foreground ,cm))))
-   `(font-lock-doc-face             ((t (:foreground ,cm :italic t))))
+   `(font-lock-comment-face         ((t (:foreground ,cm))))
+   `(font-lock-comment-delimiter-face         ((t (:foreground ,cm))))
+   `(font-lock-string-face          ((t (:foreground ,cm :italic t))))
+   `(font-lock-doc-face             ((t (:foreground ,cm))))
    `(font-lock-builtin-face         ((t ())))
    `(font-lock-type-face            ((t ())))
    `(font-lock-variable-name-face   ((t ())))
    `(font-lock-keyword-face         ((t ())))
-   `(font-lock-constant-face        ((t ())))
+   `(font-lock-constant-face        ((t (:italic t))))
    `(font-lock-function-name-face   ((t (:bold t))))
    `(font-lock-warning-face         ((t ())))
    `(font-lock-preprocessor-face    ((t ())))
@@ -121,6 +122,11 @@
    `(meow-normal-cursor             ((t ())))
    `(meow-motion-cursor             ((t ())))
 
+   ;; colorful paren
+   `(colorful-paren-round           ((t (:foreground ,cm))))
+   `(colorful-paren-square          ((t ())))
+   `(colorful-paren-curly           ((t ())))
+
    ;; Cider
    `(cider-result-overlay-face      ((t (:inverse-video t))))
    `(cider-repl-stderr-face         ((t (:bold t))))
@@ -131,17 +137,23 @@
 
    ;; Magit
    ;; `(magit-diff-file-heading-highlight ((t (:background ,bg+1))))
+   `(magit-branch-current              ((t (:box t :background ,hl))))
+   `(magit-branch-local                ((t (:background ,hl))))
+   `(magit-branch-remote               ((t (:background ,cm :foreground ,bg))))
+   `(magit-branch-remote-head          ((t (:box t :background ,cm :foreground ,bg))))
    `(magit-header-line                 ((t (:bold t))))
    `(magit-head                        ((t ())))
    `(magit-section-highlight           ((t (:background ,hl))))
    `(magit-section-heading             ((t (:bold t))))
    `(magit-section-selection           ((t (:bold t))))
-   ;; `(magit-diff-removed             ((t (:inherit font-lock-string-face))))
-   ;; `(magit-diff-added               ((t (:inherit font-lock-comment-face))))
-   ;; `(magit-diff-removed-highlight   ((t (:inherit font-lock-string-face :background ,bg+2))))
-   ;; `(magit-diff-added-highlight     ((t (:inherit font-lock-comment-face :background ,bg+2))))
-   ;; `(magit-diff-highlight           ((t (:background ,bg+1))))
-   ;; `(magit-diff-context-highlight   ((t (:background ,bg+1))))
+   `(magit-diff-hunk-heading-highlight ((t (:inverse-video t))))
+   `(magit-diff-hunk-heading ((t (:foreground ,cm))))
+   `(magit-diff-removed             ((t ())))
+   `(magit-diff-added               ((t ())))
+   `(magit-diff-removed-highlight   ((t (:background ,hl))))
+   `(magit-diff-added-highlight     ((t (:background ,cm :foreground ,bg))))
+   `(magit-diff-highlight           ((t ())))
+   `(magit-diff-context-highlight   ((t ())))
    ;;
    ;; ;; SMerge
    ;; `(smerge-refined-added           ((t (:background "#253325"))))
@@ -188,13 +200,13 @@
    ;; `(css-selector                   ((t (:foreground ,purple))))
    ;;
    ;; ;; Markdown
-   ;; `(markdown-header-face-1         ((t (:bold t :height ,(nth 0 paperlike-theme-header-scales)))))
-   ;; `(markdown-header-face-2         ((t (:bold t :height ,(nth 1 paperlike-theme-header-scales)))))
-   ;; `(markdown-header-face-3         ((t (:bold t :height ,(nth 2 paperlike-theme-header-scales)))))
-   ;; `(markdown-header-face-4         ((t (:bold t :height ,(nth 3 paperlike-theme-header-scales)))))
-   ;; `(markdown-header-face-5         ((t (:bold t :height ,(nth 4 paperlike-theme-header-scales)))))
-   ;; `(markdown-header-face-6         ((t (:bold t :height ,(nth 5 paperlike-theme-header-scales)))))
-   ;; `(markdown-header-face-7         ((t (:bold t :height ,(nth 6 paperlike-theme-header-scales)))))
+   `(markdown-header-face-1         ((t (:bold t :height ,(nth 0 grayscale-theme-header-scales)))))
+   `(markdown-header-face-2         ((t (:bold t :height ,(nth 1 grayscale-theme-header-scales)))))
+   `(markdown-header-face-3         ((t (:bold t :height ,(nth 2 grayscale-theme-header-scales)))))
+   `(markdown-header-face-4         ((t (:bold t :height ,(nth 3 grayscale-theme-header-scales)))))
+   `(markdown-header-face-5         ((t (:bold t :height ,(nth 4 grayscale-theme-header-scales)))))
+   `(markdown-header-face-6         ((t (:bold t :height ,(nth 5 grayscale-theme-header-scales)))))
+   `(markdown-header-face-7         ((t (:bold t :height ,(nth 6 grayscale-theme-header-scales)))))
    ;;
    ;; ;; Telega
    `(telega-entity-type-code        ((t ())))
@@ -202,17 +214,17 @@
    `(telega-unmuted-count           ((t ())))
    ;;
    ;; ;; Org-mode
-   `(org-document-title             ((t (:bold t :height ,(nth 0 paperlike-theme-header-scales)))))
+   `(org-document-title             ((t (:bold t :height ,(nth 0 grayscale-theme-header-scales)))))
    `(org-link                       ((t (:underline t))))
    `(org-document-title             ((t ())))
    `(org-code                       ((t (:inherit font-lock-constant-face))))
-   `(org-level-1                    ((t (:bold t :height ,(nth 0 paperlike-theme-header-scales)))))
-   `(org-level-2                    ((t (:bold t :height ,(nth 1 paperlike-theme-header-scales)))))
-   `(org-level-3                    ((t (:bold t :height ,(nth 2 paperlike-theme-header-scales)))))
-   `(org-level-4                    ((t (:bold t :height ,(nth 3 paperlike-theme-header-scales)))))
-   `(org-level-5                    ((t (:bold t :height ,(nth 4 paperlike-theme-header-scales)))))
-   `(org-level-6                    ((t (:bold t :height ,(nth 5 paperlike-theme-header-scales)))))
-   `(org-level-7                    ((t (:bold t :height ,(nth 6 paperlike-theme-header-scales)))))
+   `(org-level-1                    ((t (:bold t :height ,(nth 0 grayscale-theme-header-scales)))))
+   `(org-level-2                    ((t (:bold t :height ,(nth 1 grayscale-theme-header-scales)))))
+   `(org-level-3                    ((t (:bold t :height ,(nth 2 grayscale-theme-header-scales)))))
+   `(org-level-4                    ((t (:bold t :height ,(nth 3 grayscale-theme-header-scales)))))
+   `(org-level-5                    ((t (:bold t :height ,(nth 4 grayscale-theme-header-scales)))))
+   `(org-level-6                    ((t (:bold t :height ,(nth 5 grayscale-theme-header-scales)))))
+   `(org-level-7                    ((t (:bold t :height ,(nth 6 grayscale-theme-header-scales)))))
    ;;
    ;; ;; Treemacs
    ;; `(treemacs-root-face             ((t (:inherit font-lock-function-name-face :height 1.4 :underline t))))
@@ -227,6 +239,6 @@
                   (file-name-as-directory
                    (file-name-directory load-file-name))))
 
-(provide-theme 'paperlike)
+(provide-theme 'grayscale)
 
-;;; paperlike-theme.el ends here
+;;; grayscale-theme.el ends here

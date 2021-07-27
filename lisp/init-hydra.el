@@ -3,7 +3,6 @@
 (eat-package pretty-hydra
   :straight t
   :init
-  (+pdump-packages 'pretty-hydra)
   (pretty-hydra-define toggles-hydra (:title "Toggles" :quit-key "q")
     ("Basic"
      (("n" (if (fboundp 'display-line-numbers-mode)
