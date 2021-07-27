@@ -8,23 +8,23 @@
                        (require 'meow)
                        (meow-global-mode 1)))
   :config
+  ;; make Meow usable in TUI Emacs
+  (meow-esc-mode 1)
   ;;; project.el use C-x p
   (global-unset-key (kbd "C-x C-p"))
   (global-set-key (kbd "C-x C-d") #'dired)
   ;; SPC x f to describe-funtion
   (global-set-key (kbd "C-h C-f") 'describe-funtion)
-
   (add-to-list 'meow-mode-state-list '(debugger-mode . normal))
   (add-to-list 'meow-mode-state-list '(ielm-mode . normal))
-
   (meow-setup-line-number)
   (meow-setup)
   :init
-  (setq meow-replace-state-name-list
-        '((normal . "OwO")
-          (insert . "QAQ")
-          (keypad . "-,-")
-          (motion . "-.-")))
+  (setq meow-replace-state-name-list '((normal . "OwO")
+                                       (insert . "QAQ")
+                                       (keypad . "-,-")
+                                       (motion . "=-="))
+        meow-esc-delay 0.001)
   (defun meow-setup ()
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
     (meow-motion-overwrite-define-key
@@ -35,7 +35,7 @@
      '("SPC" . execute-extended-command)
      '("i" . consult-imenu)
      '("I" . imenu-list-smart-toggle)
-     '("b" . consult-buffer)
+     '("b" . switch-to-buffer)
      '("f" . find-file)
      ;; basic
      '("v" . magit)
@@ -69,7 +69,7 @@
      '("}" . meow-forward-barf)
      '(")" . meow-forward-slurp)
      '("e" . meow-eval-last-exp)
-     '(";" . meow-comment)
+     '(";" . comment-dwim)
      ;; window
      '("w" . ace-window)
      '("W" . ace-swap-window)
@@ -79,18 +79,7 @@
      '("\\" . split-window-right)
      ;; SPC j/k will run the original command in MOTION state.
      '("j" . meow-motion-origin-command)
-     '("k" . meow-motion-origin-command)
-     ;; Use SPC (0-9) for digit arguments.
-     '("1" . meow-digit-argument)
-     '("2" . meow-digit-argument)
-     '("3" . meow-digit-argument)
-     '("4" . meow-digit-argument)
-     '("5" . meow-digit-argument)
-     '("6" . meow-digit-argument)
-     '("7" . meow-digit-argument)
-     '("8" . meow-digit-argument)
-     '("9" . meow-digit-argument)
-     '("0" . meow-digit-argument))
+     '("k" . meow-motion-origin-command))
     (meow-normal-define-key
      '("-" . hs-hide-block)
      '("=" . hs-show-block)
