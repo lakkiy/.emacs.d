@@ -103,11 +103,7 @@
         (lambda (map _target)
           (which-key--show-keymap "Embark" map nil nil 'no-paging)
           #'which-key--hide-popup-ignore-command)
-        embark-become-indicator embark-action-indicator)
-
-  (eat-package embark-consult
-    :require t
-    :hook (embark-collect-mode-hook . embark-consult-preview-minor-mode)))
+        embark-become-indicator embark-action-indicator))
 
 (eat-package marginalia
   :straight t
