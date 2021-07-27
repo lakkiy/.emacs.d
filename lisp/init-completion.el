@@ -55,8 +55,8 @@
 
 (eat-package vertico
   :straight t
+  :hook (after-init-hook . vertico-mode)
   :init
-  (vertico-mode)
   (defun +minibuffer-backward-delete ()
     (interactive)
     (delete-region
@@ -72,9 +72,10 @@
 
 (eat-package orderless
   :straight t
-  :after selectrum
-  :init
-  (setq completion-styles '(substring orderless)))
+  :after vertico
+  :hook
+  (minibuffer-setup-hook . (lambda ()
+                             (setq-local completion-styles '(substring orderless)))))
 
 (eat-package consult
   :straight t
@@ -87,21 +88,26 @@
 (eat-package embark
   :straight t
   :after vertico
+  :init
   :config
   (define-key vertico-map (kbd "C-c C-o") 'embark-export)
   (define-key vertico-map (kbd "C-c C-c") 'embark-act)
-  (define-key vertico-map (kbd "C-h B") 'embark-bindings)
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                  nil
                  (window-parameters (mode-line-format . none))))
+
   ;; Show actions and keybindings with `which-key'
   (setq embark-action-indicator
         (lambda (map _target)
           (which-key--show-keymap "Embark" map nil nil 'no-paging)
           #'which-key--hide-popup-ignore-command)
-        embark-become-indicator embark-action-indicator))
+        embark-become-indicator embark-action-indicator)
+
+  (eat-package embark-consult
+    :require t
+    :hook (embark-collect-mode-hook . embark-consult-preview-minor-mode)))
 
 (eat-package marginalia
   :straight t
