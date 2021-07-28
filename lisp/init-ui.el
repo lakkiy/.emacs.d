@@ -15,7 +15,7 @@
   (setq nano-theme-light/dark 'light
         nano-theme-comment-italic nil
         nano-theme-keyword-italic nil
-        nano-theme-system-appearance nil))
+        nano-theme-system-appearance t))
 
 (eat-package emojify
   :straight t
