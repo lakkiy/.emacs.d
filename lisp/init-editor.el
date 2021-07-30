@@ -1,25 +1,10 @@
 ;;; -*- lexical-binding: t -*-
 
-(eat-package popper
+(eat-package isearch-mb
   :straight t
-  :commands
-  popper-toggle-latest
-  popper-cycle
-  :hook (after-init-hook . popper-mode)
   :init
-  (global-set-key (kbd "C-`") 'popper-toggle-latest)
-  (global-set-key (kbd "M-`") 'popper-cycle)
-
-  (setq popper-modeline nil
-        popper-mode-line nil
-        popper-reference-buffers
-        '("\\*Messages\\*"
-          "Outout\\*$"
-          "\\*Gofmt Errors\\*"
-          help-mode
-          eshell-mode
-          ielm-mode)
-        popper-group-function #'popper-group-by-directory))
+  (global-set-key (kbd "C-s") 'isearch-forward-regexp)
+  (global-set-key (kbd "C-r") 'isearch-backward-regexp))
 
 (eat-package good-scroll
   :straight t
@@ -50,21 +35,6 @@
   (define-key youdao-dictionary-mode-map (kbd "h") 'youdao-hydra/body)
   (define-key youdao-dictionary-mode-map (kbd "?") 'youdao-hydra/body))
 
-(eat-package writeroom-mode
-  :straight t
-  :init
-  (setq writeroom-fullscreen-effect 'maximized
-        writeroom-bottom-divider-width 0))
-
-(eat-package which-key
-  :straight t
-  :hook (after-init-hook . which-key-mode)
-  :init
-  (setq which-key-idle-delay 1
-        which-key-idle-secondary-delay 0.05)
-  :config
-  (global-set-key (kbd "<f5>") 'which-key-show-major-mode))
-
 (eat-package exec-path-from-shell
   :straight t
   :init
@@ -83,21 +53,9 @@
 
   (global-set-key (kbd "C-.") #'imenu-list-smart-toggle))
 
-(eat-package separedit
-  :straight t
-  :commands separedit
-  :init
-  (setq separedit-default-mode 'org-mode
-        separedit-remove-trailing-spaces-in-comment t)
-  (global-set-key (kbd "C-c '") #'separedit))
-
 (eat-package visual-fill-column
   :straight t
   :hook (visual-line-mode-hook . visual-fill-column-mode))
-
-(eat-package insert-char-preview
-  :straight t
-  :commands insert-char-preview)
 
 (eat-package auto-save
   :straight (auto-save :type git :host github :repo "manateelazycat/auto-save")
@@ -120,16 +78,6 @@
   :commands insert-translated-name-insert
   :init
   (global-set-key (kbd "C-c i") 'insert-translated-name-insert))
-
-(eat-package helpful
-  :straight t
-  :init
-  (global-set-key (kbd "C-h f") #'helpful-callable)
-  (global-set-key (kbd "C-h v") #'helpful-variable)
-  (global-set-key (kbd "C-h k") #'helpful-key)
-  (global-set-key (kbd "C-c C-d") #'helpful-at-point)
-  (global-set-key (kbd "C-h F") #'helpful-function)
-  (global-set-key (kbd "C-h C") #'helpful-command))
 
 (eat-package elisp-demos
   :straight t

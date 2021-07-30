@@ -3,8 +3,8 @@
 (eat-package less-theme
   :straight (less-theme :type git :host github :repo "nobiot/less-theme"))
 
+;; TODO
 (eat-package nyan-mode :straight t)
-(eat-package solaire-mode :straight t)
 
 (eat-package rainbow-mode
   :straight t
@@ -16,10 +16,6 @@
         nano-theme-comment-italic nil
         nano-theme-keyword-italic nil
         nano-theme-system-appearance t))
-
-(eat-package emojify
-  :straight t
-  :command emojify-mode)
 
 (eat-package doom-themes
   :straight t
