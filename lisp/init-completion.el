@@ -70,12 +70,12 @@
   :config
   (define-key vertico-map (kbd "M-DEL") #'+minibuffer-backward-delete))
 
-(eat-package orderless
-  :straight t
-  :after vertico
-  :hook
-  (minibuffer-setup-hook . (lambda ()
-                             (setq-local completion-styles '(substring orderless)))))
+;; (eat-package orderless
+;;   :straight t
+;;   :after vertico
+;;   :hook
+;;   (minibuffer-setup-hook . (lambda ()
+;;                              (setq-local completion-styles '(substring orderless)))))
 
 (eat-package consult
   :straight t
@@ -83,7 +83,9 @@
   (global-set-key (kbd "C-s") 'consult-line)
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref
-        consult-project-root-function #'vc-root-dir))
+        consult-project-root-function (lambda ()
+                                        (when-let (project (project-current))
+                                          (car (project-roots project))))))
 
 (eat-package embark
   :straight t
