@@ -1,11 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(eat-package isearch-mb
-  :straight t
-  :init
-  (global-set-key (kbd "C-s") 'isearch-forward-regexp)
-  (global-set-key (kbd "C-r") 'isearch-backward-regexp))
-
 (eat-package good-scroll
   :straight t
   :hook (after-init-hook . good-scroll-mode)
