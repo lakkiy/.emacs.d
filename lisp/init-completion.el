@@ -70,12 +70,11 @@
   :config
   (define-key vertico-map (kbd "M-DEL") #'+minibuffer-backward-delete))
 
-;; (eat-package orderless
-;;   :straight t
-;;   :after vertico
-;;   :hook
-;;   (minibuffer-setup-hook . (lambda ()
-;;                              (setq-local completion-styles '(substring orderless)))))
+(eat-package orderless
+  :straight t
+  :after vertico
+  :init
+  (setq completion-styles '(substring orderless)))
 
 (eat-package consult
   :straight t
