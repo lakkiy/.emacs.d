@@ -22,6 +22,8 @@
 (defvar +use-header-line nil "Wheather to use header line.")
 (defvar +theme 'doom-spacegrey "Theme use in gui.")
 (defvar +theme-tui 'minidark "Theme use in tui.")
+(defvar +theme-system-light 'doom-solarized-light "Theme used after change system apperance to light.")
+(defvar +theme-system-dark 'doom-solarized-dark "Theme used after change system apperance to dark.")
 (defvar +enable-proxy? nil)
 (defvar +proxy "127.0.0.1:7890")
 (defvar +erc-password "")
@@ -45,8 +47,8 @@
   (add-to-list 'ns-system-appearance-change-functions
                (lambda (l?d)
                  (if (eq l?d 'light)
-                     (load-theme 'spacemacs-light t)
-                   (load-theme 'doom-city-lights t)))))
+                     (load-theme +theme-system-light t)
+                   (load-theme +theme-system-dark t)))))
 
 (when +enable-proxy?
   (add-hook 'after-init-hook (lambda () (+proxy-http-enable))))
