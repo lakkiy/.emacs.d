@@ -1,4 +1,4 @@
-;;; nasy-modeline.el --- Nasy's Emacs Configuration theme file.  -*- lexical-binding: t; -*-
+;;; nasy-theme.el --- Nasy's Emacs Configuration theme file.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2020  Nasy
 
@@ -159,13 +159,9 @@
    `(cursor                            ((,class (:background ,n/黛霜 :foreground ,n/霜黛))))
    `(error                             ((,class (:background ,n-鱼肚 :foreground ,n-品红 :weight bold))))
    `(escape-glyph                      ((,class (:foreground ,n-茶))))
-   `(fixed-pitch
-     ((,class (:family ,nasy-theme-fixed-pitch-font))))
+   `(fixed-pitch                       ((,class (:family ,nasy-theme-fixed-pitch-font))))
    `(fringe                            ((,class (:background ,n/缟漆 :foreground ,n/墨缟))))
-   `(header-line                       ((,class (:background ,n-荼
-                                                             :box (:line-width 2 :style released-button)
-                                                             :extend t
-                                                             :foreground ,n/靛青湖蓝))))
+   `(header-line                       ((,class (:background ,n-荼 :box (:line-width 2 :style released-button) :extend t :foreground ,n/靛青湖蓝))))
    `(highlight                         ((,class (:background ,n/墨缟 :distant-foreground ,n/霜黛))))
    `(internal-border                   ((,class (:background ,n/缟漆))))
    `(link                              ((,class (:foreground ,n-靛青 :underline t))))
@@ -177,11 +173,7 @@
    `(warning                           ((,class (:background ,n-鱼肚 :foreground ,n-茶 :weight bold))))
 
    ;;; company
-   `(company-box-scrollbar
-     ((,class (:background ,n/黛缟
-                           :box (:line-width 2 :style released-button)
-                           :extend t
-                           :foreground ,n/缟黛))))
+   `(company-box-scrollbar             ((,class (:background ,n/黛缟 :box (:line-width 2 :style released-button) :extend t :foreground ,n/缟黛))))
    `(company-box-selection             ((,class (:inherit company-box-scrollbar))))
    `(company-echo-common               ((,class (:background ,n-茶 :foreground ,n-缟))))
    `(company-preview-common            ((,class (:background ,n-荼 :foreground ,n-墨 :slant italic :weight bold))))
@@ -190,38 +182,20 @@
    `(company-tooltip                   ((,class (:background ,n/霜黛 :foreground ,n/黛霜))))
    `(company-tooltip-common            ((,class (:background ,n-素 :foreground ,n-松绿 :weight bold))))
    `(company-tooltip-common-selection  ((,class (:background ,n/黛缟 :foreground ,n-松花 :inherit company-tooltip-common))))
-   `(company-tooltip-selection         ((,class (:background ,n/黛缟
-                                                             :box (:style released-button)
-                                                             :extend t
-                                                             :foreground ,n/缟黛))))
+   `(company-tooltip-selection         ((,class (:background ,n/黛缟 :box (:style released-button) :extend t :foreground ,n/缟黛))))
 
 
    ;;; customize faces
-   `(custom-button                     ((,class (:box (:line-width 2 :style released-button)
-                                                      :foreground ,n/霜黛
-                                                      :background ,n/黛霜))))
-   `(custom-button-mouse               ((,class (:box (:line-width 2 :style released-button)
-                                                      :background ,n/霜黛
-                                                      :foreground ,n/黛霜))))
-   `(custom-button-pressed             ((,class (:box (:line-width 2 :style pressed-button)
-                                                      :inherit custom-button))))
+   `(custom-button                     ((,class (:box (:line-width 2 :style released-button) :foreground ,n/霜黛 :background ,n/黛霜))))
+   `(custom-button-mouse               ((,class (:box (:line-width 2 :style released-button) :background ,n/霜黛 :foreground ,n/黛霜))))
+   `(custom-button-pressed             ((,class (:box (:line-width 2 :style pressed-button) :inherit custom-button))))
    `(custom-button-pressed-unraised    ((,class (:foreground ,n-青莲 :inherit custom-button-unraised))))
    `(custom-button-unraised            ((,class (:underline t))))
    `(custom-comment                    ((,class (:background ,n/霜黛 :foreground ,n/黛霜))))
-   `(custom-group-tag                  ((,class (:foreground ,n-靛青
-                                                             :height 1.4
-                                                             :slant normal
-                                                             :weight bold
-                                                             :inherit variable-pitch))))
-   `(custom-group-subtitle             ((,class (:foreground ,n/墨缟
-                                                             :height 1.2
-                                                             :underline t
-                                                             :weight bold))))
-   `(custom-variable-obsolete          ((,class (:foreground ,n/黛霜
-                                                             :strike-through t))))
-   `(custom-variable-tag               ((,class (:foreground ,n-靛青
-                                                             :slant normal
-                                                             :weight bold))))
+   `(custom-group-tag                  ((,class (:foreground ,n-靛青 :height 1.4 :slant normal :weight bold :inherit variable-pitch))))
+   `(custom-group-subtitle             ((,class (:foreground ,n/墨缟 :height 1.2 :underline t :weight bold))))
+   `(custom-variable-obsolete          ((,class (:foreground ,n/黛霜 :strike-through t))))
+   `(custom-variable-tag               ((,class (:foreground ,n-靛青 :slant normal :weight bold))))
 
    ;;; dashboard
    `(widget-button                     ((,class (:weight unspecified))))
@@ -232,9 +206,7 @@
    ;;; font-lock faces
    `(font-lock-builtin-face            ((,class (:background ,n-春緑 :foreground ,n-珈琲椶 :slant italic))))
    `(font-lock-comment-delimiter-face  ((,class (:inherit font-lock-comment-face :weight bold))))
-   `(font-lock-comment-face            ((,class (:foreground ,n/墨灰素
-                                                             :slant italic
-                                                             :underline ,(--u? 'comment)))))
+   `(font-lock-comment-face            ((,class (:foreground ,n/墨灰素 :slant italic :underline ,(--u? 'comment)))))
    `(font-lock-constant-face           ((,class (:inherit font-lock-variable-name-face :weight bold))))
    `(font-lock-doc-face                ((,class (:background ,n-水黄 :foreground ,n/靛青湖蓝 :extend t))))
    `(font-lock-function-name-face      ((,class (:foreground ,n-松绿 :underline t))))
@@ -250,96 +222,34 @@
    `(highlight-indent-guides-even-face ((,class (:background ,n-水黄))))
    `(highlight-indent-guides-odd-face  ((,class (:background ,n-春緑))))
    ;; hl-line
-   `(hl-line                           ((,class (:background ,n-芽灰
-                                                             :distant-foreground ,n-墨
-                                                             :extend t
-                                                             :underline ,(--u? 'hl-line)
-                                                             :weight bold))))
+   `(hl-line                           ((,class (:background ,n-芽灰 :distant-foreground ,n-墨 :extend t :underline ,(--u? 'hl-line) :weight bold))))
 
-   `(mode-line                         ((,class (:background ,n-胡粉 (:line-width 4 :color ,n-胡粉)))))
-   `(mode-line-inactive                ((,class (:background ,n-素 (:line-width 4 :color ,n-素)))))
+   `(mode-line                         ((,class (:background ,n-胡粉 :box `(:line-width 4 :color ,n-胡粉)))))
+   `(mode-line-inactive                ((,class (:background ,n-素 :box `(:line-width 4 :color ,n-素)))))
 
    ;;; org mode
    `(org-block                         ((,class (:background ,n-蠟白 :foreground ,n/墨缟 :extend t))))
-   `(org-block-begin-line              ((,class (:background ,n-水黄
-                                                             :box (:line-width 1 :style released-button)
-                                                             :extend t
-                                                             :foreground ,n/墨缟
-                                                             :weight bold
-                                                             :slant italic))))
-   `(org-code                          ((,class (:background ,n-米灰
-                                                             :foreground ,n-墨
-                                                             :inheit fixed-pitch))))
-   `(org-document-title                ((,class (:background ,n-富春紡
-                                                             :extend nil
-                                                             :foreground ,n/墨缟
-                                                             :height ,(--s? 1.7)
-                                                             :weight bold))))
-   `(org-document-info                 ((,class (:background ,n/素墨
-                                                             :extend t
-                                                             :foreground ,n/墨缟
-                                                             :height ,(--s? 1.2)
-                                                             :slant italic))))
-   `(org-document-info-keyword         ((,class (:background ,n/素墨
-                                                             :extend t
-                                                             :foreground ,n/墨缟
-                                                             :height ,(--s? 1.2)
-                                                             :slant italic))))
-   `(org-done                          ((,class (:box (:line-width 2 :style released-button)
-                                                      :foreground ,n/墨缟))))
+   `(org-block-begin-line              ((,class (:background ,n-水黄 :box (:line-width 1 :style released-button) :extend t :foreground ,n/墨缟 :weight bold :slant italic))))
+   `(org-code                          ((,class (:background ,n-米灰 :foreground ,n-墨 :inheit fixed-pitch))))
+   `(org-document-title                ((,class (:background ,n-富春紡 :extend nil :foreground ,n/墨缟 :height ,(--s? 1.7) :weight bold))))
+   `(org-document-info                 ((,class (:background ,n/素墨 :extend t :foreground ,n/墨缟 :height ,(--s? 1.2) :slant italic))))
+   `(org-document-info-keyword         ((,class (:background ,n/素墨 :extend t :foreground ,n/墨缟 :height ,(--s? 1.2) :slant italic))))
+   `(org-done                          ((,class (:box (:line-width 2 :style released-button) :foreground ,n/墨缟))))
    `(org-headline-done                 ((,class (:underline (:color ,n-松花)))))
-   `(org-level-1                       ((,class (:background ,n-蠟白
-                                                             :extend t
-                                                             :foreground ,n-靛青
-                                                             :height ,(--s? 1.4)
-                                                             :underline t
-                                                             :weight bold))))
-   `(org-level-2                       ((,class (:background ,n-蠟白
-                                                             :extend t
-                                                             :foreground ,n-紫扇貝
-                                                             :height ,(--s? 1.2)
-                                                             :weight bold))))
-   `(org-level-3                       ((,class (:background ,n-蠟白
-                                                             :extend t
-                                                             :foreground ,n-松绿
-                                                             :height ,(--s? 1.1)
-                                                             :weight bold))))
-   `(org-level-4                       ((,class (:background ,n-蠟白
-                                                             :extend t
-                                                             :foreground ,n/青莲丁香
-                                                             :height ,(--s? 1.1)
-                                                             :weight bold))))
-   `(org-level-5                       ((,class (:extend t
-                                                         :foreground ,n-靛青
-                                                         :height ,(--s? 1.1)
-                                                         :slant italic
-                                                         :weight normal))))
-   `(org-level-6                       ((,class (:extend t
-                                                         :foreground ,n-茶
-                                                         :height ,(--s? 1.1)
-                                                         :slant italic
-                                                         :weight normal))))
-   `(org-level-7                       ((,class (:extend t
-                                                         :foreground ,n-松绿
-                                                         :height ,(--s? 1.1)
-                                                         :slant italic
-                                                         :weight normal))))
-   `(org-level-8                       ((,class (:extend t
-                                                         :foreground ,n/青莲丁香
-                                                         :height ,(--s? 1.1)
-                                                         :slant italic
-                                                         :weight normal))))
+   `(org-level-1                       ((,class (:background ,n-蠟白 :extend t :foreground ,n-靛青 :height ,(--s? 1.4) :underline t :weight bold))))
+   `(org-level-2                       ((,class (:background ,n-蠟白 :extend t :foreground ,n-紫扇貝 :height ,(--s? 1.2) :weight bold))))
+   `(org-level-3                       ((,class (:background ,n-蠟白 :extend t :foreground ,n-松绿 :height ,(--s? 1.1) :weight bold))))
+   `(org-level-4                       ((,class (:background ,n-蠟白 :extend t :foreground ,n/青莲丁香 :height ,(--s? 1.1) :weight bold))))
+   `(org-level-5                       ((,class (:extend t :foreground ,n-靛青 :height ,(--s? 1.1) :slant italic :weight normal))))
+   `(org-level-6                       ((,class (:extend t :foreground ,n-茶 :height ,(--s? 1.1) :slant italic :weight normal))))
+   `(org-level-7                       ((,class (:extend t :foreground ,n-松绿 :height ,(--s? 1.1) :slant italic :weight normal))))
+   `(org-level-8                       ((,class (:extend t :foreground ,n/青莲丁香 :height ,(--s? 1.1) :slant italic :weight normal))))
    `(org-list-dt                       ((,class (:height ,(--s? 1.1) :weight bold))))
    `(org-meta-line                     ((,class (:inherit font-lock-comment-face :underline nil))))
    `(org-roam-link                     ((,class (:inherit org-link :overline  t :underline t))))
    `(org-superstar-header-bullet       ((,class (:background ,n-富春紡))))
    `(org-superstar-item                ((,class (:foreground ,n-靛青))))
-   `(org-tag                           ((,class (:background ,n/牙黛
-                                                             :box t
-                                                             :foreground ,n/墨缟
-                                                             :slant normal
-                                                             :underline nil
-                                                             :weight bold))))
+   `(org-tag                           ((,class (:background ,n/牙黛 :box t :foreground ,n/墨缟 :slant normal :underline nil :weight bold))))
    `(org-verbatim                      ((,class (:background ,n-春緑 :foreground ,n-墨 :inheit fixed-pitch))))
 
    ;;; page break lines

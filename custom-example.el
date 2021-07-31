@@ -8,10 +8,12 @@
 (setq +use-header-line nil)
 (setq +theme 'minidark)
 (setq +theme-tui 'minidark)
+(setq +theme-use-system nil)
 (setq +theme-system-light 'doom-solarized-light)
 (setq +theme-system-dark 'doom-solarized-dark)
 (setq +enable-proxy? nil)
 (setq +proxy "127.0.0.1:7890")
+(setq +telega-proxy nil)
 (setq +erc-password "")
 
 (setq elfeed-feeds (list

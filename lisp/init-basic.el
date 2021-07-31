@@ -22,6 +22,7 @@
 (defvar +use-header-line nil "Wheather to use header line.")
 (defvar +theme 'doom-spacegrey "Theme use in gui.")
 (defvar +theme-tui 'minidark "Theme use in tui.")
+(defvar +theme-use-system nil)
 (defvar +theme-system-light 'doom-solarized-light "Theme used after change system apperance to light.")
 (defvar +theme-system-dark 'doom-solarized-dark "Theme used after change system apperance to dark.")
 (defvar +enable-proxy? nil)
@@ -43,7 +44,9 @@
 (advice-add 'load-theme :around #'+load-theme-advice)
 
 ;; auto change theme after system apearance changed
-(when (and (boundp 'ns-system-appearance) (display-graphic-p))
+(when (and (boundp 'ns-system-appearance)
+           (display-graphic-p)
+           +theme-use-system)
   (add-to-list 'ns-system-appearance-change-functions
                (lambda (l?d)
                  (if (eq l?d 'light)
