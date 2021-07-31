@@ -9,6 +9,7 @@
 ;; Nasy's Emacs UI theme.
 
 ;;; Code:
+
 (defgroup nasy-theme nil
   "Options of Nasy's theme."
   :group 'faces)
@@ -89,7 +90,6 @@
            nasy-theme-variable-pitch-font-scale nil 'string=)
           nasy-theme-variable-pitch-font-scale)))
 
-(nasy-theme--rescale-font)
 (deftheme nasy)
 
 (let* ((class '((class color) (min-colors 89)))
@@ -487,6 +487,7 @@
                   (file-name-as-directory
                    (file-name-directory load-file-name))))
 
-  (provide-theme 'nasy)
-  (provide 'nasy-theme)
-  ;;; nasy-theme.el ends here
+(provide-theme 'nasy)
+
+(provide 'nasy-theme)
+;;; nasy-theme.el ends here
