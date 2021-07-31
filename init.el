@@ -31,10 +31,11 @@
               (lisp-interaction-mode)
               (goto-char (point-max)))))
 
-;;; Personal configuration may override some variables
-(let ((private-conf (expand-file-name "private.el" user-emacs-directory)))
-  (when (file-exists-p private-conf)
-    (load-file private-conf)))
+;; Load `custom-file'
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(when (and (file-exists-p custom-file)
+           (file-readable-p custom-file))
+  (load custom-file))
 
 (require 'init-straight)
 (require 'init-basic)

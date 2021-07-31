@@ -209,8 +209,6 @@
  ;; no client startup messages
  server-client-instructions nil
  ;; install hunspell and hunspell-en_US
- ;; custom file
- custom-file (expand-file-name "custom.el" user-emacs-directory)
  ;; yse-or-no -> y-or-n
  use-short-answers t
  ;; prefer horizental split

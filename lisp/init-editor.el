@@ -32,9 +32,8 @@
 (eat-package exec-path-from-shell
   :straight t
   :init
-  (when (memq window-system '(mac ns x))
-    (require 'exec-path-from-shell)
-    (exec-path-from-shell-initialize)))
+  (when (eq system-type 'darwin)
+    (add-hook 'after-init-hook #'exec-path-from-shell-initialize)))
 
 (eat-package imenu-list
   :straight t
