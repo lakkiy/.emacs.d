@@ -73,7 +73,7 @@
 (eat-package orderless
   :straight t
   :after vertico
-  :init
+  :config
   (setq completion-styles '(substring orderless)))
 
 (eat-package consult
