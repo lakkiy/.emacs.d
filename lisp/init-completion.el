@@ -44,7 +44,9 @@
 (eat-package company-english-helper
   :straight
   (company-english-helper :type git :host github :repo "manateelazycat/company-english-helper")
-  :commands toggle-company-english-helper)
+  :commands toggle-company-english-helper
+  :init
+  (global-set-key (kbd "C-c I") #'toggle-company-english-helper))
 
 (eat-package company-tabnine
   :straight t
