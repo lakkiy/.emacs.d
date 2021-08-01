@@ -69,7 +69,7 @@
     rust-mode-hook
     typescript-mode-hook)
    . tree-sitter-mode)
-  (tree-sitter-after-on-hook . tree-sitter-hl-mode)
+  ;; (tree-sitter-after-on-hook . tree-sitter-hl-mode)
   :config
   (require 'tree-sitter-langs))
 
