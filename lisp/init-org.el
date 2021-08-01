@@ -270,6 +270,11 @@ prepended to the element after the #+HEADER: tag."
   :config
   (require 'org-roam-protocol))
 
+(eat-package org-roam-ui
+  :straight
+  (org-roam-ui :type git :host github :repo "org-roam/org-roam-ui"
+               :branch "main" :files ("*.el" "out")))
+
 (eat-package org-agenda
   :init
   (setq org-agenda-files (list org-directory org-roam-directory))
