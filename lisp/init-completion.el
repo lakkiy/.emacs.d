@@ -41,6 +41,11 @@
   (define-key company-active-map (kbd "C-p") #'company-select-previous)
   (define-key company-active-map (kbd "C-n") #'company-select-next))
 
+(eat-package company-english-helper
+  :straight
+  (company-english-helper :type git :host github :repo "manateelazycat/company-english-helper")
+  :commands toggle-company-english-helper)
+
 (eat-package company-tabnine
   :straight t
   :doc "run company-tabnine-install-binary at the first time"
