@@ -224,9 +224,6 @@
    ;; hl-line
    `(hl-line                           ((,class (:background ,n-芽灰 :distant-foreground ,n-墨 :extend t :underline ,(--u? 'hl-line) :weight bold))))
 
-   `(mode-line                         ((,class (:background ,n-胡粉 :box `(:line-width 4 :color ,n-胡粉)))))
-   `(mode-line-inactive                ((,class (:background ,n-素 :box `(:line-width 4 :color ,n-素)))))
-
    ;;; org mode
    `(org-block                         ((,class (:background ,n-蠟白 :foreground ,n/墨缟 :extend t))))
    `(org-block-begin-line              ((,class (:background ,n-水黄 :box (:line-width 1 :style released-button) :extend t :foreground ,n/墨缟 :weight bold :slant italic))))
@@ -255,10 +252,26 @@
    ;;; page break lines
    `(page-break-lines                  ((,class (:inherit font-lock-comment-face :slant normal :underline nil))))
 
+   `(mode-line                         ((,class (:background ,n-胡粉 :box (:line-width 4 :color ,n-胡粉)))))
+   `(mode-line-inactive                ((,class (:background ,n-蠟白 :box (:line-width 4 :color ,n-蠟白)))))
+
    ;;; tab bar mode
    `(tab-bar                           ((t (:inherit mode-line))))
    `(tab-bar-tab                       ((t (:inherit mode-line))))
    `(tab-bar-tab-inactive              ((t (:inherit mode-line-inactive))))
+
+   ;;; minibuffer
+   `(minibuffer-prompt                 ((,class (:foreground ,n-墨 :weight bold))))
+
+   ;;; vertico && orderless
+   `(vertico-current                   ((,class (:background ,n/黛缟 :extend t :foreground ,n/缟墨 :weight bold))))
+   `(orderless-match-face-0            ((,class (:background ,n-松花 :foreground ,n-墨 :weight bold))))
+   `(orderless-match-face-1            ((,class (:background ,n-鹅黄 :foreground ,n-墨 :weight bold))))
+   `(orderless-match-face-2            ((,class (:background ,n-丁香 :foreground ,n-墨 :weight bold))))
+   `(orderless-match-face-3            ((,class (:background ,n-火红 :foreground ,n-墨 :weight bold))))
+
+   ;;; eshell
+   `(eshell-prompt                    ((,class (:foreground ,n-靛青))))
 
    ;;; term
    `(term-color-black                  ((,class (:background ,n-墨     :foreground ,n-墨))))
