@@ -15,4 +15,6 @@
   :config
   (setq eaf-browser-enable-adblocker "true"))
 
+(eat-package simple-call-tree :straight t)
+
 (provide 'init-fun)
