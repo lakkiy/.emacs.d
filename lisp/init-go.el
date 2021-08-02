@@ -83,7 +83,9 @@
   :straight t
   :after go-mode
   :init
-  (setq go-test-verbose t)
+  (setq go-test-verbose t
+        ;; do not cache test
+        go-test-args "-count=1")
   :config
   (define-key go-mode-map (kbd "C-c t m") #'go-test-current-file)
   (define-key go-mode-map (kbd "C-c t .") #'go-test-current-test))
