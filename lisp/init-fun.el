@@ -17,4 +17,9 @@
 
 (eat-package simple-call-tree :straight t)
 
+(eat-package chess
+  :straight t
+  :init
+  (setq chess-default-display '(chess-plain chess-ics1 chess-images)))
+
 (provide 'init-fun)
