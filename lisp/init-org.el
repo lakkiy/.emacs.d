@@ -4,6 +4,13 @@
   :straight t
   :commands restclient-mode)
 
+(eat-package ob-restclient
+  :straight t
+  :init
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((restclient . t))))
+
 (eat-package org
   :init
   (setq org-hide-emphasis-markers t
