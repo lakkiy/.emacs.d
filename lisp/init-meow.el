@@ -60,13 +60,12 @@
      '("," . xref-pop-marker-stack)
      '("Z" . xref-find-references)
      '("?" . xref-find-references)
-     ;; wrap
-     '("'" . meow-wrap-string)
-     '("(" . meow-wrap-round)
-     '("[" . meow-wrap-square)
-     '("{" . meow-wrap-curly)
-     '("}" . meow-forward-barf)
-     '(")" . meow-forward-slurp)
+     ;; wrap && sp
+     '("(" . "M-(")
+     '("[" . "M-[")
+     '("{" . "M-{")
+     '("}" . "C-}")
+     '(")" . "C-)")
      '("e" . meow-eval-last-exp)
      '(";" . comment-dwim)
      ;; window

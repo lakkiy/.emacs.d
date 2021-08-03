@@ -12,6 +12,7 @@
   (define-key smartparens-mode-map (kbd "M-s") #'sp-unwrap-sexp)
   (define-key smartparens-mode-map (kbd "M-[") #'sp-wrap-square)
   (define-key smartparens-mode-map (kbd "M-{") #'sp-wrap-curly)
+  (define-key smartparens-mode-map (kbd "M-(") #'sp-wrap-round)
   (define-key smartparens-mode-map (kbd "C-)") #'sp-forward-slurp-sexp)
   (define-key smartparens-mode-map (kbd "C-}") #'sp-forward-barf-sexp))
 
