@@ -6,7 +6,8 @@
   (defun +treemacs-scale-font-size ()
     (face-remap-add-relative 'default :height 0.8))
   (setq treemacs-no-png-images t
-        treemacs-width 40)
+        treemacs-width 30
+        treemacs-user-mode-line-format 'none)
   (global-set-key (kbd "<f1>") 'treemacs-select-window)
   :config
   (define-key treemacs-mode-map (kbd "<f1>") 'treemacs)
