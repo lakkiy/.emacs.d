@@ -16,6 +16,7 @@
   (global-set-key (kbd "C-h C-f") 'describe-funtion)
   (add-to-list 'meow-mode-state-list '(debugger-mode . normal))
   (add-to-list 'meow-mode-state-list '(ielm-mode . normal))
+  (add-to-list 'meow-mode-state-list '(inferior-python-mode . normal))
   (meow-setup-line-number)
   (meow-setup)
   :init

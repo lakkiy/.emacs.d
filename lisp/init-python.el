@@ -56,7 +56,7 @@
   :init
   (setq python-indent-offset 4
         python-shell-completion-native-enable nil
-        python-shell-interpreter "python3"
+        python-shell-interpreter "ipython"
         python-indent-guess-indent-offset nil)
   :config
   (with-eval-after-load 'exec-path-from-shell
