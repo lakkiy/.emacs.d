@@ -286,6 +286,14 @@
 
    ;;; TODO marginalia
 
+   ;;; dired-subtree
+   `(dired-subtree-depth-1-face           ((,class (:inhert dired-directory))))
+   `(dired-subtree-depth-2-face           ((,class (:inhert dired-directory))))
+   `(dired-subtree-depth-3-face           ((,class (:inhert dired-directory))))
+   `(dired-subtree-depth-4-face           ((,class (:inhert dired-directory))))
+   `(dired-subtree-depth-5-face           ((,class (:inhert dired-directory))))
+   `(dired-subtree-depth-6-face           ((,class (:inhert dired-directory))))
+
    ;;; tree sitter
    `(tree-sitter-hl-face:function.call    ((,class (:inherit tree-sitter-hl-face:function))))
    `(tree-sitter-hl-face:function.macro   ((,class (:inherit tree-sitter-hl-face:function))))
