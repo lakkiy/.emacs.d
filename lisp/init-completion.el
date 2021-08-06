@@ -21,7 +21,7 @@
   :init
   (setq company-vscode-icons-mapping nil
         company-begin-commands '(self-insert-command)
-        company-idle-delay 0
+        company-idle-delay 0.2
         company-tooltip-limit 10
         company-tooltip-align-annotations t
         company-tooltip-width-grow-only t
@@ -51,7 +51,7 @@
 (eat-package company-tabnine
   :straight t
   :doc "run company-tabnine-install-binary at the first time"
-  :after company-mode go-mode
+  ;; :after company-mode go-mode
   :config
   (add-to-list 'company-backends #'company-tabnine)
 

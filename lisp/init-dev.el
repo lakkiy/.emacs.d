@@ -80,24 +80,53 @@
   citre-update-this-tags-file
   citre-jump-back
   :init
+  (require 'citre-config)
   (setq citre-default-create-tags-file-location 'global-cache
         citre-use-project-root-when-creating-tags t
-        citre-prompt-language-for-ctags-command t)
-  (global-set-key (kbd "C-x c x") 'citre-update-this-tags-file)
-  (global-set-key (kbd "C-x c j") 'citre-jump)
-  (global-set-key (kbd "C-x c J") 'citre-jump-back)
-  (global-set-key (kbd "C-x c p") 'citre-peek)
-  (global-set-key (kbd "C-x c P") 'citre-ace-peek)
+        citre-prompt-language-for-ctags-command t
+        citre-auto-enable-citre-mode '(prog-mode))
+
   (defun citre-jump+ ()
+    "Jump to the definition of the symbol at point.
+Fallback to `xref-find-definitions'."
     (interactive)
     (condition-case _
         (citre-jump)
       (error (call-interactively #'xref-find-definitions))))
+  (global-set-key (kbd "C-x c j") 'citre-jump+)
+  (global-set-key (kbd "C-x c c") 'citre-create-tags-file)
+  (global-set-key (kbd "C-x c u") 'citre-update-this-tags-file)
+  (global-set-key (kbd "C-x c k") 'citre-jump-back)
+  (global-set-key (kbd "C-x c p") 'citre-peek)
+  (global-set-key (kbd "C-x c a") 'citre-ace-peek)
+
+  (defun company-citre (-command &optional -arg &rest _ignored)
+    "Completion backend of Citre.  Execute COMMAND with ARG and IGNORED."
+    (interactive (list 'interactive))
+    (cl-case -command
+      (interactive (company-begin-backend 'company-citre))
+      (prefix (and (bound-and-true-p citre-mode)
+                   (or (citre-get-symbol) 'stop)))
+      (meta (citre-get-property 'signature -arg))
+      (annotation (citre-capf--get-annotation -arg))
+      (candidates (all-completions -arg (citre-capf--get-collection -arg)))
+      (ignore-case (not citre-completion-case-sensitive))))
   :config
-  (with-eval-after-load 'c-mode
-    (require 'citre-lang-c)
-    (add-hook 'c-mode-hook #'citre-auto-enable-citre-mode))
-  (with-eval-after-load 'dired (require 'citre-lang-fileref)))
+  (with-eval-after-load "company"
+    (setq company-backends '((company-capf company-citre :with company-yasnippet :separate)
+                             (company-dabbrev-code company-keywords company-files)
+                             company-dabbrev)))
+  ;; The below advice makes Citre come to rescue when enabled xref backends can't find a definition.
+  ;; So, when you enable the lsp backend, this tries lsp first, then use Citre.
+  (define-advice xref--create-fetcher (:around (-fn &rest -args) fallback)
+    (let ((fetcher (apply -fn -args))
+          (citre-fetcher
+           (let ((xref-backend-functions '(citre-xref-backend t)))
+             (apply -fn -args))))
+      (lambda ()
+        (or (with-demoted-errors "%s, fallback to citre"
+              (funcall fetcher))
+            (funcall citre-fetcher))))))
 
 (eat-package devdocs
   :straight (devdocs :type git :host github :repo "astoff/devdocs.el")
