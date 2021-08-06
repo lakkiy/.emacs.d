@@ -111,7 +111,9 @@ Fallback to `xref-find-definitions'."
   (with-eval-after-load "company"
     (setq company-backends '((company-capf company-citre :with company-yasnippet :separate)
                              (company-dabbrev-code company-keywords company-files)
-                             company-dabbrev)))
+                             company-dabbrev))
+    ;; Remove duplicate candidate.
+    (add-to-list 'company-transformers #'delete-dups))
   ;; The below advice makes Citre come to rescue when enabled xref backends can't find a definition.
   ;; So, when you enable the lsp backend, this tries lsp first, then use Citre.
   (define-advice xref--create-fetcher (:around (-fn &rest -args) fallback)
