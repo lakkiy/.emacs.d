@@ -1,4 +1,4 @@
-;;; grayscale-theme.el --- A gray light theme  -*- lexical-binding: t; -*-
+;;; graverse-theme.el --- A gray light theme  -*- lexical-binding: t; -*-
 
 ;; Author: Shi Tianshu
 ;; Keywords: theme
@@ -30,18 +30,18 @@
 
 ;;; Code:
 
-(deftheme grayscale "A minimal light theme.")
+(deftheme graverse "A minimal light theme.")
 
-(defvar grayscale-theme-header-scales '(1.4 1.4 1.2 1.0 1.0 1.0 1.0)
+(defvar graverse-theme-header-scales '(1.4 1.4 1.2 1.0 1.0 1.0 1.0)
   "Scales for headers.")
 
-(let ((bg "#c4cdd3")
-      (fg "#4c5256")
-      (cm "#616b72")
-      (hl "#a9b5bd")
-      (cur "#202020"))
+(let ((bg "#4c5256")
+      (fg "#c4cdd3")
+      (cm "#a9b5bd")
+      (hl "#616b72")
+      (cur "#00FFFF"))
   (custom-theme-set-faces
-   `grayscale
+   `graverse
    ;; We don't specify default foreground/background in TTY.
    `(default                        ((t :background ,bg :foreground ,fg)))
    ;; Basics
@@ -74,9 +74,9 @@
    `(isearch-fail                   ((t (:inverse-video t))))
 
    ;; Font Locks
-   `(font-lock-comment-face         ((t (:foreground ,cm))))
-   `(font-lock-comment-delimiter-face         ((t (:foreground ,cm))))
-   `(font-lock-string-face          ((t (:foreground ,cm :italic t))))
+   `(font-lock-comment-face         ((t (:foreground ,cm :italic t))))
+   `(font-lock-comment-delimiter-face         ((t (:foreground ,cm :italic t))))
+   `(font-lock-string-face          ((t (:foreground ,cm))))
    `(font-lock-doc-face             ((t (:foreground ,cm))))
    `(font-lock-builtin-face         ((t ())))
    `(font-lock-type-face            ((t ())))
@@ -117,15 +117,15 @@
    `(meow-insert-indicator          ((t ())))
    `(meow-normal-indicator          ((t ())))
    `(meow-motion-indicator          ((t ())))
-   `(meow-keypad-cursor             ((t ())))
-   `(meow-insert-cursor             ((t ())))
-   `(meow-normal-cursor             ((t ())))
-   `(meow-motion-cursor             ((t ())))
+   `(meow-keypad-cursor             ((t (:background ,cur))))
+   `(meow-insert-cursor             ((t (:background ,cur))))
+   `(meow-normal-cursor             ((t (:background ,cur))))
+   `(meow-motion-cursor             ((t (:background ,cur))))
 
    ;; colorful paren
-   `(colorful-paren-round           ((t (:foreground ,cm))))
-   `(colorful-paren-square          ((t ())))
-   `(colorful-paren-curly           ((t ())))
+   `(colorful-round           ((t (:foreground ,cm))))
+   `(colorful-square          ((t ())))
+   `(colorful-curly           ((t ())))
 
    ;; Cider
    `(cider-result-overlay-face      ((t (:inverse-video t))))
@@ -200,13 +200,13 @@
    ;; `(css-selector                   ((t (:foreground ,purple))))
    ;;
    ;; ;; Markdown
-   `(markdown-header-face-1         ((t (:bold t :height ,(nth 0 grayscale-theme-header-scales)))))
-   `(markdown-header-face-2         ((t (:bold t :height ,(nth 1 grayscale-theme-header-scales)))))
-   `(markdown-header-face-3         ((t (:bold t :height ,(nth 2 grayscale-theme-header-scales)))))
-   `(markdown-header-face-4         ((t (:bold t :height ,(nth 3 grayscale-theme-header-scales)))))
-   `(markdown-header-face-5         ((t (:bold t :height ,(nth 4 grayscale-theme-header-scales)))))
-   `(markdown-header-face-6         ((t (:bold t :height ,(nth 5 grayscale-theme-header-scales)))))
-   `(markdown-header-face-7         ((t (:bold t :height ,(nth 6 grayscale-theme-header-scales)))))
+   `(markdown-header-face-1         ((t (:bold t :height ,(nth 0 graverse-theme-header-scales)))))
+   `(markdown-header-face-2         ((t (:bold t :height ,(nth 1 graverse-theme-header-scales)))))
+   `(markdown-header-face-3         ((t (:bold t :height ,(nth 2 graverse-theme-header-scales)))))
+   `(markdown-header-face-4         ((t (:bold t :height ,(nth 3 graverse-theme-header-scales)))))
+   `(markdown-header-face-5         ((t (:bold t :height ,(nth 4 graverse-theme-header-scales)))))
+   `(markdown-header-face-6         ((t (:bold t :height ,(nth 5 graverse-theme-header-scales)))))
+   `(markdown-header-face-7         ((t (:bold t :height ,(nth 6 graverse-theme-header-scales)))))
    ;;
    ;; ;; Telega
    `(telega-entity-type-code        ((t ())))
@@ -214,17 +214,17 @@
    `(telega-unmuted-count           ((t ())))
    ;;
    ;; ;; Org-mode
-   `(org-document-title             ((t (:bold t :height ,(nth 0 grayscale-theme-header-scales)))))
+   `(org-document-title             ((t (:bold t :height ,(nth 0 graverse-theme-header-scales)))))
    `(org-link                       ((t (:underline t))))
    `(org-document-title             ((t ())))
    `(org-code                       ((t (:inherit font-lock-constant-face))))
-   `(org-level-1                    ((t (:bold t :height ,(nth 0 grayscale-theme-header-scales)))))
-   `(org-level-2                    ((t (:bold t :height ,(nth 1 grayscale-theme-header-scales)))))
-   `(org-level-3                    ((t (:bold t :height ,(nth 2 grayscale-theme-header-scales)))))
-   `(org-level-4                    ((t (:bold t :height ,(nth 3 grayscale-theme-header-scales)))))
-   `(org-level-5                    ((t (:bold t :height ,(nth 4 grayscale-theme-header-scales)))))
-   `(org-level-6                    ((t (:bold t :height ,(nth 5 grayscale-theme-header-scales)))))
-   `(org-level-7                    ((t (:bold t :height ,(nth 6 grayscale-theme-header-scales)))))
+   `(org-level-1                    ((t (:bold t :height ,(nth 0 graverse-theme-header-scales)))))
+   `(org-level-2                    ((t (:bold t :height ,(nth 1 graverse-theme-header-scales)))))
+   `(org-level-3                    ((t (:bold t :height ,(nth 2 graverse-theme-header-scales)))))
+   `(org-level-4                    ((t (:bold t :height ,(nth 3 graverse-theme-header-scales)))))
+   `(org-level-5                    ((t (:bold t :height ,(nth 4 graverse-theme-header-scales)))))
+   `(org-level-6                    ((t (:bold t :height ,(nth 5 graverse-theme-header-scales)))))
+   `(org-level-7                    ((t (:bold t :height ,(nth 6 graverse-theme-header-scales)))))
    ;;
    ;; ;; Treemacs
    ;; `(treemacs-root-face             ((t (:inherit font-lock-function-name-face :height 1.4 :underline t))))
@@ -239,6 +239,6 @@
                   (file-name-as-directory
                    (file-name-directory load-file-name))))
 
-(provide-theme 'grayscale)
+(provide-theme 'graverse)
 
-;;; grayscale-theme.el ends here
+;;; graverse-theme.el ends here
