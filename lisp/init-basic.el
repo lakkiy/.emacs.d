@@ -131,6 +131,10 @@
         ;; C-x C-f /ssh:
         tramp-default-method "ssh"))
 
+(eat-package eldoc
+  :init
+  (setq eldoc-idle-delay 2))
+
 (setq-default
  ;; Close up of MacOs
  ring-bell-function 'ignore
