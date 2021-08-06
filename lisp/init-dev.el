@@ -75,10 +75,6 @@
 
 (eat-package citre
   :straight (citre :type git :host github :repo "universal-ctags/citre")
-  :commands
-  citre-mode
-  citre-update-this-tags-file
-  citre-jump-back
   :init
   (require 'citre-config)
   (setq citre-default-create-tags-file-location 'global-cache
@@ -163,7 +159,6 @@ Fallback to `xref-find-definitions'."
   :straight t
   :commands
   eglot-ensure
-  eglot
   :hook (go-mode-hook . eglot-ensure)
   :init
   (setq eglot-stay-out-of nil
