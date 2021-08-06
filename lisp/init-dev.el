@@ -168,6 +168,8 @@ Fallback to `xref-find-definitions'."
   :init
   (setq eglot-stay-out-of nil
         eglot-ignored-server-capabilites '(:documentHighlightProvider))
+  ;; I will manage `company-capf' myself
+  (add-to-list 'eglot-stay-out-of 'company)
   ;; auto expand function param for golang
   ;; (setq-default eglot-workspace-configuration
   ;;               '((gopls
