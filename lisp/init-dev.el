@@ -76,12 +76,13 @@
 (eat-package citre
   :straight (citre :type git :host github :repo "universal-ctags/citre")
   :init
+  (eat-package clue
+    :straight (clue :type git :host github :repo "AmaiKinono/clue"))
   (require 'citre-config)
   (setq citre-default-create-tags-file-location 'global-cache
         citre-use-project-root-when-creating-tags t
         citre-prompt-language-for-ctags-command t
         citre-auto-enable-citre-mode '(prog-mode))
-
   (defun citre-jump+ ()
     "Jump to the definition of the symbol at point.
 Fallback to `xref-find-definitions'."
@@ -95,7 +96,6 @@ Fallback to `xref-find-definitions'."
   (global-set-key (kbd "C-x c k") 'citre-jump-back)
   (global-set-key (kbd "C-x c p") 'citre-peek)
   (global-set-key (kbd "C-x c a") 'citre-ace-peek)
-
   (defun company-citre (-command &optional -arg &rest _ignored)
     "Completion backend of Citre.  Execute COMMAND with ARG and IGNORED."
     (interactive (list 'interactive))
@@ -108,6 +108,15 @@ Fallback to `xref-find-definitions'."
       (candidates (all-completions -arg (citre-capf--get-collection -arg)))
       (ignore-case (not citre-completion-case-sensitive))))
   :config
+  (global-set-key (kbd "C-x c P r") #'citre-peek-restore)
+  (global-set-key (kbd "C-x c P l") #'citre-peek-load-session)
+  (define-key citre-peek-keymap (kbd "M-l s") #'citre-peek-save-session)
+  (define-key citre-peek-keymap (kbd "M-l h") #'citre-peek-chain-backward)
+  (define-key citre-peek-keymap (kbd "M-l l") #'citre-peek-chain-forward)
+  (define-key citre-peek-keymap (kbd "M-l j") #'citre-peek-prev-branch)
+  (define-key citre-peek-keymap (kbd "M-l k") #'citre-peek-next-branch)
+  (define-key citre-peek-keymap (kbd "M-l J") #'citre-peek-move-current-def-up)
+  (define-key citre-peek-keymap (kbd "M-l K") #'citre-peek-move-current-def-down)
   (with-eval-after-load "company"
     (setq company-backends '((company-capf company-citre :with company-yasnippet :separate)
                              (company-dabbrev-code company-keywords company-files)
