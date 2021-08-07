@@ -18,7 +18,8 @@
   (add-to-list 'meow-mode-state-list '(ielm-mode . normal))
   (add-to-list 'meow-mode-state-list '(inferior-python-mode . normal))
   (add-to-list 'meow-mode-state-list '(go-dot-mod-mode . normal))
-  (meow-setup-line-number)
+  (when (display-graphic-p)
+    (meow-setup-line-number))
   (meow-setup)
   :init
   (setq meow-replace-state-name-list '((normal . "OwO")
