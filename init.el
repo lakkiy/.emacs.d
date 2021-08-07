@@ -55,7 +55,6 @@
 (require 'init-lisp)
 (require 'init-mole)
 (require 'init-mail)
-;; (unless window-system
-;;   (require 'init-xterm))
+(require 'init-xterm)
 (require 'init-dev)
 (require 'init-fun)

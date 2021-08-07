@@ -44,10 +44,23 @@
     (process-send-string xclip-process (buffer-substring-no-properties (region-beginning) (region-end)))
     (process-send-eof xclip-process)))
 
+(defun copy-from-osx ()
+  (shell-command-to-string "pbpaste"))
+
+(defun paste-to-osx (text &optional push)
+  (let ((process-connection-type nil))
+    (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
+      (process-send-string proc text)
+      (process-send-eof proc))))
+
 (unless window-system
   ;; enable mouse
   ;; FIXME in terminal.app this whill cause mouse to `M-['
-  (xterm-mouse-mode 1)
+  ;; (xterm-mouse-mode 1)
+
+  (when sys/macp
+    (setq interprogram-cut-function 'paste-to-osx)
+    (setq interprogram-paste-function 'copy-from-osx))
 
   ;; clipboard setup
   (let ((session (string-trim (shell-command-to-string "echo $XDG_SESSION_TYPE"))))
