@@ -30,6 +30,44 @@
   :init
   (global-set-key (kbd "C-c y") 'fanyi-dwim))
 
+(eat-package sdcv
+  :straight (sdcv :type git :host github :repo "manateelazycat/sdcv")
+  :commands
+  sdcv-search-pointer
+  sdcv-search-pointer+
+  sdcv-search-input
+  sdcv-search-input+
+  :init
+  (setq sdcv-dictionary-data-dir (file-truename "~/.sdcv-dict")
+        sdcv-dictionary-simple-list
+        '("懒虫简明英汉词典"
+          "懒虫简明汉英词典"
+          "KDic11万英汉词典")
+        sdcv-dictionary-complete-list
+        '("懒虫简明英汉词典"
+          "英汉汉英专业词典"
+          "XDICT英汉辞典"
+          "stardict1.3英汉辞典"
+          "WordNet"
+          "XDICT汉英辞典"
+          "懒虫简明汉英词典"
+          "新世纪英汉科技大词典"
+          "KDic11万英汉词典"
+          "朗道汉英字典5.0"
+          "CDICT5英汉辞典"
+          "新世纪汉英科技大词典"
+          "牛津英汉双解美化版"
+          "21世纪双语科技词典"
+          "quick_eng-zh_CN"))
+  (defun sdcv-dwim (&optional start end)
+    "If word is marked, translate it or translate input word"
+    (interactive "r")
+    (if (use-region-p)
+        (let ((regionp (buffer-substring start end)))
+          (sdcv-search-input regionp))
+      (sdcv-search-input)))
+  (global-set-key (kbd "C-c Y") #'sdcv-dwim))
+
 (eat-package exec-path-from-shell
   :straight t
   :init
