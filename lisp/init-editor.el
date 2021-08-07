@@ -24,23 +24,10 @@
   :straight t
   :hook (eww-mode-hook . iscroll-mode))
 
-(eat-package youdao-dictionary
-  :straight t
-  :hook (youdao-dictionary-mode-hook . (lambda () (meow-mode -1)))
+(eat-package fanyi
+  :straight (fanyi :type git :host github :repo "condy0919/fanyi.el")
   :init
-  (setq url-automatic-caching t
-        youdao-dictionary-search-history-file (expand-file-name ".youdao" user-emacs-directory)
-        youdao-dictionary-use-chinese-word-segmentation t)
-  (pretty-hydra-define youdao-hydra (:title "Youdao Dictionary Operations" :quit-key "q")
-    ("Operations"
-     (("p" youdao-dictionary-play-voice-of-current-word "play voice of current word")
-      ("y" youdao-dictionary-play-voice-at-point "play voice at point"))))
-
-  (global-set-key (kbd "C-c y") 'youdao-dictionary-search-at-point-posframe)
-  (global-set-key (kbd "C-c Y") 'youdao-dictionary-search-at-point)
-  :config
-  (define-key youdao-dictionary-mode-map (kbd "h") 'youdao-hydra/body)
-  (define-key youdao-dictionary-mode-map (kbd "?") 'youdao-hydra/body))
+  (global-set-key (kbd "C-c y") 'fanyi-dwim))
 
 (eat-package exec-path-from-shell
   :straight t
