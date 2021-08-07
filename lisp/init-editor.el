@@ -26,6 +26,7 @@
 
 (eat-package fanyi
   :straight (fanyi :type git :host github :repo "condy0919/fanyi.el")
+  :hook (fanyi-mode-hook . visual-line-mode)
   :init
   (global-set-key (kbd "C-c y") 'fanyi-dwim))
 
