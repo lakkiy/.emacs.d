@@ -98,11 +98,13 @@
   ;; TODO use -*-FZSuXinShiLiuKaiS-R-GB-normal-normal-normal-*-*-*-*-*-p-0-iso10646-1
   ;; to show flymake or flycheck errors count in mode line
   (let* ((lhs '((:eval (meow-indicator))
-                " "
                 (:eval (rime-lighter))
-                (:eval (propertize (+smart-file-name-cached) 'face 'bold))
-                " Row %l Col %C"))
-         (rhs '("%m"
+                " Row %l Col %C"
+                (:eval (when (bound-and-true-p flymake-mode)
+                         flymake-mode-line-format))))
+         (rhs '((:eval (propertize (+smart-file-name-cached) 'face 'bold))
+                " "
+                (:eval mode-name)
                 (vc-mode vc-mode)))
          (ww (window-width))
          (lhs-str (format-mode-line lhs))
