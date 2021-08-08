@@ -100,8 +100,10 @@
   (let* ((lhs '((:eval (meow-indicator))
                 (:eval (rime-lighter))
                 " Row %l Col %C"
-                (:eval (when (bound-and-true-p flymake-mode)
-                         flymake-mode-line-format))))
+                ;; use 危
+                ;; (:eval (when (bound-and-true-p flymake-mode)
+                ;;          flymake-mode-line-format))
+                ))
          (rhs '((:eval (propertize (+smart-file-name-cached) 'face 'bold))
                 " "
                 (:eval mode-name)
