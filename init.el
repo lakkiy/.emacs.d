@@ -1,3 +1,6 @@
+;; Speed up startup
+(setq auto-mode-case-fold nil)
+
 ;; Use a hook so the message doesn't get clobbered by other messages.
 (add-hook 'emacs-startup-hook
           (lambda ()
@@ -14,7 +17,11 @@
                               (lambda ()
                                 (unless (frame-focus-state)
                                   (garbage-collect))))
-              (add-hook 'focus-out-hook 'garbage-collect))))
+              (add-hook 'focus-out-hook 'garbage-collect))
+
+            ;; Recover GC values after startup
+            (setq gc-cons-threshold 800000
+                  gc-cons-percentage 0.1)))
 
 (add-hook 'after-init-hook
           (lambda ()

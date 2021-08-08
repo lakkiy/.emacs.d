@@ -72,6 +72,7 @@
   :straight t
   :init
   (when (eq system-type 'darwin)
+    (setq exec-path-from-shell-arguments '("-l"))
     (add-hook 'after-init-hook #'exec-path-from-shell-initialize)))
 
 (eat-package imenu-list

@@ -23,17 +23,12 @@
   (load bootstrap-file nil 'nomessage))
 
 (require 'eat-package)
-(eat-package quelpa
-  :straight t
-  :init
-  (setq quelpa-git-clone-depth 1
-        quelpa-update-melpa-p nil
-        quelpa-checkout-melpa-p nil))
+
 (eat-package gcmh
   :straight t
   :hook (after-init-hook . gcmh-mode)
   :init
-  (setq gcmh-idle-delay 10
+  (setq gcmh-idle-delay 5
         gcmh-high-cons-threshold #x6400000)) ;; 100 MB
 
 (provide 'init-straight)

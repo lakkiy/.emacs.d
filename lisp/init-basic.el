@@ -30,6 +30,28 @@
 (defvar +erc-password "")
 (defvar +telega-proxy nil)
 
+(with-no-warnings
+  ;; Don't ping things that look like domain names.
+  (setq ffap-machine-p-known 'reject)
+
+  (when (eq window-system 'mac)
+    ;; Compatible with Emacs Mac port
+    (setq mac-option-modifier 'meta
+          mac-command-modifier 'super)
+    (bind-keys ([(super a)] . mark-whole-buffer)
+               ([(super c)] . kill-ring-save)
+               ([(super l)] . goto-line)
+               ([(super q)] . save-buffers-kill-emacs)
+               ([(super s)] . save-buffer)
+               ([(super v)] . yank)
+               ([(super w)] . delete-frame)
+               ([(super z)] . undo)))
+
+  (unless sys/macp
+    (setq command-line-ns-option-alist nil))
+  (unless sys/linuxp
+    (setq command-line-x-option-alist nil)))
+
 (defvar +theme-hooks nil
   "((theme-id . function) ...)")
 (defun +load-theme-advice (f theme-id &optional no-confirm no-enable &rest args)
@@ -63,11 +85,7 @@
 
 (add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
 
-(eat-package ibuffer
-  :init
-  ;; ibuffer
-  (global-unset-key (kbd "C-x C-b"))
-  (global-set-key (kbd "C-x C-b") 'ibuffer))
+(fset 'list-buffers 'ibuffer)
 
 (eat-package display-line-numbers
   ;; :hook ((prog-mode-hook conf-mode-hook) . display-line-numbers-mode)
@@ -135,73 +153,57 @@
   :init
   (setq eldoc-idle-delay 2))
 
+;; Encoding
+;; UTF-8 as the default coding system
+(when (fboundp 'set-charset-priority)
+  (set-charset-priority 'unicode))
+
+;; Explicitly set the prefered coding systems to avoid annoying prompt
+;; from emacs (especially on Microsoft Windows)
+(prefer-coding-system 'utf-8)
+(setq locale-coding-system 'utf-8)
+
+(set-language-environment 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-buffer-file-coding-system 'utf-8)
+(set-clipboard-coding-system 'utf-8)
+(set-file-name-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-selection-coding-system 'utf-8)
+(modify-coding-system-alist 'process "*" 'utf-8)
+
 (setq-default
- ;; Close up of MacOs
- ring-bell-function 'ignore
- ;; no start messages
- inhibit-startup-message t
- ;; don't read x resource file
- inhibit-x-resources t
- ;; no welcome screen
- inhibit-splash-screen t
- inhibit-startup-screen t
- ;; no startup messages
- inhibit-startup-echo-area-message t
- frame-inhibit-implied-resize t
- initial-scratch-message ""
+ inhibit-compacting-font-caches t                   ; Don’t compact font caches during GC.
+ delete-by-moving-to-trash t                        ; Deleting files go to OS's trash folder
+ ring-bell-function 'ignore                         ; Disable osx bell ring
  hl-line-sticky-flag nil
- ;; Don't create lockfiles
- create-lockfiles nil
- ;; UTF-8
- buffer-file-coding-system 'utf-8-unix
- default-file-name-coding-system 'utf-8-unix
- default-keyboard-coding-system 'utf-8-unix
- default-process-coding-system '(utf-8-unix . utf-8-unix)
- default-sendmail-coding-system 'utf-8-unix
- default-terminal-coding-system 'utf-8-unix
- ;; add final newline
- require-final-newline t
- ;; Disable auto save and backup
- make-backup-files nil
+ create-lockfiles nil                               ; Don't create lockfiles
+ require-final-newline t                            ; add final newline
+ make-backup-files nil                              ; Disable auto save and backup
  auto-save-default nil
  auto-save-list-file-prefix nil
- ;; Mouse yank at point instead of click position.
- mouse-yank-at-point t
- ;; This fix the cursor movement lag
- auto-window-vscroll nil
+ mouse-yank-at-point t                              ; Mouse yank at point instead of click position.
+ auto-window-vscroll nil                            ; This fix the cursor movement lag
  tab-width 4
- ;; Don't show cursor in non selected window.
- cursor-in-non-selected-windows nil
  comment-empty-lines t
  visible-cursor t
- ;; Window divider setup
- window-divider-default-right-width 1
+ window-divider-default-right-width 1               ; Window divider setup
  window-divider-default-bottom-width 0
  window-divider-default-places t
- ;; allow resize by pixels
- frame-resize-pixelwise t
  x-gtk-resize-child-frames nil
  x-underline-at-descent-line t
- ;; Improve long line display performance
- bidi-inhibit-bpa t
+ bidi-inhibit-bpa t                                 ; Improve long line display performance
  bidi-paragraph-direction 'left-to-right
- ;; don't wait for keystrokes display
- echo-keystrokes 0.01
- ;; indent with whitespace by default
- indent-tabs-mode nil
+ echo-keystrokes 0.01                               ; don't wait for keystrokes display
+ indent-tabs-mode nil                               ; indent with whitespace by default
  read-process-output-max (* 1024 1024)
- ;; Default line number width.
- display-line-numbers-width 3
- ;; Don't use Fcitx5 in Emacs in PGTK build
- pgtk-use-im-context-on-new-connection nil
- ;; Don't display compile warnings
- warning-suppress-log-types '((comp))
- ;; Don't truncate lines in a window narrower than 65 chars.
- truncate-partial-width-windows 65
- ;; always follow link
- vc-follow-symlinks t
- ;; Vertical Scroll
- scroll-step 1
+ display-line-numbers-width 3                       ; Default line number width.
+ pgtk-use-im-context-on-new-connection nil          ; Don't use Fcitx5 in Emacs in PGTK build
+ warning-suppress-log-types '((comp))               ; Don't display compile warnings
+ truncate-partial-width-windows 65                  ; Don't truncate lines in a window narrower than 65 chars.
+ vc-follow-symlinks t                               ; always follow link
+ scroll-step 1                                      ; Vertical Scroll
  scroll-margin 0
  scroll-conservatively 100000
  scroll-up-aggressively 0.01
@@ -209,29 +211,22 @@
  scroll-preserve-screen-position t
  auto-window-vscroll nil
  fast-but-imprecise-scrolling nil
- ;; use shift + mouse wheel to scrll horizontally
- mouse-wheel-scroll-amount '(1 ((shift) . hscroll))
+ mouse-wheel-scroll-amount '(1 ((shift) . hscroll)) ; use shift + mouse wheel to scrll horizontally
  mouse-wheel-progressive-speed nil
- ;; Horizontal Scroll
- hscroll-step 1
+ hscroll-step 1                                     ; Horizontal Scroll
  hscroll-margin 10
- ;; no client startup messages
- server-client-instructions nil
- ;; install hunspell and hunspell-en_US
- ;; yse-or-no -> y-or-n
- use-short-answers t
- ;; prefer horizental split
- split-height-threshold nil
+ server-client-instructions nil                     ; no client startup messages
+ use-short-answers t                                ; yse-or-no -> y-or-n
+ split-height-threshold nil                         ; prefer horizental split
  split-width-threshold 120
- ;; disable "You can run the command balabala..."
- suggest-key-bindings nil)
+ suggest-key-bindings nil                           ; disable "You can run the command balabala..."
+ )
 
 (eat-package ispell
   :doc "install hunspell and hunspell-en_US on your system to use"
   :init
   (setq  ispell-dictionary "en_US"
          ispell-program-name "hunspell"
-         ispell-personal-dictionary (expand-file-name ".hunspell_dict.txt" user-emacs-directory)
-         ))
+         ispell-personal-dictionary (expand-file-name ".hunspell_dict.txt" user-emacs-directory)))
 
 (provide 'init-basic)

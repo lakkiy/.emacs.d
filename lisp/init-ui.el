@@ -1,5 +1,42 @@
 ;;; -*- lexical-binding: t -*-
 
+;; Optimization
+(setq idle-update-delay 1.0)
+
+(setq-default cursor-in-non-selected-windows nil)
+(setq highlight-nonselected-windows nil)
+
+(setq fast-but-imprecise-scrolling t)
+(setq redisplay-skip-fontification-on-input t)
+
+;; Suppress GUI features and more
+(setq use-file-dialog nil
+      use-dialog-box nil
+      inhibit-splash-screen t
+      inhibit-x-resources t
+      inhibit-default-init t
+      inhibit-startup-screen t
+      inhibit-startup-message t
+      inhibit-startup-buffer-menu t)
+
+;; Pixelwise resize
+(setq window-resize-pixelwise t
+      frame-resize-pixelwise t)
+
+(with-no-warnings
+  (when sys/macp
+    ;; Render thinner fonts
+    (setq ns-use-thin-smoothing t)
+    ;; Don't open a file in a new frame
+    (setq ns-pop-up-frames nil)))
+
+;; Don't use GTK+ tooltip
+(when (boundp 'x-gtk-use-system-tooltips)
+  (setq x-gtk-use-system-tooltips nil))
+
+;; Linux specific
+(setq x-underline-at-descent-line t)
+
 (eat-package less-theme
   :straight (less-theme :type git :host github :repo "nobiot/less-theme"))
 
