@@ -47,7 +47,8 @@
 (eat-package go-mode
   :straight t
   :init
-  (setq gofmt-command "goimports")
+  (setq gofmt-command "goimports"
+        gofmt-show-errors nil)
   :hook
   (before-save-hook . gofmt-before-save)
   (go-test-mode-hook . visual-line-mode)
