@@ -73,6 +73,7 @@
   :config
   (define-key dired-mode-map (kbd "C-c C-h") 'dired-hydra/body)
   :init
+  (setq dired-dwim-target t)
   (pretty-hydra-define dired-hydra (:title "Dired" :quit-key "q")
     ("TODO One"
      (("(" dired-hide-details-mode)

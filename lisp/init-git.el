@@ -27,4 +27,8 @@
   :hook
   ((dired-mode-hook prog-mode-hook conf-mode-hook) . hl-todo-mode))
 
+(eat-package smerge
+  :commands smerge-mode
+  :hook (find-file-hook . smerge-mode))
+
 (provide 'init-git)
