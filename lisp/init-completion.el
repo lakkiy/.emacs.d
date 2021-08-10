@@ -98,7 +98,6 @@
   :after vertico
   :init
   :config
-  (eat-package embark-consult :after consult)
   (define-key vertico-map (kbd "C-c C-o") 'embark-export)
   (define-key vertico-map (kbd "C-c C-c") 'embark-act)
   ;; Hide the mode line of the Embark live/completions buffers
