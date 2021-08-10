@@ -100,7 +100,8 @@ before existing. Replaces ‘save-buffers-kill-terminal’."
       (save-buffers-kill-emacs))))
 (global-set-key (kbd "C-x C-c") #'clean-exit)
 
-(add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
+(when (not (display-graphic-p))
+  (add-hook 'after-init-hook (lambda () (blink-cursor-mode -1))))
 
 (fset 'list-buffers 'ibuffer)
 
