@@ -100,10 +100,11 @@ prepended to the element after the #+HEADER: tag."
   :straight t
   :after org)
 
-(eat-package valign
-  :straight t
-  :after org
-  :hook (org-mode-hook . valign-mode))
+(when (display-graphic-p)
+  (eat-package valign
+    :straight t
+    :after org
+    :hook (org-mode-hook . valign-mode)))
 
 (eat-package doct
   :straight t
