@@ -83,23 +83,6 @@
   (find-alternate-file (format "/sudo::%s" (buffer-file-name))))
 (global-set-key (kbd "C-x C-z") #'+reopen-file-with-sudo)
 
-(defun clean-exit ()
-  "Exit Emacs cleanly.
-If there are unsaved buffer, pop up a list for them to be saved
-before existing. Replaces ‘save-buffers-kill-terminal’."
-  (interactive)
-  (if (frame-parameter nil 'client)
-      (server-save-buffers-kill-terminal arg)
-    (if-let ((buf-list (seq-filter (lambda (buf)
-                                     (and (buffer-modified-p buf)
-                                          (buffer-file-name buf)))
-                                   (buffer-list))))
-        (progn
-          (pop-to-buffer (list-buffers-noselect t buf-list))
-          (message "s to save, C-k to kill, x to execute"))
-      (save-buffers-kill-emacs))))
-(global-set-key (kbd "C-x C-c") #'clean-exit)
-
 (when (not (display-graphic-p))
   (add-hook 'after-init-hook (lambda () (blink-cursor-mode -1))))
 
