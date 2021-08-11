@@ -13,44 +13,6 @@
 
 (eat-package org
   :init
-  (setq org-hide-emphasis-markers t
-        ;; fontify code in code blocks
-        ;; org-src-fontify-natively t
-        ;; place tags directly after headline text, with only one space in between
-        org-tags-column 0
-        ;; Highlight latex text in org mode
-        org-highlight-latex-and-related '(latex script entities)
-        org-src-window-setup 'current-window
-        org-log-done t
-        org-directory "~/Dropbox/org"
-        org-html-checkbox-type 'unicode
-        org-todo-keywords        (quote ((sequence "TODO(t)" "WIP(w/!)" "WAIT(W@/!)" "HOLD(h)" "|" "CANCELLED(c@/!)" "DONE(d!/!)")))
-        org-todo-repeat-to-state "NEXT"
-        org-todo-keyword-faces   (quote (("NEXT" :inherit warning)
-  				                         ("WAIT" :inherit font-lock-string-face))))
-
-  ;; For hydra
-  (defun hot-expand (str &optional mod)
-    "Expand org template.
-
-STR is a structure template string recognised by org like <s. MOD is a
-string with additional parameters to add the begin line of the
-structure element. HEADER string includes more parameters that are
-prepended to the element after the #+HEADER: tag."
-    (let (text)
-      (when (region-active-p)
-        (setq text (buffer-substring (region-beginning) (region-end)))
-        (delete-region (region-beginning) (region-end)))
-      (insert str)
-      (if (fboundp 'org-try-structure-completion)
-          (org-try-structure-completion) ; < org 9
-        (progn
-          ;; New template expansion since org 9
-          (require 'org-tempo nil t)
-          (org-tempo-complete-tag)))
-      (when mod (insert mod) (forward-line))
-      (when text (insert text))))
-
   (pretty-hydra-define org-hydra (:title "Org Template" :quit-key "q")
     ("Basic"
      (("a" (hot-expand "<a") "ascii")
@@ -86,6 +48,41 @@ prepended to the element after the #+HEADER: tag."
       ("<" self-insert-command "ins"))))
   :hook (org-mode-hook . visual-line-mode)
   :config
+  (setq org-startup-indented t
+        org-hide-emphasis-markers t
+        org-tags-column 0
+        ;; Highlight latex text in org mode
+        org-highlight-latex-and-related '(latex script entities)
+        org-src-window-setup 'current-window
+        org-log-done t
+        org-directory "~/Dropbox/org"
+        org-html-checkbox-type 'unicode
+        org-todo-keywords        (quote ((sequence "TODO(t)" "WIP(w/!)" "WAIT(W@/!)" "HOLD(h)" "|" "CANCELLED(c@/!)" "DONE(d!/!)")))
+        org-todo-repeat-to-state "NEXT"
+        org-todo-keyword-faces   (quote (("NEXT" :inherit warning)
+  				                         ("WAIT" :inherit font-lock-string-face))))
+  ;; For hydra
+  (defun hot-expand (str &optional mod)
+    "Expand org template.
+
+STR is a structure template string recognised by org like <s. MOD is a
+string with additional parameters to add the begin line of the
+structure element. HEADER string includes more parameters that are
+prepended to the element after the #+HEADER: tag."
+    (let (text)
+      (when (region-active-p)
+        (setq text (buffer-substring (region-beginning) (region-end)))
+        (delete-region (region-beginning) (region-end)))
+      (insert str)
+      (if (fboundp 'org-try-structure-completion)
+          (org-try-structure-completion) ; < org 9
+        (progn
+          ;; New template expansion since org 9
+          (require 'org-tempo nil t)
+          (org-tempo-complete-tag)))
+      (when mod (insert mod) (forward-line))
+      (when text (insert text))))
+
   (require 'org-tempo)
   (require 'ob)
   (require 'ob-dot)
