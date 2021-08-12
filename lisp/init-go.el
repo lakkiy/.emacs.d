@@ -55,9 +55,18 @@
   :config
   (with-eval-after-load "exec-path-from-shell"
     (exec-path-from-shell-copy-envs '("GOPATH" "GO111MODULE" "GOPROXY")))
+  ;; Look for the nearest parent `go.mod' file (that is, the root of the Go module) as the project root.
+  (with-eval-after-load "project"
+    (defun project-find-go-module (dir)
+      (when-let ((root (locate-dominating-file dir "go.mod")))
+        (cons 'go-module root)))
+    (cl-defmethod project-root ((project (head go-module)))
+      (cdr project))
+    (add-hook 'project-find-functions #'project-find-go-module))
   ;; Try to install go tools if `gopls' is not found
   (unless (executable-find "gopls")
     (go-update-tools))
+
   (define-key go-mode-map (kbd "C-c t x") #'go-run))
 
 (eat-package flymake-golangci
