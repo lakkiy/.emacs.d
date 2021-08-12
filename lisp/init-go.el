@@ -44,6 +44,7 @@
   :straight t
   :commands go-playground-mode)
 
+;; FIXME https://github.com/golang/go/issues/29202
 (eat-package go-mode
   :straight t
   :init
