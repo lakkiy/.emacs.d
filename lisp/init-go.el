@@ -45,6 +45,8 @@
   :commands go-playground-mode)
 
 ;; FIXME https://github.com/golang/go/issues/29202
+;; Add this to `.dir-locals.el' to project root dir
+;; ((go-mode . ((eglot-workspace-configuration . ((:gopls . (:buildFlags ["-tags=debug"])))))))
 (eat-package go-mode
   :straight t
   :init
