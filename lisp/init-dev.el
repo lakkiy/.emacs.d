@@ -160,7 +160,9 @@ Fallback to `xref-find-definitions'."
   (setq flycheck-temp-prefix ".flycheck"
         flycheck-check-syntax-automatically '(save mode-enabled)
         flycheck-emacs-lisp-load-path 'inherit
-        flycheck-indication-mode 'right-fringe)
+        flycheck-indication-mode (if (display-graphic-p)
+                                     'right-fringe
+                                   'right-margin))
   :config
   (define-key flycheck-mode-map (kbd "C-c C-b") 'flycheck-list-errors)
   (define-key flycheck-mode-map (kbd "M-n") 'flycheck-next-error)

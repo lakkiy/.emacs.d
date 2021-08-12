@@ -77,7 +77,7 @@
 
 (eat-package flycheck-golangci-lint
   :straight t
-  ;; :after flycheck
+  ;; :after go-mode flycheck
   ;; :hook (go-mode . (lambda ()
   ;;                    "Enable golangci-lint."
   ;;                    (setq flycheck-disabled-checkers '(go-gofmt
