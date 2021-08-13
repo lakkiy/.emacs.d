@@ -11,4 +11,7 @@
   (custom-set-faces
    '(aw-leading-char-face ((t (:inherit font-lock-keyword-face :bold t :height 2.0))))))
 
+(eat-package eyebrowse
+  :straight t)
+
 (provide 'init-window)
