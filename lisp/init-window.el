@@ -12,6 +12,9 @@
    '(aw-leading-char-face ((t (:inherit font-lock-keyword-face :bold t :height 2.0))))))
 
 (eat-package eyebrowse
-  :straight t)
+  :straight t
+  :hook (after-init-hook . eyebrowse-mode)
+  :init
+  (setq eyebrowse-new-workspace t))
 
 (provide 'init-window)
