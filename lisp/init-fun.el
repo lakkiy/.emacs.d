@@ -22,6 +22,11 @@
   :init
   (setq chess-default-display '(chess-plain chess-ics1 chess-images)))
 
-
+// TODO custom
+(eat-package telephone-line
+  :straight t
+  :config
+  ;; Set mode-line height
+  (setq telephone-line-height 24))
 
 (provide 'init-fun)

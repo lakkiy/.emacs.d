@@ -83,8 +83,7 @@
   (find-alternate-file (format "/sudo::%s" (buffer-file-name))))
 (global-set-key (kbd "C-x C-z") #'+reopen-file-with-sudo)
 
-(when (not (display-graphic-p))
-  (add-hook 'after-init-hook (lambda () (blink-cursor-mode -1))))
+(add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
 
 (fset 'list-buffers 'ibuffer)
 
