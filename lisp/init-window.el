@@ -15,6 +15,14 @@
   :straight t
   :hook (after-init-hook . eyebrowse-mode)
   :init
-  (setq eyebrowse-new-workspace t))
+  (setq eyebrowse-new-workspace t)
+  :config
+  (setq eyebrowse-mode-line-separator "|"))
+
+;; Undo/redo changes to Emacs' window layout
+(eat-package winner
+  :hook (after-init-hook . winner-mode)
+  :config
+  (setq winner-dont-bind-my-keys t))
 
 (provide 'init-window)
