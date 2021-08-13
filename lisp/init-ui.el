@@ -89,6 +89,11 @@
         modus-themes-no-mixed-fonts t
         modus-themes-paren-match 'intense-bold))
 
+(eat-package kaolin-themes
+  :straight t
+  :init
+  (setq kaolin-themes-underline-wave nil))
+
 ;; Nice window divider
 (set-display-table-slot standard-display-table
                         'vertical-border
