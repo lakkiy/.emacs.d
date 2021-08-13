@@ -10,6 +10,8 @@
   :hook
   ((prog-mode-hook conf-mode-hook) . diff-hl-mode)
   (dired-mode-hook . diff-hl-dired-mode)
+  :init
+  (setq diff-hl-draw-borders nil)
   :config
   ;; Highlight on-the-fly
   (diff-hl-flydiff-mode 1)
