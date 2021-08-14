@@ -24,9 +24,11 @@
   (global-set-key [next] #'good-scroll-up-full-screen)
   (global-set-key [prior] #'good-scroll-down-full-screen))
 
-(eat-package iscroll
-  :straight t
-  :hook (eww-mode-hook . iscroll-mode))
+;; Better scroll on picture in GUI
+(when (display-graphic-p)
+  (eat-package iscroll
+    :straight t
+    :hook (eww-mode-hook . iscroll-mode)))
 
 (eat-package fanyi
   :straight (fanyi :type git :host github :repo "condy0919/fanyi.el")
