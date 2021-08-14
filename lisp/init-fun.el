@@ -22,7 +22,7 @@
   :init
   (setq chess-default-display '(chess-plain chess-ics1 chess-images)))
 
-// TODO custom
+;; TODO custom
 (eat-package telephone-line
   :straight t
   :config
