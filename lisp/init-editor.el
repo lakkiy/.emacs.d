@@ -1,5 +1,9 @@
 ;;; -*- lexical-binding: t -*-
 
+(eat-package puni
+  :straight (puni :type git :host github :repo "AmaiKinono/puni")
+  :hook (prog-mode-hook . puni-mode))
+
 (eat-package treemacs
   :straight t
   :init
