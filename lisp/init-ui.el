@@ -92,7 +92,9 @@
 (eat-package kaolin-themes
   :straight t
   :init
-  (setq kaolin-themes-underline-wave nil))
+  (setq kaolin-themes-underline-wave nil
+        kaolin-themes-modeline-border nil
+        kaolin-themes-modeline-padded 4))
 
 ;; Nice window divider
 (set-display-table-slot standard-display-table
