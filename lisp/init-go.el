@@ -3,6 +3,7 @@
 ;; Install or update tools
 (defvar go--tools '("golang.org/x/tools/cmd/goimports"
                     "github.com/go-delve/delve/cmd/dlv"
+                    "github.com/zmb3/gogetdoc"
                     "github.com/josharian/impl"
                     "github.com/cweill/gotests/..."
                     "github.com/fatih/gomodifytags"
@@ -13,7 +14,8 @@
 
 ;; Do not use the -u flag for gopls, as it will update the dependencies to incompatible versions
 ;; https://github.com/golang/tools/blob/master/gopls/doc/user.md#installation
-(defvar go--tools-no-update '("golang.org/x/tools/gopls@latest"))
+(defvar go--tools-no-update '("golang.org/x/tools/gopls@latest")
+  "All necessary go tools without update the dependencies.")
 
 (defun go-update-tools ()
     "Install or update go tools."
