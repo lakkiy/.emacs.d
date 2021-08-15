@@ -128,7 +128,7 @@
 
 (eat-package elec-pair
   :doc "Automatic parenthesis pairing"
-  :hook (after-init-hook . electric-pair-mode)
+  :hook (prog-mode-hook . electric-pair-mode)
   :init
   (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
 
@@ -136,7 +136,7 @@
   :hook (after-init-hook . save-place-mode))
 
 (eat-package paren
-  :hook (after-init-hook . show-paren-mode)
+  :hook (prog-mode-hook . show-paren-mode)
   :init
   (setq show-paren-when-point-in-periphery t
         show-paren-when-point-inside-paren t))
