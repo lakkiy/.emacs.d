@@ -126,12 +126,13 @@
 
 (eat-package avy
   :straight t
+  :init
+  (global-set-key (kbd "C-'") #'avy-goto-char-2)
   :config
   (setq avy-all-windows nil
         ;; use `C-u' to make avy search for all window
         avy-all-windows-alt t
         avy-background t
-        avy-style 'pre)
-  (global-set-key (kbd "C-'") #'avy-goto-char-2))
+        avy-style 'pre))
 
 (provide 'init-edit)
