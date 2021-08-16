@@ -124,4 +124,14 @@
   (advice-add 'describe-function-1 :after #'elisp-demos-advice-describe-function-1)
   (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update))
 
-(provide 'init-editor)
+(eat-package avy
+  :straight t
+  :config
+  (setq avy-all-windows nil
+        ;; use `C-u' to make avy search for all window
+        avy-all-windows-alt t
+        avy-background t
+        avy-style 'pre)
+  (global-set-key (kbd "C-'") #'avy-goto-char-2))
+
+(provide 'init-edit)

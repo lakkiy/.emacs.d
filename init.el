@@ -46,7 +46,7 @@
 
 (require 'init-straight)
 (require 'init-basic)
-(require 'init-editor)
+(require 'init-edit)
 (require 'init-dired)
 (require 'init-ibuffer)
 (require 'init-meow)
