@@ -12,7 +12,6 @@
 
 (eat-package xref
   :init
-
   (global-unset-key (kbd "C-<down-mouse-1>"))
   (global-set-key (kbd "C-<mouse-1>") #'xref-find-definitions-at-mouse)
   ;; Xref no prompt
@@ -35,20 +34,6 @@
   (advice-add #'xref-pop-marker-stack :after #'recenter-and-pulse)
   :hook
   ((bookmark-after-jump-hook imenu-after-jump-hook) . recenter-and-pulse))
-
-(eat-package dumb-jump
-  :straight t
-  :hook (dump-jump-after-jump-hook . recenter-and-pulse)
-  :init
-  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate t)
-  (setq dumb-jump-quiet t
-        dumb-jump-aggressive t
-        dumb-jump-prefer-search 'rg
-        dumb-jump-selector 'completing-read
-        dumb-jump-disable-obsolate-warning t)
-
-  (global-set-key (kbd "M-g J") 'dumb-jump-go-other-window)
-  (global-set-key (kbd "M-g j") 'dumb-jump-go))
 
 (eat-package tree-sitter
   :straight t
@@ -139,11 +124,6 @@ Fallback to `xref-find-definitions'."
   :straight (devdocs :type git :host github :repo "astoff/devdocs.el")
   :init
   (global-set-key (kbd "C-c b") 'devdocs-lookup))
-
-(eat-package docstr
-  :straight t
-;; FIXME not work with meow in go mode
-  :hook (prog-mode-hook . (lambda () (docstr-mode 1))))
 
 (eat-package flymake
   :commands flymake-mode

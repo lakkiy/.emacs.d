@@ -37,33 +37,6 @@
                         (goto-char (point-min))
                         (when (re-search-forward "^<<<<<<< " nil t)
                           (smerge-mode 1)))))
-  :init
-  (pretty-hydra-define smerge-mode-hydra (:title "Smerge" :color pink :quit-key "q")
-    ("Move"
-     (("n" smerge-next "next")
-      ("p" smerge-prev "previous"))
-     "Keep"
-     (("b" smerge-keep-base "base")
-      ("u" smerge-keep-upper "upper")
-      ("l" smerge-keep-lower "lower")
-      ("a" smerge-keep-all "all")
-      ("RET" smerge-keep-current "current")
-      ("C-m" smerge-keep-current "current"))
-     "Diff"
-     (("<" smerge-diff-base-upper "upper/base")
-      ("=" smerge-diff-upper-lower "upper/lower")
-      (">" smerge-diff-base-lower "upper/lower")
-      ("R" smerge-refine "refine")
-      ("E" smerge-ediff "ediff"))
-     "Other"
-     (("C" smerge-combine-with-next "combine")
-      ("r" smerge-resolve "resolve")
-      ("k" smerge-kill-current "kill")
-      ("ZZ" (lambda ()
-              (interactive)
-              (save-buffer)
-              (bury-buffer))
-       "Save and bury buffer" :exit t))))
   :config
   (define-key smerge-mode-map (kbd "C-c m") #'smerge-mode-hydra/body))
 

@@ -11,6 +11,8 @@
    'org-babel-load-languages
    '((restclient . t))))
 
+(eat-package pretty-hydra :straight t)
+
 (eat-package org
   :init
   (pretty-hydra-define org-hydra (:title "Org Template" :quit-key "q")
@@ -284,13 +286,6 @@ prepended to the element after the #+HEADER: tag."
   :init
   (setq org-agenda-files (list org-directory org-roam-directory))
   (global-set-key (kbd "C-c a") 'org-agenda))
-
-(eat-package org-super-agenda
-  :straight t
-  :hook (org-agenda-mode . org-super-agenda-mode)
-  :init
-  ;; TODO
-  (setq org-super-agenda-groups nil))
 
 (eat-package org-download
   :straight t

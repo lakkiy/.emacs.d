@@ -17,8 +17,6 @@
   :config
   (setq eaf-browser-enable-adblocker "true"))
 
-(eat-package simple-call-tree :straight t)
-
 (eat-package chess
   :straight t
   :init

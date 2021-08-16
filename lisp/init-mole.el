@@ -1,11 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(eat-package leetcode
-  :straight t
-  :commands leetcode
-  :init
-  (setq leetcode-prefer-language "golang"))
-
 (eat-package elfeed
   :straight t
   :commands elfeed

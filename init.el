@@ -46,7 +46,6 @@
 
 (require 'init-straight)
 (require 'init-basic)
-(require 'init-hydra)
 (require 'init-editor)
 (require 'init-dired)
 (require 'init-ibuffer)
@@ -59,7 +58,6 @@
 (require 'init-window)
 (require 'init-telega)
 (require 'init-spcfile)
-(require 'init-lisp)
 (require 'init-mole)
 (require 'init-mail)
 (require 'init-xterm)

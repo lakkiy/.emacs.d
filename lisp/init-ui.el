@@ -40,9 +40,6 @@
 (eat-package less-theme
   :straight (less-theme :type git :host github :repo "nobiot/less-theme"))
 
-;; TODO
-(eat-package nyan-mode :straight t)
-
 (eat-package rainbow-mode
   :straight t
   :commands rainbow-mode)
