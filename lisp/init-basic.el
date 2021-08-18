@@ -181,6 +181,7 @@
 (modify-coding-system-alist 'process "*" 'utf-8)
 
 (setq-default
+ initial-major-mode 'text-mode
  inhibit-compacting-font-caches t                   ; Don’t compact font caches during GC.
  delete-by-moving-to-trash t                        ; Deleting files go to OS's trash folder
  ring-bell-function 'ignore                         ; Disable osx bell ring

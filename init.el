@@ -35,7 +35,6 @@
               (insert (format "Today is %s .\n"
                               (format-time-string "%A %Y.%-m.%-d")))
               (insert ";;\n")
-              (lisp-interaction-mode)
               (goto-char (point-max)))))
 
 ;; Load `custom-file'
