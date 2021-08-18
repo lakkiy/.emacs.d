@@ -11,6 +11,7 @@
   (custom-set-faces
    '(aw-leading-char-face ((t (:inherit font-lock-keyword-face :bold t :height 2.0))))))
 
+;; TODO show `eyebrowse-mode-line-indicator'
 (eat-package eyebrowse
   :straight t
   :hook (after-init-hook . eyebrowse-mode)

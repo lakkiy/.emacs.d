@@ -111,8 +111,7 @@
          (rhs '((:eval (propertize (+smart-file-name-cached) 'face 'bold))
                 " "
                 (:eval mode-name)
-                (vc-mode vc-mode)
-                (:eval (eyebrowse-mode-line-indicator))))
+                (vc-mode vc-mode)))
          (ww (window-width))
          (lhs-str (format-mode-line lhs))
          (rhs-str (format-mode-line rhs))

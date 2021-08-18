@@ -71,6 +71,8 @@
 
 (eat-package dired
   :init
+  ;; if there is a dired buffer displayed in the next window, use its
+  ;; current subdir, instead of the current subdir of this dired buffer
   (setq dired-dwim-target t))
 
 (provide 'init-dired)
