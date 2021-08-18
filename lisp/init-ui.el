@@ -98,20 +98,77 @@
                         'vertical-border
                         (make-glyph-code ?┃))
 
+;; TODO different state use different face
+(defface +modeline-meow-face
+  '((((background light))
+     :foreground "#00aca9" :bold t)
+    (t
+     :foreground "#00ced1" :bold t))
+  "Face for meow state.")
+
+(defface +modeline-path-face
+  '((((background light))
+     :foreground "#ac00ac" :italic t)
+    (t
+     :foreground "#cd96cd" :italic t))
+  "Face for file path.")
+
+(defface +modeline-vc-face
+  '((((background light))
+     :foreground "#de0279" :bold t)
+    (t
+     :foreground "#ee6aa7" :bold t))
+  "Face for VCS info.")
+
+(defface +modeline-location-face
+  '((((background light))
+     :foreground "#767676" :bold t)
+    (t
+     :foreground "#999999" :bold t))
+  "Face for location.")
+
+(defface +modeline-mode-face
+  '((((background light))
+     :foreground "#4a7600")
+    (t
+     :foreground "#96d21e"))
+  "Face for major mode info.")
+
+(defun +modeline-vc ()
+  "Return the VCS info."
+  (if (and vc-mode buffer-file-name)
+      (progn
+        (let* ((backend (vc-backend buffer-file-name))
+               (state (vc-state buffer-file-name backend)))
+          (concat
+           (pcase state
+             ((or 'up-to-date 'edited) "@")
+             ((or 'removed 'conflict 'unregistered) "!")
+             ((or 'needs-update 'needs-merge) "^")
+             ('added "+")
+             ((pred stringp) (concat state ":"))
+             (_ "?"))
+           (substring vc-mode (+ (if (eq backend 'Hg) 2 3) 2)))))
+    ""))
+
+;; TODO show window message or eyebrowse, change all other to right side
+;; TODO add paded to :eval
 (defun +format-mode-line ()
   ;; TODO use -*-FZSuXinShiLiuKaiS-R-GB-normal-normal-normal-*-*-*-*-*-p-0-iso10646-1
   ;; to show flymake or flycheck errors count in mode line
-  (let* ((lhs '((:eval (meow-indicator))
+  (let* ((lhs '((:eval (propertize (meow-indicator) 'face '+modeline-meow-face))
                 (:eval (rime-lighter))
-                " Row %l Col %C"
+                (:eval (propertize " Row %l Col %C %%p" 'face '+modeline-location-face))
                 ;; use 危
                 ;; (:eval (when (bound-and-true-p flymake-mode)
                 ;;          flymake-mode-line-format))
                 ))
-         (rhs '((:eval (propertize (+smart-file-name-cached) 'face 'bold))
+         (rhs '((:eval (propertize (+smart-file-name-cached) 'face '+modeline-path-face))
                 " "
-                (:eval mode-name)
-                (vc-mode vc-mode)))
+                ;; FIXME Elisp/d or Elisp/l doesn't show
+                (:eval (propertize mode-name 'face '+modeline-mode-face))
+                " "
+                (:eval (propertize (+modeline-vc) 'face '+modeline-vc-face))))
          (ww (window-width))
          (lhs-str (format-mode-line lhs))
          (rhs-str (format-mode-line rhs))
