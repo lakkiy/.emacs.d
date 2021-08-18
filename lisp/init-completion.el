@@ -95,11 +95,11 @@
 
 (eat-package embark
   :straight t
-  :after vertico
   :init
+  (with-eval-after-load "vertico"
+    (define-key vertico-map (kbd "C-c C-o") 'embark-export)
+    (define-key vertico-map (kbd "C-c C-c") 'embark-act))
   :config
-  (define-key vertico-map (kbd "C-c C-o") 'embark-export)
-  (define-key vertico-map (kbd "C-c C-c") 'embark-act)
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
