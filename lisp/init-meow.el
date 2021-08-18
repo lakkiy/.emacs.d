@@ -5,6 +5,8 @@
   :hook
   (after-init-hook . (lambda ()
                        (meow-global-mode 1)))
+  (term-mode-hook . (lambda ()
+                      (meow-mode -1)))
   :config
   ;; make Meow usable in TUI Emacs
   (meow-esc-mode 1)
@@ -33,7 +35,7 @@
      '("k" . meow-prev))
     (meow-leader-define-key
      ;; completion
-     '("SPC" . execute-extended-command)
+     ;; '("SPC" . execute-extended-command) ;; use `SPC-m-x' instead
      '("i" . consult-imenu)
      '("I" . imenu-list-smart-toggle)
      '("b" . switch-to-buffer)
