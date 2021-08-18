@@ -4,7 +4,6 @@
   :straight t
   :hook
   (after-init-hook . (lambda ()
-                       (require 'meow)
                        (meow-global-mode 1)))
   :config
   ;; make Meow usable in TUI Emacs

@@ -59,6 +59,7 @@
 (require 'init-spcfile)
 (require 'init-mole)
 (require 'init-mail)
-(require 'init-xterm)
+(unless window-system
+  (require 'init-xterm))
 (require 'init-dev)
 (require 'init-fun)

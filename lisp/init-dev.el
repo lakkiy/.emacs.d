@@ -127,7 +127,7 @@ Fallback to `xref-find-definitions'."
 
 (eat-package flymake
   :commands flymake-mode
-  :after prog-mode
+  :after go-mode
   :config
   (define-key flymake-mode-map (kbd "C-c C-b") 'flymake-show-diagnostics-buffer)
   (define-key flymake-mode-map (kbd "M-n") 'flymake-goto-next-error)
