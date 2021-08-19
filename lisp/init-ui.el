@@ -149,7 +149,7 @@
          (rhs '((:eval (propertize (+smart-file-name-cached) 'face '+modeline-path-face))
                 " "
                 ;; FIXME Elisp/d or Elisp/l doesn't show
-                (:eval (propertize mode-name 'face '+modeline-mode-face))
+                mode-name
                 " "
                 (:eval (propertize vc-mode 'face '+modeline-vc-face))))
          (ww (window-width))
