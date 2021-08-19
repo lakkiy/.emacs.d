@@ -150,7 +150,6 @@
                 " "
                 ;; FIXME Elisp/d or Elisp/l doesn't show
                 mode-name
-                " "
                 (:eval (propertize vc-mode 'face '+modeline-vc-face))))
          (ww (window-width))
          (lhs-str (format-mode-line lhs))
