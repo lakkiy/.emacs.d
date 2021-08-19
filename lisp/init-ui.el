@@ -134,23 +134,6 @@
      :foreground "#96d21e"))
   "Face for major mode info.")
 
-(defun +modeline-vc ()
-  "Return the VCS info."
-  (if (and vc-mode buffer-file-name)
-      (progn
-        (let* ((backend (vc-backend buffer-file-name))
-               (state (vc-state buffer-file-name backend)))
-          (concat
-           (pcase state
-             ((or 'up-to-date 'edited) "@")
-             ((or 'removed 'conflict 'unregistered) "!")
-             ((or 'needs-update 'needs-merge) "^")
-             ('added "+")
-             ((pred stringp) (concat state ":"))
-             (_ "?"))
-           (substring vc-mode (+ (if (eq backend 'Hg) 2 3) 2)))))
-    ""))
-
 ;; TODO show window message or eyebrowse, change all other to right side
 ;; TODO add paded to :eval
 (defun +format-mode-line ()
@@ -168,7 +151,7 @@
                 ;; FIXME Elisp/d or Elisp/l doesn't show
                 (:eval (propertize mode-name 'face '+modeline-mode-face))
                 " "
-                (:eval (propertize (+modeline-vc) 'face '+modeline-vc-face))))
+                (:eval (propertize vc-mode 'face '+modeline-vc-face))))
          (ww (window-width))
          (lhs-str (format-mode-line lhs))
          (rhs-str (format-mode-line rhs))

@@ -4,17 +4,6 @@
   :straight t
   :commands magit)
 
-(eat-package magit-todos
-  :straight t
-  :init
-  (setq magit-todos-nice (if (executable-find "nice") t nil))
-  (with-eval-after-load "magit"
-    (let ((inhibit-message t))
-      (magit-todos-mode 1)))
-  :config
-  (transient-append-suffix 'magit-status-jump '(0 0 -1)
-    '("T " "Todos" magit-todos-jump-to-todos)))
-
 (eat-package diff-hl
   :straight t
   :commands diff-hl-mode
