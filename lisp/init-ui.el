@@ -136,21 +136,21 @@
 
 ;; TODO show window message or eyebrowse, change all other to right side
 ;; TODO add paded to :eval
+;; TODO use diff face in active modeline and deactive modeline
 (defun +format-mode-line ()
   ;; TODO use -*-FZSuXinShiLiuKaiS-R-GB-normal-normal-normal-*-*-*-*-*-p-0-iso10646-1
   ;; to show flymake or flycheck errors count in mode line
-  (let* ((lhs '((:eval (propertize (meow-indicator) 'face '+modeline-meow-face))
+  (let* ((lhs '((:eval (meow-indicator))
                 (:eval (rime-lighter))
-                (:eval (propertize " Row %l Col %C %%p" 'face '+modeline-location-face))
+                " Row %l Col %C %%p"
                 ;; use 危
                 ;; (:eval (when (bound-and-true-p flymake-mode)
                 ;;          flymake-mode-line-format))
                 ))
-         (rhs '((:eval (propertize (+smart-file-name-cached) 'face '+modeline-path-face))
+         (rhs '((:eval (+smart-file-name-cached))
                 " "
-                ;; FIXME Elisp/d or Elisp/l doesn't show
-                mode-name
-                (:eval (propertize vc-mode 'face '+modeline-vc-face))))
+                (:eval mode-name)
+                (vc-mode vc-mode)))
          (ww (window-width))
          (lhs-str (format-mode-line lhs))
          (rhs-str (format-mode-line rhs))
