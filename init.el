@@ -43,6 +43,10 @@
            (file-readable-p custom-file))
   (load custom-file :no-error :no-message))
 
+;; Shut up!
+(defun display-startup-echo-area-message()
+  (message nil))
+
 (require 'init-straight)
 (require 'init-basic)
 (require 'init-edit)
