@@ -41,7 +41,7 @@
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (and (file-exists-p custom-file)
            (file-readable-p custom-file))
-  (load custom-file))
+  (load custom-file :no-error :no-message))
 
 (require 'init-straight)
 (require 'init-basic)
