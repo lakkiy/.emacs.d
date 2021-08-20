@@ -37,7 +37,6 @@
   (benchmark-init :type git :host github :repo "404cn/benchmark-init-el")
   :init
   (when +enable-benchmark
-    (straight-use-package 'benchmark-init)
     (require 'benchmark-init)
     ;; To disable collection of benchmark data after init is done.
     (add-hook 'after-init-hook 'benchmark-init/deactivate)))
