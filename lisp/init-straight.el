@@ -22,12 +22,6 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-(defun +set-github-mirror (oldfunc &rest args)
-  (let ((url (apply oldfunc args)))
-    (replace-regexp-in-string (rx (group "github.com"))
-                              "github.com.cnpmjs.org" url nil nil 1)))
-(advice-add 'straight-vc-git--encode-url :around #'+set-github-mirror)
-
 (require 'eat-package)
 
 (defvar +enable-benchmark nil)
