@@ -147,7 +147,7 @@
                 ;; (:eval (when (bound-and-true-p flymake-mode)
                 ;;          flymake-mode-line-format))
                 ))
-         (rhs '((:eval (+smart-file-name-cached))
+         (rhs '((:eval (propertize (+smart-file-name-cached) 'face 'mode-line-buffer-id))
                 " "
                 (:eval mode-name)
                 (vc-mode vc-mode)))
