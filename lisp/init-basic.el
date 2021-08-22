@@ -229,11 +229,18 @@
  suggest-key-bindings nil                           ; disable "You can run the command balabala..."
  )
 
-(eat-package ispell
-  :doc "install hunspell and hunspell-en_US on your system to use"
+;; install aspell
+(eat-package flyspell
+  :hook
+  ((text-mode-hook outline-mode-hook) . flyspell-mode)
+  (prog-mode-hook . (flyspell-prog-mode))
+  (flyspell-mode-hook . (lambda ()
+                          (dolist (key '("C-;" "C-," "C-."))
+                            (define-key flyspell-mode-map (kbd key) nil))))
   :init
-  (setq  ispell-dictionary "en_US"
-         ispell-program-name "hunspell"
-         ispell-personal-dictionary (expand-file-name ".hunspell_dict.txt" user-emacs-directory)))
+  ;; TODO disable minibuffer message of `ispell-init-process' on startup
+  (setq flyspell-issue-message-flag nil
+        ispell-program-name "aspell"
+        ispell-extra-args '("--sug-mode=ultra" "--lang=en_US" "--run-together")))
 
 (provide 'init-basic)
