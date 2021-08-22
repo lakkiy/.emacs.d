@@ -301,4 +301,11 @@ prepended to the element after the #+HEADER: tag."
                                              (sys/linuxp "flameshot gui --raw > %s")
                                              (t ""))))
 
+(eat-package org-media-note
+  :straight
+  (org-media-note :type git :host github :repo "yuchen-lea/org-media-note")
+  :hook (org-mode-hook . org-media-note-mode)
+  :init
+  (setq org-media-note-screenshot-image-dir "~/Dropbox/org/media-note-imgs/"))
+
 (provide 'init-org)
