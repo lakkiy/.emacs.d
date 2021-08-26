@@ -102,8 +102,11 @@
         ;; do not cache test
         go-test-args "-count=1")
   :config
-  (define-key go-mode-map (kbd "C-c t m") #'go-test-current-file)
-  (define-key go-mode-map (kbd "C-c t .") #'go-test-current-test))
+  (define-key go-mode-map (kbd "C-c t f") #'go-test-current-file)
+  (define-key go-mode-map (kbd "C-c t t") #'go-test-current-test)
+  (define-key go-mode-map (kbd "C-c t j") #'go-test-current-project)
+  (define-key go-mode-map (kbd "C-c t b") #'go-test-current-benchmark)
+  (define-key go-mode-map (kbd "C-c t c") #'go-test-current-coverage))
 
 (eat-package go-gen-test
   :straight t
@@ -117,8 +120,8 @@
   :init
   (setq go-tag-args (list "-transform" "camelcase"))
   :config
-  (define-key go-mode-map (kbd "C-c t t") #'go-tag-add)
-  (define-key go-mode-map (kbd "C-c t T") #'go-tag-remove))
+  (define-key go-mode-map (kbd "C-c t a") #'go-tag-add)
+  (define-key go-mode-map (kbd "C-c t r") #'go-tag-remove))
 
 (eat-package go-fill-struct :straight t :after go-mode)
 (eat-package go-guru :straight t :after go-mode)
