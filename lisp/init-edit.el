@@ -68,6 +68,8 @@
           "牛津英汉双解美化版"
           "21世纪双语科技词典"
           "quick_eng-zh_CN"))
+  ;; FIXME if region not in use and then choose symbol or word on cursor
+  ;; if it's black space then prompt to translate
   (defun sdcv-dwim (&optional start end)
     "If word is marked, translate it or translate input word"
     (interactive "r")

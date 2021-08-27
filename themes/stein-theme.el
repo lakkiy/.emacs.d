@@ -14,9 +14,9 @@
 (deftheme stein)
 
 (let*
-    ((stein-bg      "#EDEDED")
+    ((stein-bg      "#E3e3e3")
      (stein-current "#FAFAFA")
-     (stein-fg      "#4a5868")
+     (stein-fg      "#101010")
      (stein-comment "#595959")
      (stein-cyan    "#005555")
      (stein-green   "#24721f")
