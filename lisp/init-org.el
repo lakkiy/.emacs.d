@@ -315,7 +315,7 @@ prepended to the element after the #+HEADER: tag."
 
 (eat-package olivetti
   :straight t
-  :init (setq-default olivetti-body-width 120)
+  :init (setq-default olivetti-body-width 74)
   :commands olivetti-mode)
 
 (defvar eat-prose-mode-map
