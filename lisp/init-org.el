@@ -15,7 +15,6 @@
 (eat-package pretty-hydra :straight t)
 
 (eat-package org
-  :hook (org-mode-hook . visual-line-mode)
   :init
   (setq org-directory "~/Dropbox/org")
   :config
