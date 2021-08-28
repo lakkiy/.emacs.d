@@ -308,4 +308,13 @@ prepended to the element after the #+HEADER: tag."
   :init
   (setq org-media-note-screenshot-image-dir "~/Dropbox/org/media-note-imgs/"))
 
+(eat-package toc-org
+  :straight t
+  :commands toc-org-enable toc-org-insert-toc)
+
+(eat-package olivetti
+  :straight t
+  :init (setq-default olivetti-body-width 74)
+  :commands olivetti-mode)
+
 (provide 'init-org)
