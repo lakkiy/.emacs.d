@@ -76,6 +76,7 @@ prepended to the element after the #+HEADER: tag."
       ("p" (hot-expand "<s" "perl") "perl")
       ("r" (hot-expand "<s" "ruby") "ruby")
       ("S" (hot-expand "<s" "sh") "sh")
+      ("j" (hot-expand "<s" "js") "javescript")
       ("g" (hot-expand "<s" "go :imports '\(\"fmt\"\)") "golang"))
      "Misc"
      (("u" (hot-expand "<s" "plantuml :file CHANGE.png") "plantuml")
