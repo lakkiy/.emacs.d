@@ -314,7 +314,38 @@ prepended to the element after the #+HEADER: tag."
 
 (eat-package olivetti
   :straight t
-  :init (setq-default olivetti-body-width 74)
+  :init (setq-default olivetti-body-width 120)
   :commands olivetti-mode)
+
+(defvar eat-prose-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-a") #'beginning-of-visual-line)
+    (define-key map (kbd "C-e") #'end-of-visual-line)
+    map)
+  "Mode map for ‘eat-prose-mode’.")
+
+(define-minor-mode eat-prose-mode
+  "A mode that optimizes for prose editing."
+  :lighter " PROSE"
+  :keymap eat-prose-mode-map
+  (if eat-prose-mode
+      (progn
+        (variable-pitch-mode)
+        (olivetti-mode)
+        (electric-pair-local-mode -1)
+        (electric-quote-local-mode)
+        (setq-local cursor-type 'bar)
+        (setq-local line-spacing 0.15)
+        (company-mode -1)
+        (setq-local whitespace-style '(tab-mark))
+        (whitespace-mode))
+    (whitespace-mode -1)
+    (company-mode)
+    (variable-pitch-mode -1)
+    (olivetti-mode -1)
+    (electric-pair-local-mode)
+    (electric-quote-local-mode -1)
+    (kill-local-variable 'line-spacing)
+    (kill-local-variable 'cursor-type)))
 
 (provide 'init-org)
