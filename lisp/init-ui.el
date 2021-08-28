@@ -37,9 +37,6 @@
 ;; Linux specific
 (setq x-underline-at-descent-line t)
 
-(eat-package less-theme
-  :straight (less-theme :type git :host github :repo "nobiot/less-theme"))
-
 (eat-package rainbow-mode
   :straight t
   :commands rainbow-mode)
@@ -97,42 +94,6 @@
 (set-display-table-slot standard-display-table
                         'vertical-border
                         (make-glyph-code ?┃))
-
-;; TODO different state use different face
-(defface +modeline-meow-face
-  '((((background light))
-     :foreground "#00aca9" :bold t)
-    (t
-     :foreground "#00ced1" :bold t))
-  "Face for meow state.")
-
-(defface +modeline-path-face
-  '((((background light))
-     :foreground "#ac00ac" :italic t)
-    (t
-     :foreground "#cd96cd" :italic t))
-  "Face for file path.")
-
-(defface +modeline-vc-face
-  '((((background light))
-     :foreground "#de0279" :bold t)
-    (t
-     :foreground "#ee6aa7" :bold t))
-  "Face for VCS info.")
-
-(defface +modeline-location-face
-  '((((background light))
-     :foreground "#767676" :bold t)
-    (t
-     :foreground "#999999" :bold t))
-  "Face for location.")
-
-(defface +modeline-mode-face
-  '((((background light))
-     :foreground "#4a7600")
-    (t
-     :foreground "#96d21e"))
-  "Face for major mode info.")
 
 ;; TODO show window message or eyebrowse, change all other to right side
 ;; TODO add paded to :eval
