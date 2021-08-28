@@ -18,13 +18,6 @@
  'custom-default
  'highlight-fg-only-2
  'highlight-fg-only-1
- 'red-bg-hl
- 'red-bg
- 'yellow-bg-hl
- 'yellow-bg
- 'green-bg-hl
- 'green-bg
- 'comp-scroll-bar
  'comp-mouse
  'selection-common
  'comp-common
@@ -40,7 +33,8 @@
     (let* ((bg        "#fefefe")
            ;; lighter than region
            (bg-alt    (darken bg 0.05))
-           (fg        "#2b3239")
+           ;; (fg        "#2b3239")
+           (fg        "#080808")
            (fg-weak   "#9a9ea2")
            ;; (fg-strong "#0e0e0e")
            (blue1     "#0076D6") ; fg
@@ -50,13 +44,14 @@
            (red       "#E04E49")
            (yellow    "#987816")
            (violet1   "#b751b6") ; bg
-           (violet2   "#A8289C") ; fg 
+           (violet2   "#A8289C") ; fg
            ;; Note that this is not a cons cell.
            (tty       '((type nil))))
       `(;; builtin faces
         (default     (nil ,fg ,bg))
         (region      (nil nil ,(overlay bg violet1 0.1)))
-        (highlight   (nil ,bg ,blue2))
+        ;; (highlight   (nil ,bg ,blue2))
+        (highlight   (nil nil ,(overlay bg blue1 0.1)))
         (cursor      (nil "white" "black"))
         (link        (nil ,blue1 nil nil))
         (match       (nil ,green nil nil bold))
@@ -69,9 +64,6 @@
         (vertical-border (nil ,bg-alt ,bg-alt) nil ,tty)
         (link-visited    (link ,violet2))
         (block       (nil nil ,bg-alt))
-
-        (variable-pitch () (:family "Charter" :height 155))
-        (fixed-pitch () (:family "SF Mono" :height 130))
 
         (vertical-border     (nil nil "black"))
         (lazy-highlight      (nil "black" nil nil bold))
@@ -91,7 +83,6 @@
         
         ;; see also builin-config.el (Customize) where I increase line
         ;; spacing and default face.
-        (custom-default        () (:family "SF Pro Text" :height 140))
         (custom-button
          (custom-default ,(brighten fg 0.2) ,bg-alt)
          (:box (:line-width 3 :color ,bg-alt)))
@@ -132,7 +123,7 @@
         (font-lock-type-face                 (nil ,yellow))
         (font-lock-variable-name-face        (nil ,violet2))
         (font-lock-warning-face              (warning))
-        (font-lock-negation-char-face        (nil ,blue2))
+        (font-lock-negation-char-face        (warning))
         (font-lock-preprocessor-face         (nil ,blue2))
         (font-lock-preprocessor-char-face    (nil ,blue2))
         (font-lock-regexp-grouping-backslash (nil ,blue2))
@@ -147,9 +138,11 @@
         (comp-common       (nil ,violet2))
         (selection-common  (current-selection ,bg))
         (comp-mouse        (nil ,bg ,violet1))
+
+        (completions-common-part (nil ,bg ,orange))
         
         ;; package faces
-        
+
         (company-tooltip                     (tooltip))
         (company-tooltip-annotation          (company-tooltip))
         (company-tooltip-annotation-selection
@@ -168,16 +161,16 @@
         (company-preview-common              (company-preview))
         (company-preview-search              (company-preview))
         
-        (ivy-current-match                   (current-selection))
-        (ivy-minibuffer-match-face-1         (nil ,bg ,green))
-        (ivy-minibuffer-match-face-2         (nil ,bg ,orange))
-        (ivy-minibuffer-match-face-3         (nil ,bg ,orange))
-        (ivy-minibuffer-match-face-4         (nil ,bg ,orange))
-        (ivy-minibuffer-match-highlight      (ivy-current-match))
-        (ivy-virtual                         (default))
-        (ivy-subdir                          (default))
-        (ivy-remote                          (default))
-        (ivy-org                             (default))
+        ;; (ivy-current-match                   (current-selection))
+        ;; (ivy-minibuffer-match-face-1         (nil ,bg ,green))
+        ;; (ivy-minibuffer-match-face-2         (nil ,bg ,orange))
+        ;; (ivy-minibuffer-match-face-3         (nil ,bg ,orange))
+        ;; (ivy-minibuffer-match-face-4         (nil ,bg ,orange))
+        ;; (ivy-minibuffer-match-highlight      (ivy-current-match))
+        ;; (ivy-virtual                         (default))
+        ;; (ivy-subdir                          (default))
+        ;; (ivy-remote                          (default))
+        ;; (ivy-org                             (default))
 
         (magit-heading-highlight (nil nil ,bg-alt))
         (magit-heading-selection (nil ,bg ,(overlay bg orange 0.8)))
@@ -341,7 +334,14 @@
 
         (rime-default-face (tooltip) (:height 150))
         (rime-highlight-candidate-face ((bold rime-default-face)))
-        (rime-code-face (rime-default-face))))))
+        (rime-code-face (rime-default-face))
+
+        (selectrum-prescient-primary-highlight (nil ,bg ,orange))
+        (selectrum-prescient-secondary-highlight (nil ,bg ,green))
+
+        (consult-bookmark (consult-buffer))
+        (consult-file (consult-file))
+        ))))
 
 (provide-theme 'light)
 
