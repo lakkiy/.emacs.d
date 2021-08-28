@@ -74,15 +74,6 @@
         spacemacs-theme-org-bold t
         spacemacs-theme-underline-parens t))
 
-(eat-package modus-themes
-  :straight t
-  :init
-  (setq modus-themes-slanted-constructs t
-        modus-themes-bold-constructs t
-        modus-themes-syntax 'green-strings
-        modus-themes-no-mixed-fonts t
-        modus-themes-paren-match 'intense-bold))
-
 (eat-package kaolin-themes
   :straight t
   :init
