@@ -170,7 +170,9 @@
     (setq-default mode-line-format '(:eval (+format-mode-line))))
 
   (when (not (display-graphic-p))
-    (load-theme +theme-tui t))
+    (load-theme +theme-tui t)
+    ;; Use terminal background color
+    (set-face-background 'default "undefined"))
 
   (when (display-graphic-p)
     (load-theme +theme t)
