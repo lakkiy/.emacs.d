@@ -1,17 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(eat-package restclient
-  :straight t
-  :commands restclient-mode)
-
-(eat-package ob-restclient
-  :straight t
-  :after org
-  :config
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((restclient . t))))
-
 (eat-package pretty-hydra :straight t)
 
 (eat-package org
@@ -95,42 +83,17 @@ prepended to the element after the #+HEADER: tag."
                                            (org-hydra/body)
                                          (self-insert-command 1)))))
 
-(eat-package ob-go
-  :straight t
-  :after org)
-
 (when (display-graphic-p)
   (eat-package valign
     :straight t
     :after org
     :hook (org-mode-hook . valign-mode)))
 
-(eat-package doct
-  :straight t
-  :doc "Declarative Org Capture Templates"
-  :commandes doct)
-
-(eat-package org-journal
-  :straight t
-  :init
-  (setq org-journal-file-type 'yearly
-        org-journal-dir (concat org-directory "/journal")
-        org-journal-file-format "%Y"
-        org-journal-date-format "%Y 年 %m 月 %d 日 %A")
-  (defun org-journal-find-location ()
-    ;; Open today's journal, but specify a non-nil prefix argument in order to
-    ;; inhibit inserting the heading; org-capture will insert the heading.
-    (org-journal-new-entry t)
-    ;; Position point on the journal's top-level heading so that org-capture
-    ;; will add the new entry as a child entry.
-    (goto-char (point-min))))
-
 (eat-package org-capture
   :init
   (global-set-key (kbd "C-c c") 'org-capture)
   (defun get-year-and-month ()
     (list (format-time-string "%Y年") (format-time-string "%m月")))
-
   (defun find-month-tree ()
     (let* ((path (get-year-and-month))
            (level 1)
@@ -151,79 +114,18 @@ prepended to the element after the #+HEADER: tag."
         (setq level (1+ level))
         (setq end (save-excursion (org-end-of-subtree t t))))
       (org-end-of-subtree)))
-
   (setq org-default-notes-file (concat org-directory "/default-notes.org")
         org-capture-templates
-        (doct '(("Work" :keys "w" :file "~/Dropbox/org/Work.org"
-                 :datetree t
-                 :tree-type week
-                 :template ("* %^{Description}"
-                            ":PROPERITIES:"
-                            ":Created: %T" ;; used to create weekly report
-                            ":Project: "
-                            ":Branch: "
-                            ":Jira: "
-                            ":END:"))
-                ("Journal" :keys "j"
-                 :function (lambda () (org-journal-find-location))
-                 :clock-in t :clock-resume t
-                 :template ("* %(format-time-string org-journal-time-format) %^{Title}"
-                            "  %i%?"))
-                ("Billing" :keys "b" :type plain :file "~/Dropbox/org/Billing.org"
-                 :function (lambda () (find-month-tree))
-                 :template (" | %U | %^{Category} | %^{Description} | %^{Amount} |"))
-                ("Schedule" :keys "s" :file "~/Dropbox/org/Schedule.org"
-                 :datetree t
-                 :template ("* %^{Description}"
-                            ":PROPERTIES:"
-                            ":Created: %U"
-                            ":END:"))
-                ("Web site" :keys "e" :file "~/Dropbox/org/Notes.org"
-                 :headline "Inbox"
-                 :template ("* %^{Title} :website:"
-                            ":PROPERTIES:"
-                            ":Created: %U"
-                            ":END:"
-                            "%?%:initial"))
-                (:group "All Notes"
-                        :file "~/Dropbox/org/Notes.org"
-                        :template ("* %^{Description}"
-                                   ":PROPERTIES:"
-                                   ":Created: %U"
-                                   ":END:"
-                                   "%?")
-                        :children
-                        (("Notes" :keys "n" :olp ("Notes")
-                          :datetree t)
-                         ("Exercise" :keys "e" :olp ("Exercise"))
-                         ("Research" :keys "n" :olp ("Research")
-                          :clock-in t :clock-resume t :prepend t)
-                         ("Computer" :keys "c"
-                          :prepend t
-                          :children
-                          (("Emacs" :keys "e" :olp ("Computer" "Emacs"))
-                           ("Linux" :keys "l" :olp ("Computer" "Linux"))
-                           ("Golang" :keys "g" :olp ("Computer" "Golang"))
-                           ("Python" :keys "p" :olp ("Computer" "Python"))
-                           ("Windows" :keys "w" :olp ("Computer" "Windows"))))))
-                ("Tasks" :keys "t" :file "~/Dropbox/org/Tasks.org"
-                 :template ("* %{todo-state} %^{Description}"
-                            ":PROPERTIES:"
-                            ":Created: %U"
-                            ":END:")
-                 :children
-                 (("Computer"
-                   :keys "c" :headline "Computer" :todo-state "TODO")
-                  ("Food"
-                   :keys "f" :headline "Food" :todo-state "TODO")
-                  ("Research"
-                   :keys "r" :headline "Research" :todo-state "TODO")
-                  ("Idea"
-                   :keys "i" :headline "Idea" :todo-state "TODO")
-                  ("Not grouped"
-                   :keys "n" :headline "Not grouped" :todo-state "TODO")
-                  ("Books"
-                   :keys "b" :headline "Book" :todo-state "TODO")))))))
+        `(("b" "Billing" plain (file+function "~/Dropbox/org/Billing.org" (lambda () (find-month-tree)))
+           " | %U | %^{Category} | %^{Description} | %^{Amount} |")
+          ("w" "Work" entry (file+olp+datetree "~/Dropbox/org/Work.org")
+           "* %^{Title}\n:PROPERITIES:\n:Created: %T\n:END:" :tree-type week)
+          ("j" "Journal" entry (file+olp+datetree "~/Dropbox/org/Journal.org")
+           "*  %^{Title} %?\n%U\n%a\n" :clock-in t :clock-resume t)
+          ("o" "Book" entry (file+olp+datetree "~/Dropbox/org/Book.org")
+	       "* Topic: %^{Description}  %^g %? Added: %U")
+          ("n" "Note" entry (file "~/Dropbox/org/Note.org")
+           "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t))))
 
 (eat-package easy-hugo
   :straight t
@@ -252,18 +154,16 @@ prepended to the element after the #+HEADER: tag."
                  (window-parameters . ((no-other-window . t)
                                        (no-delete-other-windows . t)))))
   (setq org-roam-v2-ack t
-        org-roam-capture-templates '(("d" "default" plain "* %?"
-                                      :if-new (file+head "%<Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags:")
-                                      :clock-in t
-                                      :clock-resume t
-                                      :unnarrowed t)
-                                     ("l" "leetcode" plain "%?"
-                                      :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
-                                                             "#+title: ${title}\n#+filetags:"
-                                                             ("References\n* Description\n* Code\n* Time & Space\n* Related & Recommend"))
-                                      :clock-in t
-                                      :clock-resume t
-                                      :unnarrowed t))
+        org-roam-capture-templates
+        '(("d" "default" plain "* %?"
+           :if-new (file+head "%<Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags:")
+           :clock-in t :clock-resume t :unnarrowed t)
+          ("l" "leetcode" plain "%?"
+           :if-new (file+head+olp
+                    "%<%Y%m%d%H%M%S>-${slug}.org"
+                    "#+title: ${title}\n#+filetags:"
+                    ("References\n* Description\n* Code\n* Time & Space\n* Related & Recommend"))
+           :clock-in t :clock-resume t :unnarrowed t))
         org-roam-directory (let ((p (expand-file-name (concat org-directory "/roam"))))
                              (unless (file-directory-p p) (make-directory p))
                              p))
@@ -346,5 +246,21 @@ prepended to the element after the #+HEADER: tag."
     (electric-quote-local-mode -1)
     (kill-local-variable 'line-spacing)
     (kill-local-variable 'cursor-type)))
+
+(eat-package restclient
+  :straight t
+  :commands restclient-mode)
+
+(eat-package ob-restclient
+  :straight t
+  :after org
+  :config
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((restclient . t))))
+
+(eat-package ob-go
+  :straight t
+  :after org)
 
 (provide 'init-org)
