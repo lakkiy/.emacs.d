@@ -68,15 +68,16 @@
           "牛津英汉双解美化版"
           "21世纪双语科技词典"
           "quick_eng-zh_CN"))
-  ;; FIXME if region not in use and then choose symbol or word on cursor
-  ;; if it's black space then prompt to translate
-  (defun sdcv-dwim (&optional start end)
-    "If word is marked, translate it or translate input word"
-    (interactive "r")
-    (if (use-region-p)
-        (let ((regionp (buffer-substring start end)))
-          (sdcv-search-input regionp))
-      (sdcv-search-input)))
+  (defun sdcv-dwim (word)
+    "Translate WORD."
+    (interactive (let* ((default (if (use-region-p)
+                                     (buffer-substring-no-properties (region-beginning) (region-end))
+                                   (thing-at-point 'word t)))
+                        (prompt (if (stringp default)
+                                    (format "Search Word (default \"%s\"): " default)
+                                  "Search Word: ")))
+                   (list (read-string prompt nil nil default))))
+    (sdcv-search-input word))
   (global-set-key (kbd "C-c Y") #'sdcv-dwim))
 
 (eat-package exec-path-from-shell
