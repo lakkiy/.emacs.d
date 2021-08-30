@@ -124,7 +124,7 @@ prepended to the element after the #+HEADER: tag."
            "*  %^{Title} %?\n%U\n%a\n" :clock-in t :clock-resume t)
           ("o" "Book" entry (file+olp+datetree "~/Dropbox/org/Book.org")
 	       "* Topic: %^{Description}  %^g %? Added: %U")
-          ("n" "Note" entry (file "~/Dropbox/org/Note.org")
+          ("n" "Note" entry (file "~/Dropbox/org/Notes.org")
            "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t))))
 
 (eat-package easy-hugo
