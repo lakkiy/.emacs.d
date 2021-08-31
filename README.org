@@ -7,3 +7,15 @@ Replace =github.com= to =github.com.cnpmjs.org= in =straight.el=
                                 "github.com.cnpmjs.org" url nil nil 1)))
   (advice-add 'straight-vc-git--encode-url :around #'+set-github-mirror)
 #+end_src
+
+Use =cnfonts= to generate font config
+#+begin_src emacs-lisp
+  (straight-use-package ’cnfonts)
+  (setq cnfonts-use-face-font-rescale t)
+  (setq cnfonts-personal-fontnames
+        '(("Monaco" "Ellograph CF")
+          ("FZSuXinShiLiuKaiS-R-GB")
+          ()))
+#+end_src
+
+Then =cnfonts-edit-profile=
