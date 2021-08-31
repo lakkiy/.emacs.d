@@ -1,5 +1,9 @@
 ;;; -*- lexical-binding: t -*-
 
+(eat-package restclient
+  :straight t
+  :commands restclient-mode)
+
 (eat-package pretty-hydra :straight t)
 
 (eat-package org
@@ -81,7 +85,34 @@ prepended to the element after the #+HEADER: tag."
                                        (interactive)
                                        (if (or (region-active-p) (looking-back "^\s*" 1))
                                            (org-hydra/body)
-                                         (self-insert-command 1)))))
+                                         (self-insert-command 1))))
+
+  (defvar load-language-list '((emacs-lisp . t)
+                               (perl . t)
+                               (python . t)
+                               (ruby . t)
+                               (js . t)
+                               (css . t)
+                               (sass . t)
+                               (C . t)
+                               (java . t)
+                               (shell . t)
+                               (plantuml . t)))
+
+  (eat-package ob-restclient
+    :straight t
+    :init (cl-pushnew '(restclient . t) load-language-list))
+
+  (eat-package ob-go
+    :straight t
+    :init (cl-pushnew '(go .t) load-language-list))
+
+  (eat-package ob-rust
+    :straight t
+    :init (cl-pushnew '(rust . t) load-language-list))
+
+  (org-babel-do-load-languages 'org-babel-load-languages
+                               load-language-list))
 
 (when (display-graphic-p)
   (eat-package valign
@@ -246,21 +277,5 @@ prepended to the element after the #+HEADER: tag."
     (electric-quote-local-mode -1)
     (kill-local-variable 'line-spacing)
     (kill-local-variable 'cursor-type)))
-
-(eat-package restclient
-  :straight t
-  :commands restclient-mode)
-
-(eat-package ob-restclient
-  :straight t
-  :after org
-  :config
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((restclient . t))))
-
-(eat-package ob-go
-  :straight t
-  :after org)
 
 (provide 'init-org)
