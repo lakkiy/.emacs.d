@@ -149,6 +149,11 @@ prepended to the element after the #+HEADER: tag."
     :after org
     :hook (org-mode-hook . valign-mode)))
 
+(eat-package zeft
+  :straight (zeft :type git :host github :repo "casouri/zeft")
+  :init
+  (setq zeft-directory (expand-file-name "~/Dropbox/org/roam")))
+
 (eat-package org-capture
   :init
   (global-set-key (kbd "C-c c") 'org-capture)
