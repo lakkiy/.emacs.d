@@ -206,7 +206,8 @@ prepended to the element after the #+HEADER: tag."
   (global-set-key (kbd "C-c n j") 'org-roam-dailies-capture-today)
   (global-set-key (kbd "C-c n s") 'org-roam-db-sync)
   :config
-  (require 'org-roam-protocol))
+  (require 'org-roam-protocol)
+  (org-roam-db-autosync-mode))
 
 (eat-package org-roam-ui
   :straight
