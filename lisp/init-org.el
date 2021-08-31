@@ -1,12 +1,41 @@
 ;;; -*- lexical-binding: t -*-
 
-(eat-package restclient
-  :straight t
-  :commands restclient-mode)
+(defvar eat-prose-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-a") #'beginning-of-visual-line)
+    (define-key map (kbd "C-e") #'end-of-visual-line)
+    map)
+  "Mode map for ‘eat-prose-mode’.")
 
+(define-minor-mode eat-prose-mode
+  "A mode that optimizes for prose editing."
+  :lighter " PROSE"
+  :keymap eat-prose-mode-map
+  (if eat-prose-mode
+      (progn
+        (variable-pitch-mode)
+        (olivetti-mode)
+        (electric-pair-local-mode -1)
+        (electric-quote-local-mode)
+        (setq-local cursor-type 'bar)
+        (setq-local line-spacing 0.15)
+        (company-mode -1)
+        (setq-local whitespace-style '(tab-mark))
+        (whitespace-mode))
+    (whitespace-mode -1)
+    (company-mode)
+    (variable-pitch-mode -1)
+    (olivetti-mode -1)
+    (electric-pair-local-mode)
+    (electric-quote-local-mode -1)
+    (kill-local-variable 'line-spacing)
+    (kill-local-variable 'cursor-type)))
+
+(eat-package restclient :straight t)
 (eat-package pretty-hydra :straight t)
 
 (eat-package org
+  :hook (org-mode-hook eat-prose-mode)
   :init
   (setq org-directory "~/Dropbox/org")
   :config
@@ -207,7 +236,7 @@ prepended to the element after the #+HEADER: tag."
   (global-set-key (kbd "C-c n s") 'org-roam-db-sync)
   :config
   (require 'org-roam-protocol)
-  (org-roam-db-autosync-mode))
+  (org-roam-setup))
 
 (eat-package org-roam-ui
   :straight
@@ -247,36 +276,5 @@ prepended to the element after the #+HEADER: tag."
 (eat-package olivetti
   :straight t
   :commands olivetti-mode)
-
-(defvar eat-prose-mode-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-a") #'beginning-of-visual-line)
-    (define-key map (kbd "C-e") #'end-of-visual-line)
-    map)
-  "Mode map for ‘eat-prose-mode’.")
-
-(define-minor-mode eat-prose-mode
-  "A mode that optimizes for prose editing."
-  :lighter " PROSE"
-  :keymap eat-prose-mode-map
-  (if eat-prose-mode
-      (progn
-        (variable-pitch-mode)
-        (olivetti-mode)
-        (electric-pair-local-mode -1)
-        (electric-quote-local-mode)
-        (setq-local cursor-type 'bar)
-        (setq-local line-spacing 0.15)
-        (company-mode -1)
-        (setq-local whitespace-style '(tab-mark))
-        (whitespace-mode))
-    (whitespace-mode -1)
-    (company-mode)
-    (variable-pitch-mode -1)
-    (olivetti-mode -1)
-    (electric-pair-local-mode)
-    (electric-quote-local-mode -1)
-    (kill-local-variable 'line-spacing)
-    (kill-local-variable 'cursor-type)))
 
 (provide 'init-org)
