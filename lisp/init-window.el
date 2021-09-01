@@ -20,10 +20,4 @@
   :config
   (setq eyebrowse-mode-line-separator "|"))
 
-;; Undo/redo changes to Emacs' window layout
-(eat-package winner
-  :hook (after-init-hook . winner-mode)
-  :config
-  (setq winner-dont-bind-my-keys t))
-
 (provide 'init-window)

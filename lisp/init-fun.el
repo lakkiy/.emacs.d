@@ -25,4 +25,8 @@
   :config
   (toki-term-setup-escape-keys))
 
+(eat-package rainbow-mode
+  :straight t
+  :commands rainbow-mode)
+
 (provide 'init-fun)

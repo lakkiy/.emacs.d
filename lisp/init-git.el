@@ -29,15 +29,4 @@
   :hook
   ((dired-mode-hook prog-mode-hook conf-mode-hook) . hl-todo-mode))
 
-(eat-package smerge-mode
-  :commands smerge-mode
-  :hook
-  (find-file-hook . (lambda ()
-                      (save-excursion
-                        (goto-char (point-min))
-                        (when (re-search-forward "^<<<<<<< " nil t)
-                          (smerge-mode 1)))))
-  :config
-  (define-key smerge-mode-map (kbd "C-c m") #'smerge-mode-hydra/body))
-
 (provide 'init-git)

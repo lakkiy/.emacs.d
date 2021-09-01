@@ -1,40 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(eat-package whitespace
-  :hook
-  ((prog-mode-hook conf-mode-hook) . whitespace-mode)
-  :init
-  (setq whitespace-style '(face trailing)))
-
-(eat-package hideshow
-  :doc "fold and display code/comment blocks"
-  :hook (prog-mode-hook . hs-minor-mode))
-
-(eat-package xref
-  :init
-  (global-unset-key (kbd "C-<down-mouse-1>"))
-  (global-set-key (kbd "C-<mouse-1>") #'xref-find-definitions-at-mouse)
-  ;; Xref no prompt
-  (setq xref-prompt-for-identifier nil))
-
-(eat-package pluse
-  :init
-  (defun pulse-region (beg end &rest _)
-    "Pulse the current region."
-    (pulse-momentary-highlight-region beg end))
-  (defun pulse-line (&rest _)
-    "Pulse the current line."
-    (pulse-momentary-highlight-one-line (point)))
-  (defun recenter-and-pulse (&rest _)
-    "Recenter and pulse the current line."
-    (recenter)
-    (pulse-line))
-  (advice-add #'xref-find-definitions :after #'recenter-and-pulse)
-  (advice-add #'xref-find-definitions-at-mouse :after #'recenter-and-pulse)
-  (advice-add #'xref-pop-marker-stack :after #'recenter-and-pulse)
-  :hook
-  ((bookmark-after-jump-hook imenu-after-jump-hook) . recenter-and-pulse))
-
 (eat-package tree-sitter
   :straight t
   :init

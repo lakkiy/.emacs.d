@@ -9,7 +9,8 @@
                       (meow-mode -1)))
   :config
   ;; make Meow usable in TUI Emacs
-  (meow-esc-mode 1)
+  (unless (display-graphic-p)
+    (meow-esc-mode 1))
   ;;; project.el use C-x p
   (global-unset-key (kbd "C-x C-p"))
   (global-set-key (kbd "C-x C-d") #'dired)

@@ -37,10 +37,6 @@
 ;; Linux specific
 (setq x-underline-at-descent-line t)
 
-(eat-package rainbow-mode
-  :straight t
-  :commands rainbow-mode)
-
 (eat-package nano-theme
   :init
   (setq nano-theme-light/dark 'light
@@ -93,7 +89,7 @@
   ;; TODO use -*-FZSuXinShiLiuKaiS-R-GB-normal-normal-normal-*-*-*-*-*-p-0-iso10646-1
   ;; to show flymake or flycheck errors count in mode line
   (let* ((lhs '((:eval (meow-indicator))
-                (:eval (rime-lighter))
+                (:eval (when (bound-and-true-p rime) (rime-lighter)))
                 " Row %l Col %C %%p"
                 ;; use 危
                 ;; (:eval (when (bound-and-true-p flymake-mode)

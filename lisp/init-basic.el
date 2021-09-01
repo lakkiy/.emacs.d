@@ -94,72 +94,6 @@
                    (abbreviate-file-name (buffer-file-name))
                  "%b"))))
 
-(eat-package display-line-numbers
-  ;; :hook ((prog-mode-hook conf-mode-hook) . display-line-numbers-mode)
-  )
-
-(eat-package subword
-  :doc "handling capitalized subwords in a nomenclature"
-  :hook (prog-mode-hook . subword-mode))
-
-(eat-package simple
-  :hook
-  (before-save-hook . delete-trailing-whitespace))
-
-(eat-package tab-bar
-  :init
-  (setq tab-bar-show nil
-        tab-bar-new-tab-choice "*scratch*"))
-
-(eat-package so-long
-  :hook (after-init-hook . global-so-long-mode))
-
-(eat-package repeat
-  :doc "repeat the previous command"
-  ;; HACK custom
-  :init
-  (setq repeat-mode t
-        repeat-keep-prefix t
-        repeat-exit-timeout 3
-        repeat-exit-key (kbd "RET")))
-
-(eat-package hl-line
-  :doc "Highlight current line, only enable in GUI"
-  ;; HACK when (display-graphic-p)
-  :hook
-  ((prog-mode-hook conf-mode-hook) . hl-line-mode))
-
-(eat-package autorevert
-  :doc "revert buffers when files on disk change"
-  :hook (after-init-hook . global-auto-revert-mode))
-
-(eat-package elec-pair
-  :doc "Automatic parenthesis pairing"
-  :hook (prog-mode-hook . electric-pair-mode)
-  :init
-  (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
-
-(eat-package saveplace
-  :hook (after-init-hook . save-place-mode))
-
-(eat-package paren
-  :hook (prog-mode-hook . show-paren-mode)
-  :init
-  (setq show-paren-when-point-in-periphery t
-        show-paren-when-point-inside-paren t))
-
-(eat-package tramp
-  :doc "transparent remote access"
-  :init
-  ;; Always use file cache when using tramp
-  (setq remote-file-name-inhibit-cache nil
-        ;; C-x C-f /ssh:
-        tramp-default-method "ssh"))
-
-(eat-package eldoc
-  :init
-  (setq eldoc-idle-delay 2))
-
 ;; Encoding
 ;; UTF-8 as the default coding system
 (when (fboundp 'set-charset-priority)
@@ -181,7 +115,8 @@
 (modify-coding-system-alist 'process "*" 'utf-8)
 
 (setq-default
- inhibit-compacting-font-caches t                   ; Don’t compact font caches during GC.
+ initial-major-mode 'fundamental-mode
+  inhibit-compacting-font-caches t                   ; Don’t compact font caches during GC.
  delete-by-moving-to-trash t                        ; Deleting files go to OS's trash folder
  ring-bell-function 'ignore                         ; Disable osx bell ring
  hl-line-sticky-flag nil
@@ -228,19 +163,5 @@
  split-width-threshold 120
  suggest-key-bindings nil                           ; disable "You can run the command balabala..."
  )
-
-;; install aspell
-(eat-package flyspell
-  :hook
-  ((text-mode-hook outline-mode-hook) . flyspell-mode)
-  (prog-mode-hook . (flyspell-prog-mode))
-  (flyspell-mode-hook . (lambda ()
-                          (dolist (key '("C-;" "C-," "C-."))
-                            (define-key flyspell-mode-map (kbd key) nil))))
-  :init
-  ;; TODO disable minibuffer message of `ispell-init-process' on startup
-  (setq flyspell-issue-message-flag nil
-        ispell-program-name "aspell"
-        ispell-extra-args '("--sug-mode=ultra" "--lang=en_US" "--run-together")))
 
 (provide 'init-basic)
