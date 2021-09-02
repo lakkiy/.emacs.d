@@ -141,7 +141,15 @@ prepended to the element after the #+HEADER: tag."
     :init (cl-pushnew '(rust . t) load-language-list))
 
   (org-babel-do-load-languages 'org-babel-load-languages
-                               load-language-list))
+                               load-language-list)
+  (eat-package org-tree-slide
+    :straight t
+    :init
+    (define-key org-mode-map (kbd "<f8>") 'org-tree-slide-mode)
+    (define-key org-mode-map (kbd "S-<f8>") 'org-tree-slide-skip-done-toggle)
+    :config
+    (define-key org-tree-slide-mode-map (kbd "<f9>") 'org-tree-slide-move-previous-tree)
+    (define-key org-tree-slide-mode-map (kbd "<f10>") 'org-tree-slide-move-next-tree)))
 
 (when (display-graphic-p)
   (eat-package valign
