@@ -82,6 +82,8 @@
                         'vertical-border
                         (make-glyph-code ?┃))
 
+
+;; TODO project path | meow | (major-mode) | git | flyc | row,col
 ;; TODO show window message or eyebrowse, change all other to right side
 ;; TODO add paded to :eval
 ;; TODO use diff face in active modeline and deactive modeline
@@ -142,7 +144,9 @@
                   :size 18.0)))
     (set-fontset-font t 'unicode +font-unicode nil 'prepend)
     (set-fontset-font t 'symbol (font-spec :family +font-unicode) frame 'prepend)
-    (set-face-attribute 'variable-pitch frame :font +font-variable-pitch :height +font-height)
+    (set-face-attribute 'variable-pitch frame :font +font-variable-pitch)
+    ;; rescale variable pitch font
+    (setf (alist-get +font-variable-pitch face-font-rescale-alist 1.3 nil 'string=) 1.3)
 
     (eat-package ligature
       :straight (ligature :type git :host github :repo "mickeynp/ligature.el")
