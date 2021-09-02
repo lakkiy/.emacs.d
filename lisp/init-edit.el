@@ -7,6 +7,20 @@
 (eat-package treemacs
   :straight t
   :init
+  (defun +treemacs-setup-title ()
+    (let ((bg (face-attribute 'default :background))
+          (fg (face-attribute 'default :foreground)))
+      (face-remap-add-relative 'header-line
+                               :background bg :foreground fg
+                               :box `(:line-width ,(/ (line-pixel-height) 2) :color ,bg)))
+    ;; FIXME it just show `Default' now
+    (setq header-line-format
+          '((:eval
+             (let* ((text (treemacs-workspace->name (treemacs-current-workspace)))
+                    (extra-align (+ (/ (length text) 2) 1))
+                    (width (- (/ (window-width) 2) extra-align)))
+               (concat (make-string width ?\s) text))))))
+  (add-hook 'treemacs-mode-hook #'+treemacs-setup-title)
   (defun +treemacs-scale-font-size ()
     (face-remap-add-relative 'default :height 0.8))
   (setq treemacs-no-png-images t
