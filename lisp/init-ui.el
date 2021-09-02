@@ -139,7 +139,7 @@
     ;; <https://github.com/tumashu/cnfonts>
     (set-face-attribute
      'default nil
-     :font (font-spec :name "-*-Ellograph CF-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
+     :font (font-spec :name "-*-Rec Mono Casual-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
                       :weight 'normal
                       :slant 'normal
                       :size 15.0))
