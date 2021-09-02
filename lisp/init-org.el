@@ -280,7 +280,9 @@ prepended to the element after the #+HEADER: tag."
   (org-media-note :type git :host github :repo "yuchen-lea/org-media-note")
   :hook (org-mode-hook . org-media-note-mode)
   :init
-  (setq org-media-note-screenshot-image-dir "~/Dropbox/org/media-note-imgs/"))
+  (setq org-media-note-screenshot-image-dir "~/Dropbox/org/media-note-imgs/")
+  :config
+  (require 'org-attach))
 
 (eat-package toc-org
   :straight t
