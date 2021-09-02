@@ -82,7 +82,6 @@
                         'vertical-border
                         (make-glyph-code ?┃))
 
-
 ;; TODO project path | meow | (major-mode) | git | flyc | row,col
 ;; TODO show window message or eyebrowse, change all other to right side
 ;; TODO add paded to :eval
@@ -147,6 +146,10 @@
     (set-face-attribute 'variable-pitch frame :font +font-variable-pitch)
     ;; rescale variable pitch font
     (setf (alist-get +font-variable-pitch face-font-rescale-alist 1.3 nil 'string=) 1.3)
+
+    (set-frame-parameter frame 'internal-border-width 10)
+    (setq-default left-margin-width 0 right-margin-width 2)
+    (set-window-margins nil 0 0)
 
     (eat-package ligature
       :straight (ligature :type git :host github :repo "mickeynp/ligature.el")
