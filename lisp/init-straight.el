@@ -42,4 +42,11 @@
   (setq gcmh-idle-delay 5
         gcmh-high-cons-threshold #x6400000)) ;; 100 MB
 
+(eat-package exec-path-from-shell
+  :straight t
+  :init
+  (when (eq system-type 'darwin)
+    (setq exec-path-from-shell-arguments '("-l"))
+    (add-hook 'after-init-hook #'exec-path-from-shell-initialize)))
+
 (provide 'init-straight)

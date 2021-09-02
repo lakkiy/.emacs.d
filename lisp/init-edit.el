@@ -80,13 +80,6 @@
     (sdcv-search-input word))
   (global-set-key (kbd "C-c Y") #'sdcv-dwim))
 
-(eat-package exec-path-from-shell
-  :straight t
-  :init
-  (when (eq system-type 'darwin)
-    (setq exec-path-from-shell-arguments '("-l"))
-    (add-hook 'after-init-hook #'exec-path-from-shell-initialize)))
-
 (eat-package imenu-list
   :straight t
   :hook
