@@ -82,6 +82,16 @@
                         'vertical-border
                         (make-glyph-code ?┃))
 
+(eat-package parrot
+  :straight t)
+(eat-package nyan-mode
+  :straight t
+  :init
+  (setq nyan-animate-nyancat t
+        nyan-wavy-trail t)
+  :config
+  (nyan-start-animation))
+
 ;; TODO project path | meow | (major-mode) | git | flyc | row,col
 ;; TODO show window message or eyebrowse, change all other to right side
 ;; TODO add paded to :eval
