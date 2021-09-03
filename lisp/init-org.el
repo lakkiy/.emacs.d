@@ -116,6 +116,15 @@ prepended to the element after the #+HEADER: tag."
                                            (org-hydra/body)
                                          (self-insert-command 1))))
 
+  (eat-package org-latex-impatient
+    :straight
+    (org-latex-impatient :type git :host github :repo "yangsheng6810/org-latex-impatient")
+    :hook (org-mode-hook . org-latex-impatient-mode)
+    :init
+    (setq org-latex-impatient-tex2svg-bin
+          ;; location of tex2svg executable
+          "~/node_modules/mathjax-node-cli/bin/tex2svg"))
+
   ;; export org to html
   (eat-package htmlize :straight t)
   ;; Add gfm/md backends
