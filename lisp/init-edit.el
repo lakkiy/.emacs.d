@@ -100,6 +100,9 @@
   (imenu-list-major-mode-hook . (lambda ()
                                   (setq-local header-line-format nil)))
   :init
+  (defun +imenu-scale-font-size ()
+    (face-remap-add-relative 'default :height 0.8))
+  (add-hook 'imenu-list-major-mode-hook #'+imenu-scale-font-size)
   (setq imenu-list-auto-resize t
         imenu-list-mode-line-format nil)
 
