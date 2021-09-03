@@ -42,6 +42,8 @@
   (setq nano-theme-light/dark 'light
         nano-theme-comment-italic nil
         nano-theme-keyword-italic nil
+        nano-theme-overline-modeline t
+        nano-theme-padded-modeline nil
         nano-theme-system-appearance t))
 
 (eat-package doom-themes
@@ -83,12 +85,15 @@
                         (make-glyph-code ?┃))
 
 (eat-package parrot
-  :straight t)
+  :straight t
+  :init
+  (setq parrot-num-rotations nil))
 (eat-package nyan-mode
   :straight t
   :init
   (setq nyan-animate-nyancat t
-        nyan-wavy-trail t)
+        nyan-wavy-trail t
+        nyan-bar-length 16)
   :config
   (nyan-start-animation))
 
@@ -101,7 +106,11 @@
   ;; to show flymake or flycheck errors count in mode line
   (let* ((lhs '((:eval (meow-indicator))
                 (:eval (when (bound-and-true-p rime) (rime-lighter)))
-                " Row %l Col %C %%p"
+                ;; " Row %l Col %C %%p"
+                " Row %l Col %C "
+                (:eval (nyan-create))
+                " "
+                (:eval (parrot-create))
                 ;; use 危
                 ;; (:eval (when (bound-and-true-p flymake-mode)
                 ;;          flymake-mode-line-format))
@@ -122,6 +131,9 @@
 (setq-default header-line-format nil)
 
 (defun +init-ui (&optional frame)
+  (nyan-mode)
+  (parrot-mode)
+
   (if +use-header-line
       (setq-default
        mode-line-format nil
