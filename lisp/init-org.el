@@ -118,6 +118,9 @@ prepended to the element after the #+HEADER: tag."
 
   ;; export org to html
   (eat-package htmlize :straight t)
+  ;; Add gfm/md backends
+  (eat-package ox-gfm :straight t)
+  (add-to-list 'org-export-backends 'md)
 
   (defvar load-language-list '((emacs-lisp . t)
                                (perl . t)
