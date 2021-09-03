@@ -116,6 +116,9 @@ prepended to the element after the #+HEADER: tag."
                                            (org-hydra/body)
                                          (self-insert-command 1))))
 
+  ;; export org to html
+  (eat-package htmlize :straight t)
+
   (defvar load-language-list '((emacs-lisp . t)
                                (perl . t)
                                (python . t)

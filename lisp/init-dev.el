@@ -11,7 +11,6 @@
     c-mode-hook
     c++-mode-hook
     css-mode-hook
-    html-mode-hook
     js-mode-hook
     js2-mode-hook
     son-mode-hook
