@@ -123,7 +123,9 @@ prepended to the element after the #+HEADER: tag."
     :init
     (setq org-latex-impatient-tex2svg-bin
           ;; location of tex2svg executable
-          "~/node_modules/mathjax-node-cli/bin/tex2svg"))
+          ;; npm install mathjax-node-cli -g TODO linux
+          (when sys/macp "/usr/local/lib/node_modules/mathjax-node-cli/bin/tex2svg")
+          org-latex-impatient-border-color (face-attribute 'default :background)))
 
   ;; export org to html
   (eat-package htmlize :straight t)
