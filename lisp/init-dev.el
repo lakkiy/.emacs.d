@@ -112,6 +112,15 @@ Fallback to `xref-find-definitions'."
   (define-key flycheck-mode-map (kbd "M-n") 'flycheck-next-error)
   (define-key flycheck-mode-map (kbd "M-p") 'flycheck-previous-error))
 
+(eat-package aggressive-indent
+  :straight t
+  :commands aggressive-indent-mode
+  :hook ((emacs-lisp-mode-hook
+          lisp-interaction-mode-hook
+          scheme-mode-hook
+          lisp-mode-hook)
+         . aggressive-indent-mode))
+
 (eat-package eglot
   :straight t
   :commands
