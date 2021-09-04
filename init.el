@@ -53,6 +53,7 @@
   (require 'init-builtin)
   (require 'init-ui)
   (require 'init-meow)
+  (require 'init-rime)
   (require 'init-minibuffer)
   (run-with-idle-timer
    1 nil
@@ -64,7 +65,6 @@
        (require 'init-telega)
        (require 'init-git)
        (require 'init-org)
-       (require 'init-rime)
        (require 'init-dired)
        (require 'init-ibuffer)
        (require 'init-spcfile)
