@@ -7,6 +7,10 @@
 (eat-package docker-compose-mode :straight t)
 (eat-package dockerfile-mode :straight t)
 
+(eat-package nix-mode
+  :straight t
+  :mode "\\.nix\\")
+
 (eat-package markdown-mode
   :straight t
   :mode ("\\.md\\'" . gfm-mode)
