@@ -109,7 +109,9 @@
                 ;; " Row %l Col %C %%p"
                 " Row %l Col %C "
                 (:eval (nyan-create))
-                " "
+                ;; make mode line fill rime lighter height
+                (:eval (propertize " " 'display '(height 1.1)))
+                ;; (:eval (propertize " " 'display '(raise -0.3)))
                 (:eval (parrot-create))
                 ;; use 危
                 ;; (:eval (when (bound-and-true-p flymake-mode)
