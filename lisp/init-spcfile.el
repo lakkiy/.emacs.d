@@ -9,7 +9,7 @@
 
 (eat-package nix-mode
   :straight t
-  :mode "\\.nix\\")
+  :mode ("\\.nix\\'" . nix-mode))
 
 (eat-package markdown-mode
   :straight t
