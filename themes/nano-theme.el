@@ -358,6 +358,14 @@
    ;; `(diff-refine-removed
    ;;   ((t (:foreground ,faded :strike-through t))))
 
+   ;; dired-hacks
+   `(dired-subtree-depth-1-face ((t (:background ,background))))
+   `(dired-subtree-depth-2-face ((t (:background ,background))))
+   `(dired-subtree-depth-3-face ((t (:background ,background))))
+   `(dired-subtree-depth-4-face ((t (:background ,background))))
+   `(dired-subtree-depth-5-face ((t (:background ,background))))
+   `(dired-subtree-depth-6-face ((t (:background ,background))))
+
    ;; Agenda
    `(org-agenda-calendar-event
      ((t (:foreground ,foreground :background ,background))))

@@ -1,5 +1,20 @@
 ;;; -*- lexical-binding: t -*-
 
+(eat-package recentf
+  :hook (after-init-mode . recentf-mode)
+  :init
+  (global-set-key (kbd "C-x C-r") #'recentf-open-files)
+  (setq recentf-max-saved-items 300
+        recentf-exclude
+        '("\\.?cache" ".cask" "url" "COMMIT_EDITMSG\\'" "bookmarks"
+          "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\|bmp\\|xpm\\)$"
+          "\\.?ido\\.last$" "\\.revive$" "/G?TAGS$" "/.elfeed/"
+          "^/tmp/" "^/var/folders/.+$" "^/ssh:" "/persp-confs/"
+          (lambda (file) (file-in-directory-p file package-user-dir))))
+  :config
+  (push (expand-file-name recentf-save-file) recentf-exclude)
+  (add-to-list 'recentf-filename-handlers #'abbreviate-file-name))
+
 (eat-package display-line-numbers
   ;; :hook ((prog-mode-hook conf-mode-hook) . display-line-numbers-mode)
   )
