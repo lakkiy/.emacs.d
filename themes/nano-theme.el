@@ -338,25 +338,25 @@
    `(flyspell-incorrect
      ((t (:underline ,critical))))
 
-   ;; Diff
-   `(diff-header
-     ((t (:foreground ,faded))))
-   `(diff-file-header
-     ((t (:foreground ,foreground :bold t))))
-   `(diff-context
-     ((t (:foreground ,foreground :background ,background))))
-   `(diff-removed
-     ((t (:foreground ,faded))))
-   `(diff-changed
-     ((t (:foreground ,popout))))
-   `(diff-added
-     ((t (:foreground ,salient))))
-   `(diff-refine-added
-     ((t (:foreground ,salient :bold t))))
-   `(diff-refine-changed
-     ((t (:foreground ,popout))))
-   `(diff-refine-removed
-     ((t (:foreground ,faded :strike-through t))))
+   ;; Diff TODO redesign
+   ;; `(diff-header
+   ;;   ((t (:foreground ,faded))))
+   ;; `(diff-file-header
+   ;;   ((t (:foreground ,foreground :bold t))))
+   ;; `(diff-context
+   ;;   ((t (:foreground ,foreground :background ,background))))
+   ;; `(diff-removed
+   ;;   ((t (:foreground ,faded))))
+   ;; `(diff-changed
+   ;;   ((t (:foreground ,popout))))
+   ;; `(diff-added
+   ;;   ((t (:foreground ,salient))))
+   ;; `(diff-refine-added
+   ;;   ((t (:foreground ,salient :bold t))))
+   ;; `(diff-refine-changed
+   ;;   ((t (:foreground ,popout))))
+   ;; `(diff-refine-removed
+   ;;   ((t (:foreground ,faded :strike-through t))))
 
    ;; Agenda
    `(org-agenda-calendar-event

@@ -16,10 +16,12 @@
   (global-set-key (kbd "C-x C-d") #'dired)
   ;; SPC x f to describe-funtion
   (global-set-key (kbd "C-h C-f") 'describe-funtion)
-  (add-to-list 'meow-mode-state-list '(debugger-mode . normal))
-  (add-to-list 'meow-mode-state-list '(ielm-mode . normal))
-  (add-to-list 'meow-mode-state-list '(inferior-python-mode . normal))
-  (add-to-list 'meow-mode-state-list '(go-dot-mod-mode . normal))
+  (dolist (mode '(debuffer-mode
+                  ielm-mode
+                  inferior-python-mode
+                  go-dot-mod-mode
+                  diff-mode))
+    (add-to-list 'meow-mode-state-list `(,mode . normal)))
   (when (display-graphic-p)
     (meow-setup-line-number))
   (meow-setup)
