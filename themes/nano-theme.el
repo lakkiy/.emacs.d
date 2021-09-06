@@ -148,11 +148,11 @@
 
    ;; Font Locks
    `(font-lock-comment-face
-     ((t (:foreground ,faded :weight bold :slant ,(if nano-theme-comment-italic 'italic 'normal)))))
+     ((t (:foreground ,faded :slant ,(if nano-theme-comment-italic 'italic 'normal)))))
    `(font-lock-comment-delimiter-face
-     ((t (:foreground ,faded :weight bold :slant ,(if nano-theme-comment-italic 'italic 'normal)))))
+     ((t (:foreground ,faded :slant ,(if nano-theme-comment-italic 'italic 'normal)))))
    `(font-lock-keyword-face
-     ((t (:foreground ,salient :weight bold :slant ,(if nano-theme-keyword-italic 'italic 'normal)))))
+     ((t (:foreground ,salient :slant ,(if nano-theme-keyword-italic 'italic 'normal)))))
    `(font-lock-string-face
      ((t (:foreground ,popout))))
    `(font-lock-doc-face
@@ -160,15 +160,15 @@
    `(font-lock-builtin-face
      ((t (:foreground ,salient :background ,subtle :slant italic))))
    `(font-lock-type-face
-     ((t (:foreground ,salient :weight bold))))
+     ((t (:foreground ,salient))))
    `(font-lock-variable-name-face
      ((t (:foreground ,strong))))
    `(font-lock-constant-face
-     ((t (:foreground ,salient :weight bold))))
+     ((t (:foreground ,salient))))
    `(font-lock-function-name-face
      ((t (:foreground ,strong :underline t))))
    `(font-lock-warning-face
-     ((t (:foreground ,popout :weight bold))))
+     ((t (:foreground ,popout))))
 
    ;; Eldoc
    `(eldoc-highlight-function-argument
