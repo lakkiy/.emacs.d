@@ -340,7 +340,7 @@
 
    ;; Diff TODO redesign
    ;; `(diff-header
-   ;;   ((t (:foreground ,faded))))
+   ;;   ((t (:background ,faded))))
    ;; `(diff-file-header
    ;;   ((t (:foreground ,foreground :bold t))))
    ;; `(diff-context
@@ -357,6 +357,10 @@
    ;;   ((t (:foreground ,popout))))
    ;; `(diff-refine-removed
    ;;   ((t (:foreground ,faded :strike-through t))))
+
+   ;; magit
+   `(magit-diff-hunk-heading
+     ((t (:background ,subtle))))
 
    ;; dired-hacks
    `(dired-subtree-depth-1-face ((t (:background ,background))))
