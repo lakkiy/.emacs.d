@@ -1,5 +1,11 @@
 ;;; -*- lexical-binding: t -*-
 
+(eat-package separedit
+  :straight t
+  :init
+  ;; use C-u C-c ' to select major mode
+  (global-set-key (kbd "C-c '") #'separedit))
+
 (eat-package puni
   :straight (puni :type git :host github :repo "AmaiKinono/puni")
   :hook (emacs-lisp-mode-hook . puni-mode))
