@@ -50,6 +50,7 @@
      '("L" . display-line-numbers-mode)
      '("S" . ispell-word)
      '("B" . ibuffer)
+     '("=" . align-regexp)
      ;; project
      '("p S" . consult-ripgrep)
      '("p s" . consult-git-grep)

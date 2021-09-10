@@ -136,7 +136,7 @@ Fallback to `xref-find-definitions'."
   ;;               '((gopls
   ;;                  (usePlaceholders . t))))
   :config
-  ;; TODO language server configuration
+  (define-key eglot-mode-map (kbd "M-RET") 'eglot-code-actions)
   (add-to-list 'eglot-server-programs
                '(python-mode . ("pyright-langserver" "--stdio")))
   (add-to-list 'eglot-server-programs
