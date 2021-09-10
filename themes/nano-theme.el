@@ -649,6 +649,8 @@
      ((t (:strike-through ,popout))))
    `(notmuch-tag-added
      ((t (:underline ,popout))))
+   `(notmuch-wash-cited-text
+     ((t (:foreground ,faded))))
 
    ;; Company
    `(company-tooltip
