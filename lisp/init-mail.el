@@ -3,10 +3,40 @@
 (eat-package mbsync
   :straight t)
 
+(defface notmuch-search-emacs-face
+  '((((class color)
+      (background dark))
+     (:foreground "White" :background "systemPurpleColor"))
+    (((class color)
+      (background light))
+     (:foreground "White" :background "systemPurpleColor")))
+  "Face used in search mode face.
+
+This face is the default value for the \"emacs\" tag in
+`notmuch-search-line-faces'."
+  :group 'notmuch-search
+  :group 'notmuch-faces)
+
+(defface notmuch-search-golang-face
+  '((((class color)
+      (background dark))
+     (:foreground "White" :background "systemBlueColor"))
+    (((class color)
+      (background light))
+     (:foreground "White" :background "systemBlueColor")))
+  "Face used in search mode face.
+
+This face is the default value for the \"golang\" tag in
+`notmuch-search-line-faces'."
+  :group 'notmuch-search
+  :group 'notmuch-faces)
+
 (eat-package notmuch
   :straight t
   :commands notmuch
   :init
+  (add-to-list 'notmuch-search-line-faces '("emacs" . notmuch-search-emacs-face))
+  (add-to-list 'notmuch-search-line-faces '("golang" . notmuch-search-golang-face))
   (setq notmuch-show-logo nil
         notmuch-search-oldest-first nil
         notmuch-search-result-format '(("date" . "%12s ")
