@@ -1,5 +1,11 @@
 ;;; -*- lexical-binding: t -*-
 
+(eat-package anzu
+  :straight t
+  :init
+  (global-set-key [remap query-replace] 'anzu-query-replace)
+  (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp))
+
 (eat-package separedit
   :straight t
   :init
@@ -27,11 +33,12 @@
 (when (not sys/macp)
   (eat-package good-scroll
     :straight t
-    :hook (after-init-hook . good-scroll-mode)
-    :config
+    :commands
+    good-scroll-up-full-screen
+    good-scroll-down-full-screen
+    :init
     (global-set-key [next] #'good-scroll-up-full-screen)
     (global-set-key [prior] #'good-scroll-down-full-screen)))
-
 
 ;; Better scroll on picture in GUI
 (when (display-graphic-p)
