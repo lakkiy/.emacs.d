@@ -683,7 +683,7 @@
                       :box ,(if -modeline-pad `(:line-width ,-modeline-pad :color ,foreground))))))
    `(mode-line-inactive
      ((t (:background ,(if nano-theme-overline-modeline background faded)
-                      :foreground ,(if nano-theme-overline-modeline nil background)
+                      :foreground ,(if nano-theme-overline-modeline faded background)
                       :overline ,(if nano-theme-overline-modeline subtle nil)
                       :box ,(if -modeline-pad `(:line-width ,-modeline-pad :color ,faded))))))
    `(header-line
