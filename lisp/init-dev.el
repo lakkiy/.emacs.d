@@ -94,8 +94,8 @@ Fallback to `xref-find-definitions'."
   :after go-mode
   :config
   (define-key flymake-mode-map (kbd "C-c C-b") 'flymake-show-diagnostics-buffer)
-  (define-key flymake-mode-map (kbd "M-n") 'flymake-goto-next-error)
-  (define-key flymake-mode-map (kbd "M-p") 'flymake-goto-prev-error))
+  (define-key flymake-mode-map (kbd "M-[") 'flymake-goto-next-error)
+  (define-key flymake-mode-map (kbd "M-]") 'flymake-goto-prev-error))
 
 (eat-package flycheck
   :straight t
@@ -109,8 +109,8 @@ Fallback to `xref-find-definitions'."
                                    'right-margin))
   :config
   (define-key flycheck-mode-map (kbd "C-c C-b") 'flycheck-list-errors)
-  (define-key flycheck-mode-map (kbd "M-n") 'flycheck-next-error)
-  (define-key flycheck-mode-map (kbd "M-p") 'flycheck-previous-error))
+  (define-key flycheck-mode-map (kbd "M-[") 'flycheck-next-error)
+  (define-key flycheck-mode-map (kbd "M-]") 'flycheck-previous-error))
 
 (eat-package aggressive-indent
   :straight t
