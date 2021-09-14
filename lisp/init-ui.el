@@ -107,7 +107,7 @@
   (let* ((lhs '((:eval (meow-indicator))
                 (:eval (rime-lighter))
                 ;; " Row %l Col %C %%p"
-                " Row %l Col %C "
+                " Row %4l Col %2C "
                 (:eval (nyan-create))
                 ;; make mode line fill rime lighter height
                 (:eval (propertize " " 'display '(height 1.1)))
