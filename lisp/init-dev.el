@@ -27,6 +27,14 @@
   :init
   (eat-package clue
     :straight (clue :type git :host github :repo "AmaiKinono/clue"))
+  (eat-package citre-global
+    :init
+    (global-set-key (kbd "C-x c r") 'citre-jump-to-reference)
+    (global-set-key (kbd "C-x c P") 'citre-ace-peek-references)
+    (global-set-key (kbd "C-x c U") 'citre-global-update-database)
+    (with-eval-after-load 'citre-peek
+      (define-key citre-peek-keymap (kbd "M-l r")
+        'citre-peek-through-references)))
   (require 'citre-config)
   (setq citre-default-create-tags-file-location 'global-cache
         citre-use-project-root-when-creating-tags t
@@ -57,8 +65,6 @@ Fallback to `xref-find-definitions'."
       (candidates (all-completions -arg (citre-capf--get-collection -arg)))
       (ignore-case (not citre-completion-case-sensitive))))
   :config
-  (global-set-key (kbd "C-x c P r") #'citre-peek-restore)
-  (global-set-key (kbd "C-x c P l") #'citre-peek-load-session)
   (define-key citre-peek-keymap (kbd "M-l s") #'citre-peek-save-session)
   (define-key citre-peek-keymap (kbd "M-l h") #'citre-peek-chain-backward)
   (define-key citre-peek-keymap (kbd "M-l l") #'citre-peek-chain-forward)
