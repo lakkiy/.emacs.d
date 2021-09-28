@@ -50,6 +50,7 @@
   :straight (fanyi :type git :host github :repo "condy0919/fanyi.el")
   :hook (fanyi-mode-hook . visual-line-mode)
   :init
+  (setq fanyi-verbose nil)
   (global-set-key (kbd "C-c y") 'fanyi-dwim))
 
 (eat-package sdcv
