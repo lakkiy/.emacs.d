@@ -37,6 +37,7 @@
     good-scroll-up-full-screen
     good-scroll-down-full-screen
     :init
+    (good-scroll-mode 1)
     (global-set-key [next] #'good-scroll-up-full-screen)
     (global-set-key [prior] #'good-scroll-down-full-screen)))
 
