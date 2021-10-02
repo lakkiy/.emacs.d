@@ -1,5 +1,19 @@
 ;;; -*- lexical-binding: t -*-
 
+(defvar +rime-version nil)
+(defvar +rime-sys nil)
+
+(defun +rime-install-librime ()
+  "Instsall librime with `+rime-version' and `+rime-sys' like
+rime-1.7.2-osx.zip to emacs/librime."
+  (interactive)
+  ;; TODO
+  ;; should only use in OSX system
+  ;; curl -L -O https://github.com/rime/librime/releases/download/1.7.2/rime-1.7.2-osx.zip
+  ;; unzip rime-1.7.2-osx.zip -d ~/.config/emacs/librime
+  ;; rm -rf rime-1.7.2-osx.zip
+  )
+
 (eat-package rime
   :straight t
   :commands toggle-input-method
