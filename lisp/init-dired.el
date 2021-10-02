@@ -1,5 +1,9 @@
 ;;; -*- lexical-binding: t -*-
 
+(eat-package dired
+  :init
+  (setq dired-kill-when-opening-new-dired-buffer t))
+
 (eat-package dired-hacks
   :straight (dired-hacks :type git
                          :host github

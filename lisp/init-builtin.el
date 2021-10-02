@@ -110,7 +110,14 @@
   (global-unset-key (kbd "C-<down-mouse-1>"))
   (global-set-key (kbd "C-<mouse-1>") #'xref-find-definitions-at-mouse)
   ;; Xref no prompt
-  (setq xref-prompt-for-identifier nil))
+  (setq xref-prompt-for-identifier nil)
+  ;; On Emacs 28, `xref-search-program' can be set to `ripgrep'.
+  ;; `project-find-regexp' benefits from that.
+  (when (>= emacs-major-version 28)
+    ;; replace with `consult'
+    ;; (setq xref-show-xrefs-function #'xref-show-definitions-completing-read)
+    ;; (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
+    (setq xref-search-program 'ripgrep)))
 
 (eat-package pluse
   :init
