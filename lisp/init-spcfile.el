@@ -1,11 +1,17 @@
 ;; -*- lexical-binding: t; -*-
 
+(eat-package yaml-mode :straight t)
+
 (eat-package docker
   :straight t
   :commands docker)
 
 (eat-package docker-compose-mode :straight t)
 (eat-package dockerfile-mode :straight t)
+
+(eat-package kubedoc
+  :straight
+  (kubedoc :type git :host github :repo "r0bobo/kubedoc.el"))
 
 (eat-package nix-mode
   :straight t
