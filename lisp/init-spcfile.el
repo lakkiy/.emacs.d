@@ -13,6 +13,18 @@
   :straight
   (kubedoc :type git :host github :repo "r0bobo/kubedoc.el"))
 
+(eat-package kubernetes
+  :straight t
+  :commands
+  kubernetes-overview
+  :config
+  (setq kubernetes-poll-frequency 3600
+        kubernetes-redraw-frequency 3600))
+
+(eat-package k8s-mode
+  :straight t
+  :hook (k8s-mode-hook . yas-minor-mode))
+
 (eat-package nix-mode
   :straight t
   :mode ("\\.nix\\'" . nix-mode))
