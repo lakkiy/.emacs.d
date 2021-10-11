@@ -104,7 +104,8 @@
 (defun +format-mode-line ()
   ;; TODO use -*-FZSuXinShiLiuKaiS-R-GB-normal-normal-normal-*-*-*-*-*-p-0-iso10646-1
   ;; to show flymake or flycheck errors count in mode line
-  (let* ((lhs '((:eval (meow-indicator))
+  (let* ((lhs '((:eval (anzu--update-mode-line))
+                (:eval (meow-indicator))
                 (:eval (rime-lighter))
                 ;; " Row %l Col %C %%p"
                 " Row %4l Col %2C "

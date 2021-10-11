@@ -22,8 +22,7 @@
         kubernetes-redraw-frequency 3600))
 
 (eat-package k8s-mode
-  :straight t
-  :hook (k8s-mode-hook . yas-minor-mode))
+  :straight t)
 
 (eat-package nix-mode
   :straight t
