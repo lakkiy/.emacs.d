@@ -1,3 +1,5 @@
+* Just some snippets
+
 Replace =github.com= to =github.com.cnpmjs.org= in =straight.el=
 
 #+begin_src emacs-lisp
@@ -19,3 +21,15 @@ Use =cnfonts= to generate font config
 #+end_src
 
 Then =cnfonts-edit-profile=
+
+[[https://www.reddit.com/r/emacs/comments/msqzoy/how_can_i_get_blurred_background_for_emacs_mac/][Blurred in mac]]
+
+#+begin_src emacs-lisp
+(set-face-background 'default "mac:windowBackgroundColor")
+(dolist (f (face-list)) (set-face-stipple f "alpha:60%"))
+(setq face-remapping-alist (append face-remapping-alist '((default my/default-blurred))))
+(defface my/default-blurred
+   '((t :inherit 'default :stipple "alpha:60%"))
+   "Like 'default but blurred."
+   :group 'my)
+#+end_src
