@@ -8,7 +8,8 @@
   :after magit
   :straight (blamer :type git :host github :repo "Artawower/blamer.el")
   :init
-  (setq blamer-commit-formatter " %s")
+  (setq blamer-commit-formatter " %s"
+        blamer-type 'visual)
   :config
   (global-blamer-mode))
 
