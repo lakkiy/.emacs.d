@@ -30,6 +30,7 @@
 (defvar +proxy "127.0.0.1:7890")
 (defvar +erc-password "")
 (defvar +telega-proxy nil)
+(defvar +use-icon-p nil)
 
 (with-no-warnings
   ;; Don't ping things that look like domain names.

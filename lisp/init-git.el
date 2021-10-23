@@ -1,5 +1,11 @@
 ;;; -*- lexical-binding: t -*-
 
+(eat-package git-modes
+  :straight t
+  :init
+  (add-to-list 'auto-mode-alist
+               (cons "/.dockerignore\\'" 'gitignore-mode)))
+
 (eat-package magit
   :straight t
   :commands magit)
