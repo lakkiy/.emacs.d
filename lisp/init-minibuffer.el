@@ -17,6 +17,12 @@
   :config
   (define-key vertico-map (kbd "M-DEL") #'+minibuffer-backward-delete))
 
+(eat-package vertico-posframe
+  :after vertico
+  :straight (vertico-posframe :type git :host github :repo "tumashu/vertico-posframe")
+  :init
+  (vertico-posframe-mode 1))
+
 (eat-package orderless
   :straight t
   :after vertico
