@@ -37,6 +37,7 @@
 
 (let ((bg "#c4d3cd")
       (fg "#353535")
+      (kw "#000000")
       (cm "#61726b")
       (hl "#a9bdb5")
       (fn "#b6c6c0")
@@ -232,7 +233,13 @@
    `(fill-column-indicator          ((t (:foreground ,cm))))
    `(scroll-bar                     ((t (:foreground ,fg))))
    `(sp-pair-overlay-face           ((t (:background ,hl))))
-   `(sp-wrap-overlay-face           ((t (:background ,hl))))))
+   `(sp-wrap-overlay-face           ((t (:background ,hl))))
+
+   `(flycheck-warning ((t (:underline (:style wave :color ,cm)))))
+   `(flycheck-error   ((t (:underline (:style wave :color ,fg)))))
+   `(flymake-warning  ((t (:underline (:style wave :color ,cm)))))
+   `(flymake-error    ((t (:underline (:style wave :color ,fg)))))
+   `(flymake-note     ((t (:underline (:style wave :color ,hl)))))))
 
 (and load-file-name
      (boundp 'custom-theme-load-path)

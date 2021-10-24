@@ -1,4 +1,4 @@
-;;; minidark-theme.el --- A minimal dark theme  -*- lexical-binding: t; -*-
+;;; graverse-theme.el --- A gray light theme  -*- lexical-binding: t; -*-
 
 ;; Author: Shi Tianshu
 ;; Keywords: theme
@@ -26,38 +26,28 @@
 
 ;;; Commentary:
 
-;;; This is a minimal light theme.
+;;; This is a minimal gray light theme.
 
 ;;; Code:
 
-(deftheme minidark "A minimal light theme.")
+(deftheme graverse "A minimal light theme.")
 
-(defvar minidark-theme-header-scales '(1.0 1.0 1.0 1.0 1.0 1.0 1.0)
+(defvar graverse-theme-header-scales '(1.4 1.4 1.2 1.0 1.0 1.0 1.0)
   "Scales for headers.")
 
-(let ((bg "#202020")
-      (fg "#9C9C9C")
-      (cm "#707070")
-      (hl "#303060")
-      (rg "#306030")
-      (ss "#603030")
-      (kw "#CFCFCF")
-      (fn "#c6a131")
-      (st "#58bc7f")
-      (str "#4594d1")
-      (num "#58bc7f")
-      (doc "#d16145")
-      (cur "#EFEFEF")
-      (pop "#202020"))
+(let ((bg "#4c5256")
+      (fg "#c4cdd3")
+      (cm "#a9b5bd")
+      (hl "#616b72")
+      (cur "#00FFFF"))
   (custom-theme-set-faces
-   `minidark
+   `graverse
    ;; We don't specify default foreground/background in TTY.
-   `(default                        ((((type tty)))
-                                     (((type graphic)) :background ,bg :foreground ,fg)))
+   `(default                        ((t :background ,bg :foreground ,fg)))
    ;; Basics
    `(cursor                         ((t (:background ,cur))))
-   `(region                         ((t (:background ,rg))))
-   `(hl-line                        ((t ())))
+   `(region                         ((t (:background ,hl))))
+   `(hl-line                        ((t)))
    `(fringe                         ((t (:background ,bg))))
    `(show-paren-match               ((t (:box (:line-width (-1 . -1))))))
    `(highlight                      ((t (:inverse-video t))))
@@ -67,7 +57,8 @@
    `(window-divider-first-pixel     ((t (:foreground ,cm))))
    `(window-divider-last-pixel      ((t (:foreground ,cm))))
    `(line-number                    ((t (:foreground ,cm))))
-   `(line-number-current-line       ((t (:foreground ,fn))))
+   `(line-number-current-line       ((t (:foreground ,fg))))
+   `(parenthesis                    ((t (:foreground ,fg))))
    `(completions-common-part        ((t ())))
    `(minibuffer-prompt              ((t ())))
    `(lazy-highlight                 ((t (:background ,hl))))
@@ -75,33 +66,26 @@
    `(compilation-warning            ((t ())))
    `(warning                        ((t ())))
    `(match                          ((t (:inverse-video t))))
-   `(secondary-selection            ((t (:background ,ss))))
+   `(secondary-selection            ((t (:inverse-video t :foreground ,cm))))
    `(help-key-binding               ((t ())))
-   `(shadow                         ((t ())))
 
    ;; ISearch
    `(isearch                        ((t (:inverse-video t))))
    `(isearch-fail                   ((t (:inverse-video t))))
 
    ;; Font Locks
-   `(font-lock-comment-face         ((t (:foreground ,doc))))
-   `(font-lock-comment-delimiter-face  ((t (:inherit font-lock-comment-face))))
-   `(font-lock-string-face          ((t (:foreground ,str))))
-   `(font-lock-doc-face             ((t (:foreground ,doc))))
+   `(font-lock-comment-face         ((t (:foreground ,cm :italic t))))
+   `(font-lock-comment-delimiter-face         ((t (:foreground ,cm :italic t))))
+   `(font-lock-string-face          ((t (:foreground ,cm))))
+   `(font-lock-doc-face             ((t (:foreground ,cm))))
    `(font-lock-builtin-face         ((t ())))
    `(font-lock-type-face            ((t ())))
    `(font-lock-variable-name-face   ((t ())))
-   `(font-lock-keyword-face         ((t (:foreground ,kw))))
-   `(font-lock-constant-face        ((t (:foreground ,st))))
-   `(font-lock-function-name-face   ((t (:foreground ,fn))))
+   `(font-lock-keyword-face         ((t ())))
+   `(font-lock-constant-face        ((t (:italic t))))
+   `(font-lock-function-name-face   ((t (:bold t))))
    `(font-lock-warning-face         ((t ())))
    `(font-lock-preprocessor-face    ((t ())))
-   `(error                          ((t (:background "red" :foreground ,fn))))
-
-   `(highlight-numbers-number       ((t (:foreground ,num))))
-
-   `(selectrum-current-candidate    ((t (:foreground ,fn :background ,hl))))
-   `(selectrum-prescient-primary-highlight ((t (:underline t))))
 
    ;; shell
    `(sh-quoted-exec                 ((t ())))
@@ -111,14 +95,12 @@
    `(imenu-list-entry-subalist-face-0 ((t (:bold t))))
 
    ;; Mode Line
-   `(mode-line                      ((t (:background ,fg :foreground ,hl))))
-   `(mode-line-inactive             ((t (:background ,cm :foreground ,hl))))
-   `(header-line                    ((t ())))
-   `(header-line-inactive           ((t ())))
+   `(mode-line                      ((t (:inverse-video t))))
+   `(mode-line-inactive             ((t (:background ,hl))))
 
    ;; Company
    `(company-tooltip-common         ((t ())))
-   `(company-tooltip-common-selection ((t ())))
+   `(company-tooltip-common-selection ((t (:bold t))))
    `(company-tooltip                ((t (:background ,hl))))
    `(company-tooltip-search         ((t ())))
    `(company-tooltip-selection      ((t (:inverse-video t))))
@@ -139,42 +121,40 @@
    `(meow-insert-cursor             ((t (:background ,cur))))
    `(meow-normal-cursor             ((t (:background ,cur))))
    `(meow-motion-cursor             ((t (:background ,cur))))
-   `(meow-unknown-cursor            ((t (:background ,cur))))
-   `(meow-position-highlight-number-1 ((t (:background "gray30" :foreground "gray90"))))
-   `(meow-position-highlight-number-2 ((t (:background "gray20" :foreground "gray80"))))
-   `(meow-position-highlight-number-3 ((t (:background "gray10" :foreground "gray60"))))
-   `(meow-position-highlight-reverse-number-1 ((t (:background "gray30" :foreground "gray90"))))
-   `(meow-position-highlight-reverse-number-2 ((t (:background "gray20" :foreground "gray80"))))
-   `(meow-position-highlight-reverse-number-3 ((t (:background "gray10" :foreground "gray60"))))
 
    ;; colorful paren
-   `(colorful-round           ((t (:foreground "gray60"))))
-   `(colorful-square          ((t (:foreground "#07a2c1"))))
-   `(colorful-curly           ((t (:foreground "#40d119"))))
-   `(colorful-semicolon       ((t (:foreground "#40d119"))))
+   `(colorful-round           ((t (:foreground ,cm))))
+   `(colorful-square          ((t ())))
+   `(colorful-curly           ((t ())))
 
    ;; Cider
    `(cider-result-overlay-face      ((t (:inverse-video t))))
-   `(cider-repl-stderr-face         ((t ())))
-   `(cider-repl-stdout-face         ((t (:foreground "gray60"))))
-   `(cider-test-error-face          ((t (:foreground "yellow" :inverse-video t))))
+   `(cider-repl-stderr-face         ((t (:bold t))))
+   `(cider-repl-stdout-face         ((t ())))
 
    ;; Clojure
    `(clojure-character-face         ((t ())))
 
    ;; Magit
    ;; `(magit-diff-file-heading-highlight ((t (:background ,bg+1))))
-   `(magit-header-line                 ((t ())))
+   `(magit-branch-current              ((t (:box t :background ,hl))))
+   `(magit-branch-local                ((t (:background ,hl))))
+   `(magit-branch-remote               ((t (:background ,cm :foreground ,bg))))
+   `(magit-branch-remote-head          ((t (:box t :background ,cm :foreground ,bg))))
+   `(magit-header-line                 ((t (:bold t))))
    `(magit-head                        ((t ())))
    `(magit-section-highlight           ((t (:background ,hl))))
-   `(magit-section-heading             ((t ())))
-   `(magit-section-selection           ((t ())))
-   `(magit-diff-removed                ((t (:background "#311"))))
-   `(magit-diff-removed-highlight      ((t (:background "#311"))))
-   `(magit-diff-added                  ((t (:background "#131"))))
-   `(magit-diff-added-highlight        ((t (:background "#131"))))
-   `(magit-diff-context-highlight      ((t (:background ,hl :foreground ,fg))))
-
+   `(magit-section-heading             ((t (:bold t))))
+   `(magit-section-selection           ((t (:bold t))))
+   `(magit-diff-hunk-heading-highlight ((t (:inverse-video t))))
+   `(magit-diff-hunk-heading ((t (:foreground ,cm))))
+   `(magit-diff-removed             ((t ())))
+   `(magit-diff-added               ((t ())))
+   `(magit-diff-removed-highlight   ((t (:background ,hl))))
+   `(magit-diff-added-highlight     ((t (:background ,cm :foreground ,bg))))
+   `(magit-diff-highlight           ((t ())))
+   `(magit-diff-context-highlight   ((t ())))
+   ;;
    ;; ;; SMerge
    ;; `(smerge-refined-added           ((t (:background "#253325"))))
    ;; `(smerge-lower                   ((t (:background "#173017"))))
@@ -206,7 +186,7 @@
    `(rime-indicator-face            ((t ())))
    `(rime-indicator-dim-face        ((t ())))
    `(rime-candidate-num-face        ((t ())))
-   `(rime-comment-face              ((t ())))
+   `(rime-comment-face              ((t (:inherit font-lock-comment))))
    `(rime-code-face                 ((t (:bold t))))
    `(rime-default-face              ((t ())))
    `(rime-highlight-candidate-face  ((t ())))
@@ -216,51 +196,42 @@
    `(web-mode-function-call-face    ((t ())))
    `(web-mode-function-name-face    ((t ())))
    `(web-mode-html-tag-bracket-face ((t (:inherit parenthesis))))
-   `(web-mode-symbol-face           ((t ())))
-   `(css-selector                   ((t ())))
+   `(web-mode-symbol-face           ((t (:inherit font-lock-constant-face))))
+   ;; `(css-selector                   ((t (:foreground ,purple))))
    ;;
-   ;; Markdown
-   `(markdown-header-face-1         ((t (:underline t :height ,(nth 0 minidark-theme-header-scales)))))
-   `(markdown-header-face-2         ((t (:underline t :height ,(nth 1 minidark-theme-header-scales)))))
-   `(markdown-header-face-3         ((t (:underline t :height ,(nth 2 minidark-theme-header-scales)))))
-   `(markdown-header-face-4         ((t (:underline t :height ,(nth 3 minidark-theme-header-scales)))))
-   `(markdown-header-face-5         ((t (:underline t :height ,(nth 4 minidark-theme-header-scales)))))
-   `(markdown-header-face-6         ((t (:underline t :height ,(nth 5 minidark-theme-header-scales)))))
-   `(markdown-header-face-7         ((t (:underline t :height ,(nth 6 minidark-theme-header-scales)))))
+   ;; ;; Markdown
+   `(markdown-header-face-1         ((t (:bold t :height ,(nth 0 graverse-theme-header-scales)))))
+   `(markdown-header-face-2         ((t (:bold t :height ,(nth 1 graverse-theme-header-scales)))))
+   `(markdown-header-face-3         ((t (:bold t :height ,(nth 2 graverse-theme-header-scales)))))
+   `(markdown-header-face-4         ((t (:bold t :height ,(nth 3 graverse-theme-header-scales)))))
+   `(markdown-header-face-5         ((t (:bold t :height ,(nth 4 graverse-theme-header-scales)))))
+   `(markdown-header-face-6         ((t (:bold t :height ,(nth 5 graverse-theme-header-scales)))))
+   `(markdown-header-face-7         ((t (:bold t :height ,(nth 6 graverse-theme-header-scales)))))
    ;;
    ;; ;; Telega
    `(telega-entity-type-code        ((t ())))
    `(telega-msg-heading             ((t ())))
-   `(telega-msg-self-title          ((t (:foreground ,fn))))
    `(telega-unmuted-count           ((t ())))
    ;;
    ;; ;; Org-mode
-   `(org-document-title             ((t (:bold t :height ,(nth 0 minidark-theme-header-scales)))))
+   `(org-document-title             ((t (:bold t :height ,(nth 0 graverse-theme-header-scales)))))
    `(org-link                       ((t (:underline t))))
    `(org-document-title             ((t ())))
    `(org-code                       ((t (:inherit font-lock-constant-face))))
-   `(org-level-1                    ((t (:inherit font-lock-string-face :height ,(nth 0 minidark-theme-header-scales)))))
-   `(org-level-2                    ((t (:inherit font-lock-function-name-face :height ,(nth 1 minidark-theme-header-scales)))))
-   `(org-level-3                    ((t (:inherit font-lock-keyword-face :height ,(nth 2 minidark-theme-header-scales)))))
-   `(org-level-4                    ((t (:height ,(nth 3 minidark-theme-header-scales)))))
-   `(org-level-5                    ((t (:height ,(nth 4 minidark-theme-header-scales)))))
-   `(org-level-6                    ((t (:height ,(nth 5 minidark-theme-header-scales)))))
-   `(org-level-7                    ((t (:height ,(nth 6 minidark-theme-header-scales)))))
+   `(org-level-1                    ((t (:bold t :height ,(nth 0 graverse-theme-header-scales)))))
+   `(org-level-2                    ((t (:bold t :height ,(nth 1 graverse-theme-header-scales)))))
+   `(org-level-3                    ((t (:bold t :height ,(nth 2 graverse-theme-header-scales)))))
+   `(org-level-4                    ((t (:bold t :height ,(nth 3 graverse-theme-header-scales)))))
+   `(org-level-5                    ((t (:bold t :height ,(nth 4 graverse-theme-header-scales)))))
+   `(org-level-6                    ((t (:bold t :height ,(nth 5 graverse-theme-header-scales)))))
+   `(org-level-7                    ((t (:bold t :height ,(nth 6 graverse-theme-header-scales)))))
    ;;
    ;; ;; Treemacs
    ;; `(treemacs-root-face             ((t (:inherit font-lock-function-name-face :height 1.4 :underline t))))
    `(fill-column-indicator          ((t (:foreground ,cm))))
    `(scroll-bar                     ((t (:foreground ,fg))))
-   `(parenthesis                    ((t (:foreground ,cm))))
-   `(eldoc-box-body                 ((t (:background ,pop :inherit variable-pitch))))
-
-   `(flycheck-warning               ((t (:underline (:style wave :color "#6A6A30")))))
-   `(flycheck-error               ((t (:underline (:style wave :color "#6F3030")))))
-   `(flymake-warning               ((t (:underline (:style wave :color "#6A6A30")))))
-   `(flymake-error               ((t (:underline (:style wave :color "#6F3030")))))
-   `(flymake-note                ((t (:underline (:style wave :color "#304F30")))))
-
-   `(wgrep-face                     ((t (:underline ,st))))))
+   `(sp-pair-overlay-face           ((t (:background ,hl))))
+   `(sp-wrap-overlay-face           ((t (:background ,hl))))))
 
 (and load-file-name
      (boundp 'custom-theme-load-path)
@@ -268,6 +239,6 @@
                   (file-name-as-directory
                    (file-name-directory load-file-name))))
 
-(provide-theme 'minidark)
+(provide-theme 'graverse)
 
-;;; minidark-theme.el ends here
+;;; graverse-theme.el ends here

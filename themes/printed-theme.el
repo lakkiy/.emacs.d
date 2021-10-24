@@ -1,3 +1,5 @@
+;;; -*- lexical-binding: t -*-
+
 (deftheme printed "A simple medium contrast light theme.")
 
 (custom-theme-set-faces
@@ -32,10 +34,16 @@
  '(meow-insert-indicator          ((t (:bold t))))
  '(meow-normal-indicator          ((t (:bold t))))
  '(meow-motion-indicator          ((t (:bold t))))
- '(meow-keypad-cursor             ((t (:background "#7c2902"))))
- '(meow-insert-cursor             ((t (:background "#014f39"))))
- '(meow-normal-cursor             ((t (:background "#9b034c"))))
- '(meow-motion-cursor             ((t (:background "#035063"))))
+ '(meow-position-highlight-number-1 ((t (:background "#1c7eb8" :foreground "white"))))
+ '(meow-position-highlight-number-2 ((t (:background "#3c9dd6" :foreground "white"))))
+ '(meow-position-highlight-number-3 ((t (:background "#5ab2e6" :foreground "white"))))
+ '(meow-position-highlight-reverse-number-1 ((t (:background "#1c7eb8" :foreground "white"))))
+ '(meow-position-highlight-reverse-number-2 ((t (:background "#3c9dd6" :foreground "white"))))
+ '(meow-position-highlight-reverse-number-3 ((t (:background "#5ab2e6" :foreground "white"))))
+ '(meow-keypad-cursor             ((t (:background "#f59842"))))
+ '(meow-insert-cursor             ((t (:background "#bf3b1d"))))
+ '(meow-normal-cursor             ((t (:background "#1d6ebf"))))
+ '(meow-motion-cursor             ((t (:background "#b22ac7"))))
  '(dired-directory                ((t (:inherit font-lock-keyword-face))))
  '(mode-line                      ((((type tty)) (:background "grey70"))
                                    (((type graphic)) (:overline "#aaa":foreground "#303030"))))
@@ -56,6 +64,7 @@
  '(telega-entity-type-code        ((t (:inherit fixed-pitch))))
  '(telega-entity-type-pre         ((t (:inherit fixed-pitch))))
  '(cider-fringe-good-face         ((t (:foreground "#006666"))))
+ `(cider-result-overlay-face      ((t (:background "grey90" :box (:line-width (-1 . -1) :color "black")))))
  '(web-mode-html-attr-name-face   ((t ())))
  '(web-mode-html-tag-face         ((t ())))
  `(line-number-current-line       ((t (:bold t :background "#eeeeee"))))
