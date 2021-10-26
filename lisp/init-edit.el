@@ -147,10 +147,7 @@
   :init
   (global-set-key (kbd "C-'") #'avy-goto-char-2)
   :config
-  (setq avy-all-windows nil
-        ;; use `C-u' to make avy search for all window
-        avy-all-windows-alt t
-        avy-background t
+  (setq avy-background t
         avy-style 'pre))
 
 (provide 'init-edit)
