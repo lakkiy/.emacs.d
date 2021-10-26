@@ -89,6 +89,9 @@
 
 (fset 'list-buffers 'ibuffer)
 
+;; produces a cleaner result
+(global-set-key [remap eval-last-sexp] 'pp-eval-last-sexp)
+
 ;; more useful frame title, that show either a file or a
 ;; buffer name (if the buffer isn't visiting a file)
 (setq frame-title-format
