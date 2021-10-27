@@ -21,7 +21,8 @@
   :after vertico
   :straight (vertico-posframe :type git :host github :repo "tumashu/vertico-posframe")
   :init
-  (vertico-posframe-mode 1))
+  (when (display-graphic-p)
+    (vertico-posframe-mode 1)))
 
 (eat-package orderless
   :straight t

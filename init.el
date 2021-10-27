@@ -73,6 +73,6 @@
        (unless window-system
          (require 'init-xterm))
        (require 'init-fun)
-       (when +use-icon-p
+       (when (and +use-icon-p (display-graphic-p))
          (require 'init-icons))
        (add-hook 'after-init-hook 'server-mode))))

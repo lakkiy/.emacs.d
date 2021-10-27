@@ -134,8 +134,9 @@
 (setq-default header-line-format nil)
 
 (defun +init-ui (&optional frame)
-  (nyan-mode)
-  (parrot-mode)
+  (when (display-graphic-p)
+    (nyan-mode)
+    (parrot-mode))
 
   (if +use-header-line
       (setq-default
