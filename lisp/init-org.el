@@ -37,6 +37,25 @@
 (eat-package org
   :init
   (setq org-directory "~/Dropbox/org")
+  ;; `org-babel-load-languages' 在初始化的时候只存放 (LANG . nil)，表示需禁止的语言。
+  ;; 其它所有需要的语言都动态加载，加载成功后存入 `org-babel-load-languages'
+  (defun my/org-babel-execute-src-block (&optional _arg info _params)
+    "Load language if needed"
+    (let* ((lang (nth 0 info))
+           (sym (if (member (downcase lang) '("c" "cpp" "c++")) 'C (intern lang)))
+           (backup-languages org-babel-load-languages))
+      ;; - (LANG . nil) 明确禁止的语言，不加载。
+      ;; - (LANG . t) 已加载过的语言，不重复载。
+      (unless (assoc sym backup-languages)
+        (condition-case err
+            (progn
+              (org-babel-do-load-languages 'org-babel-load-languages (list (cons sym t)))
+              (setq-default org-babel-load-languages (append (list (cons sym t)) backup-languages)))
+          (file-missing
+           (setq-default org-babel-load-languages backup-languages)
+           err)))))
+
+  (advice-add 'org-babel-execute-src-block :before #'my/org-babel-execute-src-block )
   :config
   (setq org-startup-indented t
         org-hide-emphasis-markers t
