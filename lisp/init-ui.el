@@ -104,15 +104,12 @@
 (defun +format-mode-line ()
   ;; TODO use -*-FZSuXinShiLiuKaiS-R-GB-normal-normal-normal-*-*-*-*-*-p-0-iso10646-1
   ;; to show flymake or flycheck errors count in mode line
-  (let* ((lhs '((:eval (when (bound-and-true-p anzu) (anzu--update-mode-line)))
-                (:eval (meow-indicator))
+  (let* ((lhs '((:eval (meow-indicator))
                 (:eval (rime-lighter))
                 ;; " Row %l Col %C %%p"
                 " Row %4l Col %2C "
                 (:eval (nyan-create))
-                ;; make mode line fill rime lighter height
-                (:eval (propertize " " 'display '(height 1.1)))
-                ;; (:eval (propertize " " 'display '(raise -0.3)))
+                (:eval (propertize " " 'display '(height 1.1))) ;; make mode line fill rime lighter height
                 (:eval (parrot-create))
                 ;; use 危
                 ;; (:eval (when (bound-and-true-p flymake-mode)
