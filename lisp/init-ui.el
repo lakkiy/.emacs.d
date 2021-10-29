@@ -130,16 +130,34 @@
 
 (setq-default header-line-format nil)
 
+(eat-package doom-modeline
+  :straight t
+  :init
+  (defvar +use-doom-modeline-p nil)
+  (unless (and after-init-time +use-doom-modeline-p)
+    (setq-default mode-line-format nil))
+  (setq doom-modeline-irc nil
+        doom-modeline-mu4e nil
+        doom-modeline-gnus nil
+        doom-modeline-github nil
+        doom-modeline-persp-name nil
+        doom-modeline-unicode-fallback t
+        doom-modeline-enable-work-count nil)
+  (setq doom-modeline-icon (and (display-graphic-p) +use-icon-p))
+  (setq doom-modeline-project-detection 'project))
+
 (defun +init-ui (&optional frame)
-  (when (display-graphic-p)
+  (when (and (display-graphic-p) (not +use-doom-modeline-p))
     (nyan-mode)
     (parrot-mode))
 
-  (if +use-header-line
-      (setq-default
-       mode-line-format nil
-       header-line-format '(:eval (+format-mode-line)))
-    (setq-default mode-line-format '(:eval (+format-mode-line))))
+  (if +use-doom-modeline-p
+      (add-hook 'after-init-hook 'doom-modeline-mode)
+    (if +use-header-line
+        (setq-default
+         mode-line-format nil
+         header-line-format '(:eval (+format-mode-line)))
+      (setq-default mode-line-format '(:eval (+format-mode-line)))) )
 
   (when (not (display-graphic-p))
     (load-theme +theme-tui t)
