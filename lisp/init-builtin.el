@@ -15,9 +15,8 @@
   (push (expand-file-name recentf-save-file) recentf-exclude)
   (add-to-list 'recentf-filename-handlers #'abbreviate-file-name))
 
-(eat-package display-line-numbers
-  ;; :hook ((prog-mode-hook conf-mode-hook) . display-line-numbers-mode)
-  )
+;; (eat-package display-line-numbers
+;;   :hook ((prog-mode-hook conf-mode-hook) . display-line-numbers-mode))
 
 (eat-package subword
   :doc "handling capitalized subwords in a nomenclature"
@@ -111,13 +110,12 @@
   (global-set-key (kbd "C-<mouse-1>") #'xref-find-definitions-at-mouse)
   ;; Xref no prompt
   (setq xref-prompt-for-identifier nil)
+  ;; replace with `consult'
+  ;; (setq xref-show-xrefs-function #'xref-show-definitions-completing-read)
+  ;; (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
   ;; On Emacs 28, `xref-search-program' can be set to `ripgrep'.
   ;; `project-find-regexp' benefits from that.
-  (when (>= emacs-major-version 28)
-    ;; replace with `consult'
-    ;; (setq xref-show-xrefs-function #'xref-show-definitions-completing-read)
-    ;; (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
-    (setq xref-search-program 'ripgrep)))
+  (setq xref-search-program 'ripgrep))
 
 (eat-package pluse
   :init

@@ -26,11 +26,12 @@
     (meow-setup-line-number))
   (meow-setup)
   :init
-  (setq meow-replace-state-name-list '((normal . "OwO")
-                                       (insert . "QAQ")
-                                       (keypad . "-,-")
-                                       (motion . "=-="))
-        meow-esc-delay 0.001)
+  (setq
+   ;; meow-replace-state-name-list '((normal . "OwO")
+   ;;                                (insert . "QAQ")
+   ;;                                (keypad . "-,-")
+   ;;                                (motion . "=-="))
+   meow-esc-delay 0.001)
   (defun meow-setup ()
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
     (meow-motion-overwrite-define-key

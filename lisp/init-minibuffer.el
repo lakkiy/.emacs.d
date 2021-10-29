@@ -34,6 +34,10 @@
   :straight t
   :init
   (global-set-key (kbd "C-s") 'consult-line)
+  (global-set-key [remap bookmark-jump] 'consult-bookmark)
+  (global-set-key [remap recentf-open-files] 'consult-recent-file)
+  (global-set-key [remap imenu] 'consult-imenu)
+  (global-set-key [remap goto-line] 'consult-goto-line)
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref
         consult-project-root-function (lambda ()

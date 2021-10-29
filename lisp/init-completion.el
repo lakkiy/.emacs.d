@@ -5,7 +5,10 @@
 (eat-package yasnippet
   :straight t
   :commands yas-minor-mode
-  :hook ((prog-mode-hook conf-mode-hook) . yas-minor-mode))
+  :hook ((prog-mode-hook conf-mode-hook) . yas-minor-mode)
+  :config
+  (let ((inhibit-message t))
+    (yas-reload-all)))
 
 (eat-package company
   :straight t

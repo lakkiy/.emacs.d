@@ -10,22 +10,17 @@
   (eq system-type 'gnu/linux)
   "Are we running on a GNU/Linux system?")
 
-(defconst emacs/>=28p
-  (>= emacs-major-version 28)
-  "Emacs is 28 or above.")
-
 (defvar +font "Monaco")
 (defvar +font-cn "FZSuXinShiLiuKaiS-R-GB")
 (defvar +font-unicode "Apple Color Emoji")
-;; (defvar +font-variable-pitch "Bookerly" "Font use in variable-pitch-mode.")
 (defvar +font-variable-pitch "Cardo" "Font use in variable-pitch-mode.")
 (defvar +font-height (cond (sys/macp 130) (t 110)))
 (defvar +use-header-line (if (display-graphic-p) nil t) "Wheather to use header line.")
-(defvar +theme 'doom-spacegrey "Theme use in gui.")
+(defvar +theme 'nano "Theme use in gui.")
 (defvar +theme-tui 'kaolin-aurora "Theme use in tui.")
 (defvar +theme-use-system nil)
-(defvar +theme-system-light 'doom-solarized-light "Theme used after change system apperance to light.")
-(defvar +theme-system-dark 'doom-solarized-dark "Theme used after change system apperance to dark.")
+(defvar +theme-system-light 'spacemacs-light "Theme used after change system apperance to light.")
+(defvar +theme-system-dark 'spacemacs-dark "Theme used after change system apperance to dark.")
 (defvar +enable-proxy? nil)
 (defvar +proxy "127.0.0.1:7890")
 (defvar +erc-password "")
@@ -121,7 +116,7 @@
 
 (setq-default
  initial-major-mode 'fundamental-mode
-  inhibit-compacting-font-caches t                   ; Don’t compact font caches during GC.
+ inhibit-compacting-font-caches t                   ; Don’t compact font caches during GC.
  delete-by-moving-to-trash t                        ; Deleting files go to OS's trash folder
  ring-bell-function 'ignore                         ; Disable osx bell ring
  hl-line-sticky-flag nil
