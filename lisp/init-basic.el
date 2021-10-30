@@ -41,6 +41,7 @@
     (global-set-key [(super s)] #'save-buffer)
     (global-set-key [(super l)] #'goto-line)
     (global-set-key [(super w)] #'delete-frame)
+    (global-set-key [(super q)] #'save-buffers-kill-emacs)
     (global-set-key [(super z)] #'undo))
 
   (unless sys/macp
