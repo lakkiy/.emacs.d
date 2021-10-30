@@ -16,7 +16,7 @@
 (defvar +font-variable-pitch "Cardo" "Font use in variable-pitch-mode.")
 (defvar +font-height (cond (sys/macp 130) (t 110)))
 (defvar +use-header-line (if (display-graphic-p) nil t) "Wheather to use header line.")
-(defvar +theme 'nano "Theme use in gui.")
+(defvar +theme 'spacemacs-light "Theme use in gui.")
 (defvar +theme-tui 'kaolin-aurora "Theme use in tui.")
 (defvar +theme-use-system nil)
 (defvar +theme-system-light 'spacemacs-light "Theme used after change system apperance to light.")
@@ -35,14 +35,13 @@
     ;; Compatible with Emacs Mac port
     (setq mac-option-modifier 'meta
           mac-command-modifier 'super)
-    (bind-keys ([(super a)] . mark-whole-buffer)
-               ([(super c)] . kill-ring-save)
-               ([(super l)] . goto-line)
-               ([(super q)] . save-buffers-kill-emacs)
-               ([(super s)] . save-buffer)
-               ([(super v)] . yank)
-               ([(super w)] . delete-frame)
-               ([(super z)] . undo)))
+    (global-set-key [(super a)] #'mark-whole-buffer)
+    (global-set-key [(super v)] #'yank)
+    (global-set-key [(super c)] #'kill-ring-save)
+    (global-set-key [(super s)] #'save-buffer)
+    (global-set-key [(super l)] #'goto-line)
+    (global-set-key [(super w)] #'delete-frame)
+    (global-set-key [(super z)] #'undo))
 
   (unless sys/macp
     (setq command-line-ns-option-alist nil))
