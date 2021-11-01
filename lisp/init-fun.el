@@ -12,7 +12,7 @@
   (eat-package epc :straight t)
   (eat-package deferred :straight t)
   ;; TODO
-  (require 'eaf)
+  ;; (require 'eaf)
 
   (eat-package eaf-browser
     :straight (eaf-browser :type git :host github :repo "emacs-eaf/eaf-browser" :files ("*.el" "*.py"))
