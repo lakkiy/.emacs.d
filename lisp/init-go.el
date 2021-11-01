@@ -68,10 +68,6 @@
     (cl-defmethod project-root ((project (head go-module)))
       (cdr project))
     (add-hook 'project-find-functions #'project-find-go-module))
-  ;; Try to install go tools if `gopls' is not found
-  (unless (executable-find "gopls")
-    (go-update-tools))
-
   (define-key go-mode-map (kbd "C-c t x") #'go-run))
 
 (eat-package flymake-golangci

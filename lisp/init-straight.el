@@ -46,7 +46,8 @@
   :straight t
   :init
   (when (eq system-type 'darwin)
-    (setq exec-path-from-shell-arguments '("-l"))
+    ;; Use fish as default shell
+    (setq exec-path-from-shell-shell-name "/usr/local/bin/fish")
     (add-hook 'after-init-hook #'exec-path-from-shell-initialize)))
 
 (provide 'init-straight)
