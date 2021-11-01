@@ -15,7 +15,7 @@
   (require 'eaf)
 
   (eat-package eaf-browser
-    :straight (eaf-browser :type git :host github :repo "emacs-eaf/eaf-browser")
+    :straight (eaf-browser :type git :host github :repo "emacs-eaf/eaf-browser" :files ("*.el" "*.py"))
     :init
     (setq eaf-browser-continue-where-left-off t
           eaf-browser-enable-autofill t
