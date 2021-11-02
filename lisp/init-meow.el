@@ -22,8 +22,9 @@
                   go-dot-mod-mode
                   diff-mode))
     (add-to-list 'meow-mode-state-list `(,mode . normal)))
-  (when (display-graphic-p)
-    (meow-setup-line-number))
+  ;; TODO disable meow mode in vterm mode
+  ;; (when (display-graphic-p)
+  ;;   (meow-setup-line-number))
   (meow-setup)
   :init
   (setq
