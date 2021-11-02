@@ -108,9 +108,9 @@
                 (:eval (rime-lighter))
                 ;; " Row %l Col %C %%p"
                 " Row %4l Col %2C "
-                (:eval (nyan-create))
+                (:eval (when (bound-and-true-p nyan-mode) (nyan-create)))
                 (:eval (propertize " " 'display '(height 1.1))) ;; make mode line fill rime lighter height
-                (:eval (parrot-create))
+                (:eval (when (bound-and-true-p parrot-mode) (parrot-create)))
                 ;; use 危
                 ;; (:eval (when (bound-and-true-p flymake-mode)
                 ;;          flymake-mode-line-format))
@@ -151,7 +151,7 @@
     (nyan-mode)
     (parrot-mode))
 
-  (if +use-doom-modeline-p
+  (if (and +use-doom-modeline-p (display-graphic-p))
       (add-hook 'after-init-hook 'doom-modeline-mode)
     (if +use-header-line
         (setq-default
@@ -162,7 +162,8 @@
   (when (not (display-graphic-p))
     (load-theme +theme-tui t)
     ;; Use terminal background color
-    (set-face-background 'default "undefined"))
+    ;; (set-face-background 'default "undefined")
+    )
 
   (when (display-graphic-p)
     (load-theme +theme t)

@@ -34,6 +34,11 @@
 (eat-package restclient :straight t)
 (eat-package pretty-hydra :straight t)
 
+(eat-package citar
+  :straight t
+  :init
+  (setq citar-bibliography '("~/Dropbox/bib/references.bib")))
+
 (eat-package org
   :init
   (setq org-directory "~/Dropbox/org")

@@ -59,12 +59,4 @@
     (interactive)
     (setq-default company-backends (remove 'company-tabnine company-backends))))
 
-(eat-package bibtex-actions
-  :straight t
-  :after embark
-  :config
-  ;; Make the 'bibtex-actions' bindings available from `embark-act'.
-  (add-to-list 'embark-keymap-alist '(bibtex . bibtex-actions-map))
-  (setq bibtex-completion-bibliography "~/Dropbox/bib/references.bib"))
-
 (provide 'init-completion)
