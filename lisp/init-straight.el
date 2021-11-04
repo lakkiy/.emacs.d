@@ -46,8 +46,6 @@
   :straight t
   :init
   (when (eq system-type 'darwin)
-    ;; Delete this if you use `emacsmacport', cause it can get correct `SHELL' from `getenv'
-    (setq exec-path-from-shell-shell-name "/usr/local/bin/fish")
     (add-hook 'after-init-hook #'exec-path-from-shell-initialize)))
 
 (provide 'init-straight)
