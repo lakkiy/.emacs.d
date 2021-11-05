@@ -162,6 +162,7 @@
  split-height-threshold nil                         ; prefer horizental split
  split-width-threshold 120
  suggest-key-bindings nil                           ; disable "You can run the command balabala..."
+ word-wrap-by-category t ;; Emacs 之光！
  )
 
 (provide 'init-basic)
