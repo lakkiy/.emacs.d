@@ -84,33 +84,13 @@
                         'vertical-border
                         (make-glyph-code ?┃))
 
-(eat-package parrot
-  :straight t
-  :init
-  (setq parrot-num-rotations nil))
-(eat-package nyan-mode
-  :straight t
-  :init
-  (setq nyan-animate-nyancat t
-        nyan-wavy-trail t
-        nyan-bar-length 16)
-  :config
-  (nyan-start-animation))
-
-;; TODO project path | meow | (major-mode) | git | flyc | row,col
-;; TODO show window message or eyebrowse, change all other to right side
-;; TODO add paded to :eval
-;; TODO use diff face in active modeline and deactive modeline
 (defun +format-mode-line ()
   ;; TODO use -*-FZSuXinShiLiuKaiS-R-GB-normal-normal-normal-*-*-*-*-*-p-0-iso10646-1
   ;; to show flymake or flycheck errors count in mode line
   (let* ((lhs '((:eval (meow-indicator))
                 (:eval (rime-lighter))
-                ;; " Row %l Col %C %%p"
-                " Row %4l Col %2C "
-                (:eval (when (bound-and-true-p nyan-mode) (nyan-create)))
+                " Row %l Col %C %%p"
                 (:eval (propertize " " 'display '(height 1.1))) ;; make mode line fill rime lighter height
-                (:eval (when (bound-and-true-p parrot-mode) (parrot-create)))
                 ;; use 危
                 ;; (:eval (when (bound-and-true-p flymake-mode)
                 ;;          flymake-mode-line-format))
@@ -147,10 +127,6 @@
   (setq doom-modeline-project-detection 'project))
 
 (defun +init-ui (&optional frame)
-  (when (and (display-graphic-p) (not +use-doom-modeline-p))
-    (nyan-mode)
-    (parrot-mode))
-
   (if (and +use-doom-modeline-p (display-graphic-p))
       (add-hook 'after-init-hook 'doom-modeline-mode)
     (if +use-header-line

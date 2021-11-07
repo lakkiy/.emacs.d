@@ -270,7 +270,7 @@ prepended to the element after the #+HEADER: tag."
         org-roam-capture-templates
         '(("d" "default" plain "* %?"
            :if-new (file+head "%<Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags:")
-           :clock-in t :clock-resume t :unnarrowed t)
+           :clock-in t :unnarrowed t)
           ("l" "leetcode" plain "%?"
            :if-new (file+head+olp
                     "%<%Y%m%d%H%M%S>-${slug}.org"

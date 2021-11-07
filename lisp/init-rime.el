@@ -4,8 +4,7 @@
 (defvar +rime-sys nil)
 
 (defun +rime-install-librime ()
-  "Instsall librime with `+rime-version' and `+rime-sys' like
-rime-1.7.2-osx.zip to emacs/librime."
+  "Instsall librime on macos to emacs/librime."
   (interactive)
   ;; TODO
   ;; should only use in OSX system

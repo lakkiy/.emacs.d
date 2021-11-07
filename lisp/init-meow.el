@@ -6,7 +6,7 @@
   (after-init-hook . (lambda ()
                        (meow-global-mode 1)))
   (term-mode-hook . (lambda ()
-                      (meow-mode -1)))
+                          (meow-mode -1)))
   :config
   ;; make Meow usable in TUI Emacs
   (unless (display-graphic-p)
@@ -22,17 +22,15 @@
                   go-dot-mod-mode
                   diff-mode))
     (add-to-list 'meow-mode-state-list `(,mode . normal)))
-  ;; TODO disable meow mode in vterm mode
   ;; (when (display-graphic-p)
   ;;   (meow-setup-line-number))
   (meow-setup)
   :init
-  (setq
-   ;; meow-replace-state-name-list '((normal . "OwO")
-   ;;                                (insert . "QAQ")
-   ;;                                (keypad . "-,-")
-   ;;                                (motion . "=-="))
-   meow-esc-delay 0.001)
+  (setq meow-esc-delay 0.001
+        meow-replace-state-name-list '((normal . "N")
+                                       (motion . "M")
+                                       (keypad . "K")
+                                       (insert . "I")))
   (defun meow-setup ()
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
     (meow-motion-overwrite-define-key

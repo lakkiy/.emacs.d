@@ -10,11 +10,8 @@
   (eq system-type 'gnu/linux)
   "Are we running on a GNU/Linux system?")
 
-(defvar +font "Monaco")
-(defvar +font-cn "FZSuXinShiLiuKaiS-R-GB")
 (defvar +font-unicode "Apple Color Emoji")
 (defvar +font-variable-pitch "Cardo" "Font use in variable-pitch-mode.")
-(defvar +font-height (cond (sys/macp 130) (t 110)))
 (defvar +use-header-line (if (display-graphic-p) nil t) "Wheather to use header line.")
 (defvar +theme 'spacemacs-light "Theme use in gui.")
 (defvar +theme-tui 'kaolin-aurora "Theme use in tui.")

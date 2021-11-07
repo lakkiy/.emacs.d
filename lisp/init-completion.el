@@ -6,6 +6,8 @@
   :straight t
   :commands yas-minor-mode
   :hook ((prog-mode-hook conf-mode-hook) . yas-minor-mode)
+  :init
+  (eat-package yasnippet-snippets :straight t)
   :config
   (let ((inhibit-message t))
     (yas-reload-all)))
@@ -40,13 +42,6 @@
   (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
   (define-key company-active-map (kbd "C-p") #'company-select-previous)
   (define-key company-active-map (kbd "C-n") #'company-select-next))
-
-(eat-package company-english-helper
-  :straight
-  (company-english-helper :type git :host github :repo "manateelazycat/company-english-helper")
-  :commands toggle-company-english-helper
-  :init
-  (global-set-key (kbd "C-c I") #'toggle-company-english-helper))
 
 (eat-package company-tabnine
   :straight t
