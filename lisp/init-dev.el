@@ -32,8 +32,10 @@
     (global-set-key (kbd "C-x c R") 'citre-ace-peek-references)
     (global-set-key (kbd "C-x c U") 'citre-global-update-database)
     (with-eval-after-load 'citre-peek
-      (define-key citre-peek-keymap (kbd "M-l r")
-        'citre-peek-through-references)))
+      (define-key citre-peek-keymap (kbd "M-l r") 'citre-peek-through-references))
+    :config
+    (with-eval-after-load "exec-path-from-shell"
+      (exec-path-from-shell-copy-envs '("GTAGSOBJDIRPREFIX" "GTAGSCONF" "GTAGSLABEL"))))
   :config
   (define-key citre-peek-keymap (kbd "M-l s") #'citre-peek-save-session)
   (define-key citre-peek-keymap (kbd "M-l h") #'citre-peek-chain-backward)
