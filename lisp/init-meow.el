@@ -6,7 +6,7 @@
   (after-init-hook . (lambda ()
                        (meow-global-mode 1)))
   (term-mode-hook . (lambda ()
-                          (meow-mode -1)))
+                      (meow-mode -1)))
   :config
   ;; make Meow usable in TUI Emacs
   (unless (display-graphic-p)
@@ -30,6 +30,7 @@
         meow-replace-state-name-list '((normal . "N")
                                        (motion . "M")
                                        (keypad . "K")
+                                       (bmacro . "B")
                                        (insert . "I")))
   (defun meow-setup ()
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
