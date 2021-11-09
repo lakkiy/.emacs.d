@@ -23,14 +23,6 @@
 
 (eat-package chess :straight t)
 
-(eat-package toki-term
-  :commands
-  ;; TODO seems not work
-  ;; TODO remap `term' to `toki-term'
-  toki-term
-  :config
-  (toki-term-setup-escape-keys))
-
 (eat-package rainbow-mode
   :straight t
   :commands rainbow-mode)
