@@ -119,7 +119,7 @@
      '("f" . meow-find)
      '("F" . meow-find-expand)
      '("g" . meow-keyboard-quit)
-     '("G" . goto-line)
+     '("G" . meow-grab)
      '("h" . meow-left)
      '("H" . meow-left-expand)
      '("i" . meow-insert)
