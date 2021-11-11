@@ -14,8 +14,7 @@
         ;; change reply symbol
         telega-symbol-reply "↫"
         ;; set date format for old messages
-        telega-old-date-format "%Y/%M/%D"
-        telega-proxies +telega-proxy)
+        telega-old-date-format "%Y/%M/%D")
 
   ;; pgtk emacs does not support copying image from clipboard, a simple workaround
   (define-advice telega-chatbuf-attach-clipboard (:override (doc-p) yang)

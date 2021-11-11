@@ -6,23 +6,15 @@
   :init
   (defun +minibuffer-backward-delete ()
     (interactive)
-    (delete-region
-     (or
-      (save-mark-and-excursion
-        (while (equal ?/ (char-before)) (backward-char))
-        (when-let ((p (re-search-backward "/" (line-beginning-position) t)))
-          (1+ p)))
-      (save-mark-and-excursion (backward-word) (point)))
-     (point)))
+    (save-restriction
+      (narrow-to-region (minibuffer-prompt-end) (point-max))
+      (delete-region
+       (save-mark-and-excursion
+         (backward-sexp)
+         (point))
+       (point))))
   :config
   (define-key vertico-map (kbd "M-DEL") #'+minibuffer-backward-delete))
-
-(eat-package vertico-posframe
-  :after vertico
-  :straight (vertico-posframe :type git :host github :repo "tumashu/vertico-posframe")
-  :init
-  (when (display-graphic-p)
-    (vertico-posframe-mode 1)))
 
 (eat-package orderless
   :straight t

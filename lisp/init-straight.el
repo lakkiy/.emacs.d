@@ -22,14 +22,22 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-(require 'eat-package)
+(defconst sys/macp
+  (eq system-type 'darwin)
+  "Are we running on a Mac system?")
 
-(defvar +enable-benchmark nil)
+(defconst sys/linuxp
+  (eq system-type 'gnu/linux)
+  "Are we running on a GNU/Linux system?")
+
+(require 'eat-package)
 
 (eat-package benchmark-init
   :straight
   (benchmark-init :type git :host github :repo "404cn/benchmark-init-el")
   :init
+  (defvar +enable-benchmark nil
+    "Where to run benchmark after init.")
   (when +enable-benchmark
     (require 'benchmark-init)
     ;; To disable collection of benchmark data after init is done.
@@ -45,7 +53,7 @@
 (eat-package exec-path-from-shell
   :straight t
   :init
-  (when (eq system-type 'darwin)
+  (when sys/macp
     (add-hook 'after-init-hook #'exec-path-from-shell-initialize)))
 
 (provide 'init-straight)

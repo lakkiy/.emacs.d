@@ -156,4 +156,8 @@
   ;; current subdir, instead of the current subdir of this dired buffer
   (setq dired-dwim-target t))
 
+(eat-package ibuffer
+  :init
+  (fset 'list-buffers 'ibuffer))
+
 (provide 'init-builtin)

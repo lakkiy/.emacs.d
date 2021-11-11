@@ -47,14 +47,20 @@
 (defun display-startup-echo-area-message()
   (message nil))
 
+(defvar +foo-p nil
+  "TODO Find a name.")
+
 (let ((file-name-handler-alist nil))
   (require 'init-straight)
   (require 'init-basic)
   (require 'init-builtin)
-  (require 'init-ui)
+  (require 'init-theme)
   (require 'init-meow)
   (require 'init-rime)
   (require 'init-minibuffer)
+  (require 'init-modeline)
+  (when (and +foo-p (display-graphic-p))
+    (require 'init-foo))
   (run-with-idle-timer
    1 nil
    #'(lambda ()
@@ -73,6 +79,4 @@
        (unless window-system
          (require 'init-xterm))
        (require 'init-fun)
-       (when (and +use-icon-p (display-graphic-p))
-         (require 'init-icons))
        (add-hook 'after-init-hook 'server-mode))))

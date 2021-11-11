@@ -1,29 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(require 'init-utils)
-
-(defconst sys/macp
-  (eq system-type 'darwin)
-  "Are we running on a Mac system?")
-
-(defconst sys/linuxp
-  (eq system-type 'gnu/linux)
-  "Are we running on a GNU/Linux system?")
-
-(defvar +font-unicode "Apple Color Emoji")
-(defvar +font-variable-pitch "Cardo" "Font use in variable-pitch-mode.")
-(defvar +use-header-line (if (display-graphic-p) nil t) "Wheather to use header line.")
-(defvar +theme 'spacemacs-light "Theme use in gui.")
-(defvar +theme-tui 'kaolin-aurora "Theme use in tui.")
-(defvar +theme-use-system nil)
-(defvar +theme-system-light 'spacemacs-light "Theme used after change system apperance to light.")
-(defvar +theme-system-dark 'spacemacs-dark "Theme used after change system apperance to dark.")
-(defvar +enable-proxy? nil)
-(defvar +proxy "127.0.0.1:7890")
-(defvar +erc-password "")
-(defvar +telega-proxy nil)
-(defvar +use-icon-p nil)
-
 (with-no-warnings
   ;; Don't ping things that look like domain names.
   (setq ffap-machine-p-known 'reject)
@@ -46,6 +22,7 @@
   (unless sys/linuxp
     (setq command-line-x-option-alist nil)))
 
+
 (defvar +theme-hooks nil
   "((theme-id . function) ...)")
 (defun +load-theme-advice (f theme-id &optional no-confirm no-enable &rest args)
@@ -59,48 +36,40 @@
         (`(,_ . ,f) (funcall f))))))
 (advice-add 'load-theme :around #'+load-theme-advice)
 
-;; auto change theme after system apearance changed
-(when (and (boundp 'ns-system-appearance)
-           (display-graphic-p)
-           +theme-use-system)
+
+;; auto change theme after system appearance changed
+(defvar +theme-system-appearance nil
+  "Weather to auto change theme after system appearance changed.")
+(defvar +theme-system-light 'spacemacs-light
+  "Theme used after change system appearance to light.")
+(defvar +theme-system-dark 'spacemacs-dark
+  "Theme used after change system appearance to dark.")
+(when (and (boundp 'ns-system-appearance) (display-graphic-p) +theme-system-appearance)
   (add-to-list 'ns-system-appearance-change-functions
                (lambda (l?d)
                  (if (eq l?d 'light)
                      (load-theme +theme-system-light t)
                    (load-theme +theme-system-dark t)))))
 
-(when +enable-proxy?
-  (add-hook 'after-init-hook (lambda () (+proxy-http-enable))))
 
 (defun +reopen-file-with-sudo ()
   (interactive)
   (find-alternate-file (format "/sudo::%s" (buffer-file-name))))
 (global-set-key (kbd "C-x C-z") #'+reopen-file-with-sudo)
 
-(add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
-
-(fset 'list-buffers 'ibuffer)
 
 ;; produces a cleaner result
 (global-set-key [remap eval-last-sexp] 'pp-eval-last-sexp)
 
-;; more useful frame title, that show either a file or a
-;; buffer name (if the buffer isn't visiting a file)
-(setq frame-title-format
-      '((:eval (if (buffer-file-name)
-                   (abbreviate-file-name (buffer-file-name))
-                 "%b"))))
 
 ;; Encoding
 ;; UTF-8 as the default coding system
 (when (fboundp 'set-charset-priority)
   (set-charset-priority 'unicode))
-
 ;; Explicitly set the prefered coding systems to avoid annoying prompt
 ;; from emacs (especially on Microsoft Windows)
 (prefer-coding-system 'utf-8)
 (setq locale-coding-system 'utf-8)
-
 (set-language-environment 'utf-8)
 (set-default-coding-systems 'utf-8)
 (set-buffer-file-coding-system 'utf-8)
@@ -110,6 +79,53 @@
 (set-terminal-coding-system 'utf-8)
 (set-selection-coding-system 'utf-8)
 (modify-coding-system-alist 'process "*" 'utf-8)
+
+
+(add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
+
+;; Optimization
+(setq idle-update-delay 1.0)
+
+(setq-default cursor-in-non-selected-windows nil)
+(setq highlight-nonselected-windows nil)
+
+(setq fast-but-imprecise-scrolling t)
+(setq redisplay-skip-fontification-on-input t)
+
+;; Suppress GUI features and more
+(setq use-file-dialog nil
+      use-dialog-box nil
+      inhibit-splash-screen t
+      inhibit-x-resources t
+      inhibit-default-init t
+      inhibit-startup-screen t
+      inhibit-startup-message t
+      inhibit-startup-buffer-menu t)
+
+;; Pixelwise resize
+(setq window-resize-pixelwise t
+      frame-resize-pixelwise t)
+
+(with-no-warnings
+  (when sys/macp
+    ;; Render thinner fonts
+    (setq ns-use-thin-smoothing t)
+    ;; Don't open a file in a new frame
+    (setq ns-pop-up-frames nil)))
+
+;; Don't use GTK+ tooltip
+(when (boundp 'x-gtk-use-system-tooltips)
+  (setq x-gtk-use-system-tooltips nil))
+
+;; Linux specific
+(setq x-underline-at-descent-line t)
+
+
+;; Nice window divider
+(set-display-table-slot standard-display-table
+                        'vertical-border
+                        (make-glyph-code ?┃))
+
 
 (setq-default
  initial-major-mode 'fundamental-mode
