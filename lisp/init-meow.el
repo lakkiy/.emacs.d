@@ -32,6 +32,11 @@
                                        (keypad . "K")
                                        (bmacro . "B")
                                        (insert . "I")))
+  (custom-set-faces
+   `(meow-keypad-indicator ((t (:foreground "#009F9F"))))
+   `(meow-insert-indicator ((t (:foreground "#39BA7E"))))
+   `(meow-motion-indicator ((t (:foreground "#E24C49"))))
+   `(meow-bmacro-indicator ((t (:foreground "#B28CE2")))))
   (defun meow-setup ()
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
     (meow-motion-overwrite-define-key
