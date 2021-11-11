@@ -78,7 +78,7 @@
      '("L" . display-line-numbers-mode)
      '("A" . org-agenda-list)
      '("t" . tab-bar-select-tab-by-name)
-     '("T" . "<f1>") ;; HACK treemacs
+     '("T" . telega)
      '("I" . imenu-list-smart-toggle)
      ;; SPC j/k will run the original command in MOTION state.
      '("j" . meow-motion-origin-command)

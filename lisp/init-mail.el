@@ -35,8 +35,6 @@ This face is the default value for the \"golang\" tag in
   :straight t
   :commands notmuch
   :init
-  (add-to-list 'notmuch-search-line-faces '("emacs" . notmuch-search-emacs-face))
-  (add-to-list 'notmuch-search-line-faces '("golang" . notmuch-search-golang-face))
   (setq notmuch-show-logo nil
         notmuch-search-oldest-first nil
         notmuch-search-result-format '(("date" . "%12s ")
