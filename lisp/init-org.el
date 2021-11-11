@@ -35,7 +35,7 @@
 (eat-package pretty-hydra :straight t)
 
 (eat-package citar
-  :straight t
+  :straight (citar :type git :host github :repo "bdarcus/citar")
   :init
   (setq citar-bibliography '("~/Dropbox/bib/references.bib")))
 

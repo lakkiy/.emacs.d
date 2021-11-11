@@ -29,7 +29,8 @@ This function is slow, so we have to use cache."
   (let* ((lhs '((:eval (when (fboundp 'meow-indicator) (meow-indicator)))
                 (:eval (when (fboundp 'rime-lighter) (rime-lighter)))
                 " Row %l Col %C %%p"
-                (:eval (propertize " " 'display '(height 1.1))) ;; make mode line fill rime lighter height
+                (:eval (propertize " " 'display '(height 1.4))) ;; make mode line fill rime lighter height
+                (:eval (propertize " " 'display '(raise -0.3)))
                 (:eval (when (bound-and-true-p flycheck-mode) flycheck-mode-line))
                 (:eval (when (bound-and-true-p flymake-mode) flymake-mode-line-format))))
          (rhs '((:eval (propertize (+smart-file-name-cached) 'face 'mode-line-buffer-id))
