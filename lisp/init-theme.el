@@ -62,13 +62,15 @@
 (defvar +font-unicode "Apple Color Emoji")
 (defvar +font-cn "FZSuXinShiLiuKaiS-R-GB")
 (defvar +font-variable-pitch "Cardo")
+(defvar +font-fixed-pitch "Recursive")
 
 (defun +load-base-font ()
   (let* ((font-spec (format "%s-%d" +font-default 15)))
     (set-frame-font font-spec)
+    (set-face-attribute 'default nil :font font-spec)
     (add-to-list 'default-frame-alist `(font . ,font-spec)))
-  ;; TODO fixed font
   (set-face-attribute 'variable-pitch nil :font +font-variable-pitch)
+  (set-face-attribute 'fixed-pitch nil :font +font-fixed-pitch)
   (setf (alist-get +font-variable-pitch face-font-rescale-alist 1.3 nil 'string=) 1.3))
 
 (defun +load-ext-font ()
