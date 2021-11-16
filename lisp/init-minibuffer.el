@@ -26,7 +26,7 @@
   :straight t
   :init
   (global-set-key (kbd "C-s") 'consult-line)
-  (global-set-key (kbd "C-S") 'consult-outline)
+  (global-set-key (kbd "C-M-s") 'consult-outline)
   (global-set-key [remap bookmark-jump] 'consult-bookmark)
   (global-set-key [remap recentf-open-files] 'consult-recent-file)
   (global-set-key [remap imenu] 'consult-imenu)
