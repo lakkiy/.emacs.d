@@ -1,5 +1,18 @@
 ;;; -*- lexical-binding: t -*-
 
+(defvar +theme-hooks nil
+  "((theme-id . function) ...)")
+(defun +load-theme-advice (f theme-id &optional no-confirm no-enable &rest args)
+  "Enhance `load-theme' by disabling other enabled themes & calling hooks"
+  (unless no-enable ;
+    (mapc #'disable-theme custom-enabled-themes))
+  (prog1
+      (apply f theme-id no-confirm no-enable args)
+    (unless no-enable ;
+      (pcase (assq theme-id +theme-hooks)
+        (`(,_ . ,f) (funcall f))))))
+(advice-add 'load-theme :around #'+load-theme-advice)
+
 (eat-package nano-theme
   :init
   (setq nano-theme-light/dark 'light
@@ -89,6 +102,20 @@
 (set-frame-parameter nil 'internal-border-width 10)
 (setq-default left-margin-width 0 right-margin-width 2)
 (set-window-margins nil 0 0)
+
+;; auto change theme after system appearance changed
+(defvar +theme-system-appearance nil
+  "Weather to auto change theme after system appearance changed.")
+(defvar +theme-system-light 'spacemacs-light
+  "Theme used after change system appearance to light.")
+(defvar +theme-system-dark 'spacemacs-dark
+  "Theme used after change system appearance to dark.")
+(when (and (boundp 'ns-system-appearance) (display-graphic-p) +theme-system-appearance)
+  (add-to-list 'ns-system-appearance-change-functions
+               (lambda (l?d)
+                 (if (eq l?d 'light)
+                     (load-theme +theme-system-light t)
+                   (load-theme +theme-system-dark t)))))
 
 (if (display-graphic-p)
     (progn
