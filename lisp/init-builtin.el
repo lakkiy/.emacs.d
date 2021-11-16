@@ -160,4 +160,11 @@
   :init
   (fset 'list-buffers 'ibuffer))
 
+(eat-package ediff
+  :init
+  (setq ediff-window-setup-function #'ediff-setup-windows-plain
+        ediff-highlight-all-diffs t
+        ediff-split-window-function 'split-window-horizontally
+        ediff-merge-split-window-function 'split-window-horizontally))
+
 (provide 'init-builtin)
