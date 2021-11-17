@@ -78,6 +78,7 @@
 
 (eat-package go-tag
   :straight t
+  :after go-mode
   :init
   (setq go-tag-args (list "-transform" "camelcase"))
   :config
