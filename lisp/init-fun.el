@@ -101,7 +101,8 @@
 (eat-package popper
   :straight t
   :init
-  (setq popper-reference-buffers
+  (setq popper-mode-line nil
+        popper-reference-buffers
         '("\\*Messages\\*"
           "Output\\*$"
           "\\*Async Shell Command\\*"

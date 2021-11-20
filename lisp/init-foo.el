@@ -1,11 +1,12 @@
 ;;; -*- lexical-binding: t -*-
 
-(eat-package vertico-posframe
-  :after vertico
-  :straight (vertico-posframe :type git :host github :repo "tumashu/vertico-posframe")
-  :init
-  (when (display-graphic-p)
-    (vertico-posframe-mode 1)))
+;; FIXME he has problem
+;; (eat-package vertico-posframe
+;;   :after vertico
+;;   :straight (vertico-posframe :type git :host github :repo "tumashu/vertico-posframe")
+;;   :init
+;;   (when (display-graphic-p)
+;;     (vertico-posframe-mode 1)))
 
 (eat-package doom-modeline
   :straight t
