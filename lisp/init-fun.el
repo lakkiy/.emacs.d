@@ -21,6 +21,14 @@
           eaf-browser-enable-autofill t
           eaf-browser-enable-adblocker t)))
 
+;; install pyqt5 with your package manager(not pip)
+(eat-package popweb
+  :straight (popweb
+             :type git
+             :host github
+             :repo "manateelazycat/popweb"
+             :files ("*.el" "*.py" "*.js" "*.html" "*.css" "extension")))
+
 (eat-package chess :straight t)
 
 (eat-package rainbow-mode
