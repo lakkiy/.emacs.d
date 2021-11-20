@@ -71,6 +71,12 @@
     :after dired
     :config
     (define-key dired-mode-map (kbd "i") 'dired-subtree-insert)
-    (define-key dired-mode-map (kbd ";") 'dired-subtree-remove)))
+    (define-key dired-mode-map (kbd ";") 'dired-subtree-remove)
+    (set-face-attribute 'dired-subtree-depth-1-face nil :background nil)
+    (set-face-attribute 'dired-subtree-depth-2-face nil :background nil)
+    (set-face-attribute 'dired-subtree-depth-3-face nil :background nil)
+    (set-face-attribute 'dired-subtree-depth-4-face nil :background nil)
+    (set-face-attribute 'dired-subtree-depth-5-face nil :background nil)
+    (set-face-attribute 'dired-subtree-depth-6-face nil :background nil)))
 
 (provide 'init-dired)
