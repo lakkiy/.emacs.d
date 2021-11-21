@@ -268,11 +268,12 @@ prepended to the element after the #+HEADER: tag."
                                        (no-delete-other-windows . t)))))
   (setq org-roam-v2-ack t
         org-roam-capture-templates
-        '(("d" "default" plain "* %?"
-           :if-new (file+head "%<Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags:")
-           :clock-in t :unnarrowed t)
+        '(("d" "default" plain "%?"
+           :target (file+head "%<Y%m%d%H%M%S>-${slug}.org"
+                              "#+title: ${title}\n")
+           :unnarrowed t)
           ("l" "leetcode" plain "%?"
-           :if-new (file+head+olp
+           :target (file+head+olp
                     "%<%Y%m%d%H%M%S>-${slug}.org"
                     "#+title: ${title}\n#+filetags:"
                     ("References\n* Description\n* Code\n* Time & Space\n* Related & Recommend"))
