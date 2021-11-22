@@ -26,7 +26,8 @@ This function is slow, so we have to use cache."
 ;; TODO use -*-FZSuXinShiLiuKaiS-R-GB-normal-normal-normal-*-*-*-*-*-p-0-iso10646-1
 ;; to show flymake or flycheck errors count in mode line
 (defun +format-mode-line ()
-  (let* ((lhs '((:eval (when (fboundp 'meow-indicator) (meow-indicator)))
+  (let* ((lhs '((:eval (when (fboundp 'eyebrowse-mode-line-indicator) (eyebrowse-mode-line-indicator)))
+                (:eval (when (fboundp 'meow-indicator) (meow-indicator)))
                 (:eval (when (fboundp 'rime-lighter) (rime-lighter)))
                 " Row %l Col %C %%p"
                 (:eval (propertize " " 'display '(height 1.4))) ;; make mode line fill rime lighter height

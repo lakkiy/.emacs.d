@@ -13,12 +13,13 @@
    '(aw-minibuffer-leading-char-face ((t (:inherit font-lock-keyword-face :bold t :height 1.0))))
    '(aw-mode-line-face ((t (:inherit mode-line-emphasis :bold t))))))
 
-;; TODO show `eyebrowse-mode-line-indicator'
 (eat-package eyebrowse
   :straight t
   :hook (after-init-hook . eyebrowse-mode)
   :init
   (setq eyebrowse-new-workspace t)
+  ;; (eyebrowse-setup-opinionated-keys) ;; FIXME conflict with `avy'
+  (eyebrowse-mode t)
   :config
   (setq eyebrowse-mode-line-separator "|"))
 

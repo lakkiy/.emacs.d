@@ -95,6 +95,7 @@
   (require 'init-rime)
   (require 'init-minibuffer)
   (require 'init-modeline)
+  (require 'init-window)
   (when (and +foo-p (display-graphic-p))
     (require 'init-foo))
   (run-with-idle-timer
@@ -103,7 +104,6 @@
        (require 'init-edit)
        (require 'init-completion)
        (require 'init-dev)
-       (require 'init-window)
        (require 'init-telega)
        (require 'init-git)
        (require 'init-org)
