@@ -36,7 +36,8 @@
   (setq gofmt-command "goimports"
         gofmt-show-errors nil)
   :hook
-  (before-save-hook . gofmt-before-save)
+  ;; HACK use `apheleia' instead
+  ;; (before-save-hook . gofmt-before-save)
   (go-test-mode-hook . visual-line-mode)
   :config
   (with-eval-after-load "exec-path-from-shell"

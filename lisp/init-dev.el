@@ -78,6 +78,15 @@
           lisp-mode-hook)
          . aggressive-indent-mode))
 
+;; HACK Doesn't support `TRAMP' now
+(eat-package apheleia
+  :straight t
+  :init
+  (apheleia-global-mode +1)
+  :config
+  (setf (alist-get 'gofmt apheleia-formatters)
+        '("goimports")))
+
 (eat-package eglot
   :straight t
   :commands
