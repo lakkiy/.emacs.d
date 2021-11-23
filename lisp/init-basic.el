@@ -98,6 +98,7 @@
 
 
 (setq-default
+ comment-auto-fill-only-comments t
  initial-major-mode 'fundamental-mode
  inhibit-compacting-font-caches t                   ; Don’t compact font caches during GC.
  delete-by-moving-to-trash t                        ; Deleting files go to OS's trash folder
