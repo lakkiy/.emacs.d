@@ -27,6 +27,9 @@
   (find-alternate-file (format "/sudo::%s" (buffer-file-name))))
 (global-set-key (kbd "C-x C-z") #'+reopen-file-with-sudo)
 
+;; in emacs29 from Po Lu!
+(when (boundp pixel-scroll-precision-mode)
+  (pixel-scroll-precision-mode))
 
 ;; produces a cleaner result
 (global-set-key [remap eval-last-sexp] 'pp-eval-last-sexp)
