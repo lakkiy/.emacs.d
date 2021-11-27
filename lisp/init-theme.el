@@ -72,13 +72,14 @@
                             "<->" "<--" "</" "+=" "++" "??" "/>" "__" "WWW")))
 
 (defvar +font-default "Rec Mono Casual")
+(defvar +font-size 13)
 (defvar +font-unicode "Apple Color Emoji")
-(defvar +font-cn "FZSuXinShiLiuKaiS-R-GB")
+(defvar +font-cn "WenQuanYi Micro Hei")
 (defvar +font-variable-pitch "Cardo")
 (defvar +font-fixed-pitch "Recursive")
 
 (defun +load-base-font ()
-  (let* ((font-spec (format "%s-%d" +font-default 15)))
+  (let* ((font-spec (format "%s-%d" +font-default +font-size)))
     (set-frame-font font-spec)
     (set-face-attribute 'default nil :font font-spec)
     (add-to-list 'default-frame-alist `(font . ,font-spec)))
