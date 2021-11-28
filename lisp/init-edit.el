@@ -26,18 +26,6 @@
                           (dolist (key '("C-;" "C-," "C-." "C-M-i"))
                             (define-key flyspell-mode-map (kbd key) nil))))
   :init
-  (defun message-off-advice (oldfun &rest args)
-    "Quiet down messages in adviced OLDFUN."
-    (let ((message-off (make-symbol "message-off")))
-      (unwind-protect
-          (progn
-            (advice-add #'message :around #'ignore (list 'name message-off))
-            (apply oldfun args))
-        (advice-remove #'message message-off))))
-
-  ;; Shut up pls
-  (advice-add #'ispell-init-process :around #'message-off-advice)
-
   ;; TODO disable minibuffer message of `ispell-init-process' on startup
   (setq flyspell-issue-message-flag nil
         ispell-program-name "aspell"
