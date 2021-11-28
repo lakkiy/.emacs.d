@@ -78,8 +78,8 @@
   (load custom-file :no-error :no-message))
 
 ;; Shut up!
-(defun display-startup-echo-area-message()
-  (message nil))
+;; Can not use `message-off-advice' or all message is off.
+(defun display-startup-echo-area-message() (message nil))
 
 (defvar +foo-p nil
   "TODO Find a name.")
