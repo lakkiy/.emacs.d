@@ -18,6 +18,26 @@
   :straight (puni :type git :host github :repo "AmaiKinono/puni")
   :hook (emacs-lisp-mode-hook . puni-mode))
 
+(eat-package flyspell
+  :hook
+  ((text-mode-hook outline-mode-hook) . flyspell-mode)
+  (prog-mode-hook . (flyspell-prog-mode))
+  (flyspell-mode-hook . (lambda ()
+                          (dolist (key '("C-;" "C-," "C-." "C-M-i"))
+                            (define-key flyspell-mode-map (kbd key) nil))))
+  :init
+  ;; TODO disable minibuffer message of `ispell-init-process' on startup
+  (setq flyspell-issue-message-flag nil
+        ispell-program-name "aspell"
+        ispell-extra-args '("--sug-mode=ultra" "--lang=en_US" "--run-together"))
+  ;; TODO Just need flyspell-correct.el file, no avy ivy helm
+  (eat-package flyspell-correct
+    :straight t
+    :after flyspell
+    :config
+    (global-set-key [remap ispell-word] 'flyspell-correct-wrapper)
+    (define-key flyspell-mode-map (kbd "C-c $") nil)))
+
 (eat-package treemacs
   :straight t
   :init

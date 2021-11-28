@@ -80,20 +80,6 @@
   :init
   (setq eldoc-idle-delay 2))
 
-;; install aspell
-(eat-package flyspell
-  :hook
-  ((text-mode-hook outline-mode-hook) . flyspell-mode)
-  (prog-mode-hook . (flyspell-prog-mode))
-  (flyspell-mode-hook . (lambda ()
-                          (dolist (key '("C-;" "C-," "C-."))
-                            (define-key flyspell-mode-map (kbd key) nil))))
-  :init
-  ;; TODO disable minibuffer message of `ispell-init-process' on startup
-  (setq flyspell-issue-message-flag nil
-        ispell-program-name "aspell"
-        ispell-extra-args '("--sug-mode=ultra" "--lang=en_US" "--run-together")))
-
 (eat-package whitespace
   :hook
   ((prog-mode-hook conf-mode-hook) . whitespace-mode)

@@ -12,12 +12,10 @@
 
             ;; GC automatically while unfocusing the frame
             ;; `focus-out-hook' is obsolete since 27.1
-            (if (boundp 'after-focus-change-function)
-                (add-function :after after-focus-change-function
-                              (lambda ()
-                                (unless (frame-focus-state)
-                                  (garbage-collect))))
-              (add-hook 'focus-out-hook 'garbage-collect))
+            (add-function :after after-focus-change-function
+                          (lambda ()
+                            (unless (frame-focus-state)
+                              (garbage-collect))))
 
             ;; Recover GC values after startup
             (setq gc-cons-threshold 800000

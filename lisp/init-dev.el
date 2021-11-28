@@ -40,8 +40,7 @@
     rust-mode-hook
     qmake-mode-hook
     lua-mode-hook
-    swift-mode-hook
-    minibuffer-inactive-mode-hook)
+    swift-mode-hook)
    . (lambda () (grammatical-edit-mode 1)))
   :config
   (define-key grammatical-edit-mode-map (kbd "(") 'grammatical-edit-open-round)
