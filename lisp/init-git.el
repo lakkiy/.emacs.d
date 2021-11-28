@@ -10,6 +10,21 @@
   :straight t
   :commands magit)
 
+(eat-package blamer
+  :straight t
+  :after magit
+  :init
+  (setq blamer-type 'visual
+        blamer-idle-time 0.5
+        blamer-min-offset 40
+        blamer-author-formatter "%s "
+        blamer-datetime-formatter "[%s] "
+        blamer-commit-formatter "- %s")
+  :config
+  (global-blamer-mode)
+  (custom-set-faces
+   '(blamer-face ((t (:inherit completions-annotations :height 0.85))))))
+
 (eat-package diff-hl
   :straight t
   :commands diff-hl-mode
