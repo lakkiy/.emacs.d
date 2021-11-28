@@ -170,6 +170,8 @@
 ;; built-in since emacs 28
 (eat-package modus-themes
   :init
-  )
+  (setq
+   ;; I will padded myself.
+   modus-themes-mode-line '(accented borderless)))
 
 (provide 'init-builtin)
