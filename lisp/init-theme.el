@@ -55,9 +55,9 @@
         kaolin-themes-modeline-border nil
         kaolin-themes-modeline-padded 4))
 
-(defvar +theme 'kaolin-aurora
+(defvar +theme 'modus-vivendi
   "Theme used in GUI.")
-(defvar +theme-tui 'minidark
+(defvar +theme-tui 'modus-vivendi
   "Theme used in TUI.")
 
 (eat-package ligature
@@ -82,6 +82,10 @@
   (let* ((font-spec (format "%s-%d" +font-default +font-size)))
     (set-frame-font font-spec)
     (set-face-attribute 'default nil :font font-spec)
+    ;; HACK mode-line inherit `variable-pitch' face as default in emacs 29
+    (set-face-attribute 'mode-line nil :font font-spec)
+    (set-face-attribute 'mode-line-active nil :font font-spec)
+    (set-face-attribute 'mode-line-inactive nil :font font-spec)
     (add-to-list 'default-frame-alist `(font . ,font-spec)))
   (set-face-attribute 'variable-pitch nil :font +font-variable-pitch)
   (set-face-attribute 'fixed-pitch nil :font +font-fixed-pitch)
@@ -107,9 +111,9 @@
 ;; auto change theme after system appearance changed
 (defvar +theme-system-appearance nil
   "Weather to auto change theme after system appearance changed.")
-(defvar +theme-system-light 'spacemacs-light
+(defvar +theme-system-light 'modus-operandi
   "Theme used after change system appearance to light.")
-(defvar +theme-system-dark 'spacemacs-dark
+(defvar +theme-system-dark 'modus-vivendi
   "Theme used after change system appearance to dark.")
 (when (and (boundp 'ns-system-appearance) (display-graphic-p) +theme-system-appearance)
   (add-to-list 'ns-system-appearance-change-functions

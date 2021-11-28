@@ -167,4 +167,9 @@
         ediff-split-window-function 'split-window-horizontally
         ediff-merge-split-window-function 'split-window-horizontally))
 
+;; built-in since emacs 28
+(eat-package modus-themes
+  :init
+  )
+
 (provide 'init-builtin)
