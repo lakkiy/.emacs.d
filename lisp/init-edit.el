@@ -31,18 +31,6 @@
   (define-key treemacs-mode-map (kbd "<f1>") 'treemacs)
   (add-hook 'treemacs-mode-hook #'+treemacs-scale-font-size))
 
-;; Good pixel line scrolling
-(when (not sys/macp)
-  (eat-package good-scroll
-    :straight t
-    :commands
-    good-scroll-up-full-screen
-    good-scroll-down-full-screen
-    :init
-    (good-scroll-mode 1)
-    (global-set-key [next] #'good-scroll-up-full-screen)
-    (global-set-key [prior] #'good-scroll-down-full-screen)))
-
 ;; Better scroll on picture in GUI
 (when (display-graphic-p)
   (eat-package iscroll
