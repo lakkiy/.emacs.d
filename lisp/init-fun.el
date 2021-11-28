@@ -131,4 +131,13 @@
   :init
   (setq citar-bibliography '("~/Dropbox/bib/references.bib")))
 
+(eat-package find-orphan
+  :straight (find-orphan
+             :type git
+             :host github
+             :repo "manateelazycat/find-orphan")
+  :commands
+  find-orphan-function-in-buffer
+  find-orphan-function-in-directory)
+
 (provide 'init-fun)

@@ -44,15 +44,6 @@
     (process-send-string xclip-process (buffer-substring-no-properties (region-beginning) (region-end)))
     (process-send-eof xclip-process)))
 
-(defun copy-from-osx ()
-  (shell-command-to-string "pbpaste"))
-
-(defun paste-to-osx (text &optional push)
-  (let ((process-connection-type nil))
-    (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
-      (process-send-string proc text)
-      (process-send-eof proc))))
-
 (unless window-system
   ;; enable mouse
   ;; FIXME in terminal.app this whill cause mouse to `M-['

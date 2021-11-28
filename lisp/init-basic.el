@@ -1,5 +1,14 @@
 ;;; -*- lexical-binding: t -*-
 
+(defun copy-from-osx ()
+  (shell-command-to-string "pbpaste"))
+
+(defun paste-to-osx (text &optional push)
+  (let ((process-connection-type nil))
+    (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
+      (process-send-string proc text)
+      (process-send-eof proc))))
+
 (with-no-warnings
   ;; Don't ping things that look like domain names.
   (setq ffap-machine-p-known 'reject)
@@ -18,7 +27,10 @@
     (global-set-key [(super z)] #'undo))
 
   (unless sys/macp
-    (setq command-line-ns-option-alist nil))
+    (setq command-line-ns-option-alist nil)
+    ;; TODO use `cond' to set this for different system
+    (setq interprogram-cut-function 'paste-to-osx)
+    (setq interprogram-paste-function 'copy-from-osx))
   (unless sys/linuxp
     (setq command-line-x-option-alist nil)))
 
