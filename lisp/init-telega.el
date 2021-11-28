@@ -46,6 +46,8 @@ If `\\[universal-argument]' is given, then attach clipboard as document."
   (telega-msg-ignore-predicates . telega-msg-from-blocked-sender-p)
   (telega-chat-mode . #'yas-minor-mode-on)
   :config
+  ;; block user or set use id 1648334150(keke)
+  (add-hook 'telega-msg-ignore-predicates 'telega-msg-from-blocked-sender-p)
   (when (not (display-graphic-p))
     (setq telega-open-message-as-file '(photo video)
           telega-open-file-function '+telega-open-file))
