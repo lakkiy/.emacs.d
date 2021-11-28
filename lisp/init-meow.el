@@ -145,7 +145,7 @@
      '("f" . meow-find)
      '("F" . meow-find-expand)
      ;; '("s" . meow-search)
-     '("s" . "C-s")
+     '("s" . meow-search)
      '("S" . meow-swap-grab)
      '("t" . meow-till)
      '("T" . meow-till-expand)
