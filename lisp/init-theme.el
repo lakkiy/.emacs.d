@@ -74,21 +74,23 @@
 (defvar +font-default "Rec Mono Casual")
 (defvar +font-size 13)
 (defvar +font-unicode "Apple Color Emoji")
-(defvar +font-cn "WenQuanYi Micro Hei")
+(defvar +font-fixed-pitch "Sarasa Mono SC")
 (defvar +font-variable-pitch "Cardo")
-(defvar +font-fixed-pitch "Recursive")
 
 (defun +load-base-font ()
   (let* ((font-spec (format "%s-%d" +font-default +font-size)))
+    ;; default font
     (set-frame-font font-spec)
     (set-face-attribute 'default nil :font font-spec)
+    (add-to-list 'default-frame-alist `(font . ,font-spec))
     ;; HACK mode-line inherit `variable-pitch' face as default in emacs 29
     (set-face-attribute 'mode-line nil :font font-spec)
     (set-face-attribute 'mode-line-active nil :font font-spec)
-    (set-face-attribute 'mode-line-inactive nil :font font-spec)
-    (add-to-list 'default-frame-alist `(font . ,font-spec)))
+    (set-face-attribute 'mode-line-inactive nil :font font-spec))
   (set-face-attribute 'variable-pitch nil :font +font-variable-pitch)
   (set-face-attribute 'fixed-pitch nil :font +font-fixed-pitch)
+  ;; Chinese font
+  (set-fontset-font t '(#x4e00 . #x9fff) +font-fixed-pitch)
   (setf (alist-get +font-variable-pitch face-font-rescale-alist 1.3 nil 'string=) 1.3))
 
 (defun +load-ext-font ()
@@ -96,9 +98,7 @@
     (set-fontset-font
      (frame-parameter nil 'font)
      charset
-     (font-spec :family +font-unicode)))
-  ;; Specify font for Chinese characters
-  (set-fontset-font t '(#x4e00 . #x9fff) (format "%s-%d" +font-cn 18)))
+     (font-spec :family +font-unicode))))
 
 (defun +load-font ()
   (+load-base-font)
@@ -111,10 +111,13 @@
 ;; auto change theme after system appearance changed
 (defvar +theme-system-appearance nil
   "Weather to auto change theme after system appearance changed.")
+
 (defvar +theme-system-light 'modus-operandi
   "Theme used after change system appearance to light.")
+
 (defvar +theme-system-dark 'modus-vivendi
   "Theme used after change system appearance to dark.")
+
 (when (and (boundp 'ns-system-appearance) (display-graphic-p) +theme-system-appearance)
   (add-to-list 'ns-system-appearance-change-functions
                (lambda (l?d)
