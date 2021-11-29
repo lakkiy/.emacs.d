@@ -106,9 +106,7 @@
   :after eglot
   :init
   :config
-  (define-key flymake-mode-map (kbd "C-c C-b") 'flymake-show-diagnostics-buffer)
-  (define-key flymake-mode-map (kbd "M-[") 'flymake-goto-prev-error)
-  (define-key flymake-mode-map (kbd "M-]") 'flymake-goto-next-error))
+  (define-key flymake-mode-map (kbd "C-c C-b") 'flymake-show-diagnostics-buffer))
 
 (eat-package flycheck
   :straight t
@@ -121,9 +119,7 @@
                                      'left-fringe
                                    'left-margin))
   :config
-  (define-key flycheck-mode-map (kbd "C-c C-b") 'flycheck-list-errors)
-  (define-key flycheck-mode-map (kbd "M-[") 'flycheck-previous-error)
-  (define-key flycheck-mode-map (kbd "M-]") 'flycheck-next-error))
+  (define-key flycheck-mode-map (kbd "C-c C-b") 'flycheck-list-errors))
 
 (eat-package aggressive-indent
   :straight t

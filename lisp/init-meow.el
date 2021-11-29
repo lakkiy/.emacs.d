@@ -174,6 +174,8 @@
      '(";" . meow-reverse)
      '("," . meow-inner-of-thing)
      '("." . meow-bounds-of-thing)
+     '("{" . flymake-goto-prev-error) ;; TODO wrap flymake and flycheck together
+     '("}" . flymake-goto-next-error)
      '("[" . meow-beginning-of-thing)
      '("]" . meow-end-of-thing))))
 
