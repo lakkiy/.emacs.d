@@ -88,7 +88,8 @@
     (set-face-attribute 'mode-line-active nil :font font-spec)
     (set-face-attribute 'mode-line-inactive nil :font font-spec))
   (set-face-attribute 'variable-pitch nil :font +font-variable-pitch)
-  (set-face-attribute 'fixed-pitch nil :font +font-fixed-pitch)
+  ;; HACK
+  ;; (set-face-attribute 'fixed-pitch nil :font +font-fixed-pitch)
   ;; Chinese font
   (set-fontset-font t '(#x4e00 . #x9fff) +font-fixed-pitch)
   (setf (alist-get +font-variable-pitch face-font-rescale-alist 1.3 nil 'string=) 1.3))
