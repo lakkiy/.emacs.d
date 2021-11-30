@@ -26,8 +26,8 @@
 
   (when +doom-modeline-p
     (setq-default mode-line-format nil
-                  header-line-format nil))
-  (add-hook 'after-init-hook 'doom-modeline-mode))
+                  header-line-format nil)
+    (add-hook 'after-init-hook 'doom-modeline-mode)))
 
 (run-with-idle-timer
  1 nil

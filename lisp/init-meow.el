@@ -27,11 +27,11 @@
   (meow-setup)
   :init
   (setq meow-esc-delay 0.001
-        meow-replace-state-name-list '((normal . "N")
-                                       (motion . "M")
-                                       (keypad . "K")
-                                       (bmacro . "B")
-                                       (insert . "I")))
+        meow-replace-state-name-list '((normal . "NORMAL")
+                                       (motion . "MOTION")
+                                       (keypad . "KEYPAD")
+                                       (bmacro . "BMACRO")
+                                       (insert . "INSERT")))
   (custom-set-faces
    `(meow-keypad-indicator ((t (:foreground "#009F9F"))))
    `(meow-insert-indicator ((t (:foreground "#39BA7E"))))

@@ -35,7 +35,7 @@
 (defvar graverse-theme-header-scales '(1.4 1.4 1.2 1.0 1.0 1.0 1.0)
   "Scales for headers.")
 
-(let ((bg "#4c5256")
+(let ((bg "#3c4246")
       (fg "#c4cdd3")
       (cm "#a9b5bd")
       (ss "#646a6e")
