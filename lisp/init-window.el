@@ -18,6 +18,7 @@
   :hook (after-init-hook . eyebrowse-mode)
   :init
   (setq eyebrowse-new-workspace t)
+  (setq eyebrowse-mode-line-style 'hide)
   ;; (eyebrowse-setup-opinionated-keys) ;; FIXME conflict with `avy'
   (eyebrowse-mode t)
   :config
