@@ -105,9 +105,9 @@
   (+load-base-font)
   (+load-ext-font))
 
-(set-frame-parameter nil 'internal-border-width 10)
-(setq-default left-margin-width 0 right-margin-width 2)
-(set-window-margins nil 0 0)
+;; (set-frame-parameter nil 'internal-border-width 10)
+;; (setq-default left-margin-width 0 right-margin-width 2)
+;; (set-window-margins nil 0 0)
 
 ;; auto change theme after system appearance changed
 (defvar +theme-system-appearance nil
