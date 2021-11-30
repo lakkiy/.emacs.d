@@ -29,7 +29,7 @@ This function is slow, so we have to use cache."
   (let* ((lhs '((:eval (when (fboundp 'eyebrowse-mode-line-indicator) (eyebrowse-mode-line-indicator)))
                 (:eval (when (fboundp 'meow-indicator) (meow-indicator)))
                 (:eval (when (fboundp 'rime-lighter) (rime-lighter)))
-                " Row %l Col %C %%p"
+                " L%l C%C"
                 (:eval (propertize " " 'display '(height 1.4))) ;; make mode line fill rime lighter height
                 (:eval (propertize " " 'display '(raise -0.3)))
                 (:eval (when (bound-and-true-p flycheck-mode) flycheck-mode-line))
