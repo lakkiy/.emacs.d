@@ -35,6 +35,8 @@
   (defun meow-setup ()
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
     (meow-motion-overwrite-define-key
+     '(">" . sort-tab-select-next-tab)
+     '("<" . sort-tab-select-prev-tab)
      '("j" . meow-next)
      '("k" . meow-prev))
     (meow-leader-define-key
@@ -43,7 +45,7 @@
      '(";" . comment-dwim)
      '("f" . find-file)
      '("d" . dired)
-     '("S" . ispell-word)
+     '("s" . ispell-word)
      '("=" . align-regexp)
      '("$" . load-theme)
      '("k" . kill-this-buffer)
@@ -87,6 +89,7 @@
      '("T" . telega)
      '("I" . imenu-list-smart-toggle)
      '("F" . auto-fill-mode)
+     '("S" . sort-tab-mode)
      ;; SPC j/k will run the original command in MOTION state.
      '("j" . "H-j")
      '("k" . "H-j"))
@@ -172,6 +175,8 @@
      '("{" . flymake-goto-prev-error) ;; TODO wrap flymake and flycheck together
      '("}" . flymake-goto-next-error)
      '("[" . meow-beginning-of-thing)
-     '("]" . meow-end-of-thing))))
+     '("]" . meow-end-of-thing)
+     '(">" . sort-tab-select-next-tab)
+     '("<" . sort-tab-select-prev-tab))))
 
 (provide 'init-meow)
