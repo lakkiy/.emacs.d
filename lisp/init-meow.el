@@ -87,7 +87,6 @@
      '("T" . telega)
      '("I" . imenu-list-smart-toggle)
      '("F" . auto-fill-mode)
-     '("S" . sort-tab-mode)
      ;; SPC j/k will run the original command in MOTION state.
      '("j" . "H-j")
      '("k" . "H-j"))
