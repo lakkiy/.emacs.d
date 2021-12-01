@@ -35,8 +35,6 @@
   (defun meow-setup ()
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
     (meow-motion-overwrite-define-key
-     '(">" . sort-tab-select-next-tab)
-     '("<" . sort-tab-select-prev-tab)
      '("j" . meow-next)
      '("k" . meow-prev))
     (meow-leader-define-key
@@ -175,8 +173,6 @@
      '("{" . flymake-goto-prev-error) ;; TODO wrap flymake and flycheck together
      '("}" . flymake-goto-next-error)
      '("[" . meow-beginning-of-thing)
-     '("]" . meow-end-of-thing)
-     '(">" . sort-tab-select-next-tab)
-     '("<" . sort-tab-select-prev-tab))))
+     '("]" . meow-end-of-thing))))
 
 (provide 'init-meow)

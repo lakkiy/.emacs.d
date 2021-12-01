@@ -93,12 +93,4 @@
   find-orphan-function-in-buffer
   find-orphan-function-in-directory)
 
-(eat-package sort-tab
-  :straight (sort-tab
-             :type git
-             :host github
-             :repo "manateelazycat/sort-tab")
-  :commands
-  sort-tab-mode)
-
 (provide 'init-fun)
