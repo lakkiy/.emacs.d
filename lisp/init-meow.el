@@ -132,20 +132,20 @@
      '("R" . meow-replace-save)
      '("n" . scroll-up-command)
      '("N" . scroll-down-command)
-     '("u" . undo) ;; TODO meow-undo-in-selection
-     '("U" . undo-redo)
+     ;; HACK default `undo' in undo in region
+     ;;      `meow-undo' is undo in global
+     '("u" . meow-undo)
+     '("U" . meow-undo-in-selection)
      '("v" . meow-line)
      '("V" . meow-goto-line)
      '("d" . meow-kill)
      ;; may have some change
      '("f" . meow-find)
      '("F" . meow-find-expand)
-     ;; '("s" . meow-search)
      '("s" . meow-search)
      '("S" . meow-swap-grab)
      '("t" . meow-till)
      '("T" . meow-till-expand)
-     ;; '("V" . meow-visit)
      '("e" . meow-join)
      '("E" . delete-indentation)
      '("y" . meow-save)
