@@ -41,6 +41,9 @@
 
 (eat-package org
   :init
+  ;; rescale image with for org-download
+  ;; use #+attr_org :width 300px to rescale
+  (setq org-image-actual-width nil)
   (setq org-directory "~/Dropbox/org")
   ;; `org-babel-load-languages' 在初始化的时候只存放 (LANG . nil)，表示需禁止的语言。
   ;; 其它所有需要的语言都动态加载，加载成功后存入 `org-babel-load-languages'
@@ -310,7 +313,7 @@ prepended to the element after the #+HEADER: tag."
   org-download-screenshot
   :init
   (setq-default org-download-image-dir (concat org-directory "/pictures"))
-  (setq org-download-image-org-width 800
+  (setq org-download-image-org-width 300
         org-download-backend "curl"
         org-download-screenshot-method (cond (sys/macp "screencapture -ci")
                                              (sys/linuxp "flameshot gui --raw > %s")
