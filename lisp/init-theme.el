@@ -100,7 +100,7 @@
      (frame-parameter nil 'font)
      charset
      (font-spec :family +font-unicode)))
-  (setf (alist-get +font-unicode face-font-rescale-alist 0.9 nil 'string=) 0.9))
+  (setf (alist-get +font-unicode face-font-rescale-alist 0.8 nil 'string=) 0.8))
 
 (defun +load-font ()
   (+load-base-font)
