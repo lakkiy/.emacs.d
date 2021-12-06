@@ -22,20 +22,15 @@
   :config
   (setq completion-styles '(substring orderless)))
 
-(eat-package consult
+(eat-package which-key
   :straight t
   :init
-  (global-set-key (kbd "C-s") 'consult-line)
-  (global-set-key (kbd "C-M-s") 'consult-outline)
-  (global-set-key [remap bookmark-jump] 'consult-bookmark)
-  (global-set-key [remap recentf-open-files] 'consult-recent-file)
-  (global-set-key [remap imenu] 'consult-imenu)
-  (global-set-key [remap goto-line] 'consult-goto-line)
-  (setq xref-show-xrefs-function #'consult-xref
-        xref-show-definitions-function #'consult-xref
-        consult-project-root-function (lambda ()
-                                        (when-let (project (project-current))
-                                          (car (project-roots project))))))
+  ;; Allow C-h to trigger which-key before it is done automatically
+  (setq which-key-show-early-on-C-h t)
+  ;; make sure which-key doesn't show normally but refreshes quickly after it is
+  ;; triggered.
+  (setq which-key-idle-delay 10000)
+  (setq which-key-idle-secondary-delay 0.05))
 
 (eat-package embark
   :straight t

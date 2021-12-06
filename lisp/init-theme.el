@@ -27,6 +27,8 @@
         doom-spacegrey-brighter-modeline t
         doom-spacegrey-comment-bg t)
   :config
+  (setq doom-themes-treemacs-theme "doom-colors") ; use the colorful treemacs theme
+  (doom-themes-treemacs-config)
   (doom-themes-visual-bell-config)
   (doom-themes-org-config))
 
@@ -70,8 +72,7 @@
     ;; HACK mode-line inherit `variable-pitch' face as default in emacs 29
     ;; (set-face-attribute 'mode-line nil :font font-spec)
     ;; (set-face-attribute 'mode-line-active nil :font font-spec)
-    ;; (set-face-attribute 'mode-line-inactive nil :font font-spec)
-    )
+    (set-face-attribute 'mode-line-inactive nil :inherit 'variable-pitch))
   (set-face-attribute 'variable-pitch nil :font +font-variable-pitch)
   ;; HACK
   ;; (set-face-attribute 'fixed-pitch nil :font +font-fixed-pitch)

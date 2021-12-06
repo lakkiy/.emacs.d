@@ -32,7 +32,7 @@
      '("=" . align-regexp)
      '("$" . load-theme)
      '("k" . kill-this-buffer)
-     '("i" . consult-imenu)
+     '("i" . imenu)
      '("v" . magit)
      '("B" . ibuffer)
      '("r" . rg-project)
@@ -43,8 +43,7 @@
      '("(" . "M-(")
      '(")" . "M-)") ;; unwrap
      ;; project
-     '("p S" . consult-ripgrep)
-     '("p s" . consult-git-grep)
+     ;; TODO project search
      '("p p" . project-switch-project)
      '("p f" . project-find-file)
      '("p b" . project-switch-to-buffer)
@@ -72,6 +71,7 @@
      '("T" . telega)
      '("I" . imenu-list-smart-toggle)
      '("F" . auto-fill-mode)
+     '("@" . treemacs-select-window)
      ;; SPC j/k will run the original command in MOTION state.
      '("j" . "H-j")
      '("k" . "H-j"))
@@ -125,8 +125,8 @@
      '("V" . meow-goto-line)
      '("d" . meow-kill)
      ;; may have some change
-     '("f" . meow-find)
-     '("F" . meow-find-expand)
+     '("f" . meow-visit) ;; HACK can not use in motion mode
+     '("F" . meow-find)
      '("s" . meow-search)
      '("S" . meow-swap-grab)
      '("t" . meow-till)

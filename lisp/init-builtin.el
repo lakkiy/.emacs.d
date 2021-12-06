@@ -91,10 +91,9 @@
   (global-set-key (kbd "C-<mouse-1>") #'xref-find-definitions-at-mouse)
   ;; Xref no prompt
   (setq xref-prompt-for-identifier nil)
-  (when (>= emacs-major-version 28)
-    (setq xref-search-program 'ripgrep)
-    (setq xref-show-xrefs-function #'xref-show-definitions-completing-read)
-    (setq xref-show-definitions-function #'xref-show-definitions-completing-read)))
+  (setq xref-search-program 'ripgrep)
+  (setq xref-show-xrefs-function #'xref-show-definitions-completing-read)
+  (setq xref-show-definitions-function #'xref-show-definitions-completing-read))
 
 (eat-package pluse
   :init
