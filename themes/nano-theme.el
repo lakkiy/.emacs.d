@@ -45,21 +45,6 @@
   :type 'symbol
   :group 'nano-theme)
 
-(defcustom nano-theme-comment-italic nil
-  "Enable italics for comments."
-  :type 'boolean
-  :group 'nano-theme)
-
-(defcustom nano-theme-keyword-italic nil
-  "Enable italics for keywords."
-  :type 'boolean
-  :group 'nano-theme)
-
-(defcustom nano-theme-system-appearance nil
-  "Related the system appearance. Only available on macOS."
-  :type 'boolean
-  :group 'nano-theme)
-
 (defcustom nano-theme-padded-modeline 4
   "If non-nil, add a 4px padding to the mode-line. Can be an integer to determine the exact padding"
   :type '(choice integer boolean)
@@ -72,12 +57,9 @@
 
 (defun nano-theme--light?dark (light dark)
   "Determine using the LIGHT or the DARK color of nano-theme."
-  (if (and (boundp 'ns-system-appearance) nano-theme-system-appearance)
-      (cond ((eq ns-system-appearance 'light) light)
-            ((eq ns-system-appearance 'dark) dark))
-    (if (eq nano-theme-light/dark 'light)
-        light
-      dark)))
+  (if (eq nano-theme-light/dark 'light)
+      light
+    dark))
 (defalias '--l?d #'nano-theme--light?dark)
 
 (let ((foreground (--l?d "#37474F" "#ECEFF4"))
@@ -96,7 +78,7 @@
    `nano
    ;; Basic
    `(default
-      ((t (:foreground ,foreground :background ,background))))
+     ((t (:foreground ,foreground :background ,background))))
    `(cursor
      ((t (:background ,foreground))))
    `(fringe
@@ -116,7 +98,7 @@
    `(line-number-current-line
      ((t (:background ,highlight :foreground ,strong))))
    `(minibuffer-prompt
-     ((t (:foreground ,popout))))
+     ((t (:foreground ,strong))))
    `(vertical-border
      ((t (:foreground ,subtle))))
    `(window-divider
@@ -148,11 +130,11 @@
 
    ;; Font Locks
    `(font-lock-comment-face
-     ((t (:foreground ,faded :slant ,(if nano-theme-comment-italic 'italic 'normal)))))
+     ((t (:foreground ,faded))))
    `(font-lock-comment-delimiter-face
-     ((t (:foreground ,faded :slant ,(if nano-theme-comment-italic 'italic 'normal)))))
+     ((t (:foreground ,faded))))
    `(font-lock-keyword-face
-     ((t (:foreground ,salient :slant ,(if nano-theme-keyword-italic 'italic 'normal)))))
+     ((t (:foreground ,salient))))
    `(font-lock-string-face
      ((t (:foreground ,popout))))
    `(font-lock-doc-face

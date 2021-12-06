@@ -16,11 +16,8 @@
 (eat-package nano-theme
   :init
   (setq nano-theme-light/dark 'light
-        nano-theme-comment-italic nil
-        nano-theme-keyword-italic nil
         nano-theme-overline-modeline t
-        nano-theme-padded-modeline nil
-        nano-theme-system-appearance t))
+        nano-theme-padded-modeline nil))
 
 (eat-package doom-themes
   :straight t
