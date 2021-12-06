@@ -1,38 +1,19 @@
-;; Speed up startup
-(setq auto-mode-case-fold nil)
+(defvar +icons-p nil "Whether to enable `all-the-icons'.")
 
-;; Use a hook so the message doesn't get clobbered by other messages.
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (message "Emacs ready in %s with %d garbage collections."
-                     (format "%.2f seconds"
-                             (float-time
-                              (time-subtract after-init-time before-init-time)))
-                     gcs-done)
+(defvar +font-default "Rec Mono Casual" "Font used for default.")
+(defvar +font-size 13 "Default font size")
+(defvar +font-unicode "Apple Color Emoji" "Emoji font.")
+(defvar +font-fixed-pitch "Sarasa Mono SC" "Just used for chinese font.")
+(defvar +font-variable-pitch "Cardo" "Used for `variable-pitch-mode'")
 
-            ;; GC automatically while unfocusing the frame
-            ;; `focus-out-hook' is obsolete since 27.1
-            (add-function :after after-focus-change-function
-                          (lambda ()
-                            (unless (frame-focus-state)
-                              (garbage-collect))))
+(defvar +theme 'modus-vivendi "Theme used in GUI.")
+(defvar +theme-tui 'modus-vivendi "Theme used in TUI.")
+(defvar +theme-system-appearance nil "Weather to auto change theme after system appearance changed.")
+(defvar +theme-system-light 'modus-operandi "Theme used after change system appearance to light.")
+(defvar +theme-system-dark 'modus-vivendi "Theme used after change system appearance to dark.")
+(defvar +theme-hooks nil "((theme-id . function) ...)")
 
-            ;; Recover GC values after startup
-            (setq gc-cons-threshold 800000
-                  gc-cons-percentage 0.1)))
-
-;; Load `custom-file'
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(when (and (file-exists-p custom-file)
-           (file-readable-p custom-file))
-  (load custom-file :no-error :no-message))
-
-;; Shut up!
-;; Can not use `message-off-advice' or all message is off.
-(defun display-startup-echo-area-message() (message nil))
-
-(defvar +foo-p nil
-  "TODO Find a name.")
+(defvar +enable-benchmark nil "Where to enable `benchmark'.")
 
 (let ((file-name-handler-alist nil))
   (require 'init-straight)
@@ -44,8 +25,8 @@
   (require 'init-minibuffer)
   (require 'init-modeline)
   (require 'init-window)
-  (when (and +foo-p (display-graphic-p))
-    (require 'init-foo))
+  (when (and +icons-p (display-graphic-p))
+    (require 'init-icons))
   (run-with-idle-timer
    1 nil
    #'(lambda ()

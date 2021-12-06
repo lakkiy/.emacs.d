@@ -1,7 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(defvar +theme-hooks nil
-  "((theme-id . function) ...)")
 (defun +load-theme-advice (f theme-id &optional no-confirm no-enable &rest args)
   "Enhance `load-theme' by disabling other enabled themes & calling hooks"
   (unless no-enable ;
@@ -52,11 +50,6 @@
         kaolin-themes-modeline-border nil
         kaolin-themes-modeline-padded 4))
 
-(defvar +theme 'modus-vivendi
-  "Theme used in GUI.")
-(defvar +theme-tui 'modus-vivendi
-  "Theme used in TUI.")
-
 (eat-package ligature
   :straight (ligature :type git :host github :repo "mickeynp/ligature.el")
   :commands global-ligature-mode
@@ -67,12 +60,6 @@
                             "=<<" "!=" "!==" ">=" ">=>" ">>=" "->" "--"
                             "-->" "<|" "<=" "<==" "<=>" "<=<" "<!--" "<-"
                             "<->" "<--" "</" "+=" "++" "??" "/>" "__" "WWW")))
-
-(defvar +font-default "Rec Mono Casual")
-(defvar +font-size 13)
-(defvar +font-unicode "Apple Color Emoji")
-(defvar +font-fixed-pitch "Sarasa Mono SC")
-(defvar +font-variable-pitch "Cardo")
 
 (defun +load-base-font ()
   (let* ((font-spec (format "%s-%d" +font-default +font-size)))
@@ -107,16 +94,6 @@
 ;; (set-frame-parameter nil 'internal-border-width 10)
 ;; (setq-default left-margin-width 0 right-margin-width 2)
 ;; (set-window-margins nil 0 0)
-
-;; auto change theme after system appearance changed
-(defvar +theme-system-appearance nil
-  "Weather to auto change theme after system appearance changed.")
-
-(defvar +theme-system-light 'modus-operandi
-  "Theme used after change system appearance to light.")
-
-(defvar +theme-system-dark 'modus-vivendi
-  "Theme used after change system appearance to dark.")
 
 (when (and (boundp 'ns-system-appearance) (display-graphic-p) +theme-system-appearance)
   (add-to-list 'ns-system-appearance-change-functions

@@ -85,4 +85,4 @@
        (with-eval-after-load "marginalia"
          (add-hook 'marginalia-mode-hook #'all-the-icons-marginalia-setup)))))
 
-(provide 'init-foo)
+(provide 'init-icons)

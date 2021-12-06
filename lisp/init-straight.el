@@ -36,8 +36,6 @@
   :straight
   (benchmark-init :type git :host github :repo "404cn/benchmark-init-el")
   :init
-  (defvar +enable-benchmark nil
-    "Where to run benchmark after init.")
   (when +enable-benchmark
     (require 'benchmark-init)
     ;; To disable collection of benchmark data after init is done.
