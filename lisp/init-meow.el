@@ -5,25 +5,15 @@
   :hook
   (after-init-hook . (lambda ()
                        (meow-global-mode 1)))
-  (term-mode-hook . (lambda ()
-                      (meow-mode -1)))
   :config
-  ;; make Meow usable in TUI Emacs
-  (unless (display-graphic-p)
-    (meow-esc-mode 1))
   ;;; project.el use C-x p
   (global-unset-key (kbd "C-x C-p"))
   (global-set-key (kbd "C-x C-d") #'dired)
   ;; SPC x f to describe-funtion
   (global-set-key (kbd "C-h C-f") 'describe-funtion)
-  (dolist (mode '(debuffer-mode
-                  ielm-mode
-                  inferior-python-mode
-                  go-dot-mod-mode
+  (dolist (mode '(go-dot-mod-mode
                   diff-mode))
     (add-to-list 'meow-mode-state-list `(,mode . normal)))
-  ;; (when (display-graphic-p)
-  ;;   (meow-setup-line-number))
   (meow-setup)
   :init
   (setq meow-esc-delay 0.001)
