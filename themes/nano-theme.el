@@ -84,11 +84,11 @@
    `(default                    ((t (:foreground ,foreground :background ,background))))
    `(cursor                     ((t (:background ,foreground))))
    `(fringe                     ((t (:foreground ,faded))))
-   `(show-paren-match           ((t (:foreground ,popout :box (:line-width (-1 . -1))))))
+   `(show-paren-match           ((t (:background ,subtle :box (:line-width (-1 . -1))))))
    `(hl-line                    ((t (:background ,highlight))))
    `(highlight                  ((t (:background ,subtle))))
    `(lazy-highlight             ((t (:background ,subtle :box (:line-width (-1 . -1))))))
-   `(region                     ((t (:background ,subtle))))
+   `(region                     ((t (:background ,faded))))
    `(line-number                ((t (:background ,highlight :foreground ,faded))))
    `(line-number-current-line   ((t (:background ,highlight :foreground ,strong))))
    `(minibuffer-prompt          ((t (:foreground ,strong))))
@@ -361,15 +361,14 @@
    `(markdown-table-face              ((t (:inhert default))))
    `(markdown-url-face                ((t (:foreground ,salient))))
 
-   ;; Notmuch TODO
-   ;; TODO add color to tag and author
-   ;; TODO add color of notmuch-tree
-   `(notmuch-tag-face        ((t (:foreground ,faded))))
-   `(notmuch-tag-unread      ((t (:foreground ,faded))))
-   `(notmuch-search-date     ((t (:foreground ,faded))))
-   `(notmuch-tag-deleted     ((t (:strike-through ,popout))))
-   `(notmuch-tag-added       ((t (:underline ,popout))))
-   `(notmuch-wash-cited-text ((t (:foreground ,faded))))
+   ;; Notmuch
+   `(notmuch-tag-face             ((t (:foreground ,faded))))
+   `(notmuch-tag-unread           ((t (:foreground ,faded))))
+   `(notmuch-search-date          ((t (:foreground ,faded))))
+   `(notmuch-tag-deleted          ((t (:strike-through ,popout))))
+   `(notmuch-tag-added            ((t (:underline ,popout))))
+   `(notmuch-wash-cited-text      ((t (:foreground ,faded))))
+   `(notmuch-message-summary-face ((t (:foreground ,strong :bold t :background ,subtle))))
 
    ;; Company
    `(company-tooltip                      ((t (:background ,subtle :foreground ,foreground))))
