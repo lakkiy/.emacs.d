@@ -26,12 +26,7 @@
   ;;   (meow-setup-line-number))
   (meow-setup)
   :init
-  (setq meow-esc-delay 0.001
-        meow-replace-state-name-list '((normal . "N")
-                                       (motion . "M")
-                                       (keypad . "K")
-                                       (bmacro . "B")
-                                       (insert . "I")))
+  (setq meow-esc-delay 0.001)
   (defun meow-setup ()
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
     (meow-motion-overwrite-define-key

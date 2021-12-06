@@ -50,17 +50,21 @@
   :type '(choice integer boolean)
   :group 'nano-theme)
 
-(defcustom nano-theme-overline-modeline nil
-  "If non-nil, set mode-line background to default background and add overline"
-  :type '(boolean)
-  :group 'nano-theme)
-
 (defun nano-theme--light?dark (light dark)
   "Determine using the LIGHT or the DARK color of nano-theme."
   (if (eq nano-theme-light/dark 'light)
       light
     dark))
 (defalias '--l?d #'nano-theme--light?dark)
+
+(defun nano-theme-toggle ()
+  "Toggle between light/dark nano theme"
+  (interactive)
+  (if (eq nano-theme-light/dark 'light)
+      (setq nano-theme-light/dark 'dark)
+    (setq nano-theme-light/dark 'light))
+  (mapc #'disable-theme custom-enabled-themes)
+  (load-theme 'nano))
 
 (let ((foreground (--l?d "#37474F" "#ECEFF4"))
       (background (--l?d "#FFFFFF" "#2E3440"))
@@ -80,10 +84,10 @@
    `(default                    ((t (:foreground ,foreground :background ,background))))
    `(cursor                     ((t (:background ,foreground))))
    `(fringe                     ((t (:foreground ,faded))))
-   `(show-paren-match           ((t (:foreground ,popout))))
+   `(show-paren-match           ((t (:foreground ,popout :box (:line-width (-1 . -1))))))
    `(hl-line                    ((t (:background ,highlight))))
    `(highlight                  ((t (:background ,subtle))))
-   `(lazy-highlight             ((t (:background ,subtle))))
+   `(lazy-highlight             ((t (:background ,subtle :box (:line-width (-1 . -1))))))
    `(region                     ((t (:background ,subtle))))
    `(line-number                ((t (:background ,highlight :foreground ,faded))))
    `(line-number-current-line   ((t (:background ,highlight :foreground ,strong))))
@@ -108,7 +112,7 @@
    `(font-lock-comment-delimiter-face ((t (:foreground ,faded))))
    `(font-lock-keyword-face           ((t (:foreground ,salient))))
    `(font-lock-string-face            ((t (:foreground ,popout))))
-   `(font-lock-doc-face               ((t (:foreground ,faded :background ,subtle :extend t))))
+   `(font-lock-doc-face               ((t (:foreground ,faded))))
    `(font-lock-builtin-face           ((t ())))
    `(font-lock-type-face              ((t ())))
    `(font-lock-variable-name-face     ((t ())))
@@ -202,25 +206,12 @@
    `(flyspell-duplicate ((t (:underline ,critical))))
    `(flyspell-incorrect ((t (:underline ,critical))))
 
-   ;; Diff TODO redesign
-   ;; `(diff-header
-   ;;   ((t (:background ,faded))))
-   ;; `(diff-file-header
-   ;;   ((t (:foreground ,foreground :bold t))))
-   ;; `(diff-context
-   ;;   ((t (:foreground ,foreground :background ,background))))
-   ;; `(diff-removed
-   ;;   ((t (:foreground ,faded))))
-   ;; `(diff-changed
-   ;;   ((t (:foreground ,popout))))
-   ;; `(diff-added
-   ;;   ((t (:foreground ,salient))))
-   ;; `(diff-refine-added
-   ;;   ((t (:foreground ,salient :bold t))))
-   ;; `(diff-refine-changed
-   ;;   ((t (:foreground ,popout))))
-   ;; `(diff-refine-removed
-   ;;   ((t (:foreground ,faded :strike-through t))))
+   ;; Diff
+   `(diff-context     ((t (:foreground ,faded))))
+   `(diff-hunk-header ((t (:background ,subtle :foreground ,foreground))))
+   `(diff-function    ((t (:inherit diff-hunk-header))))
+   `(diff-header      ((t (:foreground ,strong :bold t))))
+   `(diff-file-header ((t (:inherit diff-header))))
 
    ;; magit
    `(magit-diff-hunk-heading ((t (:background ,subtle))))
@@ -394,20 +385,12 @@
    `(calendar-today ((t (:foreground ,foreground :bold t))))
 
    ;; Mode Line
-   ;; TODO diff color in dark and light
    `(mode-line
-     ((t (:background ,(if nano-theme-overline-modeline background foreground)
-                      :foreground ,(if nano-theme-overline-modeline nil background)
-                      :overline ,(if nano-theme-overline-modeline strong nil)
+     ((t (:background ,background :overline ,strong
                       :box ,(if -modeline-pad `(:line-width ,-modeline-pad :color ,foreground))))))
    `(mode-line-inactive
-     ((t (:background ,(if nano-theme-overline-modeline background faded)
-                      :foreground ,(if nano-theme-overline-modeline faded background)
-                      :overline ,(if nano-theme-overline-modeline subtle nil)
+     ((t (:background ,background :foreground ,faded :overline ,subtle
                       :box ,(if -modeline-pad `(:line-width ,-modeline-pad :color ,faded))))))
-   `(header-line
-     ((t (:background ,(if nano-theme-overline-modeline background foreground)
-                      :underline ,(if nano-theme-overline-modeline foreground)))))
 
    ;; solaire Mode
    `(solaire-default-face             ((t (:inherit default :background ,highlight))))
@@ -420,6 +403,10 @@
 
    ;; Eshell
    `(eshell-prompt                    ((t (:foreground ,popout :bold t))))
+
+   ;; telega
+   `(telega-msg-inline-reply ((t (:foreground ,faded))))
+   `(telega-msg-heading      ((t (:underline t))))
 
    ;; Imenu-ist
    `(imenu-list-entry-subalist-face-0 ((t (:foreground ,strong :weight bold :underline t))))
