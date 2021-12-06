@@ -24,4 +24,22 @@
   :config
   (setq eyebrowse-mode-line-separator "|"))
 
+(eat-package popper
+  :straight t
+  :init
+  (setq popper-mode-line nil
+        popper-reference-buffers
+        '("\\*Messages\\*"
+          "Output\\*$"
+          "\\*Async Shell Command\\*"
+          help-mode
+          "^\\*eshell.*\\*$" eshell-mode ;eshell as a popup
+          "^\\*shell.*\\*$"  shell-mode  ;shell as a popup
+          "^\\*term.*\\*$"   term-mode   ;term as a popup
+          "^\\*vterm.*\\*$"  vterm-mode  ;vterm as a popup
+          compilation-mode))
+  (popper-mode +1)
+  (when (not (display-graphic-p))
+    (global-set-key (kbd "M-`") #'popper-toggle-latest)))
+
 (provide 'init-window)

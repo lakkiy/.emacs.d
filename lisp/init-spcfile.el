@@ -24,10 +24,6 @@
 (eat-package k8s-mode
   :straight t)
 
-(eat-package nix-mode
-  :straight t
-  :mode ("\\.nix\\'" . nix-mode))
-
 (eat-package markdown-mode
   :straight t
   :mode ("\\.md\\'" . gfm-mode)
@@ -43,14 +39,6 @@
   :straight t
   :config
   (define-key markdown-mode-command-map (kbd "r") #'markdown-toc-generate-or-refresh-toc))
-
-(eat-package fish-mode
-  :straight t
-  :config
-  (add-hook 'fish-mode-hook
-            (lambda ()
-              (add-hook 'before-save-hook
-                        #'fish_indent-before-save))))
 
 ;; TODO download single file
 ;;; protobuf-mode

@@ -31,18 +31,4 @@
   :config
   (elfeed-protocol-enable))
 
-(eat-package declutter
-  :straight (declutter :type git :host github :repo "sanel/declutter")
-  :commands declutter-under-point
-  :init
-  (setq declutter-engine 'rdrview))
-
-(eat-package leetcode
-  :straight t
-  :init
-  (setq leetcode-prefer-language "golang")
-  (setq leetcode-prefer-sql "mysql")
-  (setq leetcode-save-solutions t)
-  (setq leetcode-directory "~/Dropbox/leetcode"))
-
 (provide 'init-mole)

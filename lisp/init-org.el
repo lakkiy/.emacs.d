@@ -179,20 +179,8 @@ prepended to the element after the #+HEADER: tag."
     :straight t
     :init (cl-pushnew '(go .t) load-language-list))
 
-  (eat-package ob-rust
-    :straight t
-    :init (cl-pushnew '(rust . t) load-language-list))
-
   (org-babel-do-load-languages 'org-babel-load-languages
-                               load-language-list)
-  (eat-package org-tree-slide
-    :straight t
-    :init
-    (define-key org-mode-map (kbd "<f8>") 'org-tree-slide-mode)
-    (define-key org-mode-map (kbd "S-<f8>") 'org-tree-slide-skip-done-toggle)
-    :config
-    (define-key org-tree-slide-mode-map (kbd "<f9>") 'org-tree-slide-move-previous-tree)
-    (define-key org-tree-slide-mode-map (kbd "<f10>") 'org-tree-slide-move-next-tree)))
+                               load-language-list))
 
 (when (display-graphic-p)
   (eat-package valign
@@ -318,15 +306,6 @@ prepended to the element after the #+HEADER: tag."
         org-download-screenshot-method (cond (sys/macp "screencapture -ci")
                                              (sys/linuxp "flameshot gui --raw > %s")
                                              (t ""))))
-
-(eat-package org-media-note
-  :straight
-  (org-media-note :type git :host github :repo "yuchen-lea/org-media-note")
-  :hook (org-mode-hook . org-media-note-mode)
-  :init
-  (setq org-media-note-screenshot-image-dir "~/Dropbox/org/media-note-imgs/")
-  :config
-  (require 'org-attach))
 
 (eat-package toc-org
   :straight t

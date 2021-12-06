@@ -52,10 +52,7 @@
   (add-hook 'treemacs-mode-hook #'+treemacs-scale-font-size))
 
 ;; Better scroll on picture in GUI
-(when (display-graphic-p)
-  (eat-package iscroll
-    :straight t
-    :hook (eww-mode-hook . iscroll-mode)))
+(eat-package iscroll :straight t)
 
 (eat-package fanyi
   :straight (fanyi :type git :host github :repo "condy0919/fanyi.el")
