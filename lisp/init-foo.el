@@ -1,34 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-;; FIXME he has problem
-;; (eat-package vertico-posframe
-;;   :after vertico
-;;   :straight (vertico-posframe :type git :host github :repo "tumashu/vertico-posframe")
-;;   :init
-;;   (when (display-graphic-p)
-;;     (vertico-posframe-mode 1)))
-
-(eat-package doom-modeline
-  :straight t
-  :init
-  (defvar +doom-modeline-p nil
-    "Enable `doom-modeline'.")
-
-  (setq doom-modeline-irc nil
-        doom-modeline-mu4e nil
-        doom-modeline-gnus nil
-        doom-modeline-github nil
-        doom-modeline-persp-name nil
-        doom-modeline-unicode-fallback t
-        doom-modeline-enable-work-count nil)
-  (setq doom-modeline-icon (display-graphic-p))
-  (setq doom-modeline-project-detection 'project)
-
-  (when +doom-modeline-p
-    (setq-default mode-line-format nil
-                  header-line-format nil)
-    (add-hook 'after-init-hook 'doom-modeline-mode)))
-
 (run-with-idle-timer
  1 nil
  #'(lambda ()

@@ -1,26 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(eat-package emacs-application-framework
-  :straight (emacs-application-framework
-             :type git
-             :host github
-             :repo "emacs-eaf/emacs-application-framework"
-             :files ("*.el" "*.py" "core" "app"))
-  :init
-  (eat-package s :straight t)
-  (eat-package ctable :straight t)
-  (eat-package epc :straight t)
-  (eat-package deferred :straight t)
-  ;; TODO
-  ;; (require 'eaf)
-
-  (eat-package eaf-browser
-    :straight (eaf-browser :type git :host github :repo "emacs-eaf/eaf-browser" :files ("*.el" "*.py"))
-    :init
-    (setq eaf-browser-continue-where-left-off t
-          eaf-browser-enable-autofill t
-          eaf-browser-enable-adblocker t)))
-
 ;; install pyqt5 with your package manager(not pip)
 (eat-package popweb
   :straight (popweb
@@ -28,8 +7,6 @@
              :host github
              :repo "manateelazycat/popweb"
              :files ("*.el" "*.py" "*.js" "*.html" "*.css" "extension")))
-
-(eat-package chess :straight t)
 
 (eat-package rainbow-mode
   :straight t
