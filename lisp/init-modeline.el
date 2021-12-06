@@ -1,7 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(setq-default header-line-format nil)
-
 (defun +smart-file-name-cached ()
   (if (eq (buffer-name) (car +smart-file-name-cache))
       (cdr +smart-file-name-cache)
@@ -23,30 +21,42 @@ This function is slow, so we have to use cache."
      (bfn bfn)
      (t (buffer-name)))))
 
-;; TODO use -*-FZSuXinShiLiuKaiS-R-GB-normal-normal-normal-*-*-*-*-*-p-0-iso10646-1
-;; to show flymake or flycheck errors count in mode line
-(defun +format-mode-line ()
-  (let* ((lhs '((:eval (when (fboundp 'eyebrowse-mode-line-indicator) (eyebrowse-mode-line-indicator)))
-                (:eval (when (fboundp 'meow-indicator) (meow-indicator)))
-                (:eval (when (fboundp 'rime-lighter) (rime-lighter)))
-                " L%l C%C"
-                (:eval (propertize " " 'display '(height 1.4))) ;; make mode line fill rime lighter height
-                (:eval (propertize " " 'display '(raise -0.3)))
-                (:eval (when (bound-and-true-p flycheck-mode) flycheck-mode-line))
-                (:eval (when (bound-and-true-p flymake-mode) flymake-mode-line-format))))
-         (rhs '((:eval (propertize (+smart-file-name-cached) 'face 'mode-line-buffer-id))
-                " "
-                (:eval mode-name)
-                (vc-mode vc-mode)))
-         (ww (window-width))
-         (lhs-str (format-mode-line lhs))
-         (rhs-str (format-mode-line rhs))
-         (rhs-w (string-width rhs-str)))
-    (format "%s%s%s"
-            lhs-str
-            (propertize " " 'display `((space :align-to (- (+ right right-fringe right-margin) (+ 1 ,rhs-w)))))
-            rhs-str)))
+(defun luna-mode-line-with-padding (text)
+  "Return TEXT with padding on the left.
+The padding pushes TEXT to the right edge of the mode-line."
+  (if (display-graphic-p)
+      (let* ((len (string-pixel-width text))
+             (space-prop
+              `(space :align-to (- (+ right right-margin) (,len))))
+             (padding (propertize "-" 'display space-prop)))
+        (concat padding text))
+    (concat " " text)))
 
-(setq-default mode-line-format '(:eval (+format-mode-line)))
+(setq-default mode-line-format
+              (let* ((spaces
+                      (propertize " " 'display '(space :width 1.5)))
+                     (fringe (propertize
+                              " " 'display '(space :width fringe)))
+                     (percentage
+                      '(format
+                        "[%%l] %d%%"
+                        (/ (* (window-end) 100.0) (point-max)))))
+                `(,fringe
+                  (:eval (when (fboundp 'meow-indicator) (meow-indicator)))
+                  (:eval (when (fboundp 'rime-lighter) (rime-lighter)))
+                  ,spaces
+                  (:eval (propertize (+smart-file-name-cached) 'face 'mode-line-buffer-id))
+                  ,spaces
+                  mode-name
+                  ,spaces
+                  vc-mode
+                  (:propertize " " display (height 1.4))
+                  (:propertize " " display (raise -0.3))
+                  (:eval (concat (luna-mode-line-with-padding ,percentage)
+                                 "%%"))
+                  )))
+
+;; (benchmark-run 1000 (format-mode-line mode-line-format))
+(setq-default header-line-format nil)
 
 (provide 'init-modeline)

@@ -26,11 +26,6 @@
   :hook
   (before-save-hook . delete-trailing-whitespace))
 
-(eat-package tab-bar
-  :init
-  (setq tab-bar-show nil
-        tab-bar-new-tab-choice "*scratch*"))
-
 (eat-package so-long
   :hook (after-init-hook . global-so-long-mode))
 

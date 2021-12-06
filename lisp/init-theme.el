@@ -84,9 +84,10 @@
     (set-face-attribute 'default nil :font font-spec)
     (add-to-list 'default-frame-alist `(font . ,font-spec))
     ;; HACK mode-line inherit `variable-pitch' face as default in emacs 29
-    (set-face-attribute 'mode-line nil :font font-spec)
-    (set-face-attribute 'mode-line-active nil :font font-spec)
-    (set-face-attribute 'mode-line-inactive nil :font font-spec))
+    ;; (set-face-attribute 'mode-line nil :font font-spec)
+    ;; (set-face-attribute 'mode-line-active nil :font font-spec)
+    ;; (set-face-attribute 'mode-line-inactive nil :font font-spec)
+    )
   (set-face-attribute 'variable-pitch nil :font +font-variable-pitch)
   ;; HACK
   ;; (set-face-attribute 'fixed-pitch nil :font +font-fixed-pitch)
