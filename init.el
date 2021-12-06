@@ -21,56 +21,6 @@
             (setq gc-cons-threshold 800000
                   gc-cons-percentage 0.1)))
 
-(add-hook 'after-init-hook
-          (lambda ()
-            (save-excursion
-              (switch-to-buffer "*scratch*")
-              (goto-char (point-min))
-              (insert ";;
-;;            :h-                                  Nhy`
-;;           -mh.                           h.    `Ndho
-;;           hmh+                          oNm.   oNdhh
-;;          `Nmhd`                        /NNmd  /NNhhd
-;;          -NNhhy                      `hMNmmm`+NNdhhh
-;;          .NNmhhs              ```....`..-:/./mNdhhh+
-;;           mNNdhhh-     `.-::///+++////++//:--.`-/sd`
-;;           oNNNdhhdo..://++//++++++/+++//++///++/-.`
-;;      y.   `mNNNmhhhdy+/++++//+/////++//+++///++////-` `/oos:
-;; .    Nmy:  :NNNNmhhhhdy+/++/+++///:.....--:////+++///:.`:s+
-;; h-   dNmNmy oNNNNNdhhhhy:/+/+++/-         ---:/+++//++//.`
-;; hd+` -NNNy`./dNNNNNhhhh+-://///   -+ooo:`  ::-:+////++///:`
-;; /Nmhs+oss-:++/dNNNmhho:--::///   /mmmmmmo  ../-///++///////.
-;;  oNNdhhhhhhhs//osso/:---:::///   /myyyyso  ..o+-//////////:/.
-;;   /mNNNmdhhhh/://+///::://////     -:::- ..+sy+:////////::/:/.
-;;     /hNNNdhhs--:/+++////++/////.      ..-/yhhs-/////////::/::/`
-;;       .ooo+/-::::/+///////++++//-/ossyyhhhhs/:///////:::/::::/:
-;;       -///:::::::////++///+++/////:/+ooo+/::///////.::://::---+`
-;;       /////+//++++/////+////-..//////////::-:::--`.:///:---:::/:
-;;       //+++//++++++////+++///::--                 .::::-------::
-;;       :/++++///////////++++//////.                -:/:----::../-
-;;       -/++++//++///+//////////////               .::::---:::-.+`
-;;       `////////////////////////////:.            --::-----...-/
-;;        -///://////////////////////::::-..      :-:-:-..-::.`.+`
-;;         :/://///:///::://::://::::::/:::::::-:---::-.-....``/mm`
-;;           ::::://::://::::::::::::::----------..-:....`.../Nmhd+o/
-;;            -/:::-:::::---://:-::-::::----::---.-.......`-/oNN   ``
-;;           s-`::--:::------:////----:---.-:::...-.....`./:
-;;          yMNy.`::-.--::..-dmmhhhs-..-.-.......`.....-/:`
-;;         oMNNNh. `-::--...:NNNdhhh/.--.`..``.......:/-
-;;        :dy+:`      .-::-..NNNhhd+``..`...````.-::-`
-;;                        .-:mNdhh:.......--::::-`
-;;                          yNh/..------..`
-;;
-")
-              (insert ";; \t\t\t\t\tE M A C S\n")
-              (insert (format ";; %s\n" (make-string 58 ?-)))
-              (insert (format ";; Welcome to GNU Emacs %s. "
-                              emacs-version))
-              (insert (format "Today is %s .\n"
-                              (format-time-string "%A %Y.%-m.%-d")))
-              (insert ";;\n")
-              (goto-char (point-max)))))
-
 ;; Load `custom-file'
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (and (file-exists-p custom-file)
