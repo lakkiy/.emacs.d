@@ -39,7 +39,7 @@ The padding pushes TEXT to the right edge of the mode-line."
                               " " 'display '(space :width fringe)))
                      (percentage
                       '(format
-                        "[%%l] %d%%"
+                        "[%%l] %d%% "
                         (/ (* (window-end) 100.0) (point-max)))))
                 `(,fringe
                   (:eval (when (fboundp 'meow-indicator) (meow-indicator)))
