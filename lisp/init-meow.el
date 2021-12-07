@@ -14,6 +14,7 @@
   (dolist (mode '(go-dot-mod-mode
                   diff-mode))
     (add-to-list 'meow-mode-state-list `(,mode . normal)))
+  (global-set-key (kbd "C-s") 'meow-visit)
   (meow-setup)
   :init
   (setq meow-esc-delay 0.001)
