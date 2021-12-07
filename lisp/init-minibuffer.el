@@ -4,7 +4,6 @@
   :straight t
   :hook (after-init-hook . vertico-mode)
   :init
-  (setq vertico-sort-function nil)
   (defun +minibuffer-backward-delete ()
     (interactive)
     (save-restriction
@@ -63,6 +62,7 @@
   (global-set-key [remap yank-pop] 'consult-yank-pop)
   (global-set-key (kbd "M-g o") 'consult-outline)
   ;; Disable preview
+  (global-set-key [remap project-search] 'consult-ripgrep)
   (global-set-key [remap switch-to-buffer] 'consult-buffer)
   (global-set-key [remap bookmark-jump] 'consult-bookmark)
   (global-set-key [remap recentf-open-files] 'consult-recent-file)
