@@ -71,10 +71,7 @@
      '("T" . telega)
      '("I" . imenu-list-smart-toggle)
      '("F" . auto-fill-mode)
-     '("@" . treemacs-select-window)
-     ;; SPC j/k will run the original command in MOTION state.
-     '("j" . "H-j")
-     '("k" . "H-j"))
+     '("@" . treemacs-select-window))
     (meow-normal-define-key
      '("0" . meow-expand-0)
      '("9" . meow-expand-9)
