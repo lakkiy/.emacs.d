@@ -58,5 +58,6 @@ The padding pushes TEXT to the right edge of the mode-line."
 
 ;; (benchmark-run 1000 (format-mode-line mode-line-format))
 (setq-default header-line-format nil)
+(setq-default frame-title-format "⚘ %f ⚘")
 
 (provide 'init-modeline)
