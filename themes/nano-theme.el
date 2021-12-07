@@ -40,6 +40,10 @@
   "Options of nano theme."
   :group 'faces)
 
+(defcustom nano-theme-header-scales '(1.6 1.4 1.2 1.0 1.0 1.0 1.0)
+  "Scales for headers."
+  :group 'nano-theme)
+
 (defcustom nano-theme-light/dark 'light
   "Nano theme uses light theme or dark theme?"
   :type 'symbol
@@ -106,6 +110,8 @@
    `(trailing-whitespace        ((t (:background ,subtle))))
    `(completions-common-part    ((t (:foreground ,faded))))
    `(secondary-selection        ((t (:background ,subtle))))
+   `(header-line                ((t ( :background ,subtle :foreground ,strong
+                                      :box (:line-width 2 :style released-button)))))
 
    ;; Font Locks
    `(font-lock-comment-face           ((t (:foreground ,faded))))
@@ -133,10 +139,10 @@
    `(info-header-node ((t (:foreground ,foreground :background ,background))))
    `(info-index-match ((t (:foreground ,salient))))
    `(Info-quoted      ((t (:foreground ,faded))))
-   `(info-title-1     ((t (:inhert info-menu-header))))
-   `(info-title-2     ((t (:inhert info-menu-header))))
-   `(info-title-3     ((t (:inhert info-menu-header))))
-   `(info-title-4     ((t (:inhert info-menu-header))))
+   `(info-title-1     ((t (:inherit info-menu-header))))
+   `(info-title-2     ((t (:inherit info-menu-header))))
+   `(info-title-3     ((t (:inherit info-menu-header))))
+   `(info-title-4     ((t (:inherit info-menu-header))))
 
    ;; Bookmark
    `(bookmark-face          ((t (:foreground ,popout :box t))))
@@ -268,14 +274,13 @@
    `(org-formula                  ((t (:foreground ,faded))))
    `(org-headline-done            ((t (:foreground ,faded))))
    `(org-latex-and-related        ((t (:foreground ,faded))))
-   `(org-level-1                  ((t (:foreground ,foreground :bold t))))
-   `(org-level-2                  ((t (:foreground ,foreground :bold t))))
-   `(org-level-3                  ((t (:foreground ,foreground :bold t))))
-   `(org-level-4                  ((t (:foreground ,foreground :bold t))))
-   `(org-level-5                  ((t (:foreground ,foreground :bold t))))
-   `(org-level-6                  ((t (:foreground ,foreground :bold t))))
-   `(org-level-7                  ((t (:foreground ,foreground :bold t))))
-   `(org-level-8                  ((t (:foreground ,foreground :bold t))))
+   `(org-level-1                  ((t (:foreground ,foreground :bold t :height ,(nth 0 nano-theme-header-scales)))))
+   `(org-level-2                  ((t (:inherit org-level-1 :height ,(nth 1 nano-theme-header-scales)))))
+   `(org-level-3                  ((t (:inherit org-level-1 :height ,(nth 2 nano-theme-header-scales)))))
+   `(org-level-4                  ((t (:inherit org-level-1 :height ,(nth 3 nano-theme-header-scales)))))
+   `(org-level-5                  ((t (:inherit org-level-1 :height ,(nth 4 nano-theme-header-scales)))))
+   `(org-level-6                  ((t (:inherit org-level-1 :height ,(nth 5 nano-theme-header-scales)))))
+   `(org-level-7                  ((t (:inherit org-level-1 :height ,(nth 6 nano-theme-header-scales)))))
    `(org-link                     ((t (:foreground ,salient))))
    `(org-list-dt                  ((t (:foreground ,faded))))
    `(org-macro                    ((t (:foreground ,faded))))
@@ -318,48 +323,49 @@
    `(elfeed-search-unread-title-face ((t (:foreground ,foreground :bold t))))
 
    ;; Markdown
-   `(markdown-blockquote-face         ((t (:inhert default))))
+   `(markdown-blockquote-face         ((t (:inherit default))))
    `(markdown-bold-face               ((t (:foreground ,foreground :bold t))))
-   `(markdown-code-face               ((t (:inhert default))))
+   `(markdown-code-face               ((t (:inherit default))))
    `(markdown-comment-face            ((t (:foreground ,faded))))
-   `(markdown-footnote-marker-face    ((t (:inhert default))))
-   `(markdown-footnote-text-face      ((t (:inhert default))))
-   `(markdown-gfm-checkbox-face       ((t (:inhert default))))
+   `(markdown-footnote-marker-face    ((t (:inherit default))))
+   `(markdown-footnote-text-face      ((t (:inherit default))))
+   `(markdown-gfm-checkbox-face       ((t (:inherit default))))
    `(markdown-header-delimiter-face   ((t (:foreground ,faded))))
    `(markdown-header-face             ((t (:foreground ,foreground :bold t))))
-   `(markdown-header-face-1           ((t (:foreground ,foreground :bold t))))
-   `(markdown-header-face-2           ((t (:foreground ,foreground :bold t))))
-   `(markdown-header-face-3           ((t (:foreground ,foreground :bold t))))
-   `(markdown-header-face-4           ((t (:foreground ,foreground :bold t))))
-   `(markdown-header-face-5           ((t (:foreground ,foreground :bold t))))
-   `(markdown-header-face-6           ((t (:foreground ,foreground :bold t))))
-   `(markdown-header-rule-face        ((t (:inhert default))))
-   `(markdown-highlight-face          ((t (:inhert default))))
-   `(markdown-hr-face                 ((t (:inhert default))))
-   `(markdown-html-attr-name-face     ((t (:inhert default))))
-   `(markdown-html-attr-value-face    ((t (:inhert default))))
-   `(markdown-html-entity-face        ((t (:inhert default))))
-   `(markdown-html-tag-delimiter-face ((t (:inhert default))))
-   `(markdown-html-tag-name-face      ((t (:inhert default))))
+   `(markdown-header-rule-face        ((t (:inherit default))))
+   `(markdown-highlight-face          ((t (:inherit default))))
+   `(markdown-hr-face                 ((t (:inherit default))))
+   `(markdown-html-attr-name-face     ((t (:inherit default))))
+   `(markdown-html-attr-value-face    ((t (:inherit default))))
+   `(markdown-html-entity-face        ((t (:inherit default))))
+   `(markdown-html-tag-delimiter-face ((t (:inherit default))))
+   `(markdown-html-tag-name-face      ((t (:inherit default))))
    `(markdown-inline-code-face        ((t (:foreground ,popout))))
    `(markdown-italic-face             ((t (:foreground ,faded))))
-   `(markdown-language-info-face      ((t (:inhert default))))
-   `(markdown-language-keyword-face   ((t (:inhert default))))
-   `(markdown-line-break-face         ((t (:inhert default))))
+   `(markdown-language-info-face      ((t (:inherit default))))
+   `(markdown-language-keyword-face   ((t (:inherit default))))
+   `(markdown-line-break-face         ((t (:inherit default))))
    `(markdown-link-face               ((t (:foreground ,salient))))
-   `(markdown-link-title-face         ((t (:inhert default))))
+   `(markdown-link-title-face         ((t (:inherit default))))
    `(markdown-list-face               ((t (:foreground ,faded))))
    `(markdown-markup-face             ((t (:foreground ,faded))))
-   `(markdown-math-face               ((t (:inhert default))))
+   `(markdown-math-face               ((t (:inherit default))))
    `(markdown-metadata-key-face       ((t (:foreground ,faded))))
    `(markdown-metadata-value-face     ((t (:foreground ,faded))))
-   `(markdown-missing-link-face       ((t (:inhert default))))
-   `(markdown-plain-url-face          ((t (:inhert default))))
-   `(markdown-pre-face                ((t (:inhert default))))
+   `(markdown-missing-link-face       ((t (:inherit default))))
+   `(markdown-plain-url-face          ((t (:inherit default))))
+   `(markdown-pre-face                ((t (:inherit default))))
    `(markdown-reference-face          ((t (:foreground ,salient))))
    `(markdown-strike-through-face     ((t (:foreground ,faded))))
-   `(markdown-table-face              ((t (:inhert default))))
+   `(markdown-table-face              ((t (:inherit default))))
    `(markdown-url-face                ((t (:foreground ,salient))))
+   `(markdown-header-face-1           ((t (:foreground ,foreground :bold t :height ,(nth 0 nano-theme-header-scales)))))
+   `(markdown-header-face-2           ((t (:inherit markdown-header-face-1 :height ,(nth 1 nano-theme-header-scales)))))
+   `(markdown-header-face-3           ((t (:inherit markdown-header-face-1 :height ,(nth 2 nano-theme-header-scales)))))
+   `(markdown-header-face-4           ((t (:inherit markdown-header-face-1 :height ,(nth 3 nano-theme-header-scales)))))
+   `(markdown-header-face-5           ((t (:inherit markdown-header-face-1 :height ,(nth 4 nano-theme-header-scales)))))
+   `(markdown-header-face-6           ((t (:inherit markdown-header-face-1 :height ,(nth 5 nano-theme-header-scales)))))
+   `(markdown-header-face-7           ((t (:inherit markdown-header-face-1 :height ,(nth 6 nano-theme-header-scales)))))
 
    ;; Notmuch
    `(notmuch-tag-face             ((t (:foreground ,faded))))
@@ -384,21 +390,19 @@
    `(calendar-today ((t (:foreground ,foreground :bold t))))
 
    ;; Mode Line
-   `(mode-line
-     ((t (:background ,background :overline ,strong
-                      :box ,(if -modeline-pad `(:line-width ,-modeline-pad :color ,foreground))))))
-   `(mode-line-inactive
-     ((t (:background ,background :foreground ,faded :overline ,subtle
-                      :box ,(if -modeline-pad `(:line-width ,-modeline-pad :color ,faded))))))
+   `(mode-line          ((t ( :background ,background :overline ,strong
+                              :box ,(if -modeline-pad `(:line-width ,-modeline-pad :color ,foreground))))))
+   `(mode-line-inactive ((t ( :background ,background :foreground ,faded :overline ,subtle
+                              :box ,(if -modeline-pad `(:line-width ,-modeline-pad :color ,faded))))))
 
    ;; solaire Mode
    `(solaire-default-face             ((t (:inherit default :background ,highlight))))
 
    ;; Orderless
-   `(orderless-match-face-0           ((t (:foreground ,popout :bold t))))
-   `(orderless-match-face-1           ((t (:foreground ,popout :bold t))))
-   `(orderless-match-face-2           ((t (:foreground ,popout :bold t))))
-   `(orderless-match-face-3           ((t (:foreground ,popout :bold t))))
+   `(orderless-match-face-0           ((t (:foreground ,strong :bold t))))
+   `(orderless-match-face-1           ((t (:foreground ,strong :bold t))))
+   `(orderless-match-face-2           ((t (:foreground ,strong :bold t))))
+   `(orderless-match-face-3           ((t (:foreground ,strong :bold t))))
 
    ;; Eshell
    `(eshell-prompt                    ((t (:foreground ,popout :bold t))))

@@ -64,16 +64,14 @@
                             "<->" "<--" "</" "+=" "++" "??" "/>" "__" "WWW")))
 
 (defun +load-base-font ()
-  (let* ((font-spec (format "%s-%d" +font-default +font-size)))
+  (let* ((font-spec (format "%s-%d" +font-default +font-size))
+         (variable-font-spec (format "%s-%d" +font-variable-pitch +font-size)))
     ;; default font
     (set-frame-font font-spec)
     (set-face-attribute 'default nil :font font-spec)
     (add-to-list 'default-frame-alist `(font . ,font-spec))
-    ;; HACK mode-line inherit `variable-pitch' face as default in emacs 29
-    ;; (set-face-attribute 'mode-line nil :font font-spec)
-    ;; (set-face-attribute 'mode-line-active nil :font font-spec)
-    (set-face-attribute 'mode-line-inactive nil :inherit 'variable-pitch))
-  (set-face-attribute 'variable-pitch nil :font +font-variable-pitch)
+    (set-face-attribute 'variable-pitch nil :font variable-font-spec))
+  (set-face-attribute 'mode-line-inactive nil :inherit 'variable-pitch)
   ;; HACK
   ;; (set-face-attribute 'fixed-pitch nil :font +font-fixed-pitch)
   ;; Chinese font
