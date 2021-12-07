@@ -6,15 +6,11 @@
   (after-init-hook . (lambda ()
                        (meow-global-mode 1)))
   :config
-  ;;; project.el use C-x p
-  (global-unset-key (kbd "C-x C-p"))
-  (global-set-key (kbd "C-x C-d") #'dired)
   ;; SPC x f to describe-funtion
   (global-set-key (kbd "C-h C-f") 'describe-funtion)
   (dolist (mode '(go-dot-mod-mode
                   diff-mode))
     (add-to-list 'meow-mode-state-list `(,mode . normal)))
-  (global-set-key (kbd "C-s") 'meow-visit)
   (meow-setup)
   :init
   (setq meow-esc-delay 0.001)
@@ -44,7 +40,7 @@
      '("(" . "M-(")
      '(")" . "M-)") ;; unwrap
      ;; project
-     ;; TODO project search
+     '("p s" . project-search)
      '("p p" . project-switch-project)
      '("p f" . project-find-file)
      '("p b" . project-switch-to-buffer)

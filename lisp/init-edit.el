@@ -42,7 +42,7 @@
   :straight (treemacs
              :type git :host github
              :repo "Alexander-Miller/treemacs"
-             :files ("*"))
+             :files ("src"))
   :init
   (defun +treemacs-scale-font-size ()
     (face-remap-add-relative 'default :height 0.8))
