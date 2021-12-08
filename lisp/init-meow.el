@@ -20,6 +20,8 @@
      '("j" . meow-next)
      '("k" . meow-prev))
     (meow-leader-define-key
+     '("j" . "H-j") ;; run origin command in motion state
+     '("k" . "H-k")
      '("e" . "C-x C-e")
      '("b" . switch-to-buffer)
      '(";" . comment-dwim)

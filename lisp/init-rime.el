@@ -1,11 +1,22 @@
 ;;; -*- lexical-binding: t -*-
 
-(defvar +rime-version nil)
-(defvar +rime-sys nil)
+(defvar +rime-id "emacs-rime")
+(defvar +rime-sync-dir (expand-file-name "~/Dropbox/RimeSync"))
 
-(defun +rime-install-librime ()
-  "Instsall librime on macos to emacs/librime."
+
+;; You should edit `installation.yam' yourself to change `sync_dir' or `instanllation_id'.
+;; TODO clone personal config
+;;      download librime
+(defun +rime-init ()
   (interactive)
+  (unless (file-exists-p (expand-file-name "rimetest" user-emacs-directory))
+    (set-process-sentinel
+     (start-process "rime" "*rime*" "git" "clone" "--depth=1" "https://github.com/404cn/Rime.git" (expand-file-name "rimetest" user-emacs-directory))
+     (lambda (proc _)
+       (let ((status (process-exit-status proc)))
+         (if (= 0 status)
+             (message "Clone rime config.")
+           (message "Failed to clone rime config"))))))
   ;; TODO
   ;; should only use in OSX system
   ;; curl -L -O https://github.com/rime/librime/releases/download/1.7.2/rime-1.7.2-osx.zip
