@@ -50,7 +50,10 @@
   :init
   (setq kaolin-themes-underline-wave nil
         kaolin-themes-modeline-border nil
-        kaolin-themes-modeline-padded 4))
+        kaolin-themes-modeline-padded 4)
+  :config
+  ;; NOTE maybe check `+icons-p' and `all-the-icons'
+  (kaolin-treemacs-theme))
 
 (eat-package ligature
   :straight (ligature :type git :host github :repo "mickeynp/ligature.el")
