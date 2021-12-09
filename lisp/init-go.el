@@ -90,7 +90,10 @@
 (eat-package go-guru :straight t)
 (eat-package go-rename :straight t)
 (eat-package go-impl :straight t)
-(eat-package go-dlv :straight t)
+
+;; HACK use my own version of `go-dlv'
+;; since go-dlv didn't update
+(eat-package go-dlv)
 
 (eat-package go-playground
   :straight t
