@@ -74,6 +74,9 @@
 
 ;; in emacs29 from Po Lu!
 (when (boundp pixel-scroll-precision-mode)
+  ;; for mouse scroll
+  (setq pixel-scroll-precision-large-scroll-height 60)
+  (setq pixel-scroll-precision-interpolation-factor 8.0)
   (pixel-scroll-precision-mode))
 
 ;; produces a cleaner result
