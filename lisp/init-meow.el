@@ -17,8 +17,9 @@
   (defun meow-setup ()
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
     (meow-motion-overwrite-define-key
-     '("j" . meow-next)
-     '("k" . meow-prev))
+     '("'" . repeat)
+     '(">" . tab-bar-switch-to-next-tab)
+     '("<" . tab-bar-switch-to-prev-tab))
     (meow-leader-define-key
      '("j" . "H-j") ;; run origin command in motion state
      '("k" . "H-k")
