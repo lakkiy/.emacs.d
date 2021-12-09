@@ -150,6 +150,8 @@
      '(";" . meow-reverse)
      '("," . meow-inner-of-thing)
      '("." . meow-bounds-of-thing)
+     '("<" . tab-bar-switch-to-prev-tab)
+     '(">" . tab-bar-switch-to-next-tab)
      '("{" . flymake-goto-prev-error) ;; TODO wrap flymake and flycheck together
      '("}" . flymake-goto-next-error)
      '("[" . meow-beginning-of-thing)
