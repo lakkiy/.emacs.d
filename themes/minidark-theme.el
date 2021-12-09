@@ -71,13 +71,13 @@
    `(line-number-current-line       ((t (:foreground ,fn :background ,hl))))
    `(completions-common-part        ((t ())))
    `(minibuffer-prompt              ((t ())))
-   `(lazy-highlight                 ((t (:foreground ,lh :box (:line-width (-1 . -1))))))
+   `(lazy-highlight                 ((t (:foreground ,lh :underline t))))
    `(compilation-info               ((t ())))
    `(compilation-warning            ((t ())))
    `(warning                        ((t ())))
    `(match                          ((t (:inverse-video t))))
    `(secondary-selection            ((t (:background ,ss :extend nil))))
-   `(help-key-binding               ((t ())))
+   `(help-key-binding               ((t (:bold t))))
    `(shadow                         ((t (:foreground ,cm))))
 
    ;; ISearch
@@ -92,7 +92,8 @@
    `(font-lock-builtin-face         ((t ())))
    `(font-lock-type-face            ((t ())))
    `(font-lock-variable-name-face   ((t ())))
-   `(font-lock-keyword-face         ((t (:foreground ,kw))))
+   `(font-lock-keyword-face         ((((type tty)) (:bold t))
+                                     (((type graphic)) (:foreground ,kw))))
    `(font-lock-constant-face        ((t (:foreground ,st))))
    `(font-lock-function-name-face   ((t (:foreground ,fn))))
    `(font-lock-warning-face         ((t ())))
@@ -111,6 +112,7 @@
    ;; Mode Line
    `(tab-line                       ((t ())))
    `(mode-line                      ((t (:background ,fg :foreground ,bg))))
+   `(mode-line-active               ((t (:background ,fg :foreground ,bg))))
    `(mode-line-inactive             ((t (:background ,cm :foreground ,hl))))
    `(header-line                    ((t ())))
    `(header-line-inactive           ((t ())))
@@ -130,7 +132,7 @@
    `(yas-field-highlight-face       ((t (:background ,hl))))
 
    ;; Meow
-   `(meow-bmacro-indicator          ((t (:bold t))))
+   `(meow-beacon-indicator          ((t (:bold t))))
    `(meow-keypad-indicator          ((t (:bold t))))
    `(meow-insert-indicator          ((t (:bold t))))
    `(meow-normal-indicator          ((t (:bold t))))
@@ -140,7 +142,7 @@
    `(meow-normal-cursor             ((t (:background ,cur))))
    `(meow-motion-cursor             ((t (:background ,cur))))
    `(meow-unknown-cursor            ((t (:background ,cur))))
-   `(meow-bmacro-cursor             ((t (:background ,cur))))
+   `(meow-beacon-cursor             ((t (:background ,cur))))
 
    ;; colorful paren
    `(colorful-round           ((t ())))
@@ -234,7 +236,7 @@
    `(org-document-title             ((t (:bold t :height ,(nth 0 minidark-theme-header-scales)))))
    `(org-link                       ((t (:underline t))))
    `(org-document-title             ((t ())))
-   `(org-code                       ((t (:inherit font-lock-keyword-face))))
+   `(org-code                       ((t (:inherit font-lock-constant-face))))
    `(org-level-1                    ((t (:inherit font-lock-string-face :height ,(nth 0 minidark-theme-header-scales)))))
    `(org-level-2                    ((t (:inherit font-lock-function-name-face :height ,(nth 1 minidark-theme-header-scales)))))
    `(org-level-3                    ((t (:inherit font-lock-keyword-face :height ,(nth 2 minidark-theme-header-scales)))))
@@ -262,7 +264,16 @@
    `(erc-nick-default-face          ((t (:inherit font-lock-keyword-face))))
    `(erc-input-face                 ((t (:inherit font-lock-function-name-face))))
    `(erc-timestamp-face             ((t (:inherit font-lock-constant-face))))
-   `(erc-notice-face                ((t (:inherit font-lock-comment-face))))))
+   `(erc-notice-face                ((t (:inherit font-lock-comment-face))))
+
+   `(tab-bar                        ((t (:background ,hl))))
+   `(tab-bar-tab-group-current      ((t ())))
+   `(tab-bar-tab                    ((t (:inverse-video t :bold t))))
+   `(tab-bar-tab-group-inactive     ((t ())))
+   `(tab-bar-tab-inactive           ((t (:inherit shadow))))
+
+   `(ansi-color-blue                ((t (:foreground "#169edd"))))
+   `(ansi-color-bright-blue         ((t (:foreground "#169edd"))))))
 
 (and load-file-name
      (boundp 'custom-theme-load-path)
