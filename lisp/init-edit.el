@@ -38,11 +38,9 @@
     (global-set-key [remap ispell-word] 'flyspell-correct-wrapper)
     (define-key flyspell-mode-map (kbd "C-c $") nil)))
 
+;; FIXME add treemacs all the icons to load path
 (eat-package treemacs
-  :straight (treemacs
-             :type git :host github
-             :repo "Alexander-Miller/treemacs"
-             :files ("src"))
+  :straight t
   :init
   (defun +treemacs-scale-font-size ()
     (face-remap-add-relative 'default :height 0.8))

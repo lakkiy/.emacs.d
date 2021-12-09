@@ -9,8 +9,9 @@
        :init
        (setq treemacs-no-png-images nil)
        :config
-       (require 'treemacs-all-the-icons)
-       (treemacs-load-theme "all-the-icons"))
+       ;; (require 'treemacs-all-the-icons)
+       ;; (treemacs-load-theme "all-the-icons")
+       )
 
      (eat-package all-the-icons-ibuffer
        :after ibuffer
