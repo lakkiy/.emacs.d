@@ -33,7 +33,7 @@
   (setq which-key-idle-secondary-delay 0.05))
 
 (eat-package embark
-  :straight t
+  :straight (embark :files ("*.el"))
   :init
   (with-eval-after-load "vertico"
     (define-key vertico-map (kbd "M-o") 'embark-export)
