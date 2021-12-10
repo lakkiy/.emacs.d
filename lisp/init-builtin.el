@@ -95,24 +95,6 @@
   (setq xref-show-xrefs-function #'xref-show-definitions-completing-read)
   (setq xref-show-definitions-function #'xref-show-definitions-completing-read))
 
-(eat-package pluse
-  :init
-  (defun pulse-region (beg end &rest _)
-    "Pulse the current region."
-    (pulse-momentary-highlight-region beg end))
-  (defun pulse-line (&rest _)
-    "Pulse the current line."
-    (pulse-momentary-highlight-one-line (point)))
-  (defun recenter-and-pulse (&rest _)
-    "Recenter and pulse the current line."
-    (recenter)
-    (pulse-line))
-  (advice-add #'xref-find-definitions :after #'recenter-and-pulse)
-  (advice-add #'xref-find-definitions-at-mouse :after #'recenter-and-pulse)
-  (advice-add #'xref-pop-marker-stack :after #'recenter-and-pulse)
-  :hook
-  ((bookmark-after-jump-hook imenu-after-jump-hook) . recenter-and-pulse))
-
 ;; Undo/redo changes to Emacs' window layout
 (eat-package winner
   :hook (after-init-hook . winner-mode)
