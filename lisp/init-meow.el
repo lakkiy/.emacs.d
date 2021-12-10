@@ -19,13 +19,13 @@
     (meow-motion-overwrite-define-key
      '("<escape>" . +project-previous-buffer)
      '("'" . repeat)
-     '("j" . next-line)
-     '("k" . previous-line)
+     ;; don't overwrite keys that already used in `meow-leader-define-key'
+     ;; or `H-key' won't run the origin command in motion state
      '(">" . tab-bar-switch-to-next-tab)
      '("<" . tab-bar-switch-to-prev-tab))
     (meow-leader-define-key
-     '("j" . "H-j") ;; run origin command in motion state
-     '("k" . "H-k")
+     '(";" . "H-j") ;; run origin command in motion state
+     '(":" . "H-k")
      '("e" . "C-x C-e")
      '("b" . switch-to-buffer)
      '(";" . comment-dwim)
