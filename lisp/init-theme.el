@@ -17,21 +17,6 @@
         nano-theme-overline-modeline t
         nano-theme-padded-modeline nil))
 
-(eat-package doom-themes
-  :straight t
-  :init
-  (setq doom-themes-enable-bold t
-        doom-themes-enable-italic t
-        doom-themes-padded-modeline t
-        doom-spacegrey-brighter-comments t
-        doom-spacegrey-brighter-modeline t
-        doom-spacegrey-comment-bg t)
-  :config
-  (setq doom-themes-treemacs-theme "doom-colors") ; use the colorful treemacs theme
-  (doom-themes-treemacs-config)
-  (doom-themes-visual-bell-config)
-  (doom-themes-org-config))
-
 (eat-package spacemacs-theme
   :straight t
   :init
@@ -53,7 +38,8 @@
         kaolin-themes-modeline-padded 4)
   :config
   ;; NOTE maybe check `+icons-p' and `all-the-icons'
-  (kaolin-treemacs-theme))
+  (with-eval-after-load 'treemacs
+    (kaolin-treemacs-theme)))
 
 (eat-package ligature
   :straight (ligature :type git :host github :repo "mickeynp/ligature.el")

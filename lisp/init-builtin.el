@@ -129,13 +129,6 @@
         ediff-split-window-function 'split-window-horizontally
         ediff-merge-split-window-function 'split-window-horizontally))
 
-;; built-in since emacs 28
-(eat-package modus-themes
-  :init
-  (setq
-   ;; I will padded myself.
-   modus-themes-mode-line '(accented borderless)))
-
 ;; only enable in magit commit
 (eat-package flyspell
   :hook
