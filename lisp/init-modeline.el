@@ -43,9 +43,11 @@ The padding pushes TEXT to the right edge of the mode-line."
                         (/ (* (window-end) 100.0) (point-max)))))
                 `(,fringe
                   (:eval (when (fboundp 'meow-indicator) (meow-indicator)))
+                  ,spaces
                   (:eval (when (fboundp 'rime-lighter) (rime-lighter)))
                   ,spaces
                   (:eval (propertize (+smart-file-name-cached) 'face 'mode-line-buffer-id))
+                  ,spaces
                   ,spaces
                   mode-name
                   ,spaces
