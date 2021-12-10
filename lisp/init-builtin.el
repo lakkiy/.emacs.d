@@ -136,6 +136,18 @@
    ;; I will padded myself.
    modus-themes-mode-line '(accented borderless)))
 
+;; only enable in magit commit
+(eat-package flyspell
+  :hook
+  (flyspell-mode-hook . (lambda ()
+                          (dolist (key '("C-;" "C-," "C-." "C-M-i"))
+                            (define-key flyspell-mode-map (kbd key) nil))))
+  :init
+  (setq flyspell-issue-welcome-flag nil
+        flyspell-issue-message-flag nil
+        ispell-program-name "aspell"
+        ispell-extra-args '("--sug-mode=ultra" "--lang=en_US" "--run-together")))
+
 (defun my/project-files-in-directory (dir)
   "Use `fd' to list files in DIR."
   (let* ((default-directory dir)

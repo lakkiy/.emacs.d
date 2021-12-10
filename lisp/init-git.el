@@ -8,6 +8,7 @@
 
 (eat-package magit
   :straight t
+  :hook (git-commit-setup-hook . git-commit-turn-on-flyspell)
   :commands magit)
 
 (eat-package diff-hl
