@@ -1,9 +1,7 @@
 ;; -*- lexical-binding: t; -*-
 
 (eat-package telega
-  :straight (telega :tyep git
-                    :host github
-                    :repo "zevlg/telega.el")
+  :straight t
   :commands telega
   :init
   (defun +telega-font-setup ()

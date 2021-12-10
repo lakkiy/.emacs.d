@@ -63,9 +63,7 @@
 (defun +load-face-font (&optional frame)
   (let ((variable-pitch-font-spec (format "%s-%d" +font-variable-pitch +font-size))
         (fixed-pitch-font-spec (format "%s-%d" +font-default +font-size)))
-    (set-face-attribute 'variable-pitch frame
-                        :font variable-pitch-font-spec
-                        :height 1.2)
+    (set-face-attribute 'variable-pitch frame :font variable-pitch-font-spec)
     (set-face-attribute 'fixed-pitch frame :font fixed-pitch-font-spec)
     (set-face-attribute 'fixed-pitch-serif frame :font fixed-pitch-font-spec)
     (set-face-attribute 'tab-bar frame :inherit 'variable-pitch :height 0.8)
@@ -98,9 +96,10 @@
                      (load-theme +theme-system-light t)
                    (load-theme +theme-system-dark t)))))
 
-(add-hook 'after-init-hook (lambda ()
-                             (load-theme +theme t)
-                             (+load-font)))
+(add-hook 'after-init-hook
+          (lambda ()
+            (load-theme +theme t)
+            (+load-font)))
 
 (add-hook 'after-make-frame-functions
           (lambda (f)

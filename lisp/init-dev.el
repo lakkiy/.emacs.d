@@ -21,7 +21,7 @@
     c++-mode-hook
     java-mode-hook
     haskell-mode-hook
-    emacs-lisp-mode-hook
+    ;; emacs-lisp-mode-hook ;; use `puni'
     lisp-interaction-mode-hook
     lisp-mode-hook
     maxima-mode-hook
