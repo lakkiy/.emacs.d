@@ -53,8 +53,9 @@ The padding pushes TEXT to the right edge of the mode-line."
                   ,spaces
                   vc-mode
                   ,spaces
-                  (:eval (when (bound-and-true-p flycheck-mode) flycheck-mode-line))                  (:propertize " " display (height 1.4))
+                  (:eval (when (bound-and-true-p flycheck-mode) flycheck-mode-line))
                   (:eval (when (bound-and-true-p flymake-mode) flymake-mode-line-format))
+                  (:propertize " " display (height 1.4))
                   (:propertize " " display (raise -0.3))
                   (:eval (concat (luna-mode-line-with-padding ,percentage)
                                  "%%"))
