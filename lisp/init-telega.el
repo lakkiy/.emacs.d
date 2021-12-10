@@ -6,15 +6,15 @@
                     :repo "zevlg/telega.el")
   :commands telega
   :init
-  (defun +fixed-pitch-setup ()
+  (defun +telega-font-setup ()
     (interactive)
-    (setq buffer-face-mode-face `(:family ,+font-fixed-pitch))
+    (setq buffer-face-mode-face `(:family ,+font-cn))
     (buffer-face-mode +1))
   :hook
   ;; ignore blocked user
   (telega-msg-ignore-predicates . telega-msg-from-blocked-sender-p)
   ;; font setup
-  ((telega-root-mode-hook telega-chat-mode-hook) . +fixed-pitch-setup)
+  ((telega-root-mode-hook telega-chat-mode-hook) . +telega-font-setup)
   :config
   (setq telega-chat-input-prompt "> "
         telega-animation-play-inline nil
