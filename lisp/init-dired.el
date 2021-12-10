@@ -2,6 +2,7 @@
 
 (eat-package dired
   :init
+  (setq dired-dwim-target t)
   (setq dired-kill-when-opening-new-dired-buffer t))
 
 (eat-package dired-hacks
