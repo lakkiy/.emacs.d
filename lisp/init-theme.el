@@ -79,7 +79,8 @@
   ;; (set-face-attribute 'fixed-pitch nil :font +font-fixed-pitch)
   ;; Chinese font
   (set-fontset-font t '(#x4e00 . #x9fff) +font-fixed-pitch)
-  (setf (alist-get +font-variable-pitch face-font-rescale-alist 1.3 nil 'string=) 1.3))
+  ;; (setf (alist-get +font-variable-pitch face-font-rescale-alist 1.3 nil 'string=) 1.3)
+  )
 
 (defun +load-ext-font ()
   (dolist (charset '(kana han hangul cjk-misc bopomofo symbol))
