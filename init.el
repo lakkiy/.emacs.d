@@ -7,7 +7,6 @@
 (defvar +font-variable-pitch "Bookerly" "Used for `variable-pitch-mode'")
 
 (defvar +theme 'modus-vivendi "Theme used in GUI.")
-(defvar +theme-tui 'modus-vivendi "Theme used in TUI.")
 (defvar +theme-system-appearance nil "Weather to auto change theme after system appearance changed.")
 (defvar +theme-system-light 'modus-operandi "Theme used after change system appearance to light.")
 (defvar +theme-system-dark 'modus-vivendi "Theme used after change system appearance to dark.")
