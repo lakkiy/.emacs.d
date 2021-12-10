@@ -203,4 +203,7 @@ No tab will created if the command is cancelled."
                  (funcall tab-bar-tab-face-function tab))
      " ")))
 
+(global-set-key (kbd "C-x t .") #'tab-bar-rename-tab)
+(global-set-key (kbd "C-x t l") #'+tab-bar-switch-project)
+
 (provide 'init-builtin)

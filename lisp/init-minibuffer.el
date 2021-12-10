@@ -40,6 +40,7 @@
     (define-key vertico-map (kbd "C-c C-o") 'embark-collect-snapshot)
     (define-key vertico-map (kbd "C-c C-c") 'embark-act))
   :config
+  (define-key (kbd "<escape>") #'keyboard-escape-quit)
   ;; Consult users will also want the embark-consult package.
   (eat-package embark-consult :after consult)
   ;; Hide the mode line of the Embark live/completions buffers

@@ -17,7 +17,10 @@
   (defun meow-setup ()
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
     (meow-motion-overwrite-define-key
+     '("<escape>" . +project-previous-buffer)
      '("'" . repeat)
+     '("j" . next-line)
+     '("k" . previous-line)
      '(">" . tab-bar-switch-to-next-tab)
      '("<" . tab-bar-switch-to-prev-tab))
     (meow-leader-define-key
@@ -142,7 +145,7 @@
      '("<f2>" . meow-quick-kmacro)
      '("<f3>" . meow-start-kmacro)
      '("<f4>" . meow-end-or-call-kmacro)
-     '("<escape>" . mode-line-other-buffer)
+     '("<escape>" . +project-previous-buffer)
      '("-" . hs-hide-block) ;; TODO `negative-argument'
      '("=" . hs-show-block)
      '("_" . hs-hide-all)
