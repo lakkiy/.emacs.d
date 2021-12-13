@@ -3,7 +3,7 @@
 (defvar +font-default "Latin Modern Mono" "Font used for default and `fixed-pitch'.")
 (defvar +font-size 15 "Default font size")
 (defvar +font-unicode "Apple Color Emoji" "Emoji font.")
-(defvar +font-cn "FZPingXianYaSongS-R-GB" "Just used for chinese font.")
+(defvar +font-cn "Sarasa Mono SC" "Just used for chinese font.")
 (defvar +font-variable-pitch "Bookerly" "Used for `variable-pitch-mode'")
 
 (defvar +theme 'kaolin-mono-dark "Theme used in GUI.")

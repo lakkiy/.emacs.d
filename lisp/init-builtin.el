@@ -156,7 +156,7 @@
     (mapcan #'my/project-files-in-director
             (or dirs (list (project-root project))))))
 
-(setq tab-bar-border 0
+(setq tab-bar-border nil
       tab-bar-close-button nil
       tab-bar-back-button nil
       tab-bar-new-button nil

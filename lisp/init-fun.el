@@ -28,8 +28,7 @@
   find-orphan-function-in-directory)
 
 (defun +project-previous-buffer (arg)
-  "Toggle to the previous buffer that belongs to current project
-and don't shown in any window."
+  "Toggle to the previous buffer that belongs to current project."
   (interactive "P")
   (unless arg
     (if-let ((pr (project-current)))
@@ -37,8 +36,7 @@ and don't shown in any window."
          (->> (project--buffer-list pr)
               (--remove (or (minibufferp it)
                             (get-buffer-window-list it)))
-              (car)))
-      (mode-line-other-buffer))))
+              (car))))))
 
 (straight-use-package 'dumb-jump)
 (straight-use-package 'highlight-numbers)

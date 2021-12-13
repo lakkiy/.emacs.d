@@ -66,7 +66,7 @@
     (set-face-attribute 'variable-pitch frame :font variable-pitch-font-spec)
     (set-face-attribute 'fixed-pitch frame :font fixed-pitch-font-spec)
     (set-face-attribute 'fixed-pitch-serif frame :font fixed-pitch-font-spec)
-    (set-face-attribute 'tab-bar frame :inherit 'variable-pitch :height 0.8)
+    (set-face-attribute 'tab-bar frame :inherit 'variable-pitch :height 1.0)
     (set-face-attribute 'mode-line frame :inherit 'variable-pitch)
     (set-face-attribute 'mode-line-inactive frame :inherit 'variable-pitch)))
 
