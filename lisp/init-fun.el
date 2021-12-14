@@ -1,13 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-;; install pyqt5 with your package manager(not pip)
-(eat-package popweb
-  :straight (popweb
-             :type git
-             :host github
-             :repo "manateelazycat/popweb"
-             :files ("*.el" "*.py" "*.js" "*.html" "*.css" "extension")))
-
 (eat-package rainbow-mode
   :straight t
   :commands rainbow-mode)
@@ -40,5 +32,6 @@
 
 (straight-use-package 'dumb-jump)
 (straight-use-package 'highlight-numbers)
+(straight-use-package 'vterm)
 
 (provide 'init-fun)
