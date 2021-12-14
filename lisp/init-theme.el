@@ -76,7 +76,7 @@
           (font-spec (font-spec :family +font-unicode)))
       (dolist (charset '(kana han hangul cjk-misc bopomofo symbol))
         (set-fontset-font font charset font-spec))))
-  (setf (alist-get +font-unicode face-font-rescale-alist 0.8 nil 'string=) 0.8))
+  (setf (alist-get +font-unicode face-font-rescale-alist 0.7 nil 'string=) 0.7))
 
 (defun +load-font ()
   (+load-base-font)
