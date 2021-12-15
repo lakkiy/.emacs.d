@@ -21,7 +21,7 @@
   :after vertico
   :hook (minibuffer-setup-hook
          . (lambda ()
-             (setq-local completion-styles '(substring orderless)))))
+             (setq-local completion-styles '(basic orderless)))))
 
 (eat-package which-key
   :straight t

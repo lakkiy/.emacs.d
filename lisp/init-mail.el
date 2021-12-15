@@ -1,8 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(eat-package mbsync
-  :straight t)
-
 (defface notmuch-search-emacs-face
   '((((class color)
       (background dark))
