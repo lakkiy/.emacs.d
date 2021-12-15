@@ -19,8 +19,9 @@
 (eat-package orderless
   :straight t
   :after vertico
-  :config
-  (setq completion-styles '(substring orderless)))
+  :hook (minibuffer-setup-hook
+         . (lambda ()
+             (setq-local completion-styles '(substring orderless)))))
 
 (eat-package which-key
   :straight t
