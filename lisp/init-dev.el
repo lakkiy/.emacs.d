@@ -148,9 +148,9 @@
   :init
   (setq eglot-ignored-server-capabilites '(:documentHighlightProvider)
         ;; don't block of LSP connection attempts
-        eglot-sync-connect nil)
-  ;; I will manage `company-capf' myself
-  (add-to-list 'eglot-stay-out-of 'company)
+        eglot-sync-connect nil
+        ;; I will manage `company-capf' myself
+        eglot-stay-out-of '(company))
   :config
   (define-key eglot-mode-map (kbd "M-RET") 'eglot-code-actions)
   (define-key eglot-mode-map (kbd "C-c r") 'eglot-rename)
