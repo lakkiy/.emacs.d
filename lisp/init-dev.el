@@ -143,18 +143,18 @@
   :straight t
   :commands
   eglot-ensure
-  :hook (go-mode-hook . eglot-ensure)
+  ;; enable `eglot' manually
+  ;; :hook (go-mode-hook . eglot-ensure)
   :init
-  (setq eglot-stay-out-of nil
-        eglot-ignored-server-capabilites '(:documentHighlightProvider))
+  (setq eglot-ignored-server-capabilites '(:documentHighlightProvider)
+        ;; don't block of LSP connection attempts
+        eglot-sync-connect nil)
   ;; I will manage `company-capf' myself
   (add-to-list 'eglot-stay-out-of 'company)
-  ;; auto expand function param for golang
-  ;; (setq-default eglot-workspace-configuration
-  ;;               '((gopls
-  ;;                  (usePlaceholders . t))))
   :config
   (define-key eglot-mode-map (kbd "M-RET") 'eglot-code-actions)
+  (define-key eglot-mode-map (kbd "C-c r") 'eglot-rename)
+  (define-key eglot-mode-map (kbd "C-c h") 'eldoc)
   (add-to-list 'eglot-server-programs
                '(python-mode . ("pyright-langserver" "--stdio")))
   (add-to-list 'eglot-server-programs

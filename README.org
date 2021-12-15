@@ -9,3 +9,10 @@ Replace =github.com= to =github.com.cnpmjs.org= in =straight.el=
                                 "github.com.cnpmjs.org" url nil nil 1)))
   (advice-add 'straight-vc-git--encode-url :around #'+set-github-mirror)
 #+end_src
+
+Enable snippets completion on gopls(require =yasnippet=).
+#+begin_src emacs-lisp
+  (setq-default eglot-workspace-configuration
+                '((gopls
+                   (usePlaceholders . t))))
+#+end_src
