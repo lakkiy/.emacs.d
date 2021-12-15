@@ -19,9 +19,15 @@
 (eat-package orderless
   :straight t
   :after vertico
-  :hook (minibuffer-setup-hook
-         . (lambda ()
-             (setq-local completion-styles '(basic orderless)))))
+  :config
+  ;; do not use `orderless' style in company capf
+  (define-advice company-capf
+      (:around (orig-fun &rest args) set-completion-styles)
+    (let ((completion-styles '(basic partial-completion)))
+      (apply orig-fun args)))
+  ;; set this local in minibuffer will break perl style split of
+  ;; consult async commands like `consult-ripgrep'
+  (setq completion-styles '(basic orderless)))
 
 (eat-package which-key
   :straight t
