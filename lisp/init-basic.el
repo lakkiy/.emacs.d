@@ -87,7 +87,6 @@
        (start-process "terminal-notifier"
                       nil
                       "terminal-notifier"
-                      "-group" "Emacs"
                       "-title" title
                       "-message" body
                       "-sender" "org.gnu.Emacs"))))
