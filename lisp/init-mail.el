@@ -21,8 +21,7 @@ Used in the default value of `notmuch-tag-formats'."
   :straight t
   :commands notmuch
   :init
-  (setq notmuch-show-logo nil
-        notmuch-search-oldest-first nil
+  (setq notmuch-search-oldest-first nil
         notmuch-search-result-format '(("date" . "%12s ")
                                        ("count" . "%-11s ")
                                        ("authors" . "%-20s ")
@@ -40,7 +39,8 @@ Used in the default value of `notmuch-tag-formats'."
         (require 'notmuch)
         (notmuch-poll))
      (lambda (result)
-       (message "%s, now you can refresh notmuch buffer(g)." result))))
+       (message "+async-notmuch-poll: %s" result)
+       (notify-send :title "Emacs" :body result :urgency 'critical))))
   (global-set-key [remap notmuch-poll-and-refresh-this-buffer] #'+async-notmuch-poll))
 
 (eat-package message

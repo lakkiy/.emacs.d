@@ -67,6 +67,32 @@
   (unless sys/linuxp
     (setq command-line-x-option-alist nil)))
 
+;; Notifications
+;;
+;; Actually, `notify-send' is not defined in notifications package, but the
+;; autoload cookie will make Emacs load `notifications' first, then our
+;; `defalias' will be evaluated.
+(pcase system-type
+  ('gnu/linux
+   (autoload #'notify-send "notifications")
+   (with-eval-after-load "notifications"
+     (defalias 'notify-send 'notifications-notify)))
+  ('darwin
+   (defun notify-send (&rest params)
+     "Send notifications via `terminal-notifier'."
+     (let ((title (plist-get params :title))
+           (body (plist-get params :body)))
+       (start-process "terminal-notifier"
+                      nil
+                      "terminal-notifier"
+                      "-group" "Emacs"
+                      "-title" title
+                      "-message" body
+                      "-activate" "org.gnu.Emacs"))))
+  (_
+   (defalias 'notify-send 'ignore)))
+
+
 (defun +reopen-file-with-sudo ()
   (interactive)
   (find-alternate-file (format "/sudo::%s" (buffer-file-name))))
