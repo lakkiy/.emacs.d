@@ -1,31 +1,17 @@
 ;;; -*- lexical-binding: t -*-
 
-(defface notmuch-search-emacs-face
-  '((((class color)
-      (background dark))
-     (:foreground "White" :background "systemPurpleColor"))
-    (((class color)
-      (background light))
-     (:foreground "White" :background "systemPurpleColor")))
-  "Face used in search mode face.
+(defface notmuch-tag-emacs
+  '((t :foreground "systemPurpleColor"))
+  "Default face used for the emacs tag.
 
-This face is the default value for the \"emacs\" tag in
-`notmuch-search-line-faces'."
-  :group 'notmuch-search
+Used in the default value of `notmuch-tag-formats'."
   :group 'notmuch-faces)
 
-(defface notmuch-search-golang-face
-  '((((class color)
-      (background dark))
-     (:foreground "White" :background "systemBlueColor"))
-    (((class color)
-      (background light))
-     (:foreground "White" :background "systemBlueColor")))
-  "Face used in search mode face.
+(defface notmuch-tag-golang
+  '((t :foreground "systemBlueColor"))
+  "Default face used for the golang tag.
 
-This face is the default value for the \"golang\" tag in
-`notmuch-search-line-faces'."
-  :group 'notmuch-search
+Used in the default value of `notmuch-tag-formats'."
   :group 'notmuch-faces)
 
 (eat-package notmuch
@@ -39,7 +25,10 @@ This face is the default value for the \"golang\" tag in
                                        ("authors" . "%-20s ")
                                        ("subject" . "%s ")
                                        ("tags" . "(%s)"))
-        notmuch-show-empty-searches t))
+        notmuch-show-empty-searches t)
+  :config
+  (add-to-list 'notmuch-tag-formats '("emacs" (propertize tag 'face 'notmuch-tag-emacs)))
+  (add-to-list 'notmuch-tag-formats '("golang" (propertize tag 'face 'notmuch-tag-golang))))
 
 (eat-package message
   :hook (message-mode-hook . auto-fill-mode)
