@@ -14,6 +14,9 @@ Used in the default value of `notmuch-tag-formats'."
 Used in the default value of `notmuch-tag-formats'."
   :group 'notmuch-faces)
 
+;; TODO many enable `async-bytecomp-package-mode' before emacs running.
+(straight-use-package 'async)
+
 (eat-package notmuch
   :straight t
   :commands notmuch
@@ -28,7 +31,17 @@ Used in the default value of `notmuch-tag-formats'."
         notmuch-show-empty-searches t)
   :config
   (add-to-list 'notmuch-tag-formats '("emacs" (propertize tag 'face 'notmuch-tag-emacs)))
-  (add-to-list 'notmuch-tag-formats '("golang" (propertize tag 'face 'notmuch-tag-golang))))
+  (add-to-list 'notmuch-tag-formats '("golang" (propertize tag 'face 'notmuch-tag-golang)))
+  (defun +async-notmuch-poll ()
+    (interactive)
+    (async-start
+     `(lambda ()
+        ,(async-inject-variables "\\`load-path\\'")
+        (require 'notmuch)
+        (notmuch-poll))
+     (lambda (result)
+       (message "%s, now you can refresh notmuch buffer(g)." result))))
+  (global-set-key [remap notmuch-poll-and-refresh-this-buffer] #'+async-notmuch-poll))
 
 (eat-package message
   :hook (message-mode-hook . auto-fill-mode)
