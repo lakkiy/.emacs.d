@@ -90,7 +90,7 @@
                       "-group" "Emacs"
                       "-title" title
                       "-message" body
-                      "-activate" "org.gnu.Emacs"))))
+                      "-sender" "org.gnu.Emacs"))))
   (_
    (defalias 'notify-send 'ignore)))
 
