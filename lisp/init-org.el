@@ -171,6 +171,14 @@ prepended to the element after the #+HEADER: tag."
                                (shell . t)
                                (plantuml . t)))
 
+  (eat-package ob-async
+    :straight t
+    :init
+    ;; add :async to org src block to run async
+    ;; NOTE maybe set variable need in subprocess
+    ;;      see `ob-async-pre-execute-src-block-hook'
+    (setq ob-async-no-async-languages-alist '("ipython")))
+
   (eat-package ob-restclient
     :straight t
     :init (cl-pushnew '(restclient . t) load-language-list))
