@@ -78,6 +78,8 @@
    (with-eval-after-load "notifications"
      (defalias 'notify-send 'notifications-notify)))
   ('darwin
+   ;; HACK you must enable notify for emacs in macos system
+   ;;      Notifications & Focus -> Emacs -> Allow Notifications
    (defun notify-send (&rest params)
      "Send notifications via `terminal-notifier'."
      (let ((title (plist-get params :title))
