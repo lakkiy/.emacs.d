@@ -87,9 +87,12 @@
        (start-process "terminal-notifier"
                       nil
                       "terminal-notifier"
+                      "-group" "Emacs"
                       "-title" title
                       "-message" body
-                      "-sender" "org.gnu.Emacs"))))
+                      ;; FIXME this option didn't show emacs icon
+                      ;; but -sender didn't show the message when focus on emacs
+                      "-activate" "org.gnu.Emacs"))))
   (_
    (defalias 'notify-send 'ignore)))
 
