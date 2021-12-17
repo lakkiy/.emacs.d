@@ -28,9 +28,6 @@ Used in the default value of `notmuch-tag-formats'."
                                        ("subject" . "%s ")
                                        ("tags" . "(%s)"))
         notmuch-show-empty-searches t)
-  :config
-  (add-to-list 'notmuch-tag-formats '("emacs" (propertize tag 'face 'notmuch-tag-emacs)))
-  (add-to-list 'notmuch-tag-formats '("golang" (propertize tag 'face 'notmuch-tag-golang)))
   (defun +async-notmuch-poll ()
     (interactive)
     (async-start
@@ -41,6 +38,9 @@ Used in the default value of `notmuch-tag-formats'."
      (lambda (result)
        (message "+async-notmuch-poll: %s" result)
        (notify-send :title "Emacs" :body result :urgency 'critical))))
+  :config
+  (add-to-list 'notmuch-tag-formats '("emacs" (propertize tag 'face 'notmuch-tag-emacs)))
+  (add-to-list 'notmuch-tag-formats '("golang" (propertize tag 'face 'notmuch-tag-golang)))
   (global-set-key [remap notmuch-poll-and-refresh-this-buffer] #'+async-notmuch-poll))
 
 (eat-package message
