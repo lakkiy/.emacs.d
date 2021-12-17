@@ -207,7 +207,7 @@
  truncate-partial-width-windows 65                  ; Don't truncate lines in a window narrower than 65 chars.
  vc-follow-symlinks t                               ; always follow link
  scroll-step 1                                      ; Vertical Scroll
- scroll-margin 0
+ scroll-margin 10
  scroll-conservatively 100000
  scroll-up-aggressively 0.01
  scroll-down-aggressively 0.01
