@@ -106,4 +106,4 @@
             (+load-face-font f)
             (+load-ext-font)))
 
-(provide 'init-theme)
+(provide 'init-laf)

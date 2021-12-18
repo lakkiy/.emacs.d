@@ -13,12 +13,13 @@
 (defvar +theme-hooks nil "((theme-id . function) ...)")
 
 (defvar +enable-benchmark nil "Where to enable `benchmark'.")
+(defvar +meow-layout 'qwerty "qwerty or dvorak layout config for `meow'")
 
 (let ((file-name-handler-alist nil))
   (require 'init-straight)
   (require 'init-basic)
   (require 'init-builtin)
-  (require 'init-theme)
+  (require 'init-laf)
   (require 'init-meow)
   (require 'init-rime)
   (require 'init-minibuffer)

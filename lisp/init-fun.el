@@ -4,9 +4,7 @@
   :straight t
   :commands rainbow-mode)
 
-(eat-package secret-mode
-  :straight (secret-mode :type git :host github :repo  "bkaestner/secret-mode.el"))
-
+;; NOTE not work on macos with emacs-build
 (eat-package screenshot
   :straight (screenshot :type git :host github :repo "tecosaur/screenshot"))
 
@@ -34,5 +32,6 @@
 (straight-use-package 'dumb-jump)
 (straight-use-package 'highlight-numbers)
 (straight-use-package 'vterm)
+(straight-use-package 'eldoc-overlay)
 
 (provide 'init-fun)
