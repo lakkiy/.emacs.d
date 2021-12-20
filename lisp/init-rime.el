@@ -52,6 +52,20 @@
         rime-title "ㄓ")
   (when sys/macp
     (setq rime-librime-root (expand-file-name "librime/dist" user-emacs-directory)))
+
+  (defun +async-rime-sync ()
+    (interactive)
+    (async-start
+     `(lambda ()
+        ,(async-inject-variables "\\`load-path\\'")
+        ,(async-inject-variables "\\`rime-librime-root\\'")
+        (require 'rime)
+        (rime-activate "")
+        (rime-sync))
+     (lambda (successp)
+       (let ((msg (if successp "Rime Sync Done" "Rime Sync Failed")))
+         (message "+async-rime-sync: %s" msg)
+         (notify-send :title "Emacs" :body msg :urgency 'critical)))))
   :config
   (define-key rime-active-mode-map [tab] 'rime-inline-ascii)
   (define-key rime-mode-map (kbd "C-`") 'rime-send-keybinding)
