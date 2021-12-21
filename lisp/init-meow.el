@@ -17,6 +17,12 @@
                   notmuch-search-mode
                   notmuch-tree-mode))
     (add-to-list 'meow-mode-state-list `(,mode . motion)))
+  (setq
+   meow-replace-state-name-list '((normal . "N")
+                                  (motion . "M")
+                                  (keypad . "K")
+                                  (insert . "I")
+                                  (beacon . "B")))
   (meow-setup)
   :init
   (setq meow-esc-delay 0.001)
