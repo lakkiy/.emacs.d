@@ -82,12 +82,12 @@
    ;; movement, like hjkl
    '("h" . meow-left)
    '("H" . meow-left-expand)
-   '("l" . meow-right)
-   '("L" . meow-right-expand)
-   '("j" . meow-next)
-   '("J" . meow-next-expand)
-   '("k" . meow-prev)
-   '("K" . meow-prev-expand)
+   '("t" . meow-right)
+   '("T" . meow-right-expand)
+   '("n" . meow-next)
+   '("N" . meow-next-expand)
+   '("p" . meow-prev)
+   '("P" . meow-prev-expand)
    ;; insert above/below
    '("i" . meow-insert)
    '("I" . meow-open-above)
@@ -102,30 +102,25 @@
    '("M" . meow-mark-symbol)
    '("s" . meow-search)
    ;; kill/delete/change/replace
-   '("x" . meow-delete)
-   '("X" . meow-backward-delete)
-   '("d" . meow-kill)
+   '("d" . meow-delete)
+   '("D" . meow-backward-delete)
+   '("k" . meow-kill)
    '("r" . meow-replace)
-   '("R" . meow-replace-save)
+   '("R" . meow-swap-grab) ;; TODO move to grab
    '("c" . meow-change)
-   '("C" . meow-change-save)
    ;; line operation
-   '("e" . meow-join)
-   '("E" . delete-indentation)
-   '("v" . meow-line)
-   '("V" . meow-goto-line)
+   '("j" . meow-join)
+   '("e" . meow-line)
+   '("E" . meow-goto-line)
    '("o" . meow-block)
    '("O" . meow-to-block)
    ;; yank/pop
-   '("y" . meow-save)
-   '("Y" . meow-sync-grab)
-   '("p" . meow-yank)
+   '("x" . meow-save)
+   '("X" . meow-sync-grab)
+   '("y" . meow-yank)
    ;; grab
-   '("P" . meow-pop-grab)
    '("G" . meow-grab)
-   '("S" . meow-swap-grab)
    '("z" . meow-pop-selection)
-   '("Z" . meow-pop-all-selection)
    ;; query replace
    '("&" . meow-query-replace)
    '("%" . meow-query-replace-regexp)
@@ -135,17 +130,16 @@
    '("[" . meow-beginning-of-thing)
    '("]" . meow-end-of-thing)
    ;; find/search/till/visit
-   '("f" . meow-visit)
-   '("F" . meow-find)
-   '("t" . meow-till)
-   '("T" . meow-till-expand)
+   '("v" . meow-visit)
+   '("f" . meow-find)
+   '("l" . meow-till)
    ;; undo
    '("u" . meow-undo)
    '("U" . meow-undo-in-selection)
    ;;
    '("'" . repeat)
-   '("n" . scroll-up-command)
-   '("N" . scroll-down-command)
+   ;; '("n" . scroll-up-command) ;; TODO conflit
+   ;; '("N" . scroll-down-command)
    '("-" . hs-hide-block) ;; TODO `negative-argument'
    '("=" . hs-show-block)
    '("_" . hs-hide-all)
