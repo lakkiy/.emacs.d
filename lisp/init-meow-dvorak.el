@@ -13,8 +13,7 @@
    '(">" . tab-bar-switch-to-next-tab)
    '("<" . tab-bar-switch-to-prev-tab))
   (meow-leader-define-key
-   '(";" . "H-j") ;; run origin command in motion state
-   '(":" . "H-k")
+   '("a" . execute-extended-command)
    '("e" . "C-x C-e")
    '("b" . switch-to-buffer)
    '(";" . comment-dwim)
@@ -34,7 +33,7 @@
    '("{" . "M-{")
    '("(" . "M-(")
    '(")" . "M-)") ;; unwrap
-   ;; project
+   ;; project TODO
    '("p s" . project-search)
    '("p p" . project-switch-project)
    '("p f" . project-find-file)
@@ -44,9 +43,7 @@
    '("p d" . project-dired)
    ;; xref
    '("." . "M-.")
-   '("z" . "M-,") ;; HACK `xref-pop-stack-mark' was replaced by `xref-go-back' after emacs28,
    '("," . "M-,")
-   '("Z" . "M-?")
    '("?" . "M-?")
    ;; window
    '("w" . ace-window)
@@ -55,7 +52,7 @@
    '("O" . ace-delete-window)
    '("q" . delete-window)
    '("-" . split-window-below)
-   '("\\" . split-window-right)
+   '("s" . split-window-right)
    ;; toggles
    '("L" . display-line-numbers-mode)
    '("A" . org-agenda-list)
