@@ -1,7 +1,6 @@
 * Just some snippets
 
 Replace =github.com= to =github.com.cnpmjs.org= in =straight.el=
-
 #+begin_src emacs-lisp
   (defun +set-github-mirror (oldfunc &rest args)
     (let ((url (apply oldfunc args)))
@@ -15,4 +14,14 @@ Enable snippets completion on gopls(require =yasnippet=).
   (setq-default eglot-workspace-configuration
                 '((gopls
                    (usePlaceholders . t))))
+#+end_src
+
+To setup elfeed, add this to =custom.el=
+#+begin_src emacs-lisp
+(setq
+ elfeed-feeds (list
+               (list "fever+https://root@example.com"
+                     :api-url "https://example.com/api/fever.php"
+                     :password "p4ssw0rd"
+                     :autotags nil)))
 #+end_src
