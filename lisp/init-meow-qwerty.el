@@ -13,8 +13,6 @@
    '(">" . tab-bar-switch-to-next-tab)
    '("<" . tab-bar-switch-to-prev-tab))
   (meow-leader-define-key
-   '(";" . "H-j") ;; run origin command in motion state
-   '(":" . "H-k")
    '("e" . "C-x C-e")
    '("b" . switch-to-buffer)
    '(";" . comment-dwim)
@@ -113,7 +111,6 @@
    '("C" . meow-change-save)
    ;; line operation
    '("e" . meow-join)
-   '("E" . delete-indentation)
    '("v" . meow-line)
    '("V" . meow-goto-line)
    '("o" . meow-block)
@@ -123,11 +120,9 @@
    '("Y" . meow-sync-grab)
    '("p" . meow-yank)
    ;; grab
-   '("P" . meow-pop-grab)
    '("G" . meow-grab)
    '("S" . meow-swap-grab)
    '("z" . meow-pop-selection)
-   '("Z" . meow-pop-all-selection)
    ;; query replace
    '("&" . meow-query-replace)
    '("%" . meow-query-replace-regexp)
