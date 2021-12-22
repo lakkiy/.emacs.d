@@ -110,7 +110,8 @@
                         (when (re-search-forward "^<<<<<<< " nil t)
                           (smerge-mode 1)))))
   :config
-  (define-key smerge-mode-map (kbd "C-c m") #'smerge-mode-hydra/body))
+  (define-key smerge-mode-map (kbd "M-r") #'smerge-refine)
+  (define-key smerge-mode-map (kbd "M-RET") #'smerge-keep-current))
 
 (eat-package dired
   :init
