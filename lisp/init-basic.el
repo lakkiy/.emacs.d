@@ -112,6 +112,8 @@
 ;; produces a cleaner result
 (global-set-key [remap eval-last-sexp] 'pp-eval-last-sexp)
 
+;; This `view-hello-file' always stack me
+(global-unset-key (kbd "C-h h"))
 
 ;; Encoding
 ;; UTF-8 as the default coding system
