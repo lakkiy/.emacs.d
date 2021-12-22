@@ -1,7 +1,9 @@
 ;; -*- lexical-binding: t -*-
 
-(defun meow-setup ()
-  (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+(defun meow-setup-qwerty ()
+  (interactive)
+  (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty
+        +meow-layout 'qwerty)
   ;; TODO change to another function
   (meow-motion-overwrite-define-key
    '("<escape>" . +project-previous-buffer)

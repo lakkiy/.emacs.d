@@ -1,5 +1,8 @@
 ;;; -*- lexical-binding: t -*-
 
+(require 'init-meow-dvorak)
+(require 'init-meow-qwerty)
+
 (eat-package meow
   :straight t
   :hook
@@ -23,10 +26,10 @@
                                   (keypad . "K")
                                   (insert . "I")
                                   (beacon . "B")))
-  (meow-setup)
+  ;; setup meow with layout
+  (cond ((eq +meow-layout 'dvorak) (meow-setup-dvorak))
+        (t (meow-setup-qwerty)))
   :init
-  (setq meow-esc-delay 0.001)
-  (cond ((eq +meow-layout 'dvorak) (require 'init-meow-dvorak))
-        (t (require 'init-meow-qwerty))))
+  (setq meow-esc-delay 0.001))
 
 (provide 'init-meow)

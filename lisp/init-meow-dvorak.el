@@ -1,7 +1,9 @@
 ;; -*- lexical-binding: t -*-
 
-(defun meow-setup ()
-  (setq meow-cheatsheet-layout meow-cheatsheet-layout-dvorak)
+(defun meow-setup-dvorak ()
+  (interactive)
+  (setq meow-cheatsheet-layout meow-cheatsheet-layout-dvorak
+        +meow-layout 'dvorak)
   ;; TODO change to another function
   (meow-motion-overwrite-define-key
    '("<escape>" . +project-previous-buffer)
