@@ -162,7 +162,8 @@
       tab-bar-back-button nil
       tab-bar-new-button nil
       tab-bar-format '(tab-bar-format-tabs)
-      tab-bar-tab-name-format-function '+tab-bar-tab-format-function)
+      tab-bar-tab-name-format-function '+tab-bar-tab-format-function
+      tab-bar-tab-name-truncated-max 10)
 
 (defun +tab-bar-switch-project ()
   "Switch to project in a new tab, project name will be used as tab name.
