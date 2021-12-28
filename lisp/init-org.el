@@ -45,6 +45,7 @@
   ;; use #+attr_org :width 300px to rescale
   (setq org-image-actual-width nil)
   (setq org-directory "~/Dropbox/org")
+  (setq org-highlight-latex-and-related '(latex))
   ;; `org-babel-load-languages' 在初始化的时候只存放 (LANG . nil)，表示需禁止的语言。
   ;; 其它所有需要的语言都动态加载，加载成功后存入 `org-babel-load-languages'
   (defun my/org-babel-execute-src-block (&optional _arg info _params)
