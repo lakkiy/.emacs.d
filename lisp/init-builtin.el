@@ -1,147 +1,133 @@
 ;;; -*- lexical-binding: t -*-
 
-(eat-package recentf
-  :hook (after-init-mode . recentf-mode)
-  :init
-  (global-set-key (kbd "C-x C-r") #'recentf-open-files)
-  (setq recentf-max-saved-items 300
-        recentf-exclude
-        '("\\.?cache" ".cask" "url" "COMMIT_EDITMSG\\'" "bookmarks"
-          "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\|bmp\\|xpm\\)$"
-          "\\.?ido\\.last$" "\\.revive$" "/G?TAGS$" "/.elfeed/"
-          "^/tmp/" "^/var/folders/.+$" "^/ssh:" "/persp-confs/"
-          (lambda (file) (file-in-directory-p file package-user-dir))))
-  :config
+;; `recentf'
+(add-hook 'after-init-hook #'recentf-mode)
+(global-set-key (kbd "C-x C-r") #'recentf-open-files)
+
+(setq recentf-max-saved-items 300
+      recentf-exclude
+      '("\\.?cache" ".cask" "url" "COMMIT_EDITMSG\\'" "bookmarks"
+        "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\|bmp\\|xpm\\)$"
+        "\\.?ido\\.last$" "\\.revive$" "/G?TAGS$" "/.elfeed/"
+        "^/tmp/" "^/var/folders/.+$" "^/ssh:" "/persp-confs/"
+        (lambda (file) (file-in-directory-p file package-user-dir))))
+
+(with-eval-after-load 'recentf
   (push (expand-file-name recentf-save-file) recentf-exclude)
   (add-to-list 'recentf-filename-handlers #'abbreviate-file-name))
 
+;; `display-line-numbers'
 ;; (eat-package display-line-numbers
 ;;   :hook ((prog-mode-hook conf-mode-hook) . display-line-numbers-mode))
 
-(eat-package subword
-  :doc "handling capitalized subwords in a nomenclature"
-  :hook (prog-mode-hook . subword-mode))
+;; `subword'
+(add-hook 'prog-mode-hook #'subword-mode)
 
-(eat-package simple
-  :hook
-  (before-save-hook . delete-trailing-whitespace))
+;; `simple'
+(add-hook 'before-save-hook #'delete-trailing-whitespace)
 
-(eat-package so-long
-  :hook (after-init-hook . global-so-long-mode))
+;; `so-long'
+(add-hook 'after-init-hook #'global-so-long-mode)
 
-(eat-package repeat
-  :doc "repeat the previous command"
-  ;; HACK custom
-  :init
-  (setq repeat-mode t
-        repeat-keep-prefix t
-        repeat-exit-timeout 3
-        repeat-exit-key (kbd "RET")))
+;; `repeat'
+(setq
+ repeat-mode t
+ repeat-keep-prefix t
+ repeat-exit-timeout 3
+ repeat-exit-key (kbd "RET"))
 
-(eat-package hl-line
-  :doc "Highlight current line, only enable in GUI"
-  ;; HACK when (display-graphic-p)
-  :hook
-  ((prog-mode-hook conf-mode-hook) . hl-line-mode))
+;; `hl-line'
+(add-hook 'prog-mode-hook #'hl-line-mode)
+(add-hook 'conf-mode-hook #'hl-line-mode)
 
-(eat-package autorevert
-  :doc "revert buffers when files on disk change"
-  :hook (after-init-hook . global-auto-revert-mode))
+;; `autorevert'
+(add-hook 'after-init-hook #'global-auto-revert-mode)
 
-(eat-package elec-pair
-  :doc "Automatic parenthesis pairing"
-  :hook (prog-mode-hook . electric-pair-mode)
-  :init
-  (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
+;; `elec-pair'
+(setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
+(add-hook 'prog-mode-hook #'electric-pair-mode)
 
-(eat-package saveplace
-  :hook (after-init-hook . save-place-mode))
+;; `saveplace'
+(add-hook 'after-init-hook #'save-place-mode)
 
-(eat-package paren
-  :hook (prog-mode-hook . show-paren-mode)
-  :init
-  (setq show-paren-when-point-in-periphery t
-        show-paren-when-point-inside-paren t))
+;; `paren'
+(setq
+ show-paren-when-point-in-periphery t
+ show-paren-when-point-inside-paren t)
 
-(eat-package tramp
-  :doc "transparent remote access"
-  :init
-  ;; Always use file cache when using tramp
-  (setq remote-file-name-inhibit-cache nil
-        ;; C-x C-f /ssh:
-        tramp-default-method "ssh"))
+(add-hook 'prog-mode-hook #'show-paren-mode)
 
-(eat-package eldoc
-  :init
-  (setq eldoc-idle-delay 2))
+;; `tramp'
+(setq
+ ;; Always use file cache when using tramp
+ remote-file-name-inhibit-cache nil
+ ;; C-x C-f /ssh:
+ tramp-default-method "ssh")
 
-(eat-package whitespace
-  :hook
-  ((prog-mode-hook conf-mode-hook) . whitespace-mode)
-  :init
-  (setq whitespace-style '(face trailing)))
+;; `eldoc'
+(setq eldoc-idle-delay 2)
 
-(eat-package hideshow
-  :doc "fold and display code/comment blocks"
-  :hook (prog-mode-hook . hs-minor-mode))
+;; `whitespace'
+(setq whitespace-style '(face trailing))
 
-(eat-package xref
-  :init
-  (global-unset-key (kbd "C-<down-mouse-1>"))
-  (global-set-key (kbd "C-<mouse-1>") #'xref-find-definitions-at-mouse)
-  ;; Xref no prompt
-  (setq xref-prompt-for-identifier nil)
-  (setq xref-search-program 'ripgrep)
-  (setq xref-show-xrefs-function #'xref-show-definitions-completing-read)
-  (setq xref-show-definitions-function #'xref-show-definitions-completing-read))
+(add-hook 'prog-mode-hook #'whitespace-mode)
+(add-hook 'conf-mode-hook #'whitespace-mode)
 
-;; Undo/redo changes to Emacs' window layout
-(eat-package winner
-  :hook (after-init-hook . winner-mode)
-  :config
-  (setq winner-dont-bind-my-keys t))
+;; `hideshow'
+(add-hook 'prog-mode-hook #'hs-minor-mode)
 
-(eat-package smerge-mode
-  :commands smerge-mode
-  :hook
-  (find-file-hook . (lambda ()
-                      (save-excursion
-                        (goto-char (point-min))
-                        (when (re-search-forward "^<<<<<<< " nil t)
-                          (smerge-mode 1)))))
-  :config
+;; `xref'
+(global-unset-key (kbd "C-<down-mouse-1>"))
+(global-set-key (kbd "C-<mouse-1>") #'xref-find-definitions-at-mouse)
+
+(setq
+ xref-prompt-for-identifier nil
+ xref-search-program 'ripgrep
+ xref-show-xrefs-function #'xref-show-definitions-completing-read
+ xref-show-definitions-function #'xref-show-definitions-completing-read)
+
+;; `winner'
+(setq winner-dont-bind-my-keys t)
+
+(add-hook 'after-init-hook #'winner-mode)
+
+;; `smerge-mode'
+(add-hook 'find-file-hook
+          #'(lambda ()
+              (save-excursion
+                (goto-char (point-min))
+                (when (re-search-forward "^<<<<<<< " nil t)
+                  (smerge-mode 1)))))
+
+(with-eval-after-load 'smerge-mode
   (define-key smerge-mode-map (kbd "M-r") #'smerge-refine)
   (define-key smerge-mode-map (kbd "M-RET") #'smerge-keep-current))
 
-(eat-package dired
-  :init
-  ;; if there is a dired buffer displayed in the next window, use its
-  ;; current subdir, instead of the current subdir of this dired buffer
-  (setq dired-dwim-target t))
+;; `dired'
+(setq dired-dwim-target t)
 
-(eat-package ibuffer
-  :init
-  (fset 'list-buffers 'ibuffer))
+;; `ibuffer'
+(fset 'list-buffers 'ibuffer)
 
-(eat-package ediff
-  :init
-  (setq ediff-window-setup-function #'ediff-setup-windows-plain
-        ediff-highlight-all-diffs t
-        ediff-split-window-function 'split-window-horizontally
-        ediff-merge-split-window-function 'split-window-horizontally))
+;; `ediff'
+(setq
+ ediff-window-setup-function #'ediff-setup-windows-plain
+ ediff-highlight-all-diffs t
+ ediff-split-window-function 'split-window-horizontally
+ ediff-merge-split-window-function 'split-window-horizontally)
 
-;; only enable in magit commit
-(eat-package flyspell
-  :hook
-  (flyspell-mode-hook . (lambda ()
-                          (dolist (key '("C-;" "C-," "C-." "C-M-i"))
-                            (define-key flyspell-mode-map (kbd key) nil))))
-  :init
-  (setq flyspell-issue-welcome-flag nil
-        flyspell-issue-message-flag nil
-        ispell-program-name "aspell"
-        ispell-extra-args '("--sug-mode=ultra" "--lang=en_US" "--run-together")))
+;; `flyspell' -- only enable in magit commit
+(setq flyspell-issue-welcome-flag nil
+      flyspell-issue-message-flag nil
+      ispell-program-name "aspell"
+      ispell-extra-args '("--sug-mode=ultra" "--lang=en_US" "--run-together"))
 
+(add-hook 'flyspell-mode-hook
+          #'(lambda ()
+              (dolist (key '("C-;" "C-," "C-." "C-M-i"))
+                (define-key flyspell-mode-map (kbd key) nil))))
+
+;; `project'
 (defun my/project-files-in-directory (dir)
   "Use `fd' to list files in DIR."
   (let* ((default-directory dir)
@@ -157,13 +143,15 @@
     (mapcan #'my/project-files-in-director
             (or dirs (list (project-root project))))))
 
-(setq tab-bar-border nil
-      tab-bar-close-button nil
-      tab-bar-back-button nil
-      tab-bar-new-button nil
-      tab-bar-format '(tab-bar-format-tabs)
-      tab-bar-tab-name-format-function '+tab-bar-tab-format-function
-      tab-bar-tab-name-truncated-max 10)
+;; `tab-bar'
+(setq
+ tab-bar-border nil
+ tab-bar-close-button nil
+ tab-bar-back-button nil
+ tab-bar-new-button nil
+ tab-bar-format '(tab-bar-format-tabs)
+ tab-bar-tab-name-format-function '+tab-bar-tab-format-function
+ tab-bar-tab-name-truncated-max 10)
 
 (defun +tab-bar-switch-project ()
   "Switch to project in a new tab, project name will be used as tab name.
@@ -195,103 +183,101 @@ No tab will created if the command is cancelled."
 (global-set-key (kbd "C-x t .") #'tab-bar-rename-tab)
 (global-set-key (kbd "C-x t l") #'+tab-bar-switch-project)
 
-(eat-package gnus
-  :init
-  (setq
-   gnus-use-cache t
-   gnus-use-scoring nil
-   gnus-suppress-duplicates t
-   gnus-novice-user nil
-   gnus-expert-user t
-   gnus-interactive-exit 'quiet
-   gnus-select-method '(nnnil "")
-   gnus-secondary-select-methods '((nntp "gmane" (nntp-address "news.gmane.io"))
-                                   (nntp "nntp.lore.kernel.org"))
+;; `gnus'
+(setq
+ gnus-use-cache t
+ gnus-use-scoring nil
+ gnus-suppress-duplicates t
+ gnus-novice-user nil
+ gnus-expert-user t
+ gnus-interactive-exit 'quiet
+ gnus-select-method '(nnnil "")
+ gnus-secondary-select-methods '((nntp "gmane" (nntp-address "news.gmane.io"))
+                                 (nntp "nntp.lore.kernel.org"))
     ;;; Startup functions
-   gnus-save-killed-list nil
-   gnus-check-new-newsgroups 'ask-server
-   ;; No other newsreader is used.
-   gnus-save-newsrc-file nil
-   gnus-read-newsrc-file nil
-   gnus-subscribe-newsgroup-method 'gnus-subscribe-interactively
-   ;; Emacs 28 introduces a unified query lang
-   gnus-search-use-parsed-queries t
+ gnus-save-killed-list nil
+ gnus-check-new-newsgroups 'ask-server
+ ;; No other newsreader is used.
+ gnus-save-newsrc-file nil
+ gnus-read-newsrc-file nil
+ gnus-subscribe-newsgroup-method 'gnus-subscribe-interactively
+ ;; Emacs 28 introduces a unified query lang
+ gnus-search-use-parsed-queries t
     ;;; Article mode for Gnus
-   gnus-visible-headers (rx line-start (or "From"
-                                           "Subject"
-                                           "Mail-Followup-To"
-                                           "Date"
-                                           "To"
-                                           "Cc"
-                                           "Newsgroups"
-                                           "User-Agent"
-                                           "X-Mailer"
-                                           "X-Newsreader")
-                            ":")
-   gnus-article-sort-functions '((not gnus-article-sort-by-number)
-                                 (not gnus-article-sort-by-date))
-   gnus-article-browse-delete-temp t
-   ;; Display more MINE stuff
-   gnus-mime-display-multipart-related-as-mixed t
+ gnus-visible-headers (rx line-start (or "From"
+                                         "Subject"
+                                         "Mail-Followup-To"
+                                         "Date"
+                                         "To"
+                                         "Cc"
+                                         "Newsgroups"
+                                         "User-Agent"
+                                         "X-Mailer"
+                                         "X-Newsreader")
+                          ":")
+ gnus-article-sort-functions '((not gnus-article-sort-by-number)
+                               (not gnus-article-sort-by-date))
+ gnus-article-browse-delete-temp t
+ ;; Display more MINE stuff
+ gnus-mime-display-multipart-related-as-mixed t
   ;;; Asynchronous support for Gnus
-   gnus-asynchronous t
-   gnus-use-header-prefetch t
+ gnus-asynchronous t
+ gnus-use-header-prefetch t
   ;;; Cache interface for Gnus
-   gnus-cache-enter-articles '(ticked dormant unread)
-   gnus-cache-remove-articles '(read)
-   gnus-cacheable-groups "^\\(nntp\\|nnimap\\)"))
+ gnus-cache-enter-articles '(ticked dormant unread)
+ gnus-cache-remove-articles '(read)
+ gnus-cacheable-groups "^\\(nntp\\|nnimap\\)")
 
-;; Group mode commands for Gnus
-(eat-package gnus-group
-  :hook (gnus-group-mode-hook . gnus-topic-mode)
-  :inti
-  (setq
-   ;;          indentation ------------.
-   ;;  #      process mark ----------. |
-   ;;                level --------. | |
-   ;;           subscribed ------. | | |
-   ;;  %          new mail ----. | | | |
-   ;;  *   marked articles --. | | | | |
-   ;;                        | | | | | |  Ticked    New     Unread  open-status Group
-   gnus-group-line-format "%M%m%S%L%p%P %1(%7i%) %3(%7U%) %3(%7y%) %4(%B%-45G%) %d\n"
-   gnus-group-sort-function '(gnus-group-sort-by-level gnus-group-sort-by-alphabet)))
 
-;; Summary mode commands for Gnus
-(eat-package gnus-sum
-  :hook (gnus-select-group-hook . gnus-group-set-timestamp)
-  :init
-  (setq
-   ;; Pretty marks
-   gnus-sum-thread-tree-root            "┌ "
-   gnus-sum-thread-tree-false-root      "◌ "
-   gnus-sum-thread-tree-single-indent   "◎ "
-   gnus-sum-thread-tree-vertical        "│"
-   gnus-sum-thread-tree-indent          "  "
-   gnus-sum-thread-tree-leaf-with-other "├─►"
-   gnus-sum-thread-tree-single-leaf     "╰─►"
-   gnus-summary-line-format "%U%R %3d %[%-23,23f%] %B %s\n"
-   ;; Loose threads
-   gnus-summary-make-false-root 'adopt
-   gnus-simplify-subject-functions '(gnus-simplify-subject-re gnus-simplify-whitespace)
-   gnus-summary-thread-gathering-function 'gnus-gather-threads-by-subject
-   ;; Filling in threads
-   ;; 2 old articles are enough for memory
-   gnus-fetch-old-headers 2
-   gnus-fetch-old-ephemeral-headers 2
-   gnus-build-sparse-threads 'some
-   ;; More threading
-   gnus-show-threads t
-   gnus-thread-indent-level 2
-   gnus-thread-hide-subtree nil
-   ;; Sorting
-   gnus-thread-sort-functions '(gnus-thread-sort-by-most-recent-date)
-   gnus-subthread-sort-functions '(gnus-thread-sort-by-date)
-   ;; Viewing
-   gnus-view-pseudos 'automatic
-   gnus-view-pseudos-separately t
-   gnus-view-pseudo-asynchronously t
-   ;; No auto select
-   gnus-auto-select-first nil
-   gnus-auto-select-next nil))
+;; `gnus-group'
+(setq
+ ;;          indentation ------------.
+ ;;  #      process mark ----------. |
+ ;;                level --------. | |
+ ;;           subscribed ------. | | |
+ ;;  %          new mail ----. | | | |
+ ;;  *   marked articles --. | | | | |
+ ;;                        | | | | | |  Ticked    New     Unread  open-status Group
+ gnus-group-line-format "%M%m%S%L%p%P %1(%7i%) %3(%7U%) %3(%7y%) %4(%B%-45G%) %d\n"
+ gnus-group-sort-function '(gnus-group-sort-by-level gnus-group-sort-by-alphabet))
+
+(add-hook 'gnus-group-mode-hook #'gnus-topic-mode)
+
+;; `gnus-sum'
+(setq
+ ;; Pretty marks
+ gnus-sum-thread-tree-root            "┌ "
+ gnus-sum-thread-tree-false-root      "◌ "
+ gnus-sum-thread-tree-single-indent   "◎ "
+ gnus-sum-thread-tree-vertical        "│"
+ gnus-sum-thread-tree-indent          "  "
+ gnus-sum-thread-tree-leaf-with-other "├─►"
+ gnus-sum-thread-tree-single-leaf     "╰─►"
+ gnus-summary-line-format "%U%R %3d %[%-23,23f%] %B %s\n"
+ ;; Loose threads
+ gnus-summary-make-false-root 'adopt
+ gnus-simplify-subject-functions '(gnus-simplify-subject-re gnus-simplify-whitespace)
+ gnus-summary-thread-gathering-function 'gnus-gather-threads-by-subject
+ ;; Filling in threads
+ ;; 2 old articles are enough for memory
+ gnus-fetch-old-headers 2
+ gnus-fetch-old-ephemeral-headers 2
+ gnus-build-sparse-threads 'some
+ ;; More threading
+ gnus-show-threads t
+ gnus-thread-indent-level 2
+ gnus-thread-hide-subtree nil
+ ;; Sorting
+ gnus-thread-sort-functions '(gnus-thread-sort-by-most-recent-date)
+ gnus-subthread-sort-functions '(gnus-thread-sort-by-date)
+ ;; Viewing
+ gnus-view-pseudos 'automatic
+ gnus-view-pseudos-separately t
+ gnus-view-pseudo-asynchronously t
+ ;; No auto select
+ gnus-auto-select-first nil
+ gnus-auto-select-next nil)
+
+(add-hook 'gnus-select-group-hook #'gnus-group-set-timestamp)
 
 (provide 'init-builtin)

@@ -3,36 +3,6 @@
 ;; Speed up startup
 (setq auto-mode-case-fold nil)
 
-;; Use a hook so the message doesn't get clobbered by other messages.
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (message "Emacs ready in %s with %d garbage collections."
-                     (format "%.2f seconds"
-                             (float-time
-                              (time-subtract after-init-time before-init-time)))
-                     gcs-done)
-
-            ;; GC automatically while unfocusing the frame
-            ;; `focus-out-hook' is obsolete since 27.1
-            (add-function :after after-focus-change-function
-                          (lambda ()
-                            (unless (frame-focus-state)
-                              (garbage-collect))))
-
-            ;; Recover GC values after startup
-            (setq gc-cons-threshold 800000
-                  gc-cons-percentage 0.1)))
-
-;; Load `custom-file'
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(when (and (file-exists-p custom-file)
-           (file-readable-p custom-file))
-  (load custom-file :no-error :no-message))
-
-;; Shut up!
-;; Can not use `message-off-advice' or all message is off.
-(defun display-startup-echo-area-message() (message nil))
-
 (defun copy-from-osx ()
   (shell-command-to-string "pbpaste"))
 
@@ -59,43 +29,14 @@
     (global-set-key [(super q)] #'save-buffers-kill-emacs)
     (global-set-key [(super z)] #'undo))
 
-  (unless sys/macp
+  ;; FIXME
+  (unless (eq system-type 'darwin)
     (setq command-line-ns-option-alist nil)
     ;; TODO use `cond' to set this for different system
     (setq interprogram-cut-function 'paste-to-osx)
     (setq interprogram-paste-function 'copy-from-osx))
-  (unless sys/linuxp
+  (unless (eq system-type 'gnu/linux)
     (setq command-line-x-option-alist nil)))
-
-;; Notifications
-;;
-;; Actually, `notify-send' is not defined in notifications package, but the
-;; autoload cookie will make Emacs load `notifications' first, then our
-;; `defalias' will be evaluated.
-(pcase system-type
-  ('gnu/linux
-   (autoload #'notify-send "notifications")
-   (with-eval-after-load "notifications"
-     (defalias 'notify-send 'notifications-notify)))
-  ('darwin
-   ;; HACK you must enable notify for emacs in macos system
-   ;;      Notifications & Focus -> Emacs -> Allow Notifications
-   (defun notify-send (&rest params)
-     "Send notifications via `terminal-notifier'."
-     (let ((title (plist-get params :title))
-           (body (plist-get params :body)))
-       (start-process "terminal-notifier"
-                      nil
-                      "terminal-notifier"
-                      "-group" "Emacs"
-                      "-title" title
-                      "-message" body
-                      ;; FIXME this option didn't show emacs icon
-                      ;; but -sender didn't show the message when focus on emacs
-                      "-activate" "org.gnu.Emacs"))))
-  (_
-   (defalias 'notify-send 'ignore)))
-
 
 (defun +reopen-file-with-sudo ()
   (interactive)
@@ -160,7 +101,7 @@
       frame-resize-pixelwise t)
 
 (with-no-warnings
-  (when sys/macp
+  (when (eq system-type 'darwin)
     ;; Render thinner fonts
     (setq ns-use-thin-smoothing t)
     ;; Don't open a file in a new frame
@@ -173,12 +114,10 @@
 ;; Linux specific
 (setq x-underline-at-descent-line t)
 
-
 ;; Nice window divider
 (set-display-table-slot standard-display-table
                         'vertical-border
                         (make-glyph-code ?┃))
-
 
 (setq-default
  initial-major-mode 'fundamental-mode

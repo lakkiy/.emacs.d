@@ -1,24 +1,24 @@
 (defvar +icons-p nil "Whether to enable `all-the-icons'.")
 
-(defvar +font-default "Latin Modern Mono" "Font used for default and `fixed-pitch'.")
+(defvar +font-default "Latin Modern Mono" "Default font.")
 (defvar +font-size 15 "Default font size")
 (defvar +font-unicode "Apple Color Emoji" "Emoji font.")
 (defvar +font-cn "Sarasa Mono SC" "Just used for chinese font.")
 (defvar +font-variable-pitch "Bookerly" "Used for `variable-pitch-mode'")
 
-(defvar +theme 'kaolin-mono-dark "Theme used in GUI.")
-(defvar +theme-system-appearance t "Weather to auto change theme after system appearance changed.")
-(defvar +theme-system-light 'kaolin-mono-light "Theme used after change system appearance to light.")
-(defvar +theme-system-dark 'kaolin-mono-dark "Theme used after change system appearance to dark.")
+(defvar +theme 'kaolin-mono-dark "Default theme.")
+(defvar +theme-system-appearance t "Change theme on system appearance, only available on macOS.")
+(defvar +theme-system-light 'kaolin-mono-light "Default light theme when `+theme-system-appearance' enabled.")
+(defvar +theme-system-dark 'kaolin-mono-dark "Default dark theme when `+theme-system-appearance' enabled.")
 (defvar +theme-hooks nil "((theme-id . function) ...)")
 
-(defvar +enable-benchmark nil "Where to enable `benchmark'.")
-(defvar +meow-layout 'qwerty "qwerty or dvorak layout config for `meow'")
+(defvar +enable-benchmark nil "Run `benchmark-init/show-durations-tree'")
+(defvar +meow-layout 'qwerty "Layout config for `meow', qwerty or dvorak")
 
 (let ((file-name-handler-alist nil))
   (require 'init-straight)
-  (require 'init-basic)
-  (require 'init-builtin)
+  (require 'init-basic)   ;; some basic config
+  (require 'init-builtin) ;; builtin package config
   (require 'init-laf)
   (require 'init-meow)
   (require 'init-rime)

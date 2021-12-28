@@ -54,4 +54,63 @@
   (when sys/macp
     (add-hook 'after-init-hook #'exec-path-from-shell-initialize)))
 
+;; Use a hook so the message doesn't get clobbered by other messages.
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "Emacs ready in %s with %d garbage collections."
+                     (format "%.2f seconds"
+                             (float-time
+                              (time-subtract after-init-time before-init-time)))
+                     gcs-done)
+
+            ;; GC automatically while unfocusing the frame
+            ;; `focus-out-hook' is obsolete since 27.1
+            (add-function :after after-focus-change-function
+                          (lambda ()
+                            (unless (frame-focus-state)
+                              (garbage-collect))))
+
+            ;; Recover GC values after startup
+            (setq gc-cons-threshold 800000
+                  gc-cons-percentage 0.1)))
+
+;; Load `custom-file'
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(when (and (file-exists-p custom-file)
+           (file-readable-p custom-file))
+  (load custom-file :no-error :no-message))
+
+;; Shut up!
+;; Can not use `message-off-advice' or all message is off.
+(defun display-startup-echo-area-message() (message nil))
+
+;; Notifications
+;;
+;; Actually, `notify-send' is not defined in notifications package, but the
+;; autoload cookie will make Emacs load `notifications' first, then our
+;; `defalias' will be evaluated.
+(pcase system-type
+  ('gnu/linux
+   (autoload #'notify-send "notifications")
+   (with-eval-after-load "notifications"
+     (defalias 'notify-send 'notifications-notify)))
+  ('darwin
+   ;; HACK you must enable notify for emacs in macos system
+   ;;      Notifications & Focus -> Emacs -> Allow Notifications
+   (defun notify-send (&rest params)
+     "Send notifications via `terminal-notifier'."
+     (let ((title (plist-get params :title))
+           (body (plist-get params :body)))
+       (start-process "terminal-notifier"
+                      nil
+                      "terminal-notifier"
+                      "-group" "Emacs"
+                      "-title" title
+                      "-message" body
+                      ;; FIXME this option didn't show emacs icon
+                      ;; but -sender didn't show the message when focus on emacs
+                      "-activate" "org.gnu.Emacs"))))
+  (_
+   (defalias 'notify-send 'ignore)))
+
 (provide 'init-straight)
