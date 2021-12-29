@@ -11,6 +11,12 @@
   :hook (git-commit-setup-hook . git-commit-turn-on-flyspell)
   :commands magit)
 
+(eat-package magit-delta
+  :straight t
+  :init
+  (when (executable-find "delta")
+    (add-hook 'magit-mode-hook (lambda () (magit-delta-mode +1)))))
+
 (eat-package diff-hl
   :straight t
   :commands diff-hl-mode
