@@ -40,6 +40,7 @@
   (setq citar-bibliography '("~/Dropbox/bib/references.bib")))
 
 (eat-package org
+  :straight (org :type built-in)
   :init
   ;; rescale image with for org-download
   ;; use #+attr_org :width 300px to rescale
