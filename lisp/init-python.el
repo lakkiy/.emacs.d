@@ -34,8 +34,9 @@
   :straight t
   :after python
   :config
-  (define-key python-mode-map (kbd "C-c C-i") #'pyimport-insert-missing)
-  (define-key python-mode-map (kbd "C-c C-r") #'pyimport-remove-unused))
+  (with-eval-after-load 'python
+    (define-key python-mode-map (kbd "C-c C-i") #'pyimport-insert-missing)
+    (define-key python-mode-map (kbd "C-c C-r") #'pyimport-remove-unused)))
 
 (eat-package python-isort
   :straight (python-isort :type git :host github :repo "wyuenho/emacs-python-isort")
@@ -50,7 +51,8 @@
   :after python
   :config
   ;; pip install twisted ?
-  (define-key python-mode-map (kbd "C-c l") 'live-py-mode))
+  (with-eval-after-load 'python
+    (define-key python-mode-map (kbd "C-c l") 'live-py-mode)))
 
 (eat-package conda
   :straight t
