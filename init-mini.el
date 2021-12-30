@@ -2,12 +2,17 @@
 ;; TODO:
 ;; Maybe add some config about gc.
 
-;; Disable menu-bar
+;; UI
 (unless (eq window-system 'ns)
   (menu-bar-mode -1))
+(when (display-graphic-p)
+  (tool-bar-mode 0)
+  (scroll-bar-mode 0))
+(setq inhibit-startup-screen t)
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
+;; Basic and built-in package config
 (let ((file-name-handler-alist nil))
   (require 'init-basic)
   (require 'init-builtin))
