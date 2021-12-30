@@ -30,6 +30,7 @@
   (eq system-type 'gnu/linux)
   "Are we running on a GNU/Linux system?")
 
+(setq eat-all-package-daemon t)
 (require 'eat-package)
 
 (eat-package benchmark-init

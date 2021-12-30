@@ -25,6 +25,9 @@
 
 (require 'pcase)
 
+(defvar eat-all-package-daemon nil
+  "If it's value is t, all package in `eat-package' will be required in dameon.")
+
 (defun eat-package-split-command-args (args)
   "Split args into commands and args.
 If ARGS is (:command args args args :command args),
@@ -165,8 +168,7 @@ ARGS.
                                (require ',package)))
                           arg-list)))))
            arg-list))
-         (autoload-list (eat-package--collect-autoload arg-list
-                                                             package))
+         (autoload-list (eat-package--collect-autoload arg-list package))
          ;; Must :require explicitly if you want to require this package.
          (require-p (let ((commands (mapcar #'car arg-list)))
                       (or (memq :require commands)))))
@@ -174,7 +176,9 @@ ARGS.
          (progn
            ,@autoload-list
            ,@body
-           ,(when require-p `(require ',package)))
+           (if (and (daemonp) eat-all-package-daemon)
+               (require ',package)
+             ,(when require-p `(require ',package))))
        ((debug error) (warn "Error when loading %s: %s" ',package
                             (error-message-string err))))))
 
