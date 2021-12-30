@@ -17,7 +17,6 @@
   find-orphan-function-in-buffer
   find-orphan-function-in-directory)
 
-(eat-package vterm :straight t)
 (eat-package eldoc-overlay :straight t)
 (eat-package devdocs :straight t)
 

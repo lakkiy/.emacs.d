@@ -5,13 +5,7 @@
  #'(lambda ()
      (eat-package all-the-icons :straight t)
 
-     (eat-package treemacs
-       :init
-       (setq treemacs-no-png-images nil)
-       :config
-       ;; (require 'treemacs-all-the-icons)
-       ;; (treemacs-load-theme "all-the-icons")
-       )
+     (setq treemacs-no-png-images nil)
 
      (eat-package all-the-icons-ibuffer
        :after ibuffer

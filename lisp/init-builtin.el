@@ -17,8 +17,7 @@
   (add-to-list 'recentf-filename-handlers #'abbreviate-file-name))
 
 ;; `display-line-numbers'
-;; (eat-package display-line-numbers
-;;   :hook ((prog-mode-hook conf-mode-hook) . display-line-numbers-mode))
+;; (add-hook 'prog-mode-hook #'display-line-numbers-mode)
 
 ;; `subword'
 (add-hook 'prog-mode-hook #'subword-mode)
@@ -309,6 +308,13 @@ No tab will created if the command is cancelled."
 
 ;; `cc-mode'
 (setq-default c-basic-offset 4)
+
+;; `python'
+(setq
+ python-indent-offset 4
+ python-shell-completion-native-enable nil
+ python-shell-interpreter "ipython"
+ python-indent-guess-indent-offset nil)
 
 ;; `dired'
 (setq

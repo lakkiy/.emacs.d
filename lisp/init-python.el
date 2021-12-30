@@ -52,16 +52,6 @@
   ;; pip install twisted ?
   (define-key python-mode-map (kbd "C-c l") 'live-py-mode))
 
-(eat-package python
-  :init
-  (setq python-indent-offset 4
-        python-shell-completion-native-enable nil
-        python-shell-interpreter "ipython"
-        python-indent-guess-indent-offset nil)
-  :config
-  (with-eval-after-load 'exec-path-from-shell
-    (exec-path-from-shell-copy-env "PYTHONPATH")))
-
 (eat-package conda
   :straight t
   :config

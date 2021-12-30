@@ -15,6 +15,7 @@
 ;; Do not use `eat-package' with themes.
 ;; `spacemacs-theme'
 (straight-use-package 'spacemacs-theme)
+
 (setq
  spacemacs-theme-comment-italic t
  spacemacs-theme-keyword-italic t
@@ -27,6 +28,8 @@
  spacemacs-theme-underline-parens t)
 
 ;; `kaolin-themes'
+(straight-use-package 'kaolin-themes)
+
 (setq
  kaolin-themes-underline-wave nil
  kaolin-themes-modeline-border nil

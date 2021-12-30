@@ -14,8 +14,7 @@ Used in the default value of `notmuch-tag-formats'."
 Used in the default value of `notmuch-tag-formats'."
   :group 'notmuch-faces)
 
-;; TODO many enable `async-bytecomp-package-mode' before emacs running.
-(straight-use-package 'async)
+(eat-package async :straight t)
 
 (eat-package notmuch
   :straight t
