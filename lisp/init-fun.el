@@ -17,21 +17,8 @@
   find-orphan-function-in-buffer
   find-orphan-function-in-directory)
 
-(defun +project-previous-buffer (arg)
-  "Toggle to the previous buffer that belongs to current project."
-  (interactive "P")
-  (if (equal '(4) arg)
-      (if-let ((pr (project-current)))
-          (switch-to-buffer
-           (->> (project--buffer-list pr)
-                (--remove (or (minibufferp it)
-                              (get-buffer-window-list it)))
-                (car))))
-    (mode-line-other-buffer)))
-
-(straight-use-package 'dumb-jump)
-(straight-use-package 'highlight-numbers)
-(straight-use-package 'vterm)
-(straight-use-package 'eldoc-overlay)
+(eat-package vterm :straight t)
+(eat-package eldoc-overlay :straight t)
+(eat-package devdocs :straight t)
 
 (provide 'init-fun)

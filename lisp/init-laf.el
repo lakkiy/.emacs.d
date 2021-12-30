@@ -11,12 +11,6 @@
         (`(,_ . ,f) (funcall f))))))
 (advice-add 'load-theme :around #'+load-theme-advice)
 
-(eat-package nano-theme
-  :init
-  (setq nano-theme-light/dark 'light
-        nano-theme-overline-modeline t
-        nano-theme-padded-modeline nil))
-
 (eat-package spacemacs-theme
   :straight t
   :init

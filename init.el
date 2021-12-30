@@ -19,11 +19,11 @@
   (require 'init-straight)
   (require 'init-basic)   ;; some basic config
   (require 'init-builtin) ;; builtin package config
+  (require 'init-modeline)
   (require 'init-laf)
   (require 'init-meow)
   (require 'init-rime)
   (require 'init-minibuffer)
-  (require 'init-modeline)
   (require 'init-window)
   (when (and +icons-p (display-graphic-p))
     (require 'init-icons))

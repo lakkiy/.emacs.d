@@ -280,4 +280,39 @@ No tab will created if the command is cancelled."
 
 (add-hook 'gnus-select-group-hook #'gnus-group-set-timestamp)
 
+;; `flymake'
+(autoload #'flymake "flymake" nil t)
+
+(with-eval-after-load 'flymake
+  (define-key flymake-mode-map (kbd "C-c C-b") 'flymake-show-diagnostics-buffer))
+
+;; `message'
+(setq
+ user-full-name "Liu Bo"
+ user-mail-address "liubolovelife@gmail.com"
+ message-kill-buffer-on-exit t
+ message-mail-alias-type 'ecomplete
+ message-send-mail-function #'message-use-send-mail-function
+ message-signature user-full-name)
+
+(add-hook 'message-mode-hook #'auto-fill-mode)
+
+;; `sendmail'
+(setq send-mail-function #'smtpmail-send-it)
+
+;; `smtpmail'
+(setq
+ smtpmail-smtp-server "smtp.gmail.com"
+ smtpmail-smtp-user user-mail-address
+ smtpmail-smtp-service 587
+ smptmail-stream-type 'ssl)
+
+;; `cc-mode'
+(setq-default c-basic-offset 4)
+
+;; `dired'
+(setq
+ dired-dwim-target t
+ dired-kill-when-opening-new-dired-buffer t)
+
 (provide 'init-builtin)

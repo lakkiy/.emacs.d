@@ -43,25 +43,4 @@ Used in the default value of `notmuch-tag-formats'."
   (add-to-list 'notmuch-tag-formats '("golang" (propertize tag 'face 'notmuch-tag-golang)))
   (global-set-key [remap notmuch-poll-and-refresh-this-buffer] #'+async-notmuch-poll))
 
-(eat-package message
-  :hook (message-mode-hook . auto-fill-mode)
-  :init
-  (setq user-full-name "Liu Bo"
-        user-mail-address "liubolovelife@gmail.com"
-        message-kill-buffer-on-exit t
-        message-mail-alias-type 'ecomplete
-        message-send-mail-function #'message-use-send-mail-function
-        message-signature user-full-name))
-
-(eat-package sendmail
-  :init
-  (setq send-mail-function #'smtpmail-send-it))
-
-(eat-package smtpmail
-  :init
-  (setq smtpmail-smtp-server "smtp.gmail.com"
-        smtpmail-smtp-user user-mail-address
-        smtpmail-smtp-service 587
-        smptmail-stream-type 'ssl))
-
 (provide 'init-mail)
