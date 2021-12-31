@@ -73,6 +73,69 @@
 (add-hook 'conf-mode-hook #'whitespace-mode)
 
 ;; `hideshow'
+(setq +hs-folding-fringe-indicators t)
+
+(when (fboundp 'define-fringe-bitmap)
+  (define-fringe-bitmap '+hs-folding-fringe-marker
+    (vector #b00000000
+            #b00000000
+            #b00000000
+            #b11000011
+            #b11100111
+            #b01111110
+            #b00111100
+            #b00011000)))
+
+(defface +hs-folding-fringe-face
+  '((t (:inherit 'font-lock-comment-face
+                 :box (:line-width 1 :style released-button))))
+  "Face for folding bitmaps appearing on the fringe.")
+
+(defface +hs-folding-face
+  '((t (:inherit 'font-lock-comment-face :box t)))
+  "Face for the folded region indicator.")
+
+(defun +hs-display-code-line-counts (ov)
+  "Display a folded region indicator with the number of folded
+      lines.
+
+    Meant to be used as `hs-set-up-overlay'."
+  (let* ((marker-string "*fringe-dummy*")
+         (marker-length (length marker-string)))
+    (cond
+     ((eq 'code (overlay-get ov 'hs))
+      (let* ((nmb-line (count-lines (overlay-start ov)
+                                    (overlay-end ov)))
+             (display-string (format "(%d)..." nmb-line)))
+        ;; fringe indicator
+        (when +hs-folding-fringe-indicators
+          (put-text-property 0 marker-length 'display
+                             (list 'left-fringe
+                                   '+hs-folding-fringe-marker
+                                   '+hs-folding-fringe-face)
+                             marker-string)
+          (overlay-put ov 'before-string marker-string)
+          (overlay-put ov '+hs-fringe t))
+        ;; folding indicator
+        (put-text-property 0 (length display-string)
+                           'face '+hs-folding-face
+                           display-string)
+        (put-text-property 0 (length display-string)
+                           'mouse-face 'highlight display-string)
+        (overlay-put ov 'display display-string)
+        (overlay-put ov '+hs-folded t)))
+     ;; for docstring and comments, we don't display the number of
+     line
+     ((or (eq 'docstring (overlay-get ov 'hs))
+          (eq 'comment (overlay-get ov 'hs)))
+      (let ((display-string "..."))
+        (put-text-property 0 (length display-string)
+                           'mouse-face 'highlight display-string)
+        (overlay-put ov 'display display-string)
+        (overlay-put ov '+hs-folded t))))))
+
+(setq hs-set-up-overlay #'+hs-display-code-line-counts)
+
 (add-hook 'prog-mode-hook #'hs-minor-mode)
 
 ;; `xref'
