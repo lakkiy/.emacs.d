@@ -28,6 +28,10 @@
 (defvar eat-all-package-daemon nil
   "If it's value is t, all package in `eat-package' will be required in dameon.")
 
+(defconst eat--all-package-p
+  (and eat-all-package-daemon (daemonp))
+  "")
+
 (defun eat-package-split-command-args (args)
   "Split args into commands and args.
 If ARGS is (:command args args args :command args),
@@ -176,7 +180,7 @@ ARGS.
          (progn
            ,@autoload-list
            ,@body
-           (if (and (daemonp) eat-all-package-daemon)
+           (if eat--all-package-p
                (require ',package)
              ,(when require-p `(require ',package))))
        ((debug error) (warn "Error when loading %s: %s" ',package
