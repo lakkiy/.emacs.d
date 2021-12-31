@@ -30,16 +30,23 @@
   (eq system-type 'gnu/linux)
   "Are we running on a GNU/Linux system?")
 
-(setq eat-all-package-daemon t)
+(setq eat-all-packages-daemon t)
 (require 'eat-package)
+
+;; Load `custom-file'
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(when (and (file-exists-p custom-file)
+           (file-readable-p custom-file))
+  (load custom-file :no-error :no-message))
 
 (eat-package benchmark-init
   :straight
   (benchmark-init :type git :host github :repo "404cn/benchmark-init-el")
   :init
   (when +enable-benchmark
-    (require 'benchmark-init)
-    (add-hook 'after-init-hook 'benchmark-init/deactivate)))
+    (require 'benchmark-init))
+  :config
+  (add-hook 'after-init-hook 'benchmark-init/deactivate))
 
 (eat-package gcmh
   :straight t
@@ -48,10 +55,10 @@
   (setq gcmh-idle-delay 5
         gcmh-high-cons-threshold #x6400000)) ;; 100 MB
 
-(eat-package exec-path-from-shell
-  :straight t
-  :init
-  (when sys/macp
+(when sys/macp
+  (eat-package exec-path-from-shell
+    :straight t
+    :init
     (add-hook 'after-init-hook #'exec-path-from-shell-initialize)))
 
 ;; Use a hook so the message doesn't get clobbered by other messages.
@@ -73,44 +80,5 @@
             ;; Recover GC values after startup
             (setq gc-cons-threshold 800000
                   gc-cons-percentage 0.1)))
-
-;; Load `custom-file'
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(when (and (file-exists-p custom-file)
-           (file-readable-p custom-file))
-  (load custom-file :no-error :no-message))
-
-;; Shut up!
-;; Can not use `message-off-advice' or all message is off.
-(defun display-startup-echo-area-message() (message nil))
-
-;; Notifications
-;;
-;; Actually, `notify-send' is not defined in notifications package, but the
-;; autoload cookie will make Emacs load `notifications' first, then our
-;; `defalias' will be evaluated.
-(pcase system-type
-  ('gnu/linux
-   (autoload #'notify-send "notifications")
-   (with-eval-after-load "notifications"
-     (defalias 'notify-send 'notifications-notify)))
-  ('darwin
-   ;; HACK you must enable notify for emacs in macos system
-   ;;      Notifications & Focus -> Emacs -> Allow Notifications
-   (defun notify-send (&rest params)
-     "Send notifications via `terminal-notifier'."
-     (let ((title (plist-get params :title))
-           (body (plist-get params :body)))
-       (start-process "terminal-notifier"
-                      nil
-                      "terminal-notifier"
-                      "-group" "Emacs"
-                      "-title" title
-                      "-message" body
-                      ;; FIXME this option didn't show emacs icon
-                      ;; but -sender didn't show the message when focus on emacs
-                      "-activate" "org.gnu.Emacs"))))
-  (_
-   (defalias 'notify-send 'ignore)))
 
 (provide 'init-straight)

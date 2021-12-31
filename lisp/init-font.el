@@ -1,46 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(defun +load-theme-advice (f theme-id &optional no-confirm no-enable &rest args)
-  "Enhance `load-theme' by disabling other enabled themes & calling hooks"
-  (unless no-enable ;
-    (mapc #'disable-theme custom-enabled-themes))
-  (prog1
-      (apply f theme-id no-confirm no-enable args)
-    (unless no-enable ;
-      (pcase (assq theme-id +theme-hooks)
-        (`(,_ . ,f) (funcall f))))))
-(advice-add 'load-theme :around #'+load-theme-advice)
-
-
-;; Do not use `eat-package' with themes.
-;; `spacemacs-theme'
-(straight-use-package 'spacemacs-theme)
-
-(setq
- spacemacs-theme-comment-italic t
- spacemacs-theme-keyword-italic t
- spacemacs-theme-org-agenda-height t
- spacemacs-theme-org-bold t
- spacemacs-theme-org-height t
- spacemacs-theme-org-highlight t
- spacemacs-theme-org-priority-bold t
- spacemacs-theme-org-bold t
- spacemacs-theme-underline-parens t)
-
-;; `kaolin-themes'
-(straight-use-package 'kaolin-themes)
-
-(setq
- kaolin-themes-underline-wave nil
- kaolin-themes-modeline-border nil
- kaolin-themes-modeline-padded 4)
-
-(with-eval-after-load 'kaolin-themes
-  ;; NOTE maybe check `+icons-p' and `all-the-icons'
-  (with-eval-after-load 'treemacs
-    (kaolin-treemacs-theme)))
-
-
 (eat-package ligature
   :straight (ligature :type git :host github :repo "mickeynp/ligature.el")
   :commands global-ligature-mode
@@ -89,16 +48,8 @@
 ;; (setq-default left-margin-width 0 right-margin-width 2)
 ;; (set-window-margins nil 0 0)
 
-(when (and (boundp 'ns-system-appearance) (display-graphic-p) +theme-system-appearance)
-  (add-to-list 'ns-system-appearance-change-functions
-               (lambda (l?d)
-                 (if (eq l?d 'light)
-                     (load-theme +theme-system-light t)
-                   (load-theme +theme-system-dark t)))))
-
 (add-hook 'after-init-hook
           (lambda ()
-            (load-theme +theme t)
             (+load-font)))
 
 (add-hook 'after-make-frame-functions
@@ -106,4 +57,4 @@
             (+load-face-font f)
             (+load-ext-font)))
 
-(provide 'init-laf)
+(provide 'init-font)

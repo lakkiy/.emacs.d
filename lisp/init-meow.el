@@ -1,5 +1,18 @@
 ;;; -*- lexical-binding: t -*-
 
+;; TODO remoce `dash.el'
+(defun +project-previous-buffer (arg)
+  "Toggle to the previous buffer that belongs to current project."
+  (interactive "P")
+  (if (equal '(4) arg)
+      (if-let ((pr (project-current)))
+          (switch-to-buffer
+           (->> (project--buffer-list pr)
+                (--remove (or (minibufferp it)
+                              (get-buffer-window-list it)))
+                (car))))
+    (mode-line-other-buffer)))
+
 (require 'init-meow-dvorak)
 (require 'init-meow-qwerty)
 

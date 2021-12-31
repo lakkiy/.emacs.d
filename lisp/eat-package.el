@@ -25,11 +25,11 @@
 
 (require 'pcase)
 
-(defvar eat-all-package-daemon nil
+(defvar eat-all-packages-daemon nil
   "If it's value is t, all package in `eat-package' will be required in dameon.")
 
-(defconst eat--all-package-p
-  (and eat-all-package-daemon (daemonp))
+(defconst eat--all-packages-p
+  (and eat-all-packages-daemon (daemonp))
   "")
 
 (defun eat-package-split-command-args (args)
@@ -180,7 +180,7 @@ ARGS.
          (progn
            ,@autoload-list
            ,@body
-           (if eat--all-package-p
+           (if eat--all-packages-p
                (require ',package)
              ,(when require-p `(require ',package))))
        ((debug error) (warn "Error when loading %s: %s" ',package

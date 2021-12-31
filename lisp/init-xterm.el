@@ -49,10 +49,6 @@
   ;; FIXME in terminal.app this whill cause mouse to `M-['
   ;; (xterm-mouse-mode 1)
 
-  (when sys/macp
-    (setq interprogram-cut-function 'paste-to-osx)
-    (setq interprogram-paste-function 'copy-from-osx))
-
   ;; clipboard setup
   (let ((session (string-trim (shell-command-to-string "echo $XDG_SESSION_TYPE"))))
     (cond

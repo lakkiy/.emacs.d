@@ -1,5 +1,34 @@
 ;;; -*- lexical-binding: t -*-
 
+;; Notifications
+;;
+;; Actually, `notify-send' is not defined in notifications package, but the
+;; autoload cookie will make Emacs load `notifications' first, then our
+;; `defalias' will be evaluated.
+(pcase system-type
+  ('gnu/linux
+   (autoload #'notify-send "notifications")
+   (with-eval-after-load "notifications"
+     (defalias 'notify-send 'notifications-notify)))
+  ('darwin
+   ;; HACK you must enable notify for emacs in macos system
+   ;;      Notifications & Focus -> Emacs -> Allow Notifications
+   (defun notify-send (&rest params)
+     "Send notifications via `terminal-notifier'."
+     (let ((title (plist-get params :title))
+           (body (plist-get params :body)))
+       (start-process "terminal-notifier"
+                      nil
+                      "terminal-notifier"
+                      "-group" "Emacs"
+                      "-title" title
+                      "-message" body
+                      ;; FIXME this option didn't show emacs icon
+                      ;; but -sender didn't show the message when focus on emacs
+                      "-activate" "org.gnu.Emacs"))))
+  (_
+   (defalias 'notify-send 'ignore)))
+
 ;; Speed up startup
 (setq auto-mode-case-fold nil)
 
@@ -170,16 +199,22 @@
  word-wrap-by-category t ;; Emacs 之光！
  )
 
-(defun +project-previous-buffer (arg)
-  "Toggle to the previous buffer that belongs to current project."
-  (interactive "P")
-  (if (equal '(4) arg)
-      (if-let ((pr (project-current)))
-          (switch-to-buffer
-           (->> (project--buffer-list pr)
-                (--remove (or (minibufferp it)
-                              (get-buffer-window-list it)))
-                (car))))
-    (mode-line-other-buffer)))
+(defun +load-theme-advice (f theme-id &optional no-confirm no-enable &rest args)
+  "Enhance `load-theme' by disabling other enabled themes & calling hooks"
+  (unless no-enable ;
+    (mapc #'disable-theme custom-enabled-themes))
+  (prog1
+      (apply f theme-id no-confirm no-enable args)
+    (unless no-enable ;
+      (pcase (assq theme-id +theme-hooks)
+        (`(,_ . ,f) (funcall f))))))
+(advice-add 'load-theme :around #'+load-theme-advice)
+
+(when (and (boundp 'ns-system-appearance) (display-graphic-p) +theme-system-appearance)
+  (add-to-list 'ns-system-appearance-change-functions
+               (lambda (l?d)
+                 (if (eq l?d 'light)
+                     (load-theme +theme-system-light t)
+                   (load-theme +theme-system-dark t)))))
 
 (provide 'init-basic)

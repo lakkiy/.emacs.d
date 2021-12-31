@@ -76,6 +76,9 @@
   (setf (alist-get 'gofmt apheleia-formatters)
         '("goimports")))
 
+(eat-package eldoc-overlay :straight t)
+(eat-package devdocs :straight t)
+
 (eat-package eglot
   :straight t
   :commands
