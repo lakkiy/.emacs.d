@@ -30,6 +30,7 @@
 
 (add-hook 'after-init-hook
           (lambda ()
-            (load-theme +theme t)))
+            (unless +theme-system-appearance
+              (load-theme +theme t))))
 
 (provide 'init-themes)
