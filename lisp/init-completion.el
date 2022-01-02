@@ -25,7 +25,9 @@
                             backward-delete-char)
    ;; icons
    company-vscode-icons-mapping nil
-   company-text-icons-add-background t ;; TODO use text icons format
+   company-text-icons-add-background t
+   ;; thanks to r/emacs yyoncho
+   company-format-margin-function 'company-text-icons-margin
    ;; tooltip frontend config
    company-tooltip-align-annotations t
    company-tooltip-limit 10
@@ -49,6 +51,7 @@
   (define-key company-active-map (kbd "TAB") '+complete)
   ;; TODO C-e to complete preview
   ;; TODO `company-transformers'
+  ;; TODO remove dup cad, like func from keywords and snippets
   )
 
 (provide 'init-completion)
