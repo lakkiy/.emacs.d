@@ -28,6 +28,7 @@
   (with-eval-after-load 'treemacs
     (kaolin-treemacs-theme)))
 
+;; FIXME not work on emacsclient
 (add-hook 'after-init-hook
           (lambda ()
             (unless +theme-system-appearance
