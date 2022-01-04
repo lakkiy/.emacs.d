@@ -6,6 +6,8 @@
      (eat-package all-the-icons :straight t)
 
      (setq treemacs-no-png-images nil)
+     (require 'treemacs-all-the-icons)
+     (treemacs-load-theme "all-the-icons")
 
      (eat-package all-the-icons-ibuffer
        :after ibuffer
