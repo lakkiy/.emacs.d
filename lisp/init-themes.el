@@ -26,7 +26,8 @@
 (with-eval-after-load 'kaolin-themes
   ;; NOTE maybe check `+icons-p' and `all-the-icons'
   (with-eval-after-load 'treemacs
-    (kaolin-treemacs-theme)))
+    (with-eval-after-load 'all-the-icons
+      (kaolin-treemacs-theme))))
 
 ;; FIXME not work on emacsclient
 (add-hook 'after-init-hook
