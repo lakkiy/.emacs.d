@@ -370,6 +370,7 @@ No tab will created if the command is cancelled."
  smptmail-stream-type 'ssl)
 
 ;; `cc-mode'
+(setq c-default-style "linux")
 (setq-default c-basic-offset 4)
 
 ;; `python'

@@ -28,7 +28,14 @@
     (define-key puni-mode-map (kbd key) 'puni-squeeze)))
 
 (eat-package treemacs
-  :straight t
+  :straight ( treemacs
+              :files (:defaults "icons"
+                                "src/elisp/treemacs*.el"
+                                "src/scripts/treemacs*.py"
+                                "src/extra/*")
+              :includes (treemacs-all-the-icons
+                         treemacs-icons-dired
+                         treemacs-magit))
   :init
   (defun +treemacs-scale-font-size ()
     (face-remap-add-relative 'default :height 0.8))
