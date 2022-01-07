@@ -6,7 +6,7 @@
 (defvar +font-cn "Sarasa Mono SC" "Just used for chinese font.")
 (defvar +font-variable-pitch "Bookerly" "Used for `variable-pitch-mode'")
 
-(defvar +theme 'kaolin-mono-dark "Default theme.")
+(defvar +theme 'leuven "Default theme.")
 (defvar +theme-system-appearance t "Change theme on system appearance, only available on macOS.")
 (defvar +theme-system-light 'kaolin-mono-light "Default light theme when `+theme-system-appearance' enabled.")
 (defvar +theme-system-dark 'kaolin-mono-dark "Default dark theme when `+theme-system-appearance' enabled.")
