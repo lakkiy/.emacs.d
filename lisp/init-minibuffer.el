@@ -21,7 +21,7 @@
     :init
     (setq vertico-multiform-categories
           '((file grid reverse)
-            (consult-location buffer)
+            (consult-location reverse)
             (consult-grep buffer)
             (minor-mode reverse)
             (imenu buffer)
