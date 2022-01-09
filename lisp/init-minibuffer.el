@@ -1,20 +1,36 @@
 ;;; -*- lexical-binding: t -*-
 
 (eat-package vertico
-  :straight t
+  :straight (vertico :files (:defaults "extensions/*"))
   :hook (after-init-hook . vertico-mode)
-  :init
-  (defun +minibuffer-backward-delete ()
-    (interactive)
-    (save-restriction
-      (narrow-to-region (minibuffer-prompt-end) (point-max))
-      (delete-region
-       (save-mark-and-excursion
-         (backward-sexp)
-         (point))
-       (point))))
   :config
-  (define-key vertico-map (kbd "M-DEL") #'+minibuffer-backward-delete))
+  (define-key vertico-map (kbd "C-j") #'(lambda () (interactive)
+                                          (if minibuffer--require-match
+                                              (minibuffer-complete-and-exit)
+                                            (exit-minibuffer))))
+  (eat-package vertico-directory
+    :hook (rfn-eshadow-update-overlay-hook . vertico-directory-tidy)
+    :init
+    (define-key vertico-map (kbd "DEL") #'vertico-directory-delete-char)
+    (define-key vertico-map (kbd "M-DEL") #'vertico-directory-delete-word)
+    (define-key vertico-map (kbd "RET") #'vertico-directory-enter))
+  (eat-package vertico-grid
+    :init
+    (setq vertico-grid-separator "    "))
+  (eat-package vertico-multiform
+    :init
+    (setq vertico-multiform-categories
+          '((file grid reverse)
+            (consult-location buffer)
+            (consult-grep buffer)
+            (minor-mode reverse)
+            (imenu buffer)
+            (t unobtrusive)))
+    (vertico-multiform-mode)
+    ;; TODO can't toggle back
+    (define-key vertico-map (kbd "<backtab>") #'(lambda () (interactive)
+                                                  (vertico-multiform-unobtrusive)
+                                                  (vertico-multiform-reverse)))))
 
 (eat-package orderless
   :straight t

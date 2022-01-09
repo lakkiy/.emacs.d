@@ -79,6 +79,11 @@
 (eat-package eldoc-overlay :straight t)
 (eat-package devdocs :straight t)
 
+(eat-package turbo-log
+  :straight (turbo-log :host github :repo "artawower/turbo-log.el")
+  :config
+  (define-key prog-mode-map (kbd "C-c C-l") #'turbo-log-print))
+
 (eat-package eglot
   :straight t
   :commands
