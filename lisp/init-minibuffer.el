@@ -28,7 +28,7 @@
             (t unobtrusive)))
     (vertico-multiform-mode)
     ;; TODO can't toggle back
-    (define-key vertico-map (kbd "<backtab>") #'(lambda () (interactive)
+    (define-key vertico-map (kbd "M-TAB") #'(lambda () (interactive)
                                                   (vertico-multiform-unobtrusive)
                                                   (vertico-multiform-reverse)))))
 
