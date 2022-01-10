@@ -9,7 +9,7 @@
 (defvar +theme 'leuven "Default theme.")
 (defvar +theme-system-appearance t "Change theme on system appearance, only available on macOS.")
 (defvar +theme-system-light 'leuven "Default light theme when `+theme-system-appearance' enabled.")
-(defvar +theme-system-dark 'wombat "Default dark theme when `+theme-system-appearance' enabled.")
+(defvar +theme-system-dark 'deeper-blue "Default dark theme when `+theme-system-appearance' enabled.")
 (defvar +theme-hooks nil "((theme-id . function) ...)")
 
 (defvar +enable-benchmark nil "Run `benchmark-init/show-durations-tree'")
