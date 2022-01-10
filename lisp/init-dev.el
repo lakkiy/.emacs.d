@@ -126,8 +126,7 @@
 ;; HACK Doesn't support `TRAMP' now
 (eat-package apheleia
   :straight t
-  :init
-  (apheleia-global-mode +1)
+  :hook (go-mode-hook . apheleia-mode)
   :config
   (setf (alist-get 'gofmt apheleia-formatters)
         '("goimports")))
