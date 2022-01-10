@@ -385,4 +385,7 @@ No tab will created if the command is cancelled."
  dired-dwim-target t
  dired-kill-when-opening-new-dired-buffer t)
 
+;; `modus-theme'
+(setq modus-themes-mode-line '(accented barderless))
+
 (provide 'init-builtin)
