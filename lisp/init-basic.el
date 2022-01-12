@@ -217,4 +217,23 @@
                      (load-theme +theme-system-light t)
                    (load-theme +theme-system-dark t)))))
 
+(defun w/see-you ()
+  "Highlight ZERO WIDTH chars in all buffers."
+  (interactive)
+  (let ((charnames (list "BYTE ORDER MARK"
+                         "ZERO WIDTH NO-BREAK SPACE"
+                         "ZERO WIDTH SPACE"
+                         "RIGHT-TO-LEFT MARK"
+                         "RIGHT-TO-LEFT OVERRIDE"
+                         "LEFT-TO-RIGHT MARK"
+                         "OBJECT REPLACEMENT CHARACTER"
+
+                         "ZERO WIDTH JOINER"
+                         "ZERO WIDTH NON-JOINER")))
+    (set-face-background 'glyphless-char "RoyalBlue1")
+    (dolist (name charnames)
+      ;; see info node "info:elisp#Glyphless Chars" for available values
+      (set-char-table-range glyphless-char-display
+                            (char-from-name name) "fuck"))))
+
 (provide 'init-basic)
