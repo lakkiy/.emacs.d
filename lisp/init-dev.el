@@ -114,6 +114,12 @@
   :config
   (define-key flycheck-mode-map (kbd "C-c C-b") 'flycheck-list-errors))
 
+(eat-package flymake-flycheck
+  :straight t
+  :init
+  (setq-local
+   flymake-diagnostic-functions (flymake-flycheck-all-chained-diagnostic-functions)))
+
 (eat-package aggressive-indent
   :straight t
   :commands aggressive-indent-mode
