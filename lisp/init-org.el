@@ -297,4 +297,6 @@ prepended to the element after the #+HEADER: tag."
   :straight t
   :commands olivetti-mode)
 
+(eat-package auctex :straight t)
+
 (provide 'init-org)
