@@ -1,7 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
 ;; `recentf'
-(add-hook 'after-init-hook #'recentf-mode)
+;; (add-hook 'after-init-hook #'recentf-mode)
 (global-set-key (kbd "C-x C-r") #'recentf-open-files)
 
 (setq recentf-max-saved-items 300

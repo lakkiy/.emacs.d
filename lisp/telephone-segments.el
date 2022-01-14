@@ -49,6 +49,33 @@
              'help-echo (buffer-file-name)))
     (telephone-line-raw mode-line-buffer-identification t)))
 
+;; Exclude some buffers in modeline
+(defvar modeline-ignored-modes '("Dashboard"
+                                 "Warnings"
+                                 "Compilation"
+                                 "EShell" "Eshell"
+                                 "Debugger"
+                                 "Quickrun"
+                                 "REPL"
+                                 "IELM"
+                                 "Messages"
+                                 "Interactive-Haskell")
+  "List of major modes to ignore in modeline")
+
+;; Display modified status
+(telephone-line-defsegment my-modified-status-segment ()
+  (when (and (buffer-modified-p) (not (member mode-name modeline-ignored-modes)) (not buffer-read-only))
+    (propertize "+" 'face `(:foreground "#85b654"))))
+
+;; Display read-only status
+(telephone-line-defsegment my-read-only-status-segment ()
+  (when (and buffer-read-only (telephone-line-selected-window-active))
+    ;; (propertize "ro" 'face `(:foreground "#dbac66"))
+    (propertize (all-the-icons-octicon "key")
+                'face `(:family ,(all-the-icons-octicon-family) :height 1.0 :foreground "dim gray")
+                'display '(raise 0.0))))
+
+
 ;; `telephone-line' right segments
 
 ;; Display current branch

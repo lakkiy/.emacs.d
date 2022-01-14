@@ -15,6 +15,12 @@
   (setq telephone-line-primary-left-separator 'telephone-line-halfsin-left)
   (setq telephone-line-primary-right-separator 'telephone-line-halfsin-right)
 
+  ;; Set subseparator
+  ;; TODO: function to choose separator by name
+  (when window-system
+    (setq telephone-line-secondary-left-separator 'telephone-line-identity-hollow-left
+          telephone-line-secondary-right-separator 'telephone-line-identity-hollow-right))
+
   ;; Set mode-line height
   (setq telephone-line-height 28)
 
@@ -24,6 +30,8 @@
   (setq telephone-line-lhs
         '((accent . ((my-meow-segment :active)))
           (nil . (my-project-buffer-segment))
+          (nil . (my-modified-status-segment))
+          (nil . (my-read-only-status-segment))
           ))
   ;; (nil    . (my-flycheck-segment))))
 
