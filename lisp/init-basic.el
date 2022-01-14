@@ -236,4 +236,10 @@
       (set-char-table-range glyphless-char-display
                             (char-from-name name) "fuck"))))
 
+;; Hide vc backend in modeline
+(defadvice vc-mode-line (after strip-backend () activate)
+  (when (stringp vc-mode)
+    (let ((my-vc (replace-regexp-in-string "^ Git." "" vc-mode)))
+      (setq vc-mode my-vc))))
+
 (provide 'init-basic)

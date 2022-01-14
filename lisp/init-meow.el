@@ -33,12 +33,6 @@
                   notmuch-search-mode
                   notmuch-tree-mode))
     (add-to-list 'meow-mode-state-list `(,mode . motion)))
-  (setq
-   meow-replace-state-name-list '((normal . "N")
-                                  (motion . "M")
-                                  (keypad . "K")
-                                  (insert . "I")
-                                  (beacon . "B")))
   ;; setup meow with layout
   (cond ((eq +meow-layout 'dvorak) (meow-setup-dvorak))
         (t (meow-setup-qwerty)))

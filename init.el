@@ -44,5 +44,4 @@
   (require 'init-mail)
   (unless window-system
     (require 'init-xterm))
-  (add-hook 'after-init-hook 'server-mode)
   )

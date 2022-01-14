@@ -205,6 +205,9 @@
     (mapcan #'my/project-files-in-director
             (or dirs (list (project-root project))))))
 
+(defun +project-name ()
+  (file-name-nondirectory (directory-file-name (project-root (project-current)))))
+
 ;; `tab-bar'
 (setq
  tab-bar-border nil
