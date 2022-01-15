@@ -6,10 +6,10 @@
 (defvar +font-cn "Sarasa Mono SC" "Just used for chinese font.")
 (defvar +font-variable-pitch "Bookerly" "Used for `variable-pitch-mode'")
 
-(defvar +theme 'doom-one "Default theme.")
+(defvar +theme 'kaolin-breeze "Default theme.")
 (defvar +theme-system-appearance t "Change theme on system appearance, only available on macOS.")
-(defvar +theme-system-light 'doom-one-light "Default light theme when `+theme-system-appearance' enabled.")
-(defvar +theme-system-dark 'doom-one "Default dark theme when `+theme-system-appearance' enabled.")
+(defvar +theme-system-light 'kaolin-breeze "Default light theme when `+theme-system-appearance' enabled.")
+(defvar +theme-system-dark 'kaolin-aurora "Default dark theme when `+theme-system-appearance' enabled.")
 (defvar +theme-hooks nil "((theme-id . function) ...)")
 
 (defvar +enable-benchmark nil "Run `benchmark-init/show-durations-tree'")

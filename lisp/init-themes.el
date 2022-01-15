@@ -29,14 +29,6 @@
     (with-eval-after-load 'all-the-icons
       (kaolin-treemacs-theme))))
 
-;; `doom-themes'
-(straight-use-package 'doom-themes)
-
-(with-eval-after-load 'doom-themes
-  (setq doom-themes-treemacs-theme "doom-atom")
-  (doom-themes-treemacs-config)
-  (doom-themes-org-config))
-
 ;; `the-matrix-theme'
 ;; FIXME can see modeline text with telephone-line
 (straight-use-package 'the-matrix-theme)
