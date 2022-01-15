@@ -75,10 +75,6 @@
             (add-function :after after-focus-change-function
                           (lambda ()
                             (unless (frame-focus-state)
-                              (garbage-collect))))
-
-            ;; Recover GC values after startup
-            (setq gc-cons-threshold 800000
-                  gc-cons-percentage 0.1)))
+                              (garbage-collect))))))
 
 (provide 'init-straight)

@@ -80,7 +80,7 @@
   (pixel-scroll-precision-mode))
 
 ;; produces a cleaner result
-(global-set-key [remap eval-last-sexp] 'pp-eval-last-sexp)
+;; (global-set-key [remap eval-last-sexp] 'pp-eval-last-sexp)
 
 ;; This `view-hello-file' always stack me
 (global-unset-key (kbd "C-h h"))
