@@ -38,7 +38,8 @@
   ;; Right edge
   ;; vc pos major encoding
   (setq telephone-line-rhs
-        '((nil    . (my-vc-segment))
+        '((nil    . (my-rime-segment))
+          (nil    . (my-vc-segment))
           (accent . ((my-position-segment :active)))
           (nil    . ((my-major-mode-segment-icon :active)))
           (accent . ((my-coding-segment :active)))

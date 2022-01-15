@@ -78,6 +78,9 @@
 
 ;; `telephone-line' right segments
 
+(telephone-line-defsegment my-rime-segment ()
+  (rime-lighter))
+
 ;; Display current branch
 ;; TODO: move raise and etc into var
 (telephone-line-defsegment my-vc-segment ()
