@@ -14,23 +14,24 @@
     (define-key vertico-map (kbd "DEL") #'vertico-directory-delete-char)
     (define-key vertico-map (kbd "M-DEL") #'vertico-directory-delete-word)
     (define-key vertico-map (kbd "RET") #'vertico-directory-enter))
-  (eat-package vertico-grid
-    :init
-    (setq vertico-grid-separator "    "))
-  (eat-package vertico-multiform
-    :init
-    (setq vertico-multiform-categories
-          '((file grid reverse)
-            (consult-location reverse)
-            (consult-grep buffer)
-            (minor-mode reverse)
-            (imenu buffer)
-            (t unobtrusive)))
-    (vertico-multiform-mode)
-    ;; TODO can't toggle back
-    (define-key vertico-map (kbd "M-TAB") #'(lambda () (interactive)
-                                                  (vertico-multiform-unobtrusive)
-                                                  (vertico-multiform-reverse)))))
+  ;; (eat-package vertico-grid
+  ;;   :init
+  ;;   (setq vertico-grid-separator "    "))
+  ;; (eat-package vertico-multiform
+  ;;   :init
+  ;;   (setq vertico-multiform-categories
+  ;;         '((file grid reverse)
+  ;;           (consult-location reverse)
+  ;;           (consult-grep buffer)
+  ;;           (minor-mode reverse)
+  ;;           (imenu buffer)
+  ;;           (t unobtrusive)))
+  ;;   (vertico-multiform-mode)
+  ;;   ;; TODO can't toggle back
+  ;;   (define-key vertico-map (kbd "M-TAB") #'(lambda () (interactive)
+  ;;                                             (vertico-multiform-unobtrusive)
+  ;;                                             (vertico-multiform-reverse))))
+  )
 
 (eat-package orderless
   :straight t
