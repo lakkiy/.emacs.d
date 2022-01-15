@@ -116,7 +116,8 @@
 
 (eat-package flymake-flycheck
   :straight t
-  :init
+  :after flymake
+  :config
   (setq-local
    flymake-diagnostic-functions (flymake-flycheck-all-chained-diagnostic-functions)))
 
