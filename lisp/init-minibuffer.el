@@ -27,8 +27,7 @@
   ;;           (imenu buffer)
   ;;           (t unobtrusive)))
   ;;   (vertico-multiform-mode)
-  ;;   ;; TODO can't toggle back
-  ;;   (define-key vertico-map (kbd "M-TAB") #'(lambda () (interactive)
+  ;;   (define-key vertico-map (kbd "`") #'(lambda () (interactive)
   ;;                                             (vertico-multiform-unobtrusive)
   ;;                                             (vertico-multiform-reverse))))
   )
@@ -56,9 +55,11 @@
   (setq which-key-idle-delay 10000)
   (setq which-key-idle-secondary-delay 0.05))
 
-(eat-package marginalia
-  :straight t
-  :hook (after-init-hook . marginalia-mode))
+;; FIXME cause some vertico error when describe variable
+;; see https://github.com/minad/marginalia/issues/128
+;; (eat-package marginalia
+;;   :straight t
+;;   :hook (after-init-hook . marginalia-mode))
 
 (eat-package consult
   :straight t
