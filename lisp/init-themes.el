@@ -37,6 +37,9 @@
   (doom-themes-treemacs-config)
   (doom-themes-org-config))
 
+;; `the-matrix-theme'
+(straight-use-package 'the-matrix-theme)
+
 ;; FIXME not work on emacsclient
 (add-hook 'after-init-hook
           (lambda ()
