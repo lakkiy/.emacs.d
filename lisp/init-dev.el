@@ -143,8 +143,9 @@
 
 (eat-package turbo-log
   :straight (turbo-log :host github :repo "artawower/turbo-log.el")
-  :config
-  (define-key prog-mode-map (kbd "C-c C-l") #'turbo-log-print))
+  :init
+  (global-set-key (kbd "C-s-h") #'turbo-log-print-immediately)
+  (global-set-key (kbd "C-s-g") #'turbo-log-delete-all-logs))
 
 (eat-package eglot
   :straight t
