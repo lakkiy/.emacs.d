@@ -22,7 +22,7 @@
           telephone-line-secondary-right-separator 'telephone-line-identity-hollow-right))
 
   ;; Set mode-line height
-  (setq telephone-line-height 28)
+  (setq telephone-line-height 17)
 
   ;; Left edge
   ;; meow project-buffer
