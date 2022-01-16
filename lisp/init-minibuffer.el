@@ -55,11 +55,9 @@
   (setq which-key-idle-delay 10000)
   (setq which-key-idle-secondary-delay 0.05))
 
-;; FIXME cause some vertico error when describe variable
-;; see https://github.com/minad/marginalia/issues/128
-;; (eat-package marginalia
-;;   :straight t
-;;   :hook (after-init-hook . marginalia-mode))
+(eat-package marginalia
+  :straight t
+  :hook (after-init-hook . marginalia-mode))
 
 (eat-package consult
   :straight t
