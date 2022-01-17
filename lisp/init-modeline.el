@@ -8,6 +8,10 @@
   :straight t
   :hook (after-init-hook . telephone-line-mode)
   :init
+  (defvar modeline-height 17)
+  ;; Set mode-line height
+  (setq telephone-line-height modeline-height)
+
   (setq-default mode-line-format nil)
   (require 'telephone-segments)
 
@@ -20,9 +24,6 @@
   (when window-system
     (setq telephone-line-secondary-left-separator 'telephone-line-identity-hollow-left
           telephone-line-secondary-right-separator 'telephone-line-identity-hollow-right))
-
-  ;; Set mode-line height
-  (setq telephone-line-height 17)
 
   ;; Left edge
   ;; meow project-buffer
