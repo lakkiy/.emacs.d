@@ -389,7 +389,9 @@ No tab will created if the command is cancelled."
 ;; `dired'
 (setq
  dired-dwim-target t
- dired-kill-when-opening-new-dired-buffer t)
+ dired-kill-when-opening-new-dired-buffer t
+ dired-recursive-deletes 'always
+ delete-by-moving-to-trash t)
 
 ;; `modus-theme'
 (setq modus-themes-mode-line '(accented barderless))

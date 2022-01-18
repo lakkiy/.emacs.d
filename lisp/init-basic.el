@@ -151,7 +151,6 @@
 (setq-default
  initial-major-mode 'fundamental-mode
  inhibit-compacting-font-caches t                   ; Don’t compact font caches during GC.
- delete-by-moving-to-trash t                        ; Deleting files go to OS's trash folder
  ring-bell-function 'ignore                         ; Disable osx bell ring
  hl-line-sticky-flag nil
  create-lockfiles nil                               ; Don't create lockfiles

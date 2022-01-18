@@ -76,4 +76,6 @@
   (set-face-attribute 'dired-subtree-depth-5-face nil :background nil)
   (set-face-attribute 'dired-subtree-depth-6-face nil :background nil))
 
+(eat-package dirvish :straight t)
+
 (provide 'init-dired)
