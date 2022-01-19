@@ -173,6 +173,7 @@
  dired-dwim-target t
  dired-kill-when-opening-new-dired-buffer t
  dired-recursive-deletes 'top
+ dired-listing-switches "-AFhlv"
  delete-by-moving-to-trash t)
 
 (with-eval-after-load 'dired

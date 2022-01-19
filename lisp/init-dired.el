@@ -38,6 +38,10 @@
   :straight t
   :hook (dired-mode-hook . diredfl-mode))
 
-(eat-package dirvish :straight t)
+(eat-package dirvish
+  :straight t
+  :after dired
+  :config
+  (dirvish-override-dired-mode))
 
 (provide 'init-dired)
