@@ -172,8 +172,10 @@
 (setq
  dired-dwim-target t
  dired-kill-when-opening-new-dired-buffer t
- dired-recursive-deletes 'always
+ dired-recursive-deletes 'top
  delete-by-moving-to-trash t)
+
+(global-set-key (kbd "C-c C-p") #'wdired-change-to-wdired-mode)
 
 ;; `ibuffer'
 (fset 'list-buffers 'ibuffer)
