@@ -14,5 +14,8 @@
 
 ;; Basic and built-in package config
 (let ((file-name-handler-alist nil))
+  ;; (require 'init-straight)
   (require 'init-basic)
-  (require 'init-builtin))
+  (require 'init-builtin)
+  ;; (require 'init-dired)
+  )
