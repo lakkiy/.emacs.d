@@ -175,7 +175,7 @@
  dired-recursive-deletes 'top
  delete-by-moving-to-trash t)
 
-(global-set-key (kbd "C-c C-p") #'wdired-change-to-wdired-mode)
+(define-key dired-mode-map (kbd "C-c C-p") #'wdired-change-to-wdired-mode)
 
 ;; `ibuffer'
 (fset 'list-buffers 'ibuffer)
