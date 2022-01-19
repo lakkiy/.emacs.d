@@ -169,7 +169,11 @@
   (define-key smerge-mode-map (kbd "M-RET") #'smerge-keep-current))
 
 ;; `dired'
-(setq dired-dwim-target t)
+(setq
+ dired-dwim-target t
+ dired-kill-when-opening-new-dired-buffer t
+ dired-recursive-deletes 'always
+ delete-by-moving-to-trash t)
 
 ;; `ibuffer'
 (fset 'list-buffers 'ibuffer)
@@ -386,14 +390,25 @@ No tab will created if the command is cancelled."
  python-shell-interpreter "ipython"
  python-indent-guess-indent-offset nil)
 
-;; `dired'
-(setq
- dired-dwim-target t
- dired-kill-when-opening-new-dired-buffer t
- dired-recursive-deletes 'always
- delete-by-moving-to-trash t)
-
 ;; `modus-theme'
 (setq modus-themes-mode-line '(accented barderless))
+
+;; Used as a `sh-mode' REPL.
+;;
+;; `shell' is recommended to use over `tramp'.
+(defun shell-toggle ()
+  "Toggle a persistent shell popup window.
+If popup is visible but unselected, select it.
+If popup is focused, kill it."
+  (interactive)
+  (if-let ((win (get-buffer-window "*shell-popup*")))
+      (when (eq (selected-window) win)
+        ;; If users attempt to delete the sole ordinary window, silence it.
+        (ignore-errors (delete-window win)))
+    (let ((display-comint-buffer-action '(display-buffer-at-bottom
+                                          (inhibit-same-window . nil))))
+
+      (shell "*shell-popup*"))))
+(global-set-key (kbd "M-`") #'shell-toggle)
 
 (provide 'init-builtin)
