@@ -44,6 +44,7 @@
           (accent . ((my-position-segment :active)))
           (nil    . ((my-major-mode-segment-icon :active)))
           (accent . ((my-coding-segment :active)))
+          (nil    . (my-flymake-segment))
           ))
 
   ;; TODO rime flymake/flycheck anzu

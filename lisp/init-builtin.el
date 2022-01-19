@@ -360,7 +360,7 @@ No tab will created if the command is cancelled."
 (autoload #'flymake "flymake" nil t)
 
 (with-eval-after-load 'flymake
-  (define-key flymake-mode-map (kbd "C-c C-b") 'flymake-show-diagnostics-buffer))
+  (define-key flymake-mode-map (kbd "C-c C-b") 'flymake-show-buffer-diagnostics))
 
 ;; `message'
 (setq

@@ -158,4 +158,8 @@
                  (t "-"))))
       (format  "%s " eol))))
 
+(telephone-line-defsegment my-flymake-segment ()
+  (when (bound-and-true-p flymake-mode)
+    flymake-mode-line-format))
+
 (provide 'telephone-segments)

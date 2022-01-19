@@ -53,8 +53,15 @@
 
 (eat-package flycheck-golangci-lint
   :straight t
-  :after flycheck go-mode
-  :hook (go-mode-hook . (flycheck-golangci-lint-setup)))
+  :hook (go-mode-hook . (lambda ()
+                          "Enable golangci-lint."
+                          (setq flycheck-disabled-checkers '(go-gofmt
+                                                             go-golint
+                                                             go-vet
+                                                             go-build
+                                                             go-test
+                                                             go-errcheck))
+                          (flycheck-golangci-lint-setup))))
 
 (eat-package gotest
   :straight t

@@ -86,6 +86,9 @@
     :init
     (global-set-key (kbd "C-x c r") 'citre-jump-to-reference)
     (global-set-key (kbd "C-x c R") 'citre-ace-peek-references)
+    ;; NOTE
+    ;; Notice that GTAGSOBJDIRPREFIX must exist for gtags to use it. So you need to run:
+    ;; $ mkdir -p ~/.cache/gtags/
     (global-set-key (kbd "C-x c U") 'citre-global-update-database)
     (with-eval-after-load 'citre-peek
       (define-key citre-peek-keymap (kbd "M-l r") 'citre-peek-through-references))
