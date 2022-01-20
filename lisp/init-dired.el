@@ -40,8 +40,9 @@
 
 (eat-package dirvish
   :straight t
-  :after dired
-  :config
-  (dirvish-override-dired-mode))
+  ;; :after dired
+  ;; :config
+  ;;  (dirvish-override-dired-mode)
+  )
 
 (provide 'init-dired)
