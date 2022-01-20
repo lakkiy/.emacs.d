@@ -161,7 +161,9 @@
         ;; don't block of LSP connection attempts
         eglot-sync-connect nil
         ;; I will manage `company-capf' myself
-        eglot-stay-out-of '(company))
+        eglot-stay-out-of '(company)
+        ;; make eglot manage file out of project by `xref-find-definitions'
+        eglot-extend-to-xref t)
   :config
   (define-key eglot-mode-map (kbd "M-RET") 'eglot-code-actions)
   (define-key eglot-mode-map (kbd "C-c r") 'eglot-rename)
