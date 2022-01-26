@@ -24,7 +24,11 @@
         (fixed-pitch-font-spec (format "%s-%d" +font-default +font-size)))
     (set-face-attribute 'variable-pitch frame :font variable-pitch-font-spec)
     (set-face-attribute 'fixed-pitch frame :font fixed-pitch-font-spec)
-    (set-face-attribute 'fixed-pitch-serif frame :font fixed-pitch-font-spec)))
+    (set-face-attribute 'fixed-pitch-serif frame :font fixed-pitch-font-spec)
+    ;; TODO use variable and large font for tab bar, just like atom
+    ;; (set-face-attribute 'tab-bar frame :font +font-variable-pitch :height 1.2)
+    )
+  (setf (alist-get +font-variable-pitch face-font-rescale-alist 1.3 nil 'string=) 1.3))
 
 (defun +load-ext-font ()
   (when window-system
@@ -38,8 +42,6 @@
   (+load-base-font)
   (+load-face-font)
   (+load-ext-font))
-
-;; (setf (alist-get +font-variable-pitch face-font-rescale-alist 1.3 nil 'string=) 1.3)
 
 ;; (set-frame-parameter nil 'internal-border-width 10)
 ;; (setq-default left-margin-width 0 right-margin-width 2)
