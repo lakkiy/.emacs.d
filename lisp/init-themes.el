@@ -1,6 +1,9 @@
 ;;; -*- lexical-binding: t -*-
 ;; Do not use `eat-package' with themes.
 
+;; `atom-one-dark-theme'
+(straight-use-package 'atom-one-dark-theme)
+
 ;; `spacemacs-theme'
 (straight-use-package 'spacemacs-theme)
 
