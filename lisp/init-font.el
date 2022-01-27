@@ -24,11 +24,7 @@
         (fixed-pitch-font-spec (format "%s-%d" +font-default +font-size)))
     (set-face-attribute 'variable-pitch frame :font variable-pitch-font-spec)
     (set-face-attribute 'fixed-pitch frame :font fixed-pitch-font-spec)
-    (set-face-attribute 'fixed-pitch-serif frame :font fixed-pitch-font-spec)
-    ;; TODO use variable and large font for tab bar, just like atom
-    ;; (set-face-attribute 'tab-bar frame :font +font-variable-pitch :height 1.2)
-    )
-  (setf (alist-get +font-variable-pitch face-font-rescale-alist 1.3 nil 'string=) 1.3))
+    (set-face-attribute 'fixed-pitch-serif frame :font fixed-pitch-font-spec)))
 
 (defun +load-ext-font ()
   (when window-system
@@ -36,7 +32,8 @@
           (font-spec (font-spec :family +font-unicode)))
       (dolist (charset '(kana han hangul cjk-misc bopomofo symbol))
         (set-fontset-font font charset font-spec))))
-  (setf (alist-get +font-unicode face-font-rescale-alist 0.7 nil 'string=) 0.7))
+  (setf (alist-get +font-unicode face-font-rescale-alist 0.7 nil 'string=) 0.7)
+  (setf (alist-get +font-variable-pitch face-font-rescale-alist 1.3 nil 'string=) 1.3))
 
 (defun +load-font ()
   (+load-base-font)
