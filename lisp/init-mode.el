@@ -1,28 +1,19 @@
 ;; -*- lexical-binding: t; -*-
 
 (eat-package yaml-mode :straight t)
-
-(eat-package docker
-  :straight t
-  :commands docker)
-
 (eat-package docker-compose-mode :straight t)
 (eat-package dockerfile-mode :straight t)
+(eat-package k8s-mode :straight t)
+
+(eat-package git-modes
+  :straight t
+  :init
+  (add-to-list 'auto-mode-alist
+               (cons "/.dockerignore\\'" 'gitignore-mode)))
 
 (eat-package kubedoc
   :straight
   (kubedoc :type git :host github :repo "r0bobo/kubedoc.el"))
-
-(eat-package kubernetes
-  :straight t
-  :commands
-  kubernetes-overview
-  :config
-  (setq kubernetes-poll-frequency 3600
-        kubernetes-redraw-frequency 3600))
-
-(eat-package k8s-mode
-  :straight t)
 
 (eat-package markdown-mode
   :straight t
@@ -48,4 +39,4 @@
               (setq imenu-generic-expression
                     '((nil "^[[:space:]]*\\(message\\|service\\|enum\\)[[:space:]]+\\([[:alnum:]]+\\)" 2))))))
 
-(provide 'init-spcfile)
+(provide 'init-mode)

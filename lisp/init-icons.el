@@ -1,8 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(eat-package all-the-icons
-  :straight t)
-
 (with-eval-after-load 'treemacs
   (setq treemacs-no-png-images nil)
   (require 'treemacs-all-the-icons)

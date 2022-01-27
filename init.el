@@ -1,47 +1,27 @@
-(defvar +icons-p nil "Whether to enable `all-the-icons'.")
-
-(defvar +font-default "Menlo" "Default font.")
-(defvar +font-size 12 "Default font size")
-(defvar +font-unicode "Apple Color Emoji" "Emoji font.")
-(defvar +font-cn "Sarasa Mono SC" "Just used for chinese font.")
-(defvar +font-variable-pitch "Bookerly" "Used for `variable-pitch-mode'")
-
-(defvar +theme 'kaolin-breeze "Default theme.")
-(defvar +theme-system-appearance t "Change theme on system appearance, only available on macOS.")
-(defvar +theme-system-light 'kaolin-breeze "Default light theme when `+theme-system-appearance' enabled.")
-(defvar +theme-system-dark 'kaolin-aurora "Default dark theme when `+theme-system-appearance' enabled.")
-(defvar +theme-hooks nil "((theme-id . function) ...)")
-
-(defvar +enable-benchmark nil "Run `benchmark-init/show-durations-tree'")
-(defvar +meow-layout 'dvorak "Layout config for `meow', qwerty or dvorak")
-
-;; Shut up!
-(defun display-startup-echo-area-message() (message nil))
-
 (let ((file-name-handler-alist nil))
+  ;; 1. 必要，emacs -Q 也能用
   (require 'init-straight)
-  (require 'init-basic)   ;; some basic config
-  (require 'init-builtin) ;; builtin package config
-  (require 'init-modeline)
-  (require 'init-font) ;; TODO only config in GUI
-  (require 'init-themes)
-  (require 'init-meow)
-  (require 'init-rime)
-  (require 'init-minibuffer)
-  (require 'init-window)
-  (when (and +icons-p (display-graphic-p))
-    (require 'init-icons))
+  ;; 2. 自己写的函数之类的
+  (require 'init-my)
+  ;; 3. 正常使用必须加载
+  (require 'init-dog)
   (require 'init-edit)
   (require 'init-completion)
   (require 'init-dev)
-  (require 'init-telega)
-  (require 'init-git)
+  ;; 4. 可有可无，美化，去掉也没关系
+  ;; TODO 把 all-the-icons 拆成单独的库
+  (when (and +icons-p (display-graphic-p))
+    (require 'init-icons))
+  ;; 5. 外观，主题，modeline
+  (require 'init-ui)
+  ;; 6. emacs app，telega，magit
+  (require 'init-app)
+  ;; 7. 各种 mode
+  (require 'init-mode)
   (require 'init-org)
-  (require 'init-dired)
-  (require 'init-ibuffer)
-  (require 'init-spcfile)
+  ;; 8. TODO 库 all-the-icons
+  (require 'init-lib)
+  ;; 9. 直接 straight 然后不用管的
   (require 'init-mole)
-  (require 'init-mail)
   (unless window-system
-    (require 'init-xterm))
-  )
+    (require 'init-xterm)))

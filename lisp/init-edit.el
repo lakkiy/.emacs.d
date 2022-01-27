@@ -153,4 +153,112 @@
   (setq avy-background t
         avy-style 'pre))
 
+(eat-package ligature
+  :straight (ligature :type git :host github :repo "mickeynp/ligature.el")
+  :commands global-ligature-mode
+  :hook (after-init-hook . (lambda () (global-ligature-mode t)))
+  :config
+  ;; https://htmlpreview.github.io/?https://github.com/kiliman/operator-mono-lig/blob/master/images/preview/normal/index.html
+  (ligature-set-ligatures 'prog-mode
+                          '("&&" "||" "|>" ":=" "==" "===" "==>" "=>"
+                            "=<<" "!=" "!==" ">=" ">=>" ">>=" "->" "--"
+                            "-->" "<|" "<=" "<==" "<=>" "<=<" "<!--" "<-"
+                            "<->" "<--" "</" "+=" "++" "??" "/>" "__" "WWW")))
+
+(eat-package ace-window
+  :straight t
+  :commands
+  ace-swap-window
+  ace-window
+  :init
+  (setq aw-keys '(?a ?o ?e ?u ?i)
+        aw-scope 'frame)
+  (custom-set-faces
+   '(aw-leading-char-face ((t (:inherit font-lock-keyword-face :bold t :height 2.0))))
+   '(aw-minibuffer-leading-char-face ((t (:inherit font-lock-keyword-face :bold t :height 1.0))))
+   '(aw-mode-line-face ((t (:inherit mode-line-emphasis :bold t))))))
+
+(eat-package popper
+  :straight t
+  :hook (after-init-hook . (lambda ()
+                             (popper-mode +1)))
+  :init
+  (setq popper-mode-line nil
+        popper-reference-buffers
+        '("\\*Messages\\*"
+          "Output\\*$"
+          "\\*Async Shell Command\\*"
+          help-mode
+          ;; "^\\*eshell.*\\*$" eshell-mode ;eshell as a popup
+          ;; "^\\*shell.*\\*$"  shell-mode  ;shell as a popup
+          ;; "^\\*term.*\\*$"   term-mode   ;term as a popup
+          ;; "^\\*vterm.*\\*$"  vterm-mode  ;vterm as a popup
+          compilation-mode)))
+
+(eat-package ibuffer-project
+  :straight t
+  :init
+  ;; use `ibuffer-project-clear-cache' to clear cache
+  (setq ibuffer-project-use-cache t)
+  (custom-set-variables
+   '(ibuffer-formats
+     '((mark modified read-only locked " "
+             (name 18 18 :left :elide)
+             " "
+             (size 9 -1 :right)
+             " "
+             (mode 16 16 :left :elide)
+             " " project-file-relative))))
+  (add-hook 'ibuffer-hook
+            (lambda ()
+              (setq ibuffer-filter-groups (ibuffer-project-generate-filter-groups))
+              (unless (eq ibuffer-sorting-mode 'project-file-relative)
+                (ibuffer-do-sort-by-project-file-relative))))
+  :config
+  ;; In this case all remote buffers will be grouped by a string identifying the remote connection.
+  (add-to-list 'ibuffer-project-root-functions '(file-remote-p . "Remote")))
+
+(straight-use-package '(dired-hacks :type git :host github :repo "Fuco1/dired-hacks"))
+
+(eat-package dired-filter
+  :hook (dired-mode-hook . dired-filter-group-mode)
+  :init
+  (setq dired-filter-revert 'never
+        dired-filter-group-saved-groups
+        '(("default"
+           ("Git"
+            (directory . ".git")
+            (file . ".gitignore"))
+           ("Directory"
+            (directory))
+           ("PDF"
+            (extension . "pdf"))
+           ("LaTeX"
+            (extension "tex" "bib"))
+           ("Source"
+            (extension "c" "cpp" "hs" "rb" "py" "r" "cs" "el" "lisp" "html" "js" "css"))
+           ("Doc"
+            (extension "md" "rst" "txt"))
+           ("Org"
+            (extension . "org"))
+           ("Archives"
+            (extension "zip" "rar" "gz" "bz2" "tar"))
+           ("Images"
+            (extension "jpg" "JPG" "webp" "png" "PNG" "jpeg" "JPEG" "bmp" "BMP" "TIFF" "tiff" "gif" "GIF")))))
+  :config
+  (define-key dired-filter-map (kbd "p") 'dired-filter-pop-all)
+  (define-key dired-filter-map (kbd "/") 'dired-filter-mark-map))
+
+(eat-package dired-collapse
+  :hook (dired-mode-hook . dired-collapse-mode))
+
+(eat-package diredfl
+  :straight t
+  :hook (dired-mode-hook . diredfl-mode))
+
+(eat-package hl-todo
+  :straight t
+  :hook
+  ((dired-mode-hook prog-mode-hook conf-mode-hook) . hl-todo-mode))
+
 (provide 'init-edit)
