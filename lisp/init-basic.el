@@ -149,6 +149,7 @@
                         (make-glyph-code ?┃))
 
 (setq-default
+ initial-scratch-message (concat ";; Happy hacking, " user-login-name " - Emacs ♥ you!\n\n")
  initial-major-mode 'fundamental-mode
  inhibit-compacting-font-caches t                   ; Don’t compact font caches during GC.
  ring-bell-function 'ignore                         ; Disable osx bell ring

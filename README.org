@@ -1,4 +1,4 @@
-* Just some snippets
+** Just some snippets
 
 Replace =github.com= to =github.com.cnpmjs.org= in =straight.el=
 #+begin_src emacs-lisp
@@ -24,4 +24,14 @@ To setup elfeed, add this to =custom.el=
                      :api-url "https://example.com/api/fever.php"
                      :password "p4ssw0rd"
                      :autotags nil)))
+#+end_src
+
+Transparent
+#+begin_src emacs-lisp
+(push '(alpha . (90 . 75)) default-frame-alist)
+#+end_src
+
+Maximized screen
+#+begin_src emacs-lisp
+(push '(fullscreen . maximized) initial-frame-alist)
 #+end_src
