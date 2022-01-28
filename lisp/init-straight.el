@@ -78,8 +78,9 @@
       (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
         (process-send-string proc text)
         (process-send-eof proc))))
-  (setq interprogram-cut-function 'paste-to-osx)
-  (setq interprogram-paste-function 'copy-from-osx)
+  ;; FIXME 乱码了
+  ;; (setq interprogram-cut-function 'paste-to-osx)
+  ;; (setq interprogram-paste-function 'copy-from-osx)
 
   ;; Render thinner fonts
   (setq ns-use-thin-smoothing t)
