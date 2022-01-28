@@ -6,10 +6,6 @@
 (setq straight-check-for-modifications '(check-on-save find-when-checking))
 (setq straight-vc-git-default-clone-depth 1)
 
-(setq straight-disable-native-compile
-      (when (fboundp 'native-comp-available-p)
-	(not (native-comp-available-p))))
-
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -31,7 +27,7 @@
   (eq system-type 'gnu/linux)
   "Are we running on a GNU/Linux system?")
 
-;; require all package in emacsclient
+;; require all packages in emacsclient
 (setq eat-all-packages-daemon t)
 (require 'eat-package)
 
@@ -97,6 +93,10 @@
   ;; Linux specific
   (setq x-underline-at-descent-line t)
 
+  (setq-default
+   pgtk-use-im-context-on-new-connection nil          ; Don't use Fcitx5 in Emacs in PGTK build
+   x-gtk-resize-child-frames nil)
+
   ;; Don't use GTK+ tooltip
   (when (boundp 'x-gtk-use-system-tooltips)
     (setq x-gtk-use-system-tooltips nil)))
@@ -146,10 +146,7 @@
   ;; for mouse scroll
   (setq pixel-scroll-precision-large-scroll-height 60)
   (setq pixel-scroll-precision-interpolation-factor 30.0)
-  (pixel-scroll-precision-mode))
-
-;; This `view-hello-file' always stack me
-(global-unset-key (kbd "C-h h"))
+  (add-hook 'after-init-hook (lambda () (pixel-scroll-precision-mode))))
 
 ;; Disable cursor blink
 (add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
@@ -191,33 +188,40 @@
  initial-major-mode 'fundamental-mode
  inhibit-compacting-font-caches t                   ; Don’t compact font caches during GC.
  ring-bell-function 'ignore                         ; Disable osx bell ring
- hl-line-sticky-flag nil
- create-lockfiles nil                               ; Don't create lockfiles
  require-final-newline t                            ; add final newline
- make-backup-files nil                              ; Disable auto save and backup
- auto-save-default nil
- auto-save-list-file-prefix nil
  mouse-yank-at-point t                              ; Mouse yank at point instead of click position.
- auto-window-vscroll nil                            ; This fix the cursor movement lag
- tab-width 4
  comment-empty-lines t
  visible-cursor t
- window-divider-default-right-width 1               ; Window divider setup
- window-divider-default-bottom-width 0
- window-divider-default-places t
- x-gtk-resize-child-frames nil
- x-underline-at-descent-line t
  bidi-inhibit-bpa t                                 ; Improve long line display performance
  bidi-paragraph-direction 'left-to-right
  echo-keystrokes 0.01                               ; don't wait for keystrokes display
- indent-tabs-mode nil                               ; indent with whitespace by default
  read-process-output-max (* 1024 1024)
- display-line-numbers-width 3                       ; Default line number width.
- pgtk-use-im-context-on-new-connection nil          ; Don't use Fcitx5 in Emacs in PGTK build
  warning-suppress-log-types '((comp))               ; Don't display compile warnings
  truncate-partial-width-windows 65                  ; Don't truncate lines in a window narrower than 65 chars.
  vc-follow-symlinks t                               ; always follow link
- scroll-step 1                                      ; Vertical Scroll
+ server-client-instructions nil                     ; no client startup messages
+ use-short-answers t                                ; yse-or-no -> y-or-n
+ split-height-threshold nil                         ; prefer horizental split
+ split-width-threshold 120
+ suggest-key-bindings nil                           ; disable "You can run the command balabala..."
+ word-wrap-by-category t ;; Emacs 之光！
+ )
+
+;; indent with whitespace by default
+(setq-default
+ tab-width 4
+ indent-tabs-mode nil)
+
+;; disable default auto backup and save file
+(setq-default
+ create-lockfiles nil                               ; Don't create lockfiles
+ make-backup-files nil                              ; Disable auto save and backup
+ auto-save-default nil
+ auto-save-list-file-prefix nil)
+
+;; scroll nand hscroll
+(setq-default
+ scroll-step 1
  scroll-margin 10
  scroll-conservatively 100000
  scroll-up-aggressively 0.01
@@ -228,32 +232,16 @@
  mouse-wheel-scroll-amount '(1 ((shift) . hscroll)) ; use shift + mouse wheel to scrll horizontally
  mouse-wheel-progressive-speed nil
  hscroll-step 1                                     ; Horizontal Scroll
- hscroll-margin 10
- server-client-instructions nil                     ; no client startup messages
- use-short-answers t                                ; yse-or-no -> y-or-n
- split-height-threshold nil                         ; prefer horizental split
- split-width-threshold 120
- suggest-key-bindings nil                           ; disable "You can run the command balabala..."
- word-wrap-by-category t ;; Emacs 之光！
- )
+ hscroll-margin 10)
 
 ;; `recentf'
 ;; (add-hook 'after-init-hook #'recentf-mode)
 (global-set-key (kbd "C-x C-r") #'recentf-open-files)
 
-(setq recentf-max-saved-items 300
-      recentf-exclude
-      '("\\.?cache" ".cask" "url" "COMMIT_EDITMSG\\'" "bookmarks"
-        "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\|bmp\\|xpm\\)$"
-        "\\.?ido\\.last$" "\\.revive$" "/G?TAGS$" "/.elfeed/"
-        "^/tmp/" "^/var/folders/.+$" "^/ssh:" "/persp-confs/"
-        (lambda (file) (file-in-directory-p file package-user-dir))))
-
-(with-eval-after-load 'recentf
-  (push (expand-file-name recentf-save-file) recentf-exclude)
-  (add-to-list 'recentf-filename-handlers #'abbreviate-file-name))
-
 ;; `display-line-numbers'
+(setq-default
+ display-line-numbers-width 3)
+
 ;; (add-hook 'prog-mode-hook #'display-line-numbers-mode)
 
 ;; `subword'
@@ -273,6 +261,9 @@
  repeat-exit-key (kbd "RET"))
 
 ;; `hl-line'
+(setq-default
+ hl-line-sticky-flag nil)
+
 (add-hook 'prog-mode-hook #'hl-line-mode)
 (add-hook 'conf-mode-hook #'hl-line-mode)
 
@@ -429,10 +420,8 @@
       ispell-program-name "aspell"
       ispell-extra-args '("--sug-mode=ultra" "--lang=en_US" "--run-together"))
 
-(add-hook 'flyspell-mode-hook
-          #'(lambda ()
-              (dolist (key '("C-;" "C-," "C-." "C-M-i"))
-                (define-key flyspell-mode-map (kbd key) nil))))
+(with-eval-after-load 'flyspell
+  (setq flyspell-mode-map nil))
 
 ;; `project'
 (defun my/project-files-in-directory (dir)
@@ -492,36 +481,9 @@ No tab will created if the command is cancelled."
                 'face
                 (funcall tab-bar-tab-face-function tab))))
 
-(global-set-key (kbd "C-x t .") #'tab-bar-rename-tab)
-(global-set-key (kbd "C-x t l") #'+tab-bar-switch-project)
-
-;; `flymake'
-(autoload #'flymake "flymake" nil t)
-
-(with-eval-after-load 'flymake
-  (define-key flymake-mode-map (kbd "C-c C-b") 'flymake-show-buffer-diagnostics)
-  (define-key flymake-mode-map (kbd "C-c C-S-b") 'flymake-show-project-diagnostics))
-
-;; `message'
-(setq
- user-full-name "Liu Bo"
- user-mail-address "liubolovelife@gmail.com"
- message-kill-buffer-on-exit t
- message-mail-alias-type 'ecomplete
- message-send-mail-function #'message-use-send-mail-function
- message-signature user-full-name)
-
-(add-hook 'message-mode-hook #'auto-fill-mode)
-
-;; `sendmail'
-(setq send-mail-function #'smtpmail-send-it)
-
-;; `smtpmail'
-(setq
- smtpmail-smtp-server "smtp.gmail.com"
- smtpmail-smtp-user user-mail-address
- smtpmail-smtp-service 587
- smptmail-stream-type 'ssl)
+(with-eval-after-load 'tab-bar
+  (global-set-key (kbd "C-x t .") #'tab-bar-rename-tab)
+  (global-set-key (kbd "C-x t l") #'+tab-bar-switch-project))
 
 ;; `modus-theme'
 (setq modus-themes-mode-line '(accented barderless))

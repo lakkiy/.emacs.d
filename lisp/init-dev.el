@@ -1,5 +1,12 @@
 ;;; -*- lexical-binding: t -*-
 
+;; `flymake'
+(autoload #'flymake "flymake" nil t)
+
+(with-eval-after-load 'flymake
+  (define-key flymake-mode-map (kbd "C-c C-b") 'flymake-show-buffer-diagnostics)
+  (define-key flymake-mode-map (kbd "C-c C-S-b") 'flymake-show-project-diagnostics))
+
 (eat-package tree-sitter
   :straight t
   :init

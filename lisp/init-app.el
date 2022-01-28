@@ -83,6 +83,27 @@
   ;;  (dirvish-override-dired-mode)
   )
 
+;; `message'
+(setq
+ user-full-name "Liu Bo"
+ user-mail-address "liubolovelife@gmail.com"
+ message-kill-buffer-on-exit t
+ message-mail-alias-type 'ecomplete
+ message-send-mail-function #'message-use-send-mail-function
+ message-signature user-full-name)
+
+(add-hook 'message-mode-hook #'auto-fill-mode)
+
+;; `sendmail'
+(setq send-mail-function #'smtpmail-send-it)
+
+;; `smtpmail'
+(setq
+ smtpmail-smtp-server "smtp.gmail.com"
+ smtpmail-smtp-user user-mail-address
+ smtpmail-smtp-service 587
+ smptmail-stream-type 'ssl)
+
 (defface notmuch-tag-emacs
   '((t :foreground "systemPurpleColor"))
   "Default face used for the emacs tag.

@@ -54,4 +54,7 @@
       (set-char-table-range glyphless-char-display
                             (char-from-name name) "fuck"))))
 
+;; This `view-hello-file' always stack me
+(global-unset-key (kbd "C-h h"))
+
 (provide 'init-my)
