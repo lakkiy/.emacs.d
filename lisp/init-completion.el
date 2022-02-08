@@ -47,16 +47,10 @@
     (interactive)
     (or (yas/expand)
         (company-complete-selection)))
-  (define-key company-mode-map [tab] '+complete)
-  (define-key company-mode-map (kbd "TAB") '+complete)
   (define-key company-active-map [tab] '+complete)
   (define-key company-active-map (kbd "TAB") '+complete)
   (define-key company-active-map [return] nil)
-  (define-key company-active-map (kbd "RET") nil)
-  ;; TODO C-e to complete preview
-  ;; TODO `company-transformers'
-  ;; TODO remove dup cad, like func from keywords and snippets
-  )
+  (define-key company-active-map (kbd "RET") nil))
 
 (eat-package vertico
   :straight (vertico :files (:defaults "extensions/*"))
