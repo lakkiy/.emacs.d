@@ -136,6 +136,8 @@
                        consult-buffer
                        :preview-key nil)))
 
+(eat-package consult-yasnippet :straight t)
+
 (eat-package embark
   :straight (embark :files ("*.el"))
   :init
