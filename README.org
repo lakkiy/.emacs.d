@@ -26,11 +26,6 @@ To setup elfeed, add this to =custom.el=
                      :autotags nil)))
 #+end_src
 
-Transparent
-#+begin_src emacs-lisp
-(push '(alpha . (90 . 75)) default-frame-alist)
-#+end_src
-
 Maximized screen
 #+begin_src emacs-lisp
 (push '(fullscreen . maximized) initial-frame-alist)
