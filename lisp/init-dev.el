@@ -181,7 +181,12 @@
 			   '(rust-mode "rust-analyzer")))
 
 (eat-package eglot-ltex
-  :straight (eglot-ltex :type git :host github :repo "emacs-languagetool/eglot-ltex"))
+  :straight (eglot-ltex :type git :host github :repo "emacs-languagetool/eglot-ltex")
+  :init
+  (defun eglot-ltex ()
+    (interactive)
+    (require 'eglot-ltex)
+    (call-interactively #'eglot)))
 
 (require 'init-go)
 (require 'init-python)
