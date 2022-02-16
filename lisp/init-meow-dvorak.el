@@ -19,7 +19,6 @@
    '(";" . comment-dwim)
    '("f" . find-file)
    '("d" . dired)
-   '("s" . ispell-word)
    '("=" . align-regexp)
    '("$" . load-theme)
    '("k" . kill-this-buffer)
@@ -143,10 +142,11 @@
    '("=" . hs-show-block)
    '("_" . hs-hide-all)
    '("+" . hs-show-all)
-   '("<" . tab-bar-switch-to-prev-tab)
-   '(">" . tab-bar-switch-to-next-tab)
-   '("{" . flymake-goto-prev-error) ;; TODO wrap flymake and flycheck together
-   '("}" . flymake-goto-next-error)
+   '("<" . flymake-goto-prev-error)
+   '(">" . flymake-goto-next-error)
+   '("{" . tab-bar-switch-to-prev-tab) ;; TODO wrap flymake and flycheck together
+   '("}" . tab-bar-switch-to-next-tab)
+   '("S" . save-buffer)
    ))
 
 (provide 'init-meow-dvorak)
