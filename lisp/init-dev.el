@@ -190,5 +190,6 @@
 
 (require 'init-go)
 (require 'init-python)
+(require 'init-web)
 
 (provide 'init-dev)
