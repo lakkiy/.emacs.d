@@ -99,7 +99,7 @@
    '("W" . meow-next-symbol)
    '("m" . meow-mark-word)
    '("M" . meow-mark-symbol)
-   '("s" . meow-search)
+   '("/" . meow-search)
    ;; kill/delete/change/replace
    '("d" . meow-delete)
    '("D" . meow-backward-delete)
@@ -148,6 +148,7 @@
    '("{" . tab-bar-switch-to-prev-tab) ;; TODO wrap flymake and flycheck together
    '("}" . tab-bar-switch-to-next-tab)
    '("S" . save-buffer)
+   '("s" . ace-window)
    ))
 
 (provide 'init-meow-dvorak)
