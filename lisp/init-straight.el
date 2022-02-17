@@ -457,7 +457,7 @@
  tab-bar-new-button nil
  tab-bar-format '(tab-bar-format-tabs)
  tab-bar-tab-name-format-function '+tab-bar-tab-format-function
- tab-bar-separator "┃" ;; TODO add color, like atom
+ tab-bar-separator ""
  tab-bar-tab-name-truncated-max 10)
 
 (custom-set-faces
@@ -482,7 +482,7 @@ No tab will created if the command is cancelled."
 (defun +tab-bar-tab-format-function (tab i)
   (let ((current-p (eq (car tab) 'current-tab)))
     (propertize (concat
-                 "    "
+                 "┃   "
                  (alist-get 'name tab)
                  "    ")
                 'face
