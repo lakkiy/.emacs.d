@@ -129,6 +129,10 @@
 ;; Speed up startup
 (setq auto-mode-case-fold nil)
 
+;; The nano style for truncated long lines.
+;; See emacs lighting talk mengmeng.
+(setq auto-hscroll-mode 'current-line)
+
 ;; in emacs29 from Po Lu!
 (when (boundp pixel-scroll-precision-mode)
   ;; for mouse scroll
@@ -183,7 +187,7 @@
  bidi-inhibit-bpa t                                 ; Improve long line display performance
  bidi-paragraph-direction 'left-to-right
  echo-keystrokes 0.01                               ; don't wait for keystrokes display
- read-process-output-max (* 1024 1024)
+ read-process-output-max (* 4 1024 1024)
  warning-suppress-log-types '((comp))               ; Don't display compile warnings
  truncate-partial-width-windows 65                  ; Don't truncate lines in a window narrower than 65 chars.
  vc-follow-symlinks t                               ; always follow link
@@ -222,6 +226,16 @@
  hscroll-step 1                                     ; Horizontal Scroll
  hscroll-margin 10)
 
+;; `minibuffer'
+(setq
+ ;; `selectrum', `vertico' and `icomplete' will honoring
+ ;; completion-styles '(basic partial-completion substring flex)
+ ;; completion-category-overrides '((buffer (styles . (flex))))
+ completion-cycle-threshold t
+ minibuffer-depth-indicate-mode t
+ minibuffer-eldef-shorten-default t
+ minibuffer-electric-default-mode t)
+
 ;; `recentf'
 ;; (add-hook 'after-init-hook #'recentf-mode)
 (global-set-key (kbd "C-x C-r") #'recentf-open-files)
@@ -237,6 +251,9 @@
 
 ;; `simple'
 (add-hook 'before-save-hook #'delete-trailing-whitespace)
+(setq visual-line-fringe-indicators '(nil right-curly-arrow)
+      ;; List only applicable commands.
+      read-extended-command-predicate #'command-completion-default-include-p)
 
 ;; `so-long'
 (add-hook 'after-init-hook #'global-so-long-mode)
@@ -268,7 +285,9 @@
 ;; `paren'
 (setq
  show-paren-when-point-in-periphery t
- show-paren-when-point-inside-paren t)
+ show-paren-when-point-inside-paren t
+ ;; NOTE emacs 29
+ show-paren-context-when-offscreen t)
 
 (add-hook 'prog-mode-hook #'show-paren-mode)
 

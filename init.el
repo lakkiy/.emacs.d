@@ -1,27 +1,37 @@
+;; seems not work on emacs29
+;; (unless (or (daemonp) noninteractive)
+;;   ;; Keep a ref to the actual file-name-handler
+;;   (let ((default-file-name-handler-alist file-name-handler-alist))
+;;     ;; Set the file-name-handler to nil (because regexing is cpu intensive)
+;;     (setq file-name-handler-alist nil)
+;;     ;; Reset file-name-handler-alist after initialization
+;;     (add-hook 'emacs-startup-hook
+;;               (lambda ()
+;;                 (setq file-name-handler-alist default-file-name-handler-alist)))))
+
 (let ((file-name-handler-alist nil))
-  ;; 1. 必要，emacs -Q 也能用
+  ;; 1. must work on emacs -Q
   (require 'init-straight)
-  ;; 2. 自己写的函数之类的
+  ;; 2. some funcs
   (require 'init-my)
-  ;; 3. 正常使用必须加载
+  ;; 3. most work on normal
   (require 'init-dog)
   (require 'init-edit)
   (require 'init-completion)
   (require 'init-dev)
-  ;; 4. 可有可无，美化，去掉也没关系
-  ;; TODO 把 all-the-icons 拆成单独的库
+  ;; 4. 鸡肋
   (when (and +icons-p (display-graphic-p))
     (require 'init-icons))
-  ;; 5. 外观，主题，modeline
+  ;; 5. theme modeline
   (require 'init-ui)
   ;; 6. emacs app，telega，magit
   (require 'init-app)
-  ;; 7. 各种 mode
+  ;; 7. modes
   (require 'init-mode)
   (require 'init-org)
-  ;; 8. TODO 库 all-the-icons
+  ;; 8. lib like all-the-icons
   (require 'init-lib)
-  ;; 9. 直接 straight 然后不用管的
+  ;; 9. just straight
   (require 'init-mole)
   (unless window-system
     (require 'init-xterm)))

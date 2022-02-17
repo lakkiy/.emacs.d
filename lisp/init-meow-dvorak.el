@@ -16,6 +16,7 @@
    '("a" . execute-extended-command)
    '("e" . "C-x C-e")
    '("b" . switch-to-buffer)
+   '("g" . keyboard-escape-quit) ;; NOTE close the fucking minibuffer
    '(";" . comment-dwim)
    '("f" . find-file)
    '("d" . dired)
