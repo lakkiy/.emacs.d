@@ -461,7 +461,7 @@
  tab-bar-tab-name-truncated-max 10)
 
 (custom-set-faces
- `(tab-bar ((t (:height 1.3 :family ,+font-variable-pitch)))))
+ `(tab-bar ((t (:height 1.4 :family ,(format "%s-10" +font-variable-pitch))))))
 
 (defun +tab-bar-switch-project ()
   "Switch to project in a new tab, project name will be used as tab name.
