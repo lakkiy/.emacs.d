@@ -46,7 +46,6 @@
    '("," . "M-,")
    '("?" . "M-?")
    ;; window
-   '("w" . ace-window)
    '("W" . ace-swap-window)
    '("o" . delete-other-windows)
    '("O" . ace-delete-window)
