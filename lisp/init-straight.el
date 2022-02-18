@@ -498,6 +498,10 @@ No tab will created if the command is cancelled."
 ;; Used as a `sh-mode' REPL.
 ;;
 ;; `shell' is recommended to use over `tramp'.
+(setq
+ ;; do not echo command after in shell mode
+ comint-process-echoes t)
+
 (defun shell-toggle ()
   "Toggle a persistent shell popup window.
 If popup is visible but unselected, select it.
