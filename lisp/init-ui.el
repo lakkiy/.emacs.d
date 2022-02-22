@@ -128,6 +128,8 @@
   (doom-modeline-def-modeline 'my
     '(bar modals matches follow buffer-info remote-host buffer-position word-count selection-info)
     '(objed-state misc-info battery debug repl lsp minor-modes input-method indent-info buffer-encoding major-mode process vcs checker))
-  (doom-modeline-set-modeline 'my 'default))
+  (defun setup-custom-doom-modeline ()
+    (doom-modeline-set-modeline 'my 'default))
+  (add-hook 'doom-modeline-mode-hook 'setup-custom-doom-modeline))
 
 (provide 'init-ui)
