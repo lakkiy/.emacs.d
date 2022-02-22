@@ -50,6 +50,14 @@
     (with-eval-after-load 'all-the-icons
       (kaolin-treemacs-theme))))
 
+;; `doom-themes'
+(straight-use-package 'doom-themes)
+
+(with-eval-after-load 'doom-themes
+  (setq doom-themes-treemacs-theme "doom-atom")
+  (doom-themes-treemacs-config)
+  (doom-themes-org-config))
+
 ;; `the-matrix-theme'
 ;; FIXME can see modeline text with telephone-line
 (straight-use-package 'the-matrix-theme)
@@ -103,57 +111,17 @@
             (+load-face-font f)
             (+load-ext-font)))
 
-;; Hide vc backend in modeline
-(defadvice vc-mode-line (after strip-backend () activate)
-  (when (stringp vc-mode)
-    (let ((my-vc (replace-regexp-in-string "^ Git." "" vc-mode)))
-      (setq vc-mode my-vc))))
-
-;; TODO process icon in terminal and check +icons-p
-(eat-package telephone-line
+(eat-package doom-modeline
   :straight t
-  :hook (after-init-hook . telephone-line-mode)
+  :hook (after-init-hook . doom-modeline-mode)
   :init
-  (defvar modeline-height 17)
-  ;; Set mode-line height
-  (setq telephone-line-height modeline-height)
-
-  (setq-default mode-line-format nil)
-  (require 'telephone-segments)
-
-  ;; Set separator style
-  (setq telephone-line-primary-left-separator 'telephone-line-halfsin-left)
-  (setq telephone-line-primary-right-separator 'telephone-line-halfsin-right)
-
-  ;; Set subseparator
-  ;; TODO: function to choose separator by name
-  (when window-system
-    (setq telephone-line-secondary-left-separator 'telephone-line-identity-hollow-left
-          telephone-line-secondary-right-separator 'telephone-line-identity-hollow-right))
-
-  ;; Left edge
-  ;; meow project-buffer
-  ;; TODO: gray background for buffer and mode segment in inactive line
-  (setq telephone-line-lhs
-        '((accent . ((my-meow-segment :active)))
-          (nil . (my-project-buffer-segment))
-          (nil . (my-modified-status-segment))
-          (nil . (my-read-only-status-segment))
-          ))
-  ;; (nil    . (my-flycheck-segment))))
-
-  ;; Right edge
-  ;; vc pos major encoding
-  (setq telephone-line-rhs
-        '((nil    . (my-rime-segment))
-          (nil    . (my-vc-segment))
-          (accent . ((my-position-segment :active)))
-          (nil    . ((my-major-mode-segment-icon :active)))
-          (accent . ((my-coding-segment :active)))
-          (nil    . (my-flymake-segment))
-          ))
-
-  ;; TODO rime flymake/flycheck anzu
-  )
+  (setq doom-modeline-irc nil
+        doom-modeline-mu4e nil
+        doom-modeline-gnus nil
+        doom-modeline-github nil
+        doom-modeline-persp-name nil
+        doom-modeline-unicode-fallback t
+        doom-modeline-enable-work-count nil)
+  (setq doom-modeline-project-detection 'project))
 
 (provide 'init-ui)
