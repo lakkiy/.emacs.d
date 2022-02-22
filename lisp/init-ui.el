@@ -113,7 +113,8 @@
 
 (eat-package doom-modeline
   :straight t
-  :hook (after-init-hook . doom-modeline-mode)
+  :hook
+  (after-init-hook . doom-modeline-mode)
   :init
   (setq doom-modeline-irc nil
         doom-modeline-mu4e nil
@@ -122,6 +123,11 @@
         doom-modeline-persp-name nil
         doom-modeline-unicode-fallback t
         doom-modeline-enable-work-count nil)
-  (setq doom-modeline-project-detection 'project))
+  (setq doom-modeline-project-detection 'project)
+  :config
+  (doom-modeline-def-modeline 'my
+    '(bar modals matches follow buffer-info remote-host buffer-position word-count selection-info)
+    '(objed-state misc-info battery debug repl lsp minor-modes input-method indent-info buffer-encoding major-mode process vcs checker))
+  (doom-modeline-set-modeline 'my 'default))
 
 (provide 'init-ui)
