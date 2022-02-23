@@ -1,5 +1,10 @@
 ;;; -*- lexical-binding: t -*-
 
+;; `org-morden'
+(eat-package org-modern
+  :straight (org-modern :type git :host github :repo "minad/org-modern")
+  :hook (org-mode-hook . org-modern-mode))
+
 ;; `org'
 (eat-package org :straight (org :type built-in))
 ;; rescale image with for org-download
