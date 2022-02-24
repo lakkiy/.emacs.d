@@ -59,9 +59,8 @@
   (doom-themes-org-config))
 
 ;; `the-matrix-theme'
-;; FIXME can see modeline text with telephone-line
 (straight-use-package 'the-matrix-theme)
-
+;; `acme-theme'
 (straight-use-package 'acme-theme)
 
 ;; FIXME not work on emacsclient

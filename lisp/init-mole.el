@@ -131,4 +131,7 @@
   :config
   (elfeed-protocol-enable))
 
+;; secret mode
+(straight-use-package 'redacted)
+
 (provide 'init-mole)
