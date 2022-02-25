@@ -14,7 +14,7 @@
   (require 'init-straight)
   ;; 2. some funcs
   (require 'init-my)
-  ;; 3. most work on normal
+  ;; 3. must work on normal
   (require 'init-dog)
   (require 'init-edit)
   (require 'init-completion)
