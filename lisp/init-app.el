@@ -83,26 +83,28 @@
   ;;  (dirvish-override-dired-mode)
   )
 
-;; `message'
-(setq
- user-full-name "Liu Bo"
- user-mail-address "liubolovelife@gmail.com"
- message-kill-buffer-on-exit t
- message-mail-alias-type 'ecomplete
- message-send-mail-function #'message-use-send-mail-function
- message-signature user-full-name)
+(eat-package message
+  :hook (message-mode-hook . auto-fill-mode)
+  :init
+  (setq
+   user-full-name "Liu Bo"
+   user-mail-address "liubolovelife@gmail.com"
+   message-kill-buffer-on-exit t
+   message-mail-alias-type 'ecomplete
+   message-send-mail-function #'message-use-send-mail-function
+   message-signature user-full-name))
 
-(add-hook 'message-mode-hook #'auto-fill-mode)
+(eat-package sendmail
+  :init
+  (setq send-mail-function #'smtpmail-send-it))
 
-;; `sendmail'
-(setq send-mail-function #'smtpmail-send-it)
-
-;; `smtpmail'
-(setq
- smtpmail-smtp-server "smtp.gmail.com"
- smtpmail-smtp-user user-mail-address
- smtpmail-smtp-service 587
- smptmail-stream-type 'ssl)
+(eat-package smtpmail
+  :init
+  (setq
+   smtpmail-smtp-server "smtp.gmail.com"
+   smtpmail-smtp-user user-mail-address
+   smtpmail-smtp-service 587
+   smptmail-stream-type 'ssl))
 
 (defface notmuch-tag-emacs
   '((t :foreground "systemPurpleColor"))

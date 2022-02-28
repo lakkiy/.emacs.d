@@ -1,9 +1,9 @@
 ;;; -*- lexical-binding: t -*-
 
-;; `flymake'
-(autoload #'flymake "flymake" nil t)
-
-(with-eval-after-load 'flymake
+(eat-package flymake
+  :init
+  (autoload #'flymake "flymake" nil t)
+  :config
   (define-key flymake-mode-map (kbd "C-c C-b") 'flymake-show-buffer-diagnostics)
   (define-key flymake-mode-map (kbd "C-c C-S-b") 'flymake-show-project-diagnostics))
 
