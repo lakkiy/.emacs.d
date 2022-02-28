@@ -10,8 +10,8 @@
    '("'" . repeat)
    ;; don't overwrite keys that already used in `meow-leader-define-key'
    ;; or `H-key' won't run the origin command in motion state
-   '("{" . tab-bar-switch-to-next-tab)
-   '("}" . tab-bar-switch-to-prev-tab))
+   '("{" . tab-bar-switch-to-prev-tab)
+   '("}" . tab-bar-switch-to-next-tab))
   (meow-leader-define-key
    '("a" . execute-extended-command)
    '("e" . "C-x C-e")

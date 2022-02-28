@@ -90,7 +90,8 @@
       (dolist (charset '(kana han hangul cjk-misc bopomofo symbol))
         (set-fontset-font font charset font-spec))))
   (setf (alist-get +font-unicode face-font-rescale-alist 0.7 nil 'string=) 0.7)
-  (setf (alist-get +font-variable-pitch face-font-rescale-alist 1.3 nil 'string=) 1.3))
+  ;; (setf (alist-get +font-variable-pitch face-font-rescale-alist 1.3 nil 'string=) 1.3)
+  )
 
 (defun +load-font ()
   (+load-base-font)
