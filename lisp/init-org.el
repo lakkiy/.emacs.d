@@ -2,7 +2,7 @@
 
 ;; `org-morden'
 (eat-package org-modern
-  :straight (org-modern :type git :host github :repo "minad/org-modern")
+  :straight t
   :hook (org-mode-hook . org-modern-mode))
 
 ;; `org'
@@ -46,7 +46,7 @@
 
 (with-eval-after-load 'org
   (setq
-   org-startup-indented t
+   ;; org-startup-indented t ;; NOTE conflict with org-modern
    org-hide-emphasis-markers t
    org-tags-column 0
    ;; Highlight latex text in org mode
