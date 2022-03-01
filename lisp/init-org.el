@@ -1,7 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
 (eat-package org-modern
-  :straight (org-modern :type git :host github :repo "minda/org-modern")
+  :straight (org-modern :type git :host github :repo "minad/org-modern")
   :hook (org-mode-hook . org-modern-mode))
 
 (eat-package org
