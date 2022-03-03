@@ -47,6 +47,11 @@
   (setq
    ;; org-startup-indented t ;; NOTE conflict with org-modern
    org-hide-emphasis-markers t
+   org-pretty-entities t
+   org-ellipsis "…"
+   org-catch-invisible-edits 'show-and-error
+   org-special-ctrl-a/e t
+   org-insert-heading-respect-content t
    org-tags-column 0
    ;; Highlight latex text in org mode
    org-highlight-latex-and-related '(latex script entities)
