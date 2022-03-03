@@ -182,9 +182,12 @@
 
 (eat-package eglot-ltex
   :straight (eglot-ltex :type git :host github :repo "emacs-languagetool/eglot-ltex")
+  :hook
+  ((markdown-mode-hook org-mode-hook) . eglot-ltex)
   :init
   (defun eglot-ltex ()
     (interactive)
+    (setq eglot-languagetool-server-path (expand-file-name "ltex-ls/" user-emacs-directory))
     (require 'eglot-ltex)
     (call-interactively #'eglot)))
 
