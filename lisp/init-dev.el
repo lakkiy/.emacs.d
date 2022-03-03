@@ -180,6 +180,7 @@
   (add-to-list 'eglot-server-programs
 			   '(rust-mode "rust-analyzer")))
 
+;; TODO auto download ltex-ls into emacs root dir and extract to ltex-ls
 (eat-package eglot-ltex
   :straight (eglot-ltex :type git :host github :repo "emacs-languagetool/eglot-ltex")
   :hook

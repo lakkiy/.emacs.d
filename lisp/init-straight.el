@@ -213,18 +213,18 @@
 
 ;; scroll nand hscroll
 (setq-default
- scroll-step 1
- scroll-margin 10
- scroll-conservatively 100000
+ scroll-step 2
+ scroll-margin 2
+ hscroll-step 2                                     ; Horizontal Scroll
+ hscroll-margin 2
+ scroll-conservatively 101
  scroll-up-aggressively 0.01
  scroll-down-aggressively 0.01
- scroll-preserve-screen-position t
+ scroll-preserve-screen-position 'always
  auto-window-vscroll nil
  fast-but-imprecise-scrolling nil
  mouse-wheel-scroll-amount '(1 ((shift) . hscroll)) ; use shift + mouse wheel to scrll horizontally
- mouse-wheel-progressive-speed nil
- hscroll-step 1                                     ; Horizontal Scroll
- hscroll-margin 10)
+ mouse-wheel-progressive-speed nil)
 
 (eat-package minibuffer
   :init
