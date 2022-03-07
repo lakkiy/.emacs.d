@@ -108,17 +108,17 @@
   :hook (after-init-hook . (lambda ()
                              (popper-mode +1)))
   :init
-  (setq popper-mode-line nil
-        popper-reference-buffers
-        '("\\*Messages\\*"
-          "Output\\*$"
-          "\\*Async Shell Command\\*"
-          help-mode
-          ;; "^\\*eshell.*\\*$" eshell-mode ;eshell as a popup
-          ;; "^\\*shell.*\\*$"  shell-mode  ;shell as a popup
-          ;; "^\\*term.*\\*$"   term-mode   ;term as a popup
-          ;; "^\\*vterm.*\\*$"  vterm-mode  ;vterm as a popup
-          compilation-mode)))
+  (setq
+   popper-reference-buffers
+   '("\\*Messages\\*"
+     "Output\\*$"
+     "\\*Async Shell Command\\*"
+     help-mode
+     ;; "^\\*eshell.*\\*$" eshell-mode ;eshell as a popup
+     ;; "^\\*shell.*\\*$"  shell-mode  ;shell as a popup
+     ;; "^\\*term.*\\*$"   term-mode   ;term as a popup
+     ;; "^\\*vterm.*\\*$"  vterm-mode  ;vterm as a popup
+     compilation-mode)))
 
 (eat-package diredfl
   :straight t
