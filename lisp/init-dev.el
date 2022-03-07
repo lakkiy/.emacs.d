@@ -17,7 +17,7 @@
   :config
   (require 'tree-sitter-langs))
 
-(eat-package  grammatical-edit
+(eat-package grammatical-edit
   :straight (grammatical-edit
              :type git
              :host github
@@ -147,15 +147,6 @@
   :config
   (setf (alist-get 'gofmt apheleia-formatters)
         '("goimports")))
-
-(eat-package eldoc-overlay :straight t)
-(eat-package devdocs :straight t)
-
-(eat-package turbo-log
-  :straight (turbo-log :host github :repo "artawower/turbo-log.el")
-  :init
-  (global-set-key (kbd "C-s-h") #'turbo-log-print-immediately)
-  (global-set-key (kbd "C-s-g") #'turbo-log-delete-all-logs))
 
 (eat-package eglot
   :straight t

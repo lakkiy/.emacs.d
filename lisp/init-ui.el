@@ -19,9 +19,6 @@
                      (load-theme +theme-system-light t)
                    (load-theme +theme-system-dark t)))))
 
-;; `atom-one-dark-theme'
-(straight-use-package 'atom-one-dark-theme)
-
 ;; `spacemacs-theme'
 (straight-use-package 'spacemacs-theme)
 
@@ -49,19 +46,6 @@
   (with-eval-after-load 'treemacs
     (with-eval-after-load 'all-the-icons
       (kaolin-treemacs-theme))))
-
-;; `doom-themes'
-(straight-use-package 'doom-themes)
-
-(with-eval-after-load 'doom-themes
-  (setq doom-themes-treemacs-theme "doom-atom")
-  (doom-themes-treemacs-config)
-  (doom-themes-org-config))
-
-;; `the-matrix-theme'
-(straight-use-package 'the-matrix-theme)
-;; `acme-theme'
-(straight-use-package 'acme-theme)
 
 ;; FIXME not work on emacsclient
 (add-hook 'after-init-hook
@@ -110,26 +94,5 @@
           (lambda (f)
             (+load-face-font f)
             (+load-ext-font)))
-
-(eat-package doom-modeline
-  :straight t
-  :hook
-  (after-init-hook . doom-modeline-mode)
-  :init
-  (setq doom-modeline-irc nil
-        doom-modeline-mu4e nil
-        doom-modeline-gnus nil
-        doom-modeline-github nil
-        doom-modeline-persp-name nil
-        doom-modeline-unicode-fallback t
-        doom-modeline-enable-work-count nil)
-  (setq doom-modeline-project-detection 'project)
-  :config
-  (doom-modeline-def-modeline 'my
-    '(bar modals matches follow buffer-info remote-host buffer-position word-count selection-info)
-    '(objed-state misc-info battery debug repl lsp minor-modes input-method indent-info buffer-encoding major-mode process vcs checker))
-  (defun setup-custom-doom-modeline ()
-    (doom-modeline-set-modeline 'my 'default))
-  (add-hook 'doom-modeline-mode-hook 'setup-custom-doom-modeline))
 
 (provide 'init-ui)

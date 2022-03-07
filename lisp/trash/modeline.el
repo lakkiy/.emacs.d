@@ -275,5 +275,26 @@ The padding pushes TEXT to the right edge of the mode-line."
       (format  "%s " eol))))
 
 (telephone-line-defsegment my-flymake-segment ()
-  (when (bound-and-true-p flymake-mode)
-    flymake-mode-line-format))
+                           (when (bound-and-true-p flymake-mode)
+                             flymake-mode-line-format))
+
+(eat-package doom-modeline
+  :straight t
+  :hook
+  (after-init-hook . doom-modeline-mode)
+  :init
+  (setq doom-modeline-irc nil
+        doom-modeline-mu4e nil
+        doom-modeline-gnus nil
+        doom-modeline-github nil
+        doom-modeline-persp-name nil
+        doom-modeline-unicode-fallback t
+        doom-modeline-enable-work-count nil)
+  (setq doom-modeline-project-detection 'project)
+  :config
+  (doom-modeline-def-modeline 'my
+    '(bar modals matches follow buffer-info remote-host buffer-position word-count selection-info)
+    '(objed-state misc-info battery debug repl lsp minor-modes input-method indent-info buffer-encoding major-mode process vcs checker))
+  (defun setup-custom-doom-modeline ()
+    (doom-modeline-set-modeline 'my 'default))
+  (add-hook 'doom-modeline-mode-hook 'setup-custom-doom-modeline))

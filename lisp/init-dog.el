@@ -27,8 +27,7 @@
         rime-inline-ascii-holder ?a
         default-input-method "rime"
         rime-cursor "|"
-        rime-show-candidate 'minibuffer
-        rime-title "ㄓ")
+        rime-show-candidate 'minibuffer)
   (when sys/macp
     (setq rime-librime-root (expand-file-name "librime/dist" user-emacs-directory)))
   :config
@@ -55,8 +54,11 @@
   (after-init-hook . (lambda ()
                        (meow-global-mode 1)))
   :config
+  (meow-setup-indicator) ;; NOTE use default modeline
+
   ;; SPC h f to describe-funtion
   (global-set-key (kbd "C-h C-f") 'describe-funtion)
+
   ;; normal mode list
   (dolist (mode '(go-dot-mod-mode
                   diff-mode))
@@ -66,7 +68,8 @@
                   notmuch-search-mode
                   notmuch-tree-mode))
     (add-to-list 'meow-mode-state-list `(,mode . motion)))
-  ;; setup meow with layout
+
+  ;; setup meow with selected keyboard layout
   (cond ((eq +meow-layout 'dvorak)
          (require 'init-meow-dvorak)
          (meow-setup-dvorak))

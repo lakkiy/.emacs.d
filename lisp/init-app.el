@@ -76,12 +76,7 @@
       (add-to-list 'desktop-minor-mode-table
                    '(diff-hl-margin-mode nil)))))
 
-(eat-package dirvish
-  :straight t
-  ;; :after dired
-  ;; :config
-  ;;  (dirvish-override-dired-mode)
-  )
+(eat-package dirvish :straight t)
 
 (eat-package message
   :hook (message-mode-hook . auto-fill-mode)
@@ -157,5 +152,7 @@ Used in the default value of `notmuch-tag-formats'."
   :config
   (setq kubernetes-poll-frequency 3600
         kubernetes-redraw-frequency 3600))
+
+(eat-package devdocs :straight t)
 
 (provide 'init-app)

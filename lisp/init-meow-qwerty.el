@@ -1,5 +1,7 @@
 ;; -*- lexical-binding: t -*-
 
+;; NOTE this file won't update since switch to dvorak
+
 (defun meow-setup-qwerty ()
   (interactive)
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty
