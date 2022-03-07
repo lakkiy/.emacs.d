@@ -54,6 +54,15 @@
   (after-init-hook . (lambda ()
                        (meow-global-mode 1)))
   :config
+  ;; custom indicator
+  (when window-system
+    (setq meow-replace-state-name-list
+          '((normal . "🅝")
+            (beacon . "🅑")
+            (insert . "🅘")
+            (motion . "🅜")
+            (keypad . "🅚"))))
+
   (meow-setup-indicator) ;; NOTE use default modeline
 
   ;; SPC h f to describe-funtion

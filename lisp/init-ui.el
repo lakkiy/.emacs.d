@@ -42,12 +42,10 @@
  kaolin-themes-modeline-padded 4)
 
 (with-eval-after-load 'kaolin-themes
-  ;; NOTE maybe check `+icons-p' and `all-the-icons'
   (with-eval-after-load 'treemacs
     (with-eval-after-load 'all-the-icons
       (kaolin-treemacs-theme))))
 
-;; FIXME not work on emacsclient
 (add-hook 'after-init-hook
           (lambda ()
             (unless +theme-system-appearance
@@ -65,26 +63,22 @@
         (fixed-pitch-font-spec (format "%s-%d" +font-default +font-size)))
     (set-face-attribute 'variable-pitch frame :font variable-pitch-font-spec)
     (set-face-attribute 'fixed-pitch frame :font fixed-pitch-font-spec)
-    (set-face-attribute 'fixed-pitch-serif frame :font fixed-pitch-font-spec)))
+    (set-face-attribute 'fixed-pitch-serif frame :font fixed-pitch-font-spec))
+  (custom-set-faces
+   '(mode-line ((t :inherit variable-pitch)))
+   '(mode-line-inactive ((t :inherit variable-pitch)))))
 
 (defun +load-ext-font ()
   (when window-system
     (let ((font (frame-parameter nil 'font))
           (font-spec (font-spec :family +font-unicode)))
       (dolist (charset '(kana han hangul cjk-misc bopomofo symbol))
-        (set-fontset-font font charset font-spec))))
-  (setf (alist-get +font-unicode face-font-rescale-alist 0.7 nil 'string=) 0.7)
-  ;; (setf (alist-get +font-variable-pitch face-font-rescale-alist 1.3 nil 'string=) 1.3)
-  )
+        (set-fontset-font font charset font-spec)))))
 
 (defun +load-font ()
   (+load-base-font)
   (+load-face-font)
   (+load-ext-font))
-
-;; (set-frame-parameter nil 'internal-border-width 10)
-;; (setq-default left-margin-width 0 right-margin-width 2)
-;; (set-window-margins nil 0 0)
 
 (add-hook 'after-init-hook
           (lambda ()

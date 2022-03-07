@@ -212,3 +212,9 @@ prepended to the element after the #+HEADER: tag."
   :straight (citar :type git :host github :repo "bdarcus/citar")
   :init
   (setq citar-bibliography '("~/Dropbox/bib/references.bib")))
+
+;; Better to have title name with project name
+(setq-default frame-title-format
+              '((:eval
+                 (or (cdr (project-current))
+                     (buffer-name)))))

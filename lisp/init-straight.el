@@ -537,4 +537,7 @@ If popup is focused, kill it."
    python-shell-interpreter "ipython"
    python-indent-guess-indent-offset nil))
 
+(global-set-key (kbd "C-c j") 'select-frame-by-name)
+(global-set-key (kbd "C-c J") 'set-frame-name)
+
 (provide 'init-straight)
