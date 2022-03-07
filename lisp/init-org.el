@@ -114,7 +114,37 @@
 (eat-package org-agenda
   :init
   (setq org-agenda-files (list org-directory))
-  (global-set-key (kbd "C-c a") 'org-agenda))
+  (global-set-key (kbd "C-c a") 'org-agenda)
+
+  ;; https://200ok.ch/posts/2022-02-13_integrating_org_mode_agenda_into_other_calendar_apps.html
+  ;; export agenda to iCalendar
+
+  ;; Setting variables for the ics file path
+  (setq org-agenda-private-local-path "/tmp/dummy.ics")
+  ;; (setq org-agenda-private-remote-path "/sshx:user@host:path/dummy.ics")
+  (setq org-agenda-private-remote-path "~/Sync/dummy.ics")
+
+  ;; Define a custom command to save the org agenda to a file
+  (setq org-agenda-custom-commands
+        `(("X" agenda "" nil ,(list org-agenda-private-local-path))))
+
+  (defun org-agenda-export-to-ics ()
+    (interactive)
+    ;; Run all custom agenda commands that have a file argument.
+    (org-batch-store-agenda-views)
+
+    ;; Org mode correctly exports TODO keywords as VTODO events in ICS.
+    ;; However, some proprietary calendars do not really work with
+    ;; standards (looking at you Google), so VTODO is ignored and only
+    ;; VEVENT is read.
+    (with-current-buffer (find-file-noselect org-agenda-private-local-path)
+      (goto-char (point-min))
+      (while (re-search-forward "VTODO" nil t)
+        (replace-match "VEVENT"))
+      (save-buffer))
+
+    ;; Copy the ICS file to a remote server (Tramp paths work).
+    (copy-file org-agenda-private-local-path org-agenda-private-remote-path t)))
 
 ;; export org to html
 (eat-package htmlize :straight t)
