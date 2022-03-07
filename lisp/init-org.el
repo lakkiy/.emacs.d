@@ -146,22 +146,11 @@
     ;; Copy the ICS file to a remote server (Tramp paths work).
     (copy-file org-agenda-private-local-path org-agenda-private-remote-path t)))
 
-;; export org to html
-(eat-package htmlize :straight t)
 ;; Add gfm/md backends
 (eat-package ox-gfm
   :straight t
-  :after org
   :config
   (add-to-list 'org-export-backends 'md))
-
-(eat-package ob-async
-  :straight t
-  :init
-  ;; add :async to org src block to run async
-  ;; NOTE maybe set variable need in subprocess
-  ;;      see `ob-async-pre-execute-src-block-hook'
-  (setq ob-async-no-async-languages-alist '("ipython")))
 
 (eat-package ob-restclient
   :straight t
@@ -173,83 +162,9 @@
 
 (eat-package restclient :straight t)
 
-(eat-package pretty-hydra
-  :straight t
-  :init
-  (with-eval-after-load 'org
-    (defun hot-expand (str &optional mod)
-      "Expand org template.
-
-STR is a structure template string recognised by org like <s. MOD is a
-string with additional parameters to add the begin line of the
-structure element. HEADER string includes more parameters that are
-prepended to the element after the #+HEADER: tag."
-      (let (text)
-        (when (region-active-p)
-          (setq text (buffer-substring (region-beginning) (region-end)))
-          (delete-region (region-beginning) (region-end)))
-        (insert str)
-        (if (fboundp 'org-try-structure-completion)
-            (org-try-structure-completion) ; < org 9
-          (progn
-            ;; New template expansion since org 9
-            (require 'org-tempo nil t)
-            (org-tempo-complete-tag)))
-        (when mod (insert mod) (forward-line))
-        (when text (insert text))))
-
-    (pretty-hydra-define org-hydra (:title "Org Template" :quit-key "q")
-      ("Basic"
-       (("a" (hot-expand "<a") "ascii")
-        ("c" (hot-expand "<c") "center")
-        ("C" (hot-expand "<C") "comment")
-        ("e" (hot-expand "<e") "example")
-        ("E" (hot-expand "<E") "export")
-        ("h" (hot-expand "<h") "html")
-        ("l" (hot-expand "<l") "latex")
-        ("n" (hot-expand "<n") "note")
-        ("o" (hot-expand "<q") "quote")
-        ("v" (hot-expand "<v") "verse"))
-       "Head"
-       (("i" (hot-expand "<i") "index")
-        ("A" (hot-expand "<A") "ASCII")
-        ("I" (hot-expand "<I") "INCLUDE")
-        ("H" (hot-expand "<H") "HTML")
-        ("L" (hot-expand "<L") "LaTeX"))
-       "Source"
-       (("s" (hot-expand "<s") "src")
-        ("m" (hot-expand "<s" "emacs-lisp") "emacs-lisp")
-        ("y" (hot-expand "<s" "python :results output") "python")
-        ("p" (hot-expand "<s" "perl") "perl")
-        ("r" (hot-expand "<s" "ruby") "ruby")
-        ("S" (hot-expand "<s" "sh") "sh")
-        ("j" (hot-expand "<s" "js") "javescript")
-        ("g" (hot-expand "<s" "go :imports '\(\"fmt\"\)") "golang"))
-       "Misc"
-       (("u" (hot-expand "<s" "plantuml :file CHANGE.png") "plantuml")
-        ("Y" (hot-expand "<s" "ipython :session :exports both :results raw drawer\n$0") "ipython")
-        ("P" (progn
-               (insert "#+HEADERS: :results output :exports both :shebang \"#!/usr/bin/env perl\"\n")
-               (hot-expand "<s" "perl")) "Perl tangled")
-        ("<" self-insert-command "ins"))))
-
-    (define-key org-mode-map (kbd "<")
-                (lambda ()
-                  "Insert org template."
-                  (interactive)
-                  (if (or (region-active-p) (looking-back "^\s*" 1))
-                      (org-hydra/body)
-                    (self-insert-command 1))))))
-
-(eat-package citar
-  :straight (citar :type git :host github :repo "bdarcus/citar")
-  :init
-  (setq citar-bibliography '("~/Dropbox/bib/references.bib")))
-
 (when (display-graphic-p)
   (eat-package valign
     :straight t
-    :after org
     :hook (org-mode-hook . valign-mode)))
 
 (eat-package zeft
@@ -336,7 +251,5 @@ prepended to the element after the #+HEADER: tag."
 (eat-package olivetti
   :straight t
   :commands olivetti-mode)
-
-(eat-package auctex :straight t)
 
 (provide 'init-org)
