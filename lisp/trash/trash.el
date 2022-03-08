@@ -218,3 +218,7 @@ prepended to the element after the #+HEADER: tag."
               '((:eval
                  (or (cdr (project-current))
                      (buffer-name)))))
+
+(eat-package diredfl
+  :straight t
+  :hook (dired-mode-hook . diredfl-mode))

@@ -120,10 +120,6 @@
      ;; "^\\*vterm.*\\*$"  vterm-mode  ;vterm as a popup
      compilation-mode)))
 
-(eat-package diredfl
-  :straight t
-  :hook (dired-mode-hook . diredfl-mode))
-
 (eat-package hl-todo
   :straight t
   :hook

@@ -76,7 +76,10 @@
       (add-to-list 'desktop-minor-mode-table
                    '(diff-hl-margin-mode nil)))))
 
-(eat-package dirvish :straight t)
+(eat-package dirvish
+  :straight t
+  :config
+  (dirvish-override-dired-mode))
 
 (eat-package message
   :hook (message-mode-hook . auto-fill-mode)
