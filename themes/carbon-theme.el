@@ -1,4 +1,4 @@
-;;; minidark-theme.el --- A minimal dark theme  -*- lexical-binding: t; -*-
+;;; carbon-theme.el --- A minimal dark theme  -*- lexical-binding: t; -*-
 
 ;; Author: Shi Tianshu
 ;; Keywords: theme
@@ -30,9 +30,9 @@
 
 ;;; Code:
 
-(deftheme minidark "A minimal light theme.")
+(deftheme carbon "A minimal light theme.")
 
-(defvar minidark-theme-header-scales '(1.6 1.4 1.2 1.0 1.0 1.0 1.0)
+(defvar carbon-theme-header-scales '(1.0 1.0 1.0 1.0 1.0 1.0 1.0)
   "Scales for headers.")
 
 (let ((bg "#202020")
@@ -42,7 +42,7 @@
       (hl "#2A2A2A")
       (lh "#0DA59B")
       (ss "#353535")
-      (kw "#BEBEBE")
+      (kw "#EEEEEE")
       (fn "#bfaa6b")
       (st "#4b9e6b")
       (str "#4a95b5")
@@ -52,7 +52,7 @@
       (pop "#272727")
       (tb "#000000"))
   (custom-theme-set-faces
-   `minidark
+   `carbon
    ;; We don't specify default foreground/background in TTY.
    `(default                        ((((type tty)))
                                      (((type graphic)) :background ,bg :foreground ,fg)))
@@ -129,7 +129,7 @@
    `(company-template-field         ((t (:inherit yas-field-highlight-face))))
 
    ;; Yasnippet
-   `(yas-field-highlight-face       ((t (:background ,hl))))
+   `(yas-field-highlight-face       ((t (:underline t))))
 
    ;; Meow
    `(meow-beacon-indicator          ((t (:bold t))))
@@ -218,13 +218,13 @@
    `(css-selector                   ((t ())))
    ;;
    ;; Markdown
-   `(markdown-header-face-1         ((t (:underline t :height ,(nth 0 minidark-theme-header-scales)))))
-   `(markdown-header-face-2         ((t (:underline t :height ,(nth 1 minidark-theme-header-scales)))))
-   `(markdown-header-face-3         ((t (:underline t :height ,(nth 2 minidark-theme-header-scales)))))
-   `(markdown-header-face-4         ((t (:underline t :height ,(nth 3 minidark-theme-header-scales)))))
-   `(markdown-header-face-5         ((t (:underline t :height ,(nth 4 minidark-theme-header-scales)))))
-   `(markdown-header-face-6         ((t (:underline t :height ,(nth 5 minidark-theme-header-scales)))))
-   `(markdown-header-face-7         ((t (:underline t :height ,(nth 6 minidark-theme-header-scales)))))
+   `(markdown-header-face-1         ((t (:underline t :height ,(nth 0 carbon-theme-header-scales)))))
+   `(markdown-header-face-2         ((t (:underline t :height ,(nth 1 carbon-theme-header-scales)))))
+   `(markdown-header-face-3         ((t (:underline t :height ,(nth 2 carbon-theme-header-scales)))))
+   `(markdown-header-face-4         ((t (:underline t :height ,(nth 3 carbon-theme-header-scales)))))
+   `(markdown-header-face-5         ((t (:underline t :height ,(nth 4 carbon-theme-header-scales)))))
+   `(markdown-header-face-6         ((t (:underline t :height ,(nth 5 carbon-theme-header-scales)))))
+   `(markdown-header-face-7         ((t (:underline t :height ,(nth 6 carbon-theme-header-scales)))))
    ;;
    ;; ;; Telega
    `(telega-entity-type-code        ((t ())))
@@ -233,17 +233,17 @@
    `(telega-unmuted-count           ((t ())))
    ;;
    ;; ;; Org-mode
-   `(org-document-title             ((t (:bold t :height ,(nth 0 minidark-theme-header-scales)))))
+   `(org-document-title             ((t (:bold t :height ,(nth 0 carbon-theme-header-scales)))))
    `(org-link                       ((t (:underline t))))
    `(org-document-title             ((t ())))
    `(org-code                       ((t (:inherit font-lock-constant-face))))
-   `(org-level-1                    ((t (:inherit font-lock-string-face :height ,(nth 0 minidark-theme-header-scales)))))
-   `(org-level-2                    ((t (:inherit font-lock-function-name-face :height ,(nth 1 minidark-theme-header-scales)))))
-   `(org-level-3                    ((t (:inherit font-lock-keyword-face :height ,(nth 2 minidark-theme-header-scales)))))
-   `(org-level-4                    ((t (:height ,(nth 3 minidark-theme-header-scales)))))
-   `(org-level-5                    ((t (:height ,(nth 4 minidark-theme-header-scales)))))
-   `(org-level-6                    ((t (:height ,(nth 5 minidark-theme-header-scales)))))
-   `(org-level-7                    ((t (:height ,(nth 6 minidark-theme-header-scales)))))
+   `(org-level-1                    ((t (:inherit font-lock-string-face :height ,(nth 0 carbon-theme-header-scales)))))
+   `(org-level-2                    ((t (:inherit font-lock-function-name-face :height ,(nth 1 carbon-theme-header-scales)))))
+   `(org-level-3                    ((t (:inherit font-lock-keyword-face :height ,(nth 2 carbon-theme-header-scales)))))
+   `(org-level-4                    ((t (:height ,(nth 3 carbon-theme-header-scales)))))
+   `(org-level-5                    ((t (:height ,(nth 4 carbon-theme-header-scales)))))
+   `(org-level-6                    ((t (:height ,(nth 5 carbon-theme-header-scales)))))
+   `(org-level-7                    ((t (:height ,(nth 6 carbon-theme-header-scales)))))
    ;;
    ;; ;; Treemacs
    ;; `(treemacs-root-face             ((t (:inherit font-lock-function-name-face :height 1.4 :underline t))))
@@ -283,6 +283,6 @@
                   (file-name-as-directory
                    (file-name-directory load-file-name))))
 
-(provide-theme 'minidark)
+(provide-theme 'carbon)
 
-;;; minidark-theme.el ends here
+;;; carbon-theme.el ends here
