@@ -411,7 +411,7 @@
    dired-dwim-target t
    dired-kill-when-opening-new-dired-buffer t
    dired-recursive-deletes 'top
-   dired-listing-switches "-AGhlv --group-directories-first"
+   dired-listing-switches "-AGhlv"
    delete-by-moving-to-trash t)
   :config
   (define-key dired-mode-map (kbd "C-c C-p") #'wdired-change-to-wdired-mode))
