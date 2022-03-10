@@ -1,14 +1,3 @@
-;; seems not work on emacs29
-;; (unless (or (daemonp) noninteractive)
-;;   ;; Keep a ref to the actual file-name-handler
-;;   (let ((default-file-name-handler-alist file-name-handler-alist))
-;;     ;; Set the file-name-handler to nil (because regexing is cpu intensive)
-;;     (setq file-name-handler-alist nil)
-;;     ;; Reset file-name-handler-alist after initialization
-;;     (add-hook 'emacs-startup-hook
-;;               (lambda ()
-;;                 (setq file-name-handler-alist default-file-name-handler-alist)))))
-
 (let ((file-name-handler-alist nil))
   ;; 1. must work on emacs -Q
   (require 'init-straight)
