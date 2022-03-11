@@ -16,7 +16,13 @@
    gnus-interactive-exit 'quiet
    gnus-select-method '(nnnil "")
    gnus-secondary-select-methods '((nntp "gmane" (nntp-address "news.gmane.io"))
-                                   (nntp "nntp.lore.kernel.org"))
+                                   (nntp "nntp.lore.kernel.org")
+                                   (nnimap "GMail"
+                                           (nnimap-inbox "INBOX")
+                                           (nnimap-address "imap.gmail.com")
+                                           (nnimap-server-port "imaps")
+                                           (nnimap-stream ssl)
+                                           (nnimap-expunge 'never)))
     ;;; Startup functions
    gnus-save-killed-list nil
    gnus-check-new-newsgroups 'ask-server
@@ -52,9 +58,10 @@
    gnus-cacheable-groups "^\\(nntp\\|nnimap\\)"))
 
 (eat-package gnus-group
-  :hook (gnus-group-mode-hook . gnus-topic-mode)
+  ;; :hook (gnus-group-mode-hook . gnus-topic-mode)
   :init
   (setq
+   gnus-group-mode-hook nil
    ;;          indentation ------------.
    ;;  #      process mark ----------. |
    ;;                level --------. | |
