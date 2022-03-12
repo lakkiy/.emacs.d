@@ -79,7 +79,6 @@
 (eat-package citre
   :straight (citre :type git :host github :repo "universal-ctags/citre")
   :init
-  (require 'citre-config)
   (global-set-key (kbd "C-x c j") 'citre-jump)
   (global-set-key (kbd "C-x c k") 'citre-jump-back)
   (global-set-key (kbd "C-x c p") 'citre-peek)
@@ -87,8 +86,7 @@
   (global-set-key (kbd "C-x c u") 'citre-update-this-tags-file)
   (setq citre-default-create-tags-file-location 'global-cache
         citre-use-project-root-when-creating-tags t
-        citre-prompt-language-for-ctags-command t
-        citre-auto-enable-citre-mode '(prog-mode))
+        citre-prompt-language-for-ctags-command t)
   (eat-package citre-global
     :init
     (global-set-key (kbd "C-x c r") 'citre-jump-to-reference)
@@ -103,6 +101,9 @@
     (with-eval-after-load "exec-path-from-shell"
       (exec-path-from-shell-copy-envs '("GTAGSOBJDIRPREFIX" "GTAGSCONF" "GTAGSLABEL"))))
   :config
+  (with-eval-after-load 'cc-mode (require 'citre-lang-c))
+  (with-eval-after-load 'dired (require 'citre-lang-fileref))
+  (with-eval-after-load 'verilog-mode (require 'citre-lang-verilog))
   (define-key citre-peek-keymap (kbd "M-l s") #'citre-peek-save-session)
   (define-key citre-peek-keymap (kbd "M-l h") #'citre-peek-chain-backward)
   (define-key citre-peek-keymap (kbd "M-l l") #'citre-peek-chain-forward)
