@@ -13,6 +13,24 @@
   (setq org-directory "~/Dropbox/org")
   (setq org-highlight-latex-and-related '(latex))
 
+  (setq
+   ;; org-startup-indented t ;; NOTE conflict with org-modern
+   org-hide-emphasis-markers t
+   org-pretty-entities t
+   org-ellipsis "…"
+   org-catch-invisible-edits 'show-and-error
+   org-special-ctrl-a/e t
+   org-insert-heading-respect-content t
+   org-tags-column 0
+   ;; Highlight latex text in org mode
+   org-highlight-latex-and-related '(latex script entities)
+   org-src-window-setup 'current-window
+   org-log-done t
+   org-html-checkbox-type 'unicode
+   org-todo-keywords        (quote ((sequence "TODO(t)" "WIP(w/!)" "WAIT(W@/!)" "HOLD(h)" "|" "CANCELLED(c@/!)" "DONE(d!/!)")))
+   org-todo-repeat-to-state "NEXT"
+   org-todo-keyword-faces   (quote (("NEXT" :inherit warning)
+  				                    ("WAIT" :inherit font-lock-string-face))))
   (defvar load-language-list '((emacs-lisp . t)
                                (perl . t)
                                (python . t)
@@ -44,26 +62,6 @@
            err)))))
   (advice-add 'org-babel-execute-src-block :before #'my/org-babel-execute-src-block )
   :config
-  (setq
-   ;; org-startup-indented t ;; NOTE conflict with org-modern
-   org-hide-emphasis-markers t
-   org-pretty-entities t
-   org-ellipsis "…"
-   org-catch-invisible-edits 'show-and-error
-   org-special-ctrl-a/e t
-   org-insert-heading-respect-content t
-   org-tags-column 0
-   ;; Highlight latex text in org mode
-   org-highlight-latex-and-related '(latex script entities)
-   org-src-window-setup 'current-window
-   org-log-done t
-   org-html-checkbox-type 'unicode
-   org-todo-keywords        (quote ((sequence "TODO(t)" "WIP(w/!)" "WAIT(W@/!)" "HOLD(h)" "|" "CANCELLED(c@/!)" "DONE(d!/!)")))
-   org-todo-repeat-to-state "NEXT"
-   org-todo-keyword-faces   (quote (("NEXT" :inherit warning)
-  				                    ("WAIT" :inherit font-lock-string-face))))
-
-  ;; For hydra
   (require 'org-tempo)
   (require 'ob)
   (require 'ob-dot)
@@ -115,38 +113,17 @@
   :init
   (setq org-agenda-files (list org-directory))
   (global-set-key (kbd "C-c a") 'org-agenda)
-
+  :config
   ;; https://200ok.ch/posts/2022-02-13_integrating_org_mode_agenda_into_other_calendar_apps.html
   ;; export agenda to iCalendar
-
   ;; Setting variables for the ics file path
   (setq org-agenda-private-local-path "/tmp/dummy.ics")
   ;; (setq org-agenda-private-remote-path "/sshx:user@host:path/dummy.ics")
   (setq org-agenda-private-remote-path "~/Sync/dummy.ics")
-
   ;; Define a custom command to save the org agenda to a file
   (setq org-agenda-custom-commands
-        `(("X" agenda "" nil ,(list org-agenda-private-local-path))))
+        `(("X" agenda "" nil ,(list org-agenda-private-local-path)))))
 
-  (defun org-agenda-export-to-ics ()
-    (interactive)
-    ;; Run all custom agenda commands that have a file argument.
-    (org-batch-store-agenda-views)
-
-    ;; Org mode correctly exports TODO keywords as VTODO events in ICS.
-    ;; However, some proprietary calendars do not really work with
-    ;; standards (looking at you Google), so VTODO is ignored and only
-    ;; VEVENT is read.
-    (with-current-buffer (find-file-noselect org-agenda-private-local-path)
-      (goto-char (point-min))
-      (while (re-search-forward "VTODO" nil t)
-        (replace-match "VEVENT"))
-      (save-buffer))
-
-    ;; Copy the ICS file to a remote server (Tramp paths work).
-    (copy-file org-agenda-private-local-path org-agenda-private-remote-path t)))
-
-;; Add gfm/md backends
 (eat-package ox-gfm
   :straight t
   :config

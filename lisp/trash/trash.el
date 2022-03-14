@@ -222,3 +222,22 @@ prepended to the element after the #+HEADER: tag."
 (eat-package diredfl
   :straight t
   :hook (dired-mode-hook . diredfl-mode))
+
+;; FIXME this func cause require org on stratup
+(defun org-agenda-export-to-ics ()
+  (interactive)
+  ;; Run all custom agenda commands that have a file argument.
+  (org-batch-store-agenda-views)
+
+  ;; Org mode correctly exports TODO keywords as VTODO events in ICS.
+  ;; However, some proprietary calendars do not really work with
+  ;; standards (looking at you Google), so VTODO is ignored and only
+  ;; VEVENT is read.
+  (with-current-buffer (find-file-noselect org-agenda-private-local-path)
+    (goto-char (point-min))
+    (while (re-search-forward "VTODO" nil t)
+      (replace-match "VEVENT"))
+    (save-buffer))
+
+  ;; Copy the ICS file to a remote server (Tramp paths work).
+  (copy-file org-agenda-private-local-path org-agenda-private-remote-path t))
