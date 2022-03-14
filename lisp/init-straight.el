@@ -237,11 +237,6 @@
    minibuffer-eldef-shorten-default t
    minibuffer-electric-default-mode t))
 
-(eat-package recentf
-  :hook (after-init-hook . recentf-mode)
-  :init
-  (global-set-key (kbd "C-x C-r") #'recentf-open-files))
-
 (eat-package display-line-numbers
   ;; :hook (prog-mode-hook . display-line-numbers-mode)
   :init
