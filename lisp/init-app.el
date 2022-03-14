@@ -192,8 +192,10 @@ Used in the default value of `notmuch-tag-formats'."
 (eat-package svg-tag-mode
   :straight (svg-tag-mode :type git :host github :repo "rougier/svg-tag-mode")
   :commands svg-tag-mode
-  :hook
-  ;; ((prog-mode-hook org-mode-hook) . svg-tag-mode)
+  ;; :hook
+  ;; ((prog-mode-hook org-mode-hook) . (lambda ()
+  ;;                                     (let ((inhibit-message t))
+  ;;                                       (svg-tag-mode))))
   :config
   (setq svg-tag-tags
         '(("DONE" . ((lambda (tag) (svg-tag-make "DONE" :face 'org-done :margin 0))))
