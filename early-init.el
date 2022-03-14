@@ -26,7 +26,7 @@
 (defvar +font-size 12 "Default font size")
 (defvar +font-unicode "Apple Color Emoji" "Emoji font.")
 (defvar +font-cn "LXGW WenKai" "Just used for chinese font.")
-(defvar +font-variable-pitch "Bookerly" "Used for `variable-pitch-mode'")
+(defvar +font-variable-pitch "DejaVu Serif" "Used for `variable-pitch-mode'")
 
 (defvar +theme 'kaolin-breeze "Default theme.")
 (defvar +theme-system-appearance t "Change theme on system appearance, only available on macOS.")
