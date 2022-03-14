@@ -1,7 +1,7 @@
 ;; -*- lexical-binding: t; -*-
 
 (eat-package telega
-  :straight (telega :type git :host github :repo "zevlg/telega.el" :branch "release-0.8.0")
+  :straight t
   :commands telega
   :init
   (defun +telega-font-setup ()
@@ -187,5 +187,21 @@ Used in the default value of `notmuch-tag-formats'."
 
   (setq pulsar-face 'pulsar-magenta)
   (setq pulsar-delay 0.055))
+
+;; TODO only enable this in comment?
+(eat-package svg-tag-mode
+  :straight (svg-tag-mode :type git :host github :repo "rougier/svg-tag-mode")
+  :commands svg-tag-mode
+  :hook
+  ;; ((prog-mode-hook org-mode-hook) . svg-tag-mode)
+  :config
+  (setq svg-tag-tags
+        '(("DONE" . ((lambda (tag) (svg-tag-make "DONE" :face 'org-done :margin 0))))
+          ("FIXME" . ((lambda (tag) (svg-tag-make "FIXME" :face 'org-todo :inverse t :margin 0))))
+          ("\\/\\/\\W?MARK:\\|MARK:" . ((lambda (tag) (svg-tag-make "MARK" :face 'font-lock-doc-face :inverse t :margin 0 :crop-right t))))
+          ("MARK:\\(.*\\)" . ((lambda (tag) (svg-tag-make tag :face 'font-lock-doc-face :crop-left t))))
+          ;; TODOS
+          ("\\/\\/\\W?TODO\\|TODO" . ((lambda (tag) (svg-tag-make "TODO" :face 'org-todo :inverse t :margin 0 :crop-right t))))
+          ("TODO\\(.*\\)" . ((lambda (tag) (svg-tag-make tag :face 'org-todo :crop-left t)))))))
 
 (provide 'init-app)

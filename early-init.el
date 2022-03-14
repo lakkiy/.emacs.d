@@ -25,7 +25,7 @@
 (defvar +font-default "Menlo" "Default font.")
 (defvar +font-size 12 "Default font size")
 (defvar +font-unicode "Apple Color Emoji" "Emoji font.")
-(defvar +font-cn "Sarasa Mono SC" "Just used for chinese font.")
+(defvar +font-cn "LXGW WenKai" "Just used for chinese font.")
 (defvar +font-variable-pitch "Bookerly" "Used for `variable-pitch-mode'")
 
 (defvar +theme 'kaolin-breeze "Default theme.")
