@@ -19,6 +19,8 @@
                      (load-theme +theme-system-light t)
                    (load-theme +theme-system-dark t)))))
 
+(straight-use-package 'kuronami-theme)
+
 ;; `spacemacs-theme'
 (straight-use-package 'spacemacs-theme)
 
