@@ -27,6 +27,10 @@
   (eq system-type 'gnu/linux)
   "Are we running on a GNU/Linux system?")
 
+(defconst emacs/>=29p
+  (>= emacs-major-version 29)
+  "Emacs is 29 or above.")
+
 ;; require all packages in emacsclient
 (setq eat-all-packages-daemon t)
 (require 'eat-package)
@@ -134,7 +138,7 @@
 (setq auto-hscroll-mode 'current-line)
 
 ;; in emacs29 from Po Lu!
-(when (boundp pixel-scroll-precision-mode)
+(when emacs/>=29p
   ;; for mouse scroll
   (setq pixel-scroll-precision-large-scroll-height 60)
   (setq pixel-scroll-precision-interpolation-factor 30.0)

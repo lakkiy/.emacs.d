@@ -119,7 +119,6 @@ Available COMMAND:
   :config       Run after package loads.
   :hook         Each arguments is (HOOK . FUNC)
                 HOOK and FUNC can be a symbol or a list of symbols.
-  :load-path    Add load paths.
   :mode         Add (ARG . PACKAGE) to ‘auto-mode-alist’. If ARG is
                 already a cons, add ARG to ‘auto-mode-alist’.
   :commands     Add autoload for this command.
