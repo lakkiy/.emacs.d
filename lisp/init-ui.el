@@ -71,23 +71,23 @@
         (set-fontset-font font charset font-spec))))
   (setf (alist-get +font-unicode face-font-rescale-alist 0.7 nil 'string=) 0.7))
 
-(defun +load-font ()
+(defun +load-theme-font ()
   (+load-base-font)
   (+load-face-font)
-  (+load-ext-font))
+  (+load-ext-font)
+  (if (and (boundp 'ns-system-appearance)
+           +theme-system-appearance)
+      (add-to-list 'ns-system-appearance-change-functions
+                   (lambda (l?d)
+                     (if (eq l?d 'light)
+                         (load-theme +theme-system-light t)
+                       (load-theme +theme-system-dark t))))
+    (load-theme +theme t)))
 
 ;; load font and theme after theme created
-(add-hook 'server-after-make-frame-hook
-          (lambda ()
-            (+load-font)
-            (if (and (boundp 'ns-system-appearance)
-                     +theme-system-appearance)
-                (add-to-list 'ns-system-appearance-change-functions
-                             (lambda (l?d)
-                               (if (eq l?d 'light)
-                                   (load-theme +theme-system-light t)
-                                 (load-theme +theme-system-dark t))))
-              (load-theme +theme t))))
+(if (daemonp)
+    (add-hook 'server-after-make-frame-hook '+load-theme-font)
+  (+load-theme-font))
 
 ;; TODO
 ;; spc a id agenda, not m-x
