@@ -542,7 +542,6 @@ If popup is focused, kill it."
 (eat-package sql
   :init
   (setq
-   sql-mysql-program "mycli"
    sql-mysql-login-params '(user password server database port)))
 
 (provide 'init-straight)
