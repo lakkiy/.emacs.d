@@ -92,6 +92,7 @@
 ;; TODO
 ;; spc a id agenda, not m-x
 ;; daemon start on tui, bui if you create a frame, it's gui, also `windows-system' become to non nil from nil
-;; so config about `window-system' should update to check if emacs start with daemon (like `meow-indicator')
+;; If start gui emacsclient, then start tui emacsclient it will show menu bar but with theme loaded
+;; If start tui emacsclient first it didn't show menu bar but also didn't loaded theme.
 
 (provide 'init-ui)
