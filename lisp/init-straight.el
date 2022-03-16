@@ -539,4 +539,10 @@ If popup is focused, kill it."
 (global-set-key (kbd "C-c j") 'select-frame-by-name)
 (global-set-key (kbd "C-c J") 'set-frame-name)
 
+(eat-package sql
+  :init
+  (setq
+   sql-mysql-program "mycli"
+   sql-mysql-login-params '(user password server database port)))
+
 (provide 'init-straight)
