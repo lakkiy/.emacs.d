@@ -20,3 +20,5 @@
 (set-frame-parameter nil 'internal-border-width 10)
 (setq-default left-margin-width 0 right-margin-width 2)
 (set-window-margins nil 0 0)
+
+(straight-use-package 'kuronami-theme)

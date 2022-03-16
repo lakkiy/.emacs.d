@@ -19,7 +19,9 @@
                      (load-theme +theme-system-light t)
                    (load-theme +theme-system-dark t)))))
 
-(straight-use-package 'kuronami-theme)
+;; `base16-theme'
+(straight-use-package 'base16-theme)
+(setq base16-distinct-fringe-background nil)
 
 ;; `spacemacs-theme'
 (straight-use-package 'spacemacs-theme)
@@ -37,6 +39,7 @@
 
 ;; `kaolin-themes'
 (straight-use-package 'kaolin-themes)
+
 
 (setq
  kaolin-themes-underline-wave nil
