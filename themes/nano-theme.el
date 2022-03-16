@@ -1,6 +1,6 @@
 ;;; nano-theme.el --- A theme split from nano-emacs  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2021 LiuBo
+;; Copyright (C) 2021-2022 LiuBo
 
 ;; Author: LiuBo <https://github.com/404cn>
 ;; Created: May 30, 2021
@@ -49,11 +49,6 @@
   :type 'symbol
   :group 'nano-theme)
 
-(defcustom nano-theme-padded-modeline 4
-  "If non-nil, add a 4px padding to the mode-line. Can be an integer to determine the exact padding"
-  :type '(choice integer boolean)
-  :group 'nano-theme)
-
 (defun nano-theme--light?dark (light dark)
   "Determine using the LIGHT or the DARK color of nano-theme."
   (if (eq nano-theme-light/dark 'light)
@@ -75,13 +70,10 @@
       (highlight  (--l?d "#FAFAFA" "#3B4252"))
       (critical   (--l?d "#FF6F00" "#EBCB8B"))
       (salient    (--l?d "#673AB7" "#81A1C1"))
-      (strong     (--l?d "#000000" "#ECEFF4"))
+      (strong     (--l?d "#263238" "#FFFFFF"))
       (popout     (--l?d "#FFAB91" "#D08770"))
       (subtle     (--l?d "#ECEFF1" "#434C5E"))
-      (faded      (--l?d "#B0BEC5" "#677691"))
-      (-modeline-pad
-       (when nano-theme-padded-modeline
-         (if (integerp nano-theme-padded-modeline) nano-theme-padded-modeline 4))))
+      (faded      (--l?d "#90A4AE" "#677691")))
   (custom-theme-set-faces
    `nano
    ;; Basic
@@ -390,10 +382,8 @@
    `(calendar-today ((t (:foreground ,foreground :bold t))))
 
    ;; Mode Line
-   `(mode-line          ((t ( :background ,background :overline ,strong
-                              :box ,(if -modeline-pad `(:line-width ,-modeline-pad :color ,foreground))))))
-   `(mode-line-inactive ((t ( :background ,background :foreground ,faded :overline ,subtle
-                              :box ,(if -modeline-pad `(:line-width ,-modeline-pad :color ,faded))))))
+   `(mode-line          ((t ( :background ,foreground :foreground ,background))))
+   `(mode-line-inactive ((t ( :background ,faded :foreground ,background))))
 
    ;; tab-bar
    `(tab-bar                    ((t (:background ,subtle))))

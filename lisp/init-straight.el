@@ -72,7 +72,7 @@
   (global-set-key [(super s)] #'save-buffer)
   (global-set-key [(super l)] #'goto-line)
   (global-set-key [(super w)] #'delete-frame)
-  (global-set-key [(super q)] #'save-buffers-kill-emacs)
+  (global-set-key [(super q)] #'delete-frame) ;; `save-buffers-kill-emacs' will shutdown emacs daemon
   (global-set-key [(super z)] #'undo)
 
   (defun copy-from-osx ()

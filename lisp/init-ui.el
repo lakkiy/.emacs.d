@@ -1,6 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 ;; Do not use `eat-package' with themes.
 
+;; disable previous theme when load theme
 (defun +load-theme-advice (f theme-id &optional no-confirm no-enable &rest args)
   "Enhance `load-theme' by disabling other enabled themes & calling hooks"
   (unless no-enable ;
@@ -11,13 +12,6 @@
       (pcase (assq theme-id +theme-hooks)
         (`(,_ . ,f) (funcall f))))))
 (advice-add 'load-theme :around #'+load-theme-advice)
-
-(when (and (boundp 'ns-system-appearance) (display-graphic-p) +theme-system-appearance)
-  (add-to-list 'ns-system-appearance-change-functions
-               (lambda (l?d)
-                 (if (eq l?d 'light)
-                     (load-theme +theme-system-light t)
-                   (load-theme +theme-system-dark t)))))
 
 ;; `base16-theme'
 (straight-use-package 'base16-theme)
@@ -51,11 +45,7 @@
     (with-eval-after-load 'all-the-icons
       (kaolin-treemacs-theme))))
 
-(add-hook 'after-init-hook
-          (lambda ()
-            (unless +theme-system-appearance
-              (load-theme +theme t))))
-
+;; font
 (defun +load-base-font ()
   (let ((font-spec (format "%s-%d" +font-default +font-size)))
     (set-frame-font font-spec)
@@ -86,13 +76,22 @@
   (+load-face-font)
   (+load-ext-font))
 
-(add-hook 'after-init-hook
+;; load font and theme after theme created
+(add-hook 'server-after-make-frame-hook
           (lambda ()
-            (+load-font)))
+            (+load-font)
+            (if (and (boundp 'ns-system-appearance)
+                     +theme-system-appearance)
+                (add-to-list 'ns-system-appearance-change-functions
+                             (lambda (l?d)
+                               (if (eq l?d 'light)
+                                   (load-theme +theme-system-light t)
+                                 (load-theme +theme-system-dark t))))
+              (load-theme +theme t))))
 
-(add-hook 'after-make-frame-functions
-          (lambda (f)
-            (+load-face-font f)
-            (+load-ext-font)))
+;; TODO
+;; spc a id agenda, not m-x
+;; daemon start on tui, bui if you create a frame, it's gui, also `windows-system' become to non nil from nil
+;; so config about `window-system' should update to check if emacs start with daemon (like `meow-indicator')
 
 (provide 'init-ui)

@@ -11,6 +11,7 @@
   ("\\.jsx\\'" . js2-jsx-mode))
 
 (eat-package typescript-mode
+  :straight t
   :mode ("\\.ts[x]\\'" . typescript-mode))
 
 (provide 'init-web)
