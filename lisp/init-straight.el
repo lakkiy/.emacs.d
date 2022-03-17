@@ -19,6 +19,10 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+;; require all packages in emacsclient
+(setq eat-all-packages-daemon t)
+(require 'eat-package)
+
 (defvar after-make-console-frame-hooks '()
   "Hooks to run after creating a new TTY frame")
 (defvar after-make-window-system-frame-hooks '()
@@ -232,10 +236,6 @@ Selectively runs either `after-make-console-frame-hooks' or
 
 ;; `modus-theme'
 (setq modus-themes-mode-line '(accented barderless))
-
-;; require all packages in emacsclient
-(setq eat-all-packages-daemon t)
-(require 'eat-package)
 
 ;; Load `custom-file'
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
