@@ -71,7 +71,8 @@
   (define-key grammatical-edit-mode-map (kbd "M-)") 'grammatical-edit-unwrap)
   (define-key grammatical-edit-mode-map (kbd "M-p") 'grammatical-edit-jump-right)
   (define-key grammatical-edit-mode-map (kbd "M-n") 'grammatical-edit-jump-left)
-  (define-key grammatical-edit-mode-map (kbd "M-:") 'grammatical-edit-jump-out-pair-and-newline))
+  (define-key grammatical-edit-mode-map (kbd "M-:") 'grammatical-edit-jump-out-pair-and-newline)
+  (define-key grammatical-edit-mode-map (kbd "C-j") 'grammatical-edit-jump-up))
 
 (eat-package clue
   :straight (clue :type git :host github :repo "AmaiKinono/clue"))
