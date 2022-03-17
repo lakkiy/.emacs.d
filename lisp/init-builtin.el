@@ -241,7 +241,7 @@
    tab-bar-tab-name-truncated-max 10)
 
   (custom-set-faces
-   `(tab-bar ((t (:height 1.4 :family ,(format "%s-10" +font-variable-pitch))))))
+   `(tab-bar ((t (:height 1.2 :family ,(format "%s-10" +font-variable-pitch))))))
 
   (defun +tab-bar-switch-project ()
     "Switch to project in a new tab, project name will be used as tab name.
@@ -262,7 +262,7 @@ No tab will created if the command is cancelled."
   (defun +tab-bar-tab-format-function (tab i)
     (let ((current-p (eq (car tab) 'current-tab)))
       (propertize (concat
-                   "┃   "
+                   "    "
                    (alist-get 'name tab)
                    "    ")
                   'face

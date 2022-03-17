@@ -385,7 +385,7 @@
    `(mode-line-inactive ((t ( :background ,faded :foreground ,background))))
 
    ;; tab-bar
-   `(tab-bar                    ((t (:background ,subtle))))
+   `(tab-bar                    ((t (:background ,background :foreground ,foreground))))
    `(tab-bar-tab-group-current  ((t ())))
    `(tab-bar-tab                ((t (:inverse-video t :bold t))))
    `(tab-bar-tab-group-inactive ((t ())))
