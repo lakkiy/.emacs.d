@@ -56,5 +56,4 @@
   (require 'init-lib)
   ;; 9. just straight
   (require 'init-mole)
-  (unless window-system
-    (require 'init-xterm)))
+  (require 'init-xterm))

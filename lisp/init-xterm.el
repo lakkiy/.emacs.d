@@ -44,10 +44,9 @@
     (process-send-string xclip-process (buffer-substring-no-properties (region-beginning) (region-end)))
     (process-send-eof xclip-process)))
 
-(unless window-system
-  ;; enable mouse
-  ;; FIXME in terminal.app this whill cause mouse to `M-['
-  ;; (xterm-mouse-mode 1)
+(defun console-frame-setup ()
+  (xterm-mouse-mode 1) ; Mouse in a terminal (Use shift to paste with middle button)
+  (mouse-wheel-mode)
 
   ;; clipboard setup
   (let ((session (string-trim (shell-command-to-string "echo $XDG_SESSION_TYPE"))))
@@ -63,9 +62,11 @@
   ;; enable vertical scrolling
   (put 'scroll-left 'disabled nil)
   (put 'scroll-right 'disabled nil)
-  (global-set-key (kbd "<mouse-6>")
-                  (lambda () (interactive) (scroll-right 1)))
-  (global-set-key (kbd "<mouse-7>")
-                  (lambda () (interactive) (scroll-left 1))))
+  (global-set-key (kbd "<mouse-6>") (lambda () (interactive) (scroll-right 1)))
+  (global-set-key (kbd "<mouse-7>") (lambda () (interactive) (scroll-left 1)))
+  (global-set-key [mouse-4] (lambda () (interactive) (scroll-down 1)))
+  (global-set-key [mouse-5] (lambda () (interactive) (scroll-up 1))))
+
+(add-hook 'after-make-console-frame-hooks 'console-frame-setup)
 
 (provide 'init-xterm)
