@@ -1,6 +1,36 @@
+(defvar +font-default "Menlo"
+  "Default font.")
+(defvar +icons-p nil
+  "Whether to enable `all-the-icons'.")
+(defvar +font-size 12
+  "Default font size")
+(defvar +font-unicode "Apple Color Emoji"
+  "Emoji font.")
+(defvar +font-cn "LXGW WenKai"
+  "Just used for chinese font.")
+(defvar +font-variable-pitch "DejaVu Serif"
+  "Used for `variable-pitch-mode'")
+
+(defvar +theme 'nano
+  "Default theme.")
+(defvar +theme-tui 'carbon
+  "Default theme in terminal.")
+(defvar +theme-system-light 'nano
+  "Default light theme after system appearance changed.")
+(defvar +theme-system-dark 'carbon
+  "Default dark theme. after system appearance changed.")
+(defvar +theme-hooks nil
+  "((theme-id . function) ...)")
+
+(defvar +enable-benchmark nil
+  "Enable `benchmark-init', run `benchmark-init/show-durations-tree' to see result.")
+(defvar +meow-layout 'dvorak
+  "Layout config for `meow', qwerty or dvorak")
+
 (let ((file-name-handler-alist nil))
   ;; 1. must work on emacs -Q
   (require 'init-straight)
+  (require 'init-builtin)
   ;; 2. some funcs
   (require 'init-my)
   ;; 3. must work on normal

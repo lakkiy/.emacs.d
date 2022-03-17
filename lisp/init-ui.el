@@ -75,8 +75,8 @@
   (+load-base-font)
   (+load-face-font)
   (+load-ext-font)
-  (if (and (boundp 'ns-system-appearance)
-           +theme-system-appearance)
+  ;; TODO load light or dark theme when start gui emacs after start tui emacs daemon
+  (if (boundp 'ns-system-appearance)
       (add-to-list 'ns-system-appearance-change-functions
                    (lambda (l?d)
                      (if (eq l?d 'light)
@@ -84,15 +84,16 @@
                        (load-theme +theme-system-dark t))))
     (load-theme +theme t)))
 
-;; load font and theme after theme created
-(if (daemonp)
-    (add-hook 'server-after-make-frame-hook '+load-theme-font)
-  (+load-theme-font))
+;; tui: only load tui theme
+(add-hook 'after-make-console-frame-hooks (lambda ()
+                                            (when (fboundp 'menu-bar-mode)
+                                              (menu-bar-mode -1))
+                                            (load-theme +theme-tui t)))
+;; gui frame: load font and theme
+(add-hook 'after-make-window-system-frame-hooks '+load-theme-font)
 
 ;; TODO
 ;; spc a id agenda, not m-x
 ;; daemon start on tui, bui if you create a frame, it's gui, also `windows-system' become to non nil from nil
-;; If start gui emacsclient, then start tui emacsclient it will show menu bar but with theme loaded
-;; If start tui emacsclient first it didn't show menu bar but also didn't loaded theme.
 
 (provide 'init-ui)
