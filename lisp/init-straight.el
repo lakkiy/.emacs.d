@@ -23,6 +23,15 @@
 (setq eat-all-packages-daemon t)
 (require 'eat-package)
 
+(eat-package benchmark-init
+  :straight
+  (benchmark-init :type git :host github :repo "404cn/benchmark-init-el")
+  :init
+  (when +enable-benchmark
+    (require 'benchmark-init))
+  :config
+  (add-hook 'after-init-hook 'benchmark-init/deactivate))
+
 (defvar after-make-console-frame-hooks '()
   "Hooks to run after creating a new TTY frame")
 (defvar after-make-window-system-frame-hooks '()
@@ -242,15 +251,6 @@ Selectively runs either `after-make-console-frame-hooks' or
 (when (and (file-exists-p custom-file)
            (file-readable-p custom-file))
   (load custom-file :no-error :no-message))
-
-(eat-package benchmark-init
-  :straight
-  (benchmark-init :type git :host github :repo "404cn/benchmark-init-el")
-  :init
-  (when +enable-benchmark
-    (require 'benchmark-init))
-  :config
-  (add-hook 'after-init-hook 'benchmark-init/deactivate))
 
 (eat-package gcmh
   :straight t

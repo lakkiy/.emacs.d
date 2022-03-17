@@ -27,6 +27,10 @@
 (defvar +meow-layout 'dvorak
   "Layout config for `meow', qwerty or dvorak")
 
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+(add-to-list 'load-path (expand-file-name "site-lisp" user-emacs-directory))
+(add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))
+
 (let ((file-name-handler-alist nil))
   ;; 1. must work on emacs -Q
   (require 'init-straight)
