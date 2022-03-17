@@ -361,7 +361,6 @@
 
    ;; Notmuch
    `(notmuch-tag-face             ((t (:foreground ,faded))))
-   `(notmuch-tag-unread           ((t (:foreground ,faded))))
    `(notmuch-search-date          ((t (:foreground ,faded))))
    `(notmuch-tag-deleted          ((t (:strike-through ,popout))))
    `(notmuch-tag-added            ((t (:underline ,popout))))
