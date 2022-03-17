@@ -13,6 +13,9 @@
         (`(,_ . ,f) (funcall f))))))
 (advice-add 'load-theme :around #'+load-theme-advice)
 
+;; `color-theme-sanityinc-tomorrow'
+(straight-use-package 'color-theme-sanityinc-tomorrow)
+
 ;; `base16-theme'
 (straight-use-package 'base16-theme)
 (setq base16-distinct-fringe-background nil)
@@ -83,6 +86,53 @@
                          (load-theme +theme-system-light t)
                        (load-theme +theme-system-dark t))))
     (load-theme +theme t)))
+
+(eat-package dimmer
+  :straight t
+  :hook (after-init-hook . dimmer-mode)
+  :init
+  (setq-default dimmer-fraction 0.15)
+  :config
+  (advice-add 'frame-set-background-mode :after (lambda (&rest args) (dimmer-process-all)))
+  ;; Don't dim in terminal windows. Even with 256 colours it can
+  ;; lead to poor contrast.  Better would be to vary dimmer-fraction
+  ;; according to frame type.
+  (defun sanityinc/display-non-graphic-p ()
+    (not (display-graphic-p)))
+  (add-to-list 'dimmer-exclusion-predicates 'sanityinc/display-non-graphic-p))
+
+(eat-package diredfl
+  :straight t
+  :hook (dired-mode-hook . diredfl-global-mode)
+  :config
+  (require 'dired-x))
+
+(eat-package default-text-scale
+  :straight t
+  :hook (after-init-hook . default-text-scale-mode))
+
+(defun sanityinc/adjust-opacity (frame incr)
+  "Adjust the background opacity of FRAME by increment INCR."
+  (unless (display-graphic-p frame)
+    (error "Cannot adjust opacity of this frame"))
+  (let* ((oldalpha (or (frame-parameter frame 'alpha) 100))
+         ;; The 'alpha frame param became a pair at some point in
+         ;; emacs 24.x, e.g. (100 100)
+         (oldalpha (if (listp oldalpha) (car oldalpha) oldalpha))
+         (newalpha (+ incr oldalpha)))
+    (when (and (<= frame-alpha-lower-limit newalpha) (>= 100 newalpha))
+      (modify-frame-parameters frame (list (cons 'alpha newalpha))))))
+
+(when (and *is-a-mac* (fboundp 'toggle-frame-fullscreen))
+  ;; Command-Option-f to toggle fullscreen mode
+  ;; Hint: Customize `ns-use-native-fullscreen'
+  (global-set-key (kbd "M-ƒ") 'toggle-frame-fullscreen))
+
+;; TODO: use seethru package instead?
+(global-set-key (kbd "M-C-8") (lambda () (interactive) (sanityinc/adjust-opacity nil -2)))
+(global-set-key (kbd "M-C-9") (lambda () (interactive) (sanityinc/adjust-opacity nil 2)))
+(global-set-key (kbd "M-C-7") (lambda () (interactive) (modify-frame-parameters nil `((alpha . 100)))))
+
 
 ;; tui: only load tui theme
 (add-hook 'after-make-console-frame-hooks (lambda ()

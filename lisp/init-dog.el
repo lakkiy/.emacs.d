@@ -28,7 +28,7 @@
         default-input-method "rime"
         rime-cursor "|"
         rime-show-candidate 'minibuffer)
-  (when sys/macp
+  (when *is-a-mac*
     (setq rime-librime-root (expand-file-name "librime/dist" user-emacs-directory)))
   :config
   (define-key rime-active-mode-map [tab] 'rime-inline-ascii)
@@ -81,9 +81,10 @@
   (cond ((eq +meow-layout 'dvorak)
          (require 'init-meow-dvorak)
          (meow-setup-dvorak))
-        (t
+        ((eq +meow-layout 'qwerty)
          (require 'init-meow-qwerty)
-         (meow-setup-qwerty)))
+         (meow-setup-qwerty))
+        (t (meow-global-mode -1)))
   :init
   (setq meow-esc-delay 0.001))
 

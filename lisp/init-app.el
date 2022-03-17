@@ -65,6 +65,8 @@
   :init
   (setq diff-hl-draw-borders nil)
   :config
+  (with-eval-after-load 'dired
+    (add-hook 'dired-mode-hook 'diff-hl-dired-mode))
   ;; Highlight on-the-fly
   (diff-hl-flydiff-mode 1)
 

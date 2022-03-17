@@ -129,8 +129,9 @@
   :straight t
   :after flymake
   :config
-  (setq-local
-   flymake-diagnostic-functions (flymake-flycheck-all-chained-diagnostic-functions)))
+  (setq-local flymake-diagnostic-functions
+              (append flymake-diagnostic-functions
+                      (flymake-flycheck-all-chained-diagnostic-functions))))
 
 (eat-package aggressive-indent
   :straight t
@@ -164,6 +165,7 @@
         ;; make eglot manage file out of project by `xref-find-definitions'
         eglot-extend-to-xref t)
   :config
+  (eat-package consult-eglot :straight t)
   (define-key eglot-mode-map (kbd "M-RET") 'eglot-code-actions)
   (define-key eglot-mode-map (kbd "C-c r") 'eglot-rename)
   (define-key eglot-mode-map (kbd "C-c h") 'eldoc)

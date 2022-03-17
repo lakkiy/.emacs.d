@@ -25,7 +25,7 @@
 (defvar +enable-benchmark nil
   "Enable `benchmark-init', run `benchmark-init/show-durations-tree' to see result.")
 (defvar +meow-layout 'dvorak
-  "Layout config for `meow', qwerty or dvorak")
+  "Layout config for `meow', qwerty or dvorak, otherwise disable it.")
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 (add-to-list 'load-path (expand-file-name "site-lisp" user-emacs-directory))
@@ -36,7 +36,7 @@
   (require 'init-straight)
   (require 'init-builtin)
   ;; 2. some funcs
-  (require 'init-my)
+  (require 'init-utils)
   ;; 3. must work on normal
   (require 'init-dog)
   (require 'init-edit)

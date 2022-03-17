@@ -1,5 +1,12 @@
 ;;; -*- lexical-binding: t -*-
 
+(eat-package recentf
+  :hook (after-init-hook . recentf-mode)
+  :init
+  (setq-default
+   recentf-max-saved-items 1000)
+  (global-set-key (kbd "C-x C-r") #'recentf-open-files))
+
 (eat-package minibuffer
   :init
   (setq
@@ -16,6 +23,17 @@
   :init
   (setq-default
    display-line-numbers-width 3))
+
+(eat-package hippie-exp
+  :init
+  (global-set-key (kbd "M-/") 'hippie-expand)
+
+  (setq hippie-expand-try-functions-list
+        '(try-complete-file-name-partially
+          try-complete-file-name
+          try-expand-dabbrev
+          try-expand-dabbrev-all-buffers
+          try-expand-dabbrev-from-kill)))
 
 (eat-package subword
   :hook (prog-mode-hook . subword-mode))
@@ -179,10 +197,15 @@
   (setq
    dired-dwim-target t
    dired-kill-when-opening-new-dired-buffer t
-   dired-recursive-deletes 'top
    dired-listing-switches "-AGhlv"
    delete-by-moving-to-trash t)
   :config
+  (setq
+   dired-recursive-deletes 'top)
+  ;; Prefer g-prefixed coreutils version of standard utilities when available
+  (let ((gls (executable-find "gls")))
+    (when gls (setq insert-directory-program gls)))
+  (define-key dired-mode-map [mouse-2] 'dired-find-file)
   (define-key dired-mode-map (kbd "C-c C-p") #'wdired-change-to-wdired-mode))
 
 (eat-package ibuffer

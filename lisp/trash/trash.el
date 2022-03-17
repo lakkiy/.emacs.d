@@ -219,10 +219,6 @@ prepended to the element after the #+HEADER: tag."
                  (or (cdr (project-current))
                      (buffer-name)))))
 
-(eat-package diredfl
-  :straight t
-  :hook (dired-mode-hook . diredfl-mode))
-
 ;; FIXME this func cause require org on stratup
 (defun org-agenda-export-to-ics ()
   (interactive)

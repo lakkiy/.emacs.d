@@ -217,7 +217,7 @@
   (setq-default org-download-image-dir (concat org-directory "/pictures"))
   (setq org-download-image-org-width 300
         org-download-backend "curl"
-        org-download-screenshot-method (cond (sys/macp "screencapture -ci")
+        org-download-screenshot-method (cond (*is-a-mac* "screencapture -ci")
                                              (sys/linuxp "flameshot gui --raw > %s")
                                              (t ""))))
 

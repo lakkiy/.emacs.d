@@ -43,6 +43,10 @@
    company-files-exclusions '(".git/" ".DS_Store")
    company-tooltip-margin 0)
   :config
+  (eat-package company-quickhelp
+    :straight t
+    :init
+    (company-quickhelp-mode))
   (defun +complete ()
     (interactive)
     (or (yas/expand)
@@ -87,15 +91,10 @@
 (eat-package orderless
   :straight t
   :after vertico
-  :config
-  ;; do not use `orderless' style in company capf
-  (define-advice company-capf
-      (:around (orig-fun &rest args) set-completion-styles)
-    (let ((completion-styles '(basic partial-completion)))
-      (apply orig-fun args)))
-  ;; set this local in minibuffer will break perl style split of
-  ;; consult async commands like `consult-ripgrep'
-  (setq completion-styles '(basic orderless)))
+  :hook (minibuffer-setup-hook . sanityinc/use-orderless-in-minibuffer)
+  :init
+  (defun sanityinc/use-orderless-in-minibuffer ()
+    (setq-local completion-styles '(substring orderless))))
 
 (eat-package which-key
   :straight t
@@ -105,6 +104,14 @@
   ;; make sure which-key doesn't show normally but refreshes quickly after it is
   ;; triggered.
   (setq which-key-idle-secondary-delay 0.05))
+
+(eat-package affe
+  :straight t
+  :init
+  (defun sanityinc/affe-grep-at-point (&optional dir initial)
+    (interactive (list prefix-arg (when-let ((s (symbol-at-point)))
+                                    (symbol-name s))))
+    (affe-grep dir initial)))
 
 (eat-package marginalia
   :straight t
@@ -141,13 +148,14 @@
   :straight (embark :files ("*.el"))
   :init
   (with-eval-after-load "vertico"
-    (define-key vertico-map (kbd "M-o") 'embark-export)
-    (define-key vertico-map (kbd "C-c C-o") 'embark-collect-snapshot)
+    (define-key vertico-map (kbd "C-c C-o") 'embark-export)
     (define-key vertico-map (kbd "C-c C-c") 'embark-act))
   :config
   (define-key embark-meta-map (kbd "<escape>") #'keyboard-escape-quit)
   ;; Consult users will also want the embark-consult package.
-  (eat-package embark-consult :after consult)
+  (eat-package embark-consult
+    :after consult
+    :hook (embark-collect-mode-hook . embark-consult-preview-minor-mode))
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
