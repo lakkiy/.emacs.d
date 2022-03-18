@@ -142,5 +142,9 @@ name and search again. Typically OP is nil or \"common\"."
       (browse-url (concat "file://" file-name)))))
 
 
+(eat-package page-break-lines
+  :straight t
+  :hook (after-init-hook . global-page-break-lines-mode))
+
 
 (provide 'init-utils)
