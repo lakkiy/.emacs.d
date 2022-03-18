@@ -208,4 +208,13 @@ Used in the default value of `notmuch-tag-formats'."
           ("\\/\\/\\W?TODO\\|TODO" . ((lambda (tag) (svg-tag-make "TODO" :face 'org-todo :inverse t :margin 0 :crop-right t))))
           ("TODO\\(.*\\)" . ((lambda (tag) (svg-tag-make tag :face 'org-todo :crop-left t)))))))
 
+(eat-package ibuffer-vc
+  :straight t
+  :hook (ibuffer-hook . ibuffer-set-up-preferred-filters)
+  :init
+  (defun ibuffer-set-up-preferred-filters ()
+    (ibuffer-vc-set-filter-groups-by-vc-root)
+    (unless (eq ibuffer-sorting-mode 'filename/process)
+      (ibuffer-do-sort-by-filename/process))))
+
 (provide 'init-app)
