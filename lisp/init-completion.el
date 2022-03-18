@@ -12,6 +12,8 @@
   (let ((inhibit-message t))
     (yas-reload-all)))
 
+;; TODO 有重复的选项
+;; TODO 有时有完全匹配的在最下面，不完全的反而在上面
 (eat-package company
   :straight t
   :hook
@@ -43,10 +45,6 @@
    company-files-exclusions '(".git/" ".DS_Store")
    company-tooltip-margin 0)
   :config
-  (eat-package company-quickhelp
-    :straight t
-    :init
-    (company-quickhelp-mode))
   (defun +complete ()
     (interactive)
     (or (yas/expand)
