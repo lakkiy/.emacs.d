@@ -77,7 +77,6 @@
   (+load-base-font)
   (+load-face-font)
   (+load-ext-font)
-  ;; TODO load light or dark theme when start gui emacs after start tui emacs daemon
   (if (boundp 'ns-system-appearance)
       (add-to-list 'ns-system-appearance-change-functions
                    (lambda (l?d)
