@@ -4,6 +4,16 @@
   :straight t
   :hook (after-init-hook . mode-line-bell-mode))
 
+(eat-package symbol-overlay
+  :straight t
+  :hook
+  ((prog-mode-hook conf-mode-hook) . symbol-overlay-mode)
+  :config
+  (define-key symbol-overlay-mode-map (kbd "M-i") 'symbol-over-put)
+  (define-key symbol-overlay-mode-map (kbd "M-I") 'symbol-overlay-remove-all)
+  (define-key symbol-overlay-mode-map (kbd "M-n") 'symbol-overlay-jump-next)
+  (define-key symbol-overlay-mode-map (kbd "M-p") 'symbol-overlay-jump-prev))
+
 (eat-package anzu
   :straight t
   :init
