@@ -25,7 +25,7 @@
 (defvar +enable-benchmark nil
   "Enable `benchmark-init', run `benchmark-init/show-durations-tree' to see result.")
 (defvar +meow-layout 'dvorak
-  "Layout config for `meow', qwerty or dvorak, otherwise disable it.")
+  "Layout config for `meow', qwerty or dvorak.")
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 (add-to-list 'load-path (expand-file-name "site-lisp" user-emacs-directory))

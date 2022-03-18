@@ -54,6 +54,9 @@
   (after-init-hook . (lambda ()
                        (meow-global-mode 1)))
   :config
+  (setq meow-esc-delay 0.001
+        meow-keypad-describe-delay 1.0)
+
   ;; custom indicator
   (setq meow-replace-state-name-list
         '((normal . "🅝")
@@ -83,9 +86,6 @@
          (meow-setup-dvorak))
         ((eq +meow-layout 'qwerty)
          (require 'init-meow-qwerty)
-         (meow-setup-qwerty))
-        (t (meow-global-mode -1)))
-  :init
-  (setq meow-esc-delay 0.001))
+         (meow-setup-qwerty))))
 
 (provide 'init-dog)
