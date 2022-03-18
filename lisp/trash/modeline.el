@@ -67,7 +67,6 @@ The padding pushes TEXT to the right edge of the mode-line."
                                  "%%"))
                   )))
 
-;; TODO process icon in terminal and check +icons-p
 (eat-package telephone-line
   :straight t
   :hook (after-init-hook . telephone-line-mode)
@@ -84,14 +83,12 @@ The padding pushes TEXT to the right edge of the mode-line."
   (setq telephone-line-primary-right-separator 'telephone-line-halfsin-right)
 
   ;; Set subseparator
-  ;; TODO: function to choose separator by name
   (when window-system
     (setq telephone-line-secondary-left-separator 'telephone-line-identity-hollow-left
           telephone-line-secondary-right-separator 'telephone-line-identity-hollow-right))
 
   ;; Left edge
   ;; meow project-buffer
-  ;; TODO: gray background for buffer and mode segment in inactive line
   (setq telephone-line-lhs
         '((accent . ((my-meow-segment :active)))
           (nil . (my-project-buffer-segment))
@@ -111,7 +108,6 @@ The padding pushes TEXT to the right edge of the mode-line."
           (nil    . (my-flymake-segment))
           ))
 
-  ;; TODO rime flymake/flycheck anzu
   )
 
 ;;; -*- lexical-binding: t -*-
@@ -195,72 +191,68 @@ The padding pushes TEXT to the right edge of the mode-line."
 ;; `telephone-line' right segments
 
 (telephone-line-defsegment my-rime-segment ()
-  (rime-lighter))
+                           (rime-lighter))
 
 ;; Display current branch
-;; TODO: move raise and etc into var
 (telephone-line-defsegment my-vc-segment ()
-  (when (and vc-mode (telephone-line-selected-window-active))
-    ;; double format to prevent warnings in '*Messages*' buffer
-    (format "%s %s"
-            (propertize (all-the-icons-octicon "git-branch")
-                        'face `( :family ,(all-the-icons-octicon-family)
-                                 :height 1.0
-                                 :foreground ,(face-foreground 'font-lock-variable-name-face))
-                        'display '(raise 0.0))
-            (propertize
-             (format "%s"
-                     (telephone-line-raw vc-mode t))
-             'face `(:foreground ,(face-foreground 'font-lock-variable-name-face))))))
+                           (when (and vc-mode (telephone-line-selected-window-active))
+                             ;; double format to prevent warnings in '*Messages*' buffer
+                             (format "%s %s"
+                                     (propertize (all-the-icons-octicon "git-branch")
+                                                 'face `( :family ,(all-the-icons-octicon-family)
+                                                          :height 1.0
+                                                          :foreground ,(face-foreground 'font-lock-variable-name-face))
+                                                 'display '(raise 0.0))
+                                     (propertize
+                                      (format "%s"
+                                              (telephone-line-raw vc-mode t))
+                                      'face `(:foreground ,(face-foreground 'font-lock-variable-name-face))))))
 
 (telephone-line-defsegment my-position-segment (&optional lines columns)
-  "Position segment. Optional args set padding on lines/columns."
-  (when (telephone-line-selected-window-active)
-    (let* ((l (number-to-string (if lines lines 3)))
-           (c (number-to-string (if columns columns 2))))
-      (if (eq major-mode 'paradox-menu-mode)
-          (telephone-line-raw mode-line-front-space t)
-        `(,(concat " %" l "l:%" c "c"))))))
+                           "Position segment. Optional args set padding on lines/columns."
+                           (when (telephone-line-selected-window-active)
+                             (let* ((l (number-to-string (if lines lines 3)))
+                                    (c (number-to-string (if columns columns 2))))
+                               (if (eq major-mode 'paradox-menu-mode)
+                                   (telephone-line-raw mode-line-front-space t)
+                                 `(,(concat " %" l "l:%" c "c"))))))
 
 ;; Display major mode
-;; TODO: rewrite with var/macro
 (telephone-line-defsegment* my-major-mode-segment ()
-  (let* ((name (if (or (version< emacs-version "28.0") (stringp mode-name))
-                   mode-name
-                 (car mode-name)))
-         (mode (cond
-                ((string= name "Fundamental") "text")
-                ((string= name "Emacs-Lisp") "elisp")
-                ((string= name "Javascript-IDE") "js")
-                ((string= name "undo-tree-visualizer") "undotree")
-                ((string= name "C++//l") "cpp")
-                (t (downcase name)))))
-    (propertize mode 'face `font-lock-string-face)))
+                            (let* ((name (if (or (version< emacs-version "28.0") (stringp mode-name))
+                                             mode-name
+                                           (car mode-name)))
+                                   (mode (cond
+                                          ((string= name "Fundamental") "text")
+                                          ((string= name "Emacs-Lisp") "elisp")
+                                          ((string= name "Javascript-IDE") "js")
+                                          ((string= name "undo-tree-visualizer") "undotree")
+                                          ((string= name "C++//l") "cpp")
+                                          (t (downcase name)))))
+                              (propertize mode 'face `font-lock-string-face)))
 
-;; TODO: add raise or v-adjust
-;; TODO icon higher than
 (telephone-line-defsegment* my-major-mode-segment-icon ()
-  (let* ((name (if (or (version< emacs-version "28.0") (stringp mode-name))
-                   mode-name
-                 (car mode-name)))
-         (mode (cond
-                ((string= name "Fundamental") "text")
-                ((string= name "Emacs-Lisp") "elisp")
-                ((string= name "ELisp") "elisp")
-                ((string= name "Javascript-IDE") "js")
-                ((string= name "undo-tree-visualizer") "undotree")
-                ((string= name "C++//l") "cpp")
-                (t (downcase name))))
-         (icon ( all-the-icons-icon-for-mode major-mode
-                 :v-adjust 0.0
-                 :height 0.8
-                 :face font-lock-string-face)))
-    (concat
-     (when
-         (and (not (eq major-mode (all-the-icons-icon-for-mode major-mode)))
-              (telephone-line-selected-window-active))
-       (format "%s " icon))
-     (propertize mode 'face `font-lock-string-face))))
+                            (let* ((name (if (or (version< emacs-version "28.0") (stringp mode-name))
+                                             mode-name
+                                           (car mode-name)))
+                                   (mode (cond
+                                          ((string= name "Fundamental") "text")
+                                          ((string= name "Emacs-Lisp") "elisp")
+                                          ((string= name "ELisp") "elisp")
+                                          ((string= name "Javascript-IDE") "js")
+                                          ((string= name "undo-tree-visualizer") "undotree")
+                                          ((string= name "C++//l") "cpp")
+                                          (t (downcase name))))
+                                   (icon ( all-the-icons-icon-for-mode major-mode
+                                           :v-adjust 0.0
+                                           :height 0.8
+                                           :face font-lock-string-face)))
+                              (concat
+                               (when
+                                   (and (not (eq major-mode (all-the-icons-icon-for-mode major-mode)))
+                                        (telephone-line-selected-window-active))
+                                 (format "%s " icon))
+                               (propertize mode 'face `font-lock-string-face))))
 
 ;; Display encoding system
 (telephone-line-defsegment my-coding-segment ()

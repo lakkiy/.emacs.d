@@ -356,9 +356,25 @@ If popup is focused, kill it."
    python-shell-interpreter "ipython"
    python-indent-guess-indent-offset nil))
 
+;; TODO init-sql.el
 (eat-package sql
   :init
   (setq
    sql-mysql-login-params '(user password server database port)))
+
+(eat-package xwidget
+  :init
+  (defun google () ;; TODO
+    (interactive))
+
+  (defun duckduckgo () ;; TODO
+    (interactive)))
+
+(eat-package display-fill-column-indicator
+  :hook (prog-mode-hook . display-fill-column-indicator-mode)
+  :init
+  (setq-default indicate-buffer-boundaries 'left)
+  (setq-default display-fill-column-indicator-character ?\u254e))
+
 
 (provide 'init-builtin)

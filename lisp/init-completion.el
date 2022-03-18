@@ -96,15 +96,6 @@
   (defun sanityinc/use-orderless-in-minibuffer ()
     (setq-local completion-styles '(substring orderless))))
 
-(eat-package which-key
-  :straight t
-  :init
-  ;; Allow C-h to trigger which-key before it is done automatically
-  (setq which-key-show-early-on-C-h t)
-  ;; make sure which-key doesn't show normally but refreshes quickly after it is
-  ;; triggered.
-  (setq which-key-idle-secondary-delay 0.05))
-
 (eat-package affe
   :straight t
   :init

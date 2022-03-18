@@ -137,7 +137,16 @@
   :straight t
   :init (cl-pushnew '(go .t) load-language-list))
 
-(eat-package restclient :straight t)
+(eat-package restclient
+  :straight t
+  :mode ("\\.rest\\'" . restclient-mode)
+  :init
+  (defun sanityinc/restclient ()
+    "Work with `rest' in the *restclient* buffer."
+    (interactive)
+    (with-current-buffer (get-buffer-create "*restclient*")
+      (restclient-mode)
+      (pop-to-buffer (current-buffer)))))
 
 (when (display-graphic-p)
   (eat-package valign
@@ -228,5 +237,8 @@
 (eat-package olivetti
   :straight t
   :commands olivetti-mode)
+
+
+;; TODO prose mode
 
 (provide 'init-org)

@@ -1,5 +1,9 @@
 ;;; -*- lexical-binding: t -*-
 
+(eat-package mode-line-bell
+  :straight t
+  :hook (after-init-hook . mode-line-bell-mode))
+
 (eat-package anzu
   :straight t
   :init
@@ -94,35 +98,15 @@
                             "-->" "<|" "<=" "<==" "<=>" "<=<" "<!--" "<-"
                             "<->" "<--" "</" "+=" "++" "??" "/>" "__" "WWW")))
 
-(eat-package ace-window
-  :straight t
-  :commands
-  ace-swap-window
-  ace-window
-  :init
-  (setq aw-keys '(?a ?o ?e ?u ?i)
-        aw-scope 'frame))
-
-(eat-package popper
-  :straight t
-  :hook (after-init-hook . (lambda ()
-                             (popper-mode +1)))
-  :init
-  (setq
-   popper-reference-buffers
-   '("\\*Messages\\*"
-     "Output\\*$"
-     "\\*Async Shell Command\\*"
-     help-mode
-     ;; "^\\*eshell.*\\*$" eshell-mode ;eshell as a popup
-     ;; "^\\*shell.*\\*$"  shell-mode  ;shell as a popup
-     ;; "^\\*term.*\\*$"   term-mode   ;term as a popup
-     ;; "^\\*vterm.*\\*$"  vterm-mode  ;vterm as a popup
-     compilation-mode)))
-
 (eat-package hl-todo
   :straight t
   :hook
   ((dired-mode-hook prog-mode-hook conf-mode-hook) . hl-todo-mode))
+
+(eat-package which-key
+  :straight t
+  :hook (after-init-hook . which-key-mode)
+  :init
+  (setq-default which-key-idle-delay 1.5))
 
 (provide 'init-edit)

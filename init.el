@@ -42,6 +42,7 @@
   (require 'init-edit)
   (require 'init-completion)
   (require 'init-dev)
+  (require 'init-windows)
   ;; 4. 鸡肋
   (when (and +icons-p (display-graphic-p))
     (require 'init-icons))

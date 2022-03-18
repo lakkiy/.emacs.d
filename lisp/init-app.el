@@ -48,7 +48,20 @@
 (eat-package magit
   :straight t
   :hook (git-commit-setup-hook . git-commit-turn-on-flyspell)
-  :commands magit)
+  :commands magit
+  :config
+  (setq-default magit-diff-refine-hunk t)
+  (global-set-key (kbd "C-x g") 'magit-status)
+  (global-set-key (kbd "C-x M-g") 'magit-dispatch))
+
+(eat-package magit-todos
+  :straight t
+  :after magit
+  :init
+  (setq magit-todos-nice (if (executable-find "nice") t nil))
+  :config
+  (let ((inhibit-message t))
+    (magit-todos-mode 1)))
 
 (when (executable-find "delta")
   (eat-package magit-delta
@@ -62,11 +75,10 @@
   :hook
   ((prog-mode-hook conf-mode-hook) . diff-hl-mode)
   (dired-mode-hook . diff-hl-dired-mode)
+  (magit-post-refresh-hook . diff-hl-magit-post-refresh)
   :init
   (setq diff-hl-draw-borders nil)
   :config
-  (with-eval-after-load 'dired
-    (add-hook 'dired-mode-hook 'diff-hl-dired-mode))
   ;; Highlight on-the-fly
   (diff-hl-flydiff-mode 1)
 

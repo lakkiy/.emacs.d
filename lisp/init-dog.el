@@ -88,10 +88,4 @@
   :init
   (setq meow-esc-delay 0.001))
 
-(eat-package window-numbering
-  :straight (window-numbering :type git :host github :repo "DogLooksGood/window-numbering.el")
-  :hook (after-init-hook . (lambda ()
-                             (require 'window-numbering)
-                             (window-numbering-mode 1))))
-
 (provide 'init-dog)

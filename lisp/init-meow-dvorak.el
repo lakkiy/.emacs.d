@@ -48,11 +48,11 @@
    ;; window
    '("w" . ace-window)
    '("W" . ace-swap-window)
-   '("o" . delete-other-windows)
+   '("o" . "C-x 1")
    '("O" . ace-delete-window)
    '("q" . delete-window)
-   '("-" . split-window-below)
-   '("s" . split-window-right)
+   '("-" . "C-x 2")
+   '("s" . "C-x 3")
    ;; toggles
    '("L" . display-line-numbers-mode)
    '("A" . org-agenda-list)
