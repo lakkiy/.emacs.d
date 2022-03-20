@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: pretty print json
+# key: ppj
+# --
+b, _ := json.MarshalIndent($1, "", "  ")
+fmt.Println(string(b))
