@@ -203,7 +203,6 @@ Selectively runs either `after-make-console-frame-hooks' or
                 (unless (frame-focus-state)
                   (garbage-collect))))
 
-;; From DoomEmacs
 ;; Contrary to what many Emacs users have in their configs, you don't need
 ;; more than this to make UTF-8 the default coding system:
 (set-language-environment "UTF-8")
@@ -212,7 +211,6 @@ Selectively runs either `after-make-console-frame-hooks' or
 (setq auto-mode-case-fold nil)
 
 ;; The nano style for truncated long lines.
-;; See emacs lighting talk mengmeng.
 (setq auto-hscroll-mode 'current-line)
 
 ;; in emacs29 from Po Lu!
@@ -311,9 +309,6 @@ Selectively runs either `after-make-console-frame-hooks' or
 (global-set-key (kbd "C-c j") 'select-frame-by-name)
 (global-set-key (kbd "C-c J") 'set-frame-name)
 
-;; `modus-theme'
-(setq modus-themes-mode-line '(accented barderless))
-
 ;; Load `custom-file'
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (and (file-exists-p custom-file)
@@ -326,5 +321,9 @@ Selectively runs either `after-make-console-frame-hooks' or
   :init
   (setq gcmh-idle-delay 5
         gcmh-high-cons-threshold #x6400000)) ;; 100 MB
+
+;; Make “C-t” act like “C-x”, so it's easier to type on Dvorak layout
+;; And do not bind any key to "C-t" cause it will translate to "C-x"
+(keyboard-translate ?\C-t ?\C-x)
 
 (provide 'init-straight)

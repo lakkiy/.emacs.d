@@ -376,5 +376,8 @@ If popup is focused, kill it."
   (setq-default indicate-buffer-boundaries 'left)
   (setq-default display-fill-column-indicator-character ?\u254e))
 
+;; `modus-theme'
+(setq modus-themes-mode-line '(accented barderless))
+
 
 (provide 'init-builtin)
