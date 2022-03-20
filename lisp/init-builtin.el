@@ -325,6 +325,8 @@ No tab will created if the command is cancelled."
 
 (eat-package shell
   :init
+  (setq comint-process-echoes t)
+
   ;; Used as a `sh-mode' REPL.
   ;;
   ;; `shell' is recommended to use over `tramp'.
