@@ -170,6 +170,7 @@
   (define-key eglot-mode-map (kbd "M-RET") 'eglot-code-actions)
   (define-key eglot-mode-map (kbd "C-c r") 'eglot-rename)
   (define-key eglot-mode-map (kbd "C-c h") 'eldoc)
+  (define-key eglot-mode-map (kbd "M-'") 'eglot-find-implementation)
   (add-to-list 'eglot-server-programs
                '(sql-mode . ("sqls" "-config" "~/.config/sqls/config.yaml")))
   (add-to-list 'eglot-server-programs
