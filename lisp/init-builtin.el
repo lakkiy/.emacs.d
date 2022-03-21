@@ -362,10 +362,21 @@ If popup is focused, kill it."
 (setq modus-themes-mode-line '(accented barderless))
 
 (eat-package desktop
+  :hook (desktop-after-read-hook . desktop-load-theme)
   :init
-  (desktop-save-mode 1)
   (setq desktop-path (list user-emacs-directory)
         desktop-auto-save-timeout 600)
+  (desktop-save-mode 1)
+
+  ;; Reload theme after `desktop-read'.
+  ;; But it doesn't prevent the desktop-save-mode from saving the theme
+  ;; in the .desktop file, instead it restores the theme after loading
+  ;; the desktop.
+  (defun desktop-load-theme ()
+    "load custom theme"
+    (interactive)
+    (dolist (th custom-enabled-themes)
+      (load-theme th)))
 
   (defun sanityinc/desktop-time-restore (orig &rest args)
     (let ((start-time (current-time)))
@@ -393,13 +404,13 @@ If popup is focused, kill it."
         '((comint-input-ring        . 50)
           (compile-history          . 30)
           desktop-missing-file-warning
+          custom-enabled-themes
           (dired-regexp-history     . 20)
           (extended-command-history . 30)
           (face-name-history        . 20)
           (file-name-history        . 100)
           (grep-find-history        . 30)
           (grep-history             . 30)
-          (ivy-history              . 100)
           (magit-revision-history   . 50)
           (minibuffer-history       . 50)
           (org-clock-history        . 50)

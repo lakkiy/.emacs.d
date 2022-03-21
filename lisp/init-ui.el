@@ -72,10 +72,12 @@
       (set-fontset-font font charset font-spec)))
   (setf (alist-get +font-unicode face-font-rescale-alist 0.7 nil 'string=) 0.7))
 
-(defun +load-theme-font ()
+(defun +load-font ()
   (+load-base-font)
   (+load-face-font)
-  (+load-ext-font)
+  (+load-ext-font))
+
+(defun +load-theme ()
   (if (boundp 'ns-system-appearance)
       (add-to-list 'ns-system-appearance-change-functions
                    (lambda (l?d)
@@ -140,7 +142,9 @@
                                               (menu-bar-mode -1))
                                             (load-theme +theme-tui t)))
 ;; gui frame: load font and theme
-(add-hook 'after-make-window-system-frame-hooks '+load-theme-font)
+(add-hook 'after-make-window-system-frame-hooks (lambda ()
+                                                  (+load-font)
+                                                  (+load-theme)))
 
 ;; TODO
 ;; spc a id agenda, not m-x
