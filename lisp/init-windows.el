@@ -24,23 +24,23 @@
   :hook (after-init-hook . (lambda ()
                              (popper-mode +1)))
   :init
-  (setq
-   popper-group-function 'popper-group-by-project
-   popper-reference-buffers
-   '("\\*Messages\\*"
-     "Output\\*$"
-     "\\*Async Shell Command\\*"
-     "\\*Compile-Log\\*"
-     "\\*Completions\\*"
-     "\\*Warnings\\*"
+  (setq popper-reference-buffers
+        '("\\*Messages\\*"
+          "Output\\*$"
+          "\\*Async Shell Command\\*"
+          "\\*Compile-Log\\*"
+          "\\*Completions\\*"
+          "\\*Warnings\\*"
 
-     "^\\*eshell.*\\*$" eshell-mode ;eshell as a popup
-     ;; "^\\*shell.*\\*$"  shell-mode  ;shell as a popup
-     "^\\*term.*\\*$"   term-mode   ;term as a popup
-     "^\\*vterm.*\\*$"  vterm-mode  ;vterm as a popup
+          "^\\*eshell.*\\*$" eshell-mode ;eshell as a popup
+          ;; "^\\*shell.*\\*$"  shell-mode  ;shell as a popup
+          "^\\*term.*\\*$"   term-mode   ;term as a popup
+          "^\\*vterm.*\\*$"  vterm-mode  ;vterm as a popup
 
-     help-mode
-     compilation-mode))
+          help-mode
+          compilation-mode))
+  (with-eval-after-load 'project
+    (setq popper-group-function 'popper-group-by-project))
   :config
   (defun my-popper-fit-window-height (win)
     "Determine the height of popup window WIN by fitting it to the buffer's content."
