@@ -103,68 +103,38 @@
 (eat-package hideshow
   :hook (prog-mode-hook hs-minor-mode)
   :init
-  (setq +hs-folding-fringe-indicators t)
+  (defconst hideshow-folded-face '((t (:inherit 'font-lock-comment-face :box t))))
 
-  (when (fboundp 'define-fringe-bitmap)
-    (define-fringe-bitmap '+hs-folding-fringe-marker
-      (vector #b00000000
-              #b00000000
-              #b00000000
-              #b11000011
-              #b11100111
-              #b01111110
-              #b00111100
-              #b00011000)))
+  (defface hideshow-border-face
+    '((((background light))
+       :background "light coral" :extend t)
+      (t
+       :background "firebrick" :extend t))
+    "Face used for hideshow fringe."
+    :group 'hideshow)
 
-  (defface +hs-folding-fringe-face
-    '((t (:inherit 'font-lock-comment-face
-                   :box (:line-width 1 :style released-button))))
-    "Face for folding bitmaps appearing on the fringe.")
+  (define-fringe-bitmap 'hideshow-folded-fringe
+    (vector #b00000000
+            #b00000000
+            #b00000000
+            #b11000011
+            #b11100111
+            #b01111110
+            #b00111100
+            #b00011000))
 
-  (defface +hs-folding-face
-    '((t (:inherit 'font-lock-comment-face :box t)))
-    "Face for the folded region indicator.")
-
-  (defun +hs-display-code-line-counts (ov)
-    "Display a folded region indicator with the number of folded
-      lines.
-
-    Meant to be used as `hs-set-up-overlay'."
-    (let* ((marker-string "*fringe-dummy*")
-           (marker-length (length marker-string)))
-      (cond
-       ((eq 'code (overlay-get ov 'hs))
-        (let* ((nmb-line (count-lines (overlay-start ov)
-                                      (overlay-end ov)))
-               (display-string (format "(%d)..." nmb-line)))
-          ;; fringe indicator
-          (when +hs-folding-fringe-indicators
-            (put-text-property 0 marker-length 'display
-                               (list 'left-fringe
-                                     '+hs-folding-fringe-marker
-                                     '+hs-folding-fringe-face)
-                               marker-string)
-            (overlay-put ov 'before-string marker-string)
-            (overlay-put ov '+hs-fringe t))
-          ;; folding indicator
-          (put-text-property 0 (length display-string)
-                             'face '+hs-folding-face
-                             display-string)
-          (put-text-property 0 (length display-string)
-                             'mouse-face 'highlight display-string)
-          (overlay-put ov 'display display-string)
-          (overlay-put ov '+hs-folded t)))
-       ;; for docstring and comments, we don't display the number of
-       line
-       ((or (eq 'docstring (overlay-get ov 'hs))
-            (eq 'comment (overlay-get ov 'hs)))
-        (let ((display-string "..."))
-          (put-text-property 0 (length display-string)
-                             'mouse-face 'highlight display-string)
-          (overlay-put ov 'display display-string)
-          (overlay-put ov '+hs-folded t))))))
-
-  (setq hs-set-up-overlay #'+hs-display-code-line-counts))
+  (defun hideshow-folded-overlay-fn (ov)
+    "Display a folded region indicator with the number of folded lines."
+    (when (eq 'code (overlay-get ov 'hs))
+      (let* ((nlines (count-lines (overlay-start ov) (overlay-end ov)))
+             (info (format "(%d)..." nlines)))
+        ;; fringe indicator
+        (overlay-put ov 'before-string (propertize " "
+                                                   'display '(left-fringe hideshow-folded-fringe
+                                                                          hideshow-border-face)))
+        ;; folding indicator
+        (overlay-put ov 'display (propertize info 'face hideshow-folded-face)))))
+  (setq hs-set-up-overlay #'hideshow-folded-overlay-fn))
 
 (eat-package xref
   :init
@@ -323,13 +293,21 @@ No tab will created if the command is cancelled."
   (global-set-key (kbd "C-x t .") #'tab-bar-rename-tab)
   (global-set-key (kbd "C-x t l") #'+tab-bar-switch-project))
 
+;; The interactive shell.
+;;
+;; It can be used as a `sh-mode' REPL.
+;;
+;; `shell' is recommended to use over `tramp'.
 (eat-package shell
+  :hook
+  (comint-mode-hook
+   . (my-comint-init revert-tab-width-to-default))
   :init
-  (setq comint-process-echoes t)
+  (defun my-comint-init ()
+    (setq-local
+     comint-input-ignoredups t
+     comint-process-echoes t))
 
-  ;; Used as a `sh-mode' REPL.
-  ;;
-  ;; `shell' is recommended to use over `tramp'.
   (defun shell-toggle ()
     "Toggle a persistent shell popup window.
 If popup is visible but unselected, select it.
@@ -343,7 +321,15 @@ If popup is focused, kill it."
                                             (inhibit-same-window . nil))))
 
         (shell "*shell-popup*"))))
-  (global-set-key (kbd "M-`") #'shell-toggle))
+  (global-set-key (kbd "M-`") #'shell-toggle)
+
+  ;; Correct indentation for `ls'
+  (defun revert-tab-width-to-default ()
+    "Revert `tab-width' to default value."
+    (setq-local tab-width 8)))
+
+(eat-package eshell)
+(eat-package term)
 
 (eat-package cc-mode
   :init

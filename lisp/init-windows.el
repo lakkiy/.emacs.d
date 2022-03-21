@@ -30,10 +30,10 @@
      "Output\\*$"
      "\\*Async Shell Command\\*"
      help-mode
-     ;; "^\\*eshell.*\\*$" eshell-mode ;eshell as a popup
+     "^\\*eshell.*\\*$" eshell-mode ;eshell as a popup
      ;; "^\\*shell.*\\*$"  shell-mode  ;shell as a popup
-     ;; "^\\*term.*\\*$"   term-mode   ;term as a popup
-     ;; "^\\*vterm.*\\*$"  vterm-mode  ;vterm as a popup
+     "^\\*term.*\\*$"   term-mode   ;term as a popup
+     "^\\*vterm.*\\*$"  vterm-mode  ;vterm as a popup
      compilation-mode)))
 
 ;; When splitting window, show (other-buffer) in the new window
