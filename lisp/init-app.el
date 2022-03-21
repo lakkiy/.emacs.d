@@ -54,15 +54,6 @@
   (global-set-key (kbd "C-x g") 'magit-status)
   (global-set-key (kbd "C-x M-g") 'magit-dispatch))
 
-(eat-package magit-todos
-  :straight t
-  :after magit
-  :init
-  (setq magit-todos-nice (if (executable-find "nice") t nil))
-  :config
-  (let ((inhibit-message t))
-    (magit-todos-mode 1)))
-
 (when (executable-find "delta")
   (eat-package magit-delta
     :straight t
