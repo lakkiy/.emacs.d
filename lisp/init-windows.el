@@ -25,16 +25,30 @@
                              (popper-mode +1)))
   :init
   (setq
+   popper-group-function 'popper-group-by-project
    popper-reference-buffers
    '("\\*Messages\\*"
      "Output\\*$"
      "\\*Async Shell Command\\*"
-     help-mode
+     "\\*Compile-Log\\*"
+     "\\*Completions\\*"
+     "\\*Warnings\\*"
+
      "^\\*eshell.*\\*$" eshell-mode ;eshell as a popup
      ;; "^\\*shell.*\\*$"  shell-mode  ;shell as a popup
      "^\\*term.*\\*$"   term-mode   ;term as a popup
      "^\\*vterm.*\\*$"  vterm-mode  ;vterm as a popup
-     compilation-mode)))
+
+     help-mode
+     compilation-mode))
+  :config
+  (defun my-popper-fit-window-height (win)
+    "Determine the height of popup window WIN by fitting it to the buffer's content."
+    (fit-window-to-buffer
+     win
+     (floor (frame-height) 3)
+     (floor (frame-height) 3)))
+  (setq popper-window-height #'my-popper-fit-window-height))
 
 ;; When splitting window, show (other-buffer) in the new window
 
