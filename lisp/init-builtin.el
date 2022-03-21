@@ -350,13 +350,7 @@ If popup is focused, kill it."
   (setq
    sql-mysql-login-params '(user password server database port)))
 
-(eat-package xwidget
-  :init
-  (defun google () ;; TODO
-    (interactive))
-
-  (defun duckduckgo () ;; TODO
-    (interactive)))
+(eat-package xwidget)
 
 (eat-package display-fill-column-indicator
   :hook (prog-mode-hook . display-fill-column-indicator-mode)
@@ -368,9 +362,8 @@ If popup is focused, kill it."
 (setq modus-themes-mode-line '(accented barderless))
 
 (eat-package desktop
-  :hook (after-init-hook . (lambda ()
-                             (desktop-save-mode 1)))
   :init
+  (desktop-save-mode 1)
   (setq desktop-path (list user-emacs-directory)
         desktop-auto-save-timeout 600)
 

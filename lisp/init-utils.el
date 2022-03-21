@@ -147,12 +147,4 @@ name and search again. Typically OP is nil or \"common\"."
   :hook (after-init-hook . global-page-break-lines-mode))
 
 
-(eat-package session
-  :straight t
-  :hook (after-init-hook . session-initialize)
-  :init
-  (setq session-name-disable-regexp "\\(?:\\`'/tmp\\|\\.git/[A-Z_]+\\'\\)")
-  (setq session-save-file-coding-system 'utf-8))
-
-
 (provide 'init-utils)
