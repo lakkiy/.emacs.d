@@ -350,7 +350,9 @@ If popup is focused, kill it."
   (setq
    sql-mysql-login-params '(user password server database port)))
 
-(eat-package xwidget)
+(eat-package xwidget
+  :config
+  (define-key xwidget-webkit-mode-map (kbd "y") #'xwidget-webkit-copy-selection-as-kill))
 
 (eat-package display-fill-column-indicator
   :hook (prog-mode-hook . display-fill-column-indicator-mode)
