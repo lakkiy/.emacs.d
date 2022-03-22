@@ -275,8 +275,8 @@ No tab will created if the command is cancelled."
           (progn
             (tab-bar-new-tab)
             (call-interactively #'project-switch-project)
-            (when-let ((proj (project-current)))
-              (tab-bar-rename-tab (format "%s" (file-name-nondirectory (directory-file-name (cdr proj)))))
+            (when-let ((proj (project-root (project-current))))
+              (tab-bar-rename-tab (format "%s" (file-name-nondirectory (directory-file-name proj))))
               (setq succ t)))
         (unless succ
           (tab-bar-close-tab)))))
