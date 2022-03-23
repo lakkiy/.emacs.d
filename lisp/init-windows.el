@@ -31,12 +31,9 @@
           "\\*Compile-Log\\*"
           "\\*Completions\\*"
           "\\*Warnings\\*"
-
-          "^\\*eshell.*\\*$" eshell-mode ;eshell as a popup
-          ;; "^\\*shell.*\\*$"  shell-mode  ;shell as a popup
-          "^\\*term.*\\*$"   term-mode   ;term as a popup
-          "^\\*vterm.*\\*$"  vterm-mode  ;vterm as a popup
-
+          shell-mode
+          eshell-mode
+          term-mode
           help-mode
           compilation-mode))
   (with-eval-after-load 'project

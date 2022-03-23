@@ -293,6 +293,7 @@ No tab will created if the command is cancelled."
   (global-set-key (kbd "C-x t .") #'tab-bar-rename-tab)
   (global-set-key (kbd "C-x t l") #'+tab-bar-switch-project))
 
+
 ;; The interactive shell.
 ;;
 ;; It can be used as a `sh-mode' REPL.
@@ -329,7 +330,11 @@ If popup is focused, kill it."
     (setq-local tab-width 8)))
 
 (eat-package eshell)
-(eat-package term)
+
+(eat-package term
+  :init
+  (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
+
 
 (eat-package cc-mode
   :init
