@@ -21,6 +21,7 @@
 (eat-package markdown-mode
   :straight t
   :mode ("\\.md\\'" . gfm-mode)
+  :hook (markdown-mode-hook . prose-mode)
   :init
   (setq markdown-enable-wiki-links t
         markdown-italic-underscore t
