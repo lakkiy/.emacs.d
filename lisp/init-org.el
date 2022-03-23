@@ -154,10 +154,13 @@
     :straight t
     :hook (org-mode-hook . valign-mode)))
 
-(eat-package zeft
-  :straight (zeft :type git :host github :repo "casouri/zeft")
+(eat-package xeft
+  :straight (xeft
+             :type git :host github :repo "casouri/xeft"
+             :pre-build ("make")
+             :files (:defaults "Makefile" "*.h" "*.cc" "*.so"))
   :init
-  (setq zeft-directory (expand-file-name "~/Dropbox/org/roam")))
+  (setq xeft-directory (expand-file-name "~/Dropbox/org/roam")))
 
 (eat-package easy-hugo
   :straight t

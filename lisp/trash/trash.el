@@ -234,3 +234,8 @@ prepended to the element after the #+HEADER: tag."
   :config
   (let ((inhibit-message t))
     (magit-todos-mode 1)))
+
+(eat-package zeft
+  :straight (zeft :type git :host github :repo "casouri/zeft")
+  :init
+  (setq zeft-directory (expand-file-name "~/Dropbox/org/roam")))

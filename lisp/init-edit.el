@@ -30,14 +30,11 @@
   :straight (puni :type git :host github :repo "AmaiKinono/puni")
   :hook (emacs-lisp-mode-hook . puni-mode)
   :config
-  (define-key puni-mode-map (kbd "M-r") 'puni-raise)
-  ;; (define-key puni-mode-map (kbd "M-)") 'puni-splice) ;; TODO bind another key
+  (define-key puni-mode-map (kbd "M-r") 'puni-splice)
   (define-key puni-mode-map (kbd "C-(") 'puni-slurp-backward)
   (define-key puni-mode-map (kbd "C-)") 'puni-slurp-forward)
   (define-key puni-mode-map (kbd "C-{") 'puni-barf-backward)
-  (define-key puni-mode-map (kbd "C-}") 'puni-barf-forward)
-  (dolist (key '("M-[" "M-{" "M-(" "M-\""))
-    (define-key puni-mode-map (kbd key) 'puni-squeeze)))
+  (define-key puni-mode-map (kbd "C-}") 'puni-barf-forward))
 
 (eat-package treemacs
   :straight ( treemacs

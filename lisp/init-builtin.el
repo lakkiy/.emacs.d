@@ -394,6 +394,9 @@ If popup is focused, kill it."
 (eat-package xwidget
   :init
   (setq browse-url-browser-function 'xwidget-webkit-browse-url)
+  ;; run `xwidget-webkit-browse-url' in other tab
+  (advice-add 'xwidget-webkit-browse-url :before '(lambda (url &optional new-session)
+                                                    (tab-bar-select-tab-by-name "xwidget")))
   :config
   (define-key xwidget-webkit-mode-map (kbd "y") #'xwidget-webkit-copy-selection-as-kill))
 
