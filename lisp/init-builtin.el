@@ -213,11 +213,24 @@
 
 (eat-package ediff
   :init
+  (defvar local-ediff-saved-window-conf nil)
+
+  (defun ediff-save-window-conf ()
+    (setq local-ediff-saved-window-conf (current-window-configuration)))
+
+  (defun ediff-restore-window-conf ()
+    (when (window-configuration-p local-ediff-saved-window-conf)
+      (set-window-configuration local-ediff-saved-window-conf)))
+
   (setq
    ediff-window-setup-function #'ediff-setup-windows-plain
    ediff-highlight-all-diffs t
    ediff-split-window-function 'split-window-horizontally
-   ediff-merge-split-window-function 'split-window-horizontally))
+   ediff-merge-split-window-function 'split-window-horizontally)
+  :config
+  ;; Restore window config after quitting ediff
+  (add-hook 'ediff-before-setup-hook #'ediff-save-window-conf)
+  (add-hook 'ediff-quit-hook #'ediff-restore-window-conf))
 
 (eat-package flyspell
   :init
@@ -355,9 +368,55 @@ If popup is focused, kill it."
   (setq
    sql-mysql-login-params '(user password server database port)))
 
+(eat-package isearch
+  :init
+  (setq
+   isearch-lazy-count t
+   isearch-lazy-highlight t
+   lazy-count-prefix-format nil
+   lazy-count-suffix-format " [%s/%s]"
+   lazy-highlight-buffer t
+   lazy-highlight-cleanup nil
+   ;; Record isearch in minibuffer history, so C-x ESC ESC can repeat it.
+   isearch-resume-in-command-history t
+   ;; M-< and M-> move to the first/last occurrence of the current search string.
+   isearch-allow-motion t
+   isearch-motion-changes-direction t)
+  :config
+  (define-advice isearch-occur (:after (_regexp &optional _nlines))
+    (isearch-exit))
+  (define-key isearch-mode-map (kbd "C-c C-o") #'isearch-occur)
+  (define-key isearch-mode-map [escape] #'isearch-cancel)
+  ;; Edit the search string instead of jumping back
+  (define-key isearch-mode-map [remap isearch-delete-chac] #'isearch-del-chac))
+
+
 (eat-package xwidget
+  :init
+  (setq browse-url-browser-function 'xwidget-webkit-browse-url)
   :config
   (define-key xwidget-webkit-mode-map (kbd "y") #'xwidget-webkit-copy-selection-as-kill))
+
+(eat-package webjump
+  :init
+  (global-set-key (kbd "C-c /") #'webjump)
+  (setq webjump-sites
+        '(("Emacs Wiki" .
+           [simple-query "www.emacswiki.org" "www.emacswiki.org/cgi-bin/wiki/" #1=""])
+          ("Emacs China" . "emacs-china.org")
+          ("Emacs Reddit" . "www.reddit.com/r/emacs/")
+          ("Emacs News" . "sachachua.com/blog/category/emacs-news/")
+          ("Github" .
+           [simple-query "github.com" "github.com/search?q=" #1#])
+          ("DuckDuckGo" .
+           [simple-query "duckduckgo.com" "duckduckgo.com/?q=" #1#])
+          ("Google" .
+           [simple-query "google.com" "google.com/search?q=" #1#])
+          ("Google Groups" .
+           [simple-query "groups.google.com" "groups.google.com/groups?q=" #1#])
+          ("Wikipedia" .
+           [simple-query "wikipedia.org" "wikipedia.org/wiki/" #1#]))))
+
 
 (eat-package display-fill-column-indicator
   :hook (prog-mode-hook . display-fill-column-indicator-mode)

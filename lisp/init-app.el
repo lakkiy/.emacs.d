@@ -163,36 +163,6 @@ Used in the default value of `notmuch-tag-formats'."
 
 (eat-package devdocs :straight t)
 
-(eat-package pulsar
-  :straight (pulsar :type git :host github :repo "protesilaos/pulsar")
-  :hook (after-init-hook . pulsar-setup)
-  :config
-  (customize-set-variable
-   'pulsar-pulse-functions ; Read the doc string for why not `setq'
-   '(recenter-top-bottom
-     move-to-window-line-top-bottom
-     reposition-window
-     bookmark-jump
-     other-window
-     forward-page
-     backward-page
-     scroll-up-command
-     scroll-down-command
-     org-next-visible-heading
-     org-previous-visible-heading
-     org-forward-heading-same-level
-     org-backward-heading-same-level
-     org-tree-slide-move-next-tree
-     org-tree-slide-move-previous-tree
-     outline-backward-same-level
-     outline-forward-same-level
-     outline-next-visible-heading
-     outline-previous-visible-heading
-     outline-up-heading))
-
-  (setq pulsar-face 'pulsar-magenta)
-  (setq pulsar-delay 0.055))
-
 ;; TODO only enable this in comment?
 (eat-package svg-tag-mode
   :straight (svg-tag-mode :type git :host github :repo "rougier/svg-tag-mode")

@@ -100,6 +100,14 @@
     (not (display-graphic-p)))
   (add-to-list 'dimmer-exclusion-predicates 'sanityinc/display-non-graphic-p))
 
+;; maybe use puslar ?
+(eat-package beacon
+  :straight t
+  :hook (aftel-init-hook . beacon-mode)
+  :init
+  (setq-default beacon-lighter "")
+  (setq-default beacon-size 20))
+
 (eat-package diredfl
   :straight t
   :hook (dired-mode-hook . diredfl-global-mode)

@@ -116,10 +116,8 @@
   (global-set-key (kbd "C-x w") 'elfeed)
 
   (setq elfeed-search-filter "+unread "
-        elfeed-curl-extra-arguments '("--insecure")
         ;; browse-url-browser-function 'eww-browse-url
-        ;; HACK only for emacs 29
-        browse-url-browser-function 'xwidget-webkit-browse-url)
+        elfeed-curl-extra-arguments '("--insecure"))
 
   (defun +elfeed-search-star-tag-all ()
     (interactive)
