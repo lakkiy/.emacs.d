@@ -31,7 +31,7 @@
   :hook (emacs-lisp-mode-hook . puni-mode)
   :config
   (define-key puni-mode-map (kbd "M-r") 'puni-raise)
-  (define-key puni-mode-map (kbd "M-)") 'puni-splice)
+  ;; (define-key puni-mode-map (kbd "M-)") 'puni-splice) ;; TODO bind another key
   (define-key puni-mode-map (kbd "C-(") 'puni-slurp-backward)
   (define-key puni-mode-map (kbd "C-)") 'puni-slurp-forward)
   (define-key puni-mode-map (kbd "C-{") 'puni-barf-backward)
@@ -118,6 +118,18 @@
   :hook (after-init-hook . which-key-mode)
   :init
   (setq-default which-key-idle-delay 1.5))
+
+(eat-package imenu-list
+  :straight t
+  :hook
+  (imenu-list-major-mode-hook . (lambda ()
+                                  (setq-local header-line-format nil)))
+  :init
+  (defun +imenu-scale-font-size ()
+    (face-remap-add-relative 'default :height 0.8))
+  (add-hook 'imenu-list-major-mode-hook #'+imenu-scale-font-size)
+  (setq imenu-list-auto-resize t
+        imenu-list-mode-line-format nil))
 
 
 (provide 'init-edit)
