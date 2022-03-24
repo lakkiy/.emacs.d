@@ -65,22 +65,8 @@
 (eat-package autorevert
   :hook (after-init-hook . global-auto-revert-mode))
 
-(eat-package elec-pair
-  :hook (prog-mode-hook . electric-pair-mode)
-  :init
-  (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
-
 (eat-package saveplace ;; TODO
   :hook (after-init-hook . save-place-mode))
-
-(eat-package paren
-  :hook (prog-mode-hook . show-paren-mode)
-  :init
-  (setq
-   show-paren-when-point-in-periphery t
-   show-paren-when-point-inside-paren t
-   ;; NOTE emacs 29
-   show-paren-context-when-offscreen t))
 
 (eat-package tramp
   :init
@@ -151,16 +137,6 @@
   :hook (after-init-hook . winner-mode)
   :init
   (setq winner-dont-bind-my-keys t))
-
-(eat-package smerge-mode
-  :hook (find-file-hook . (lambda ()
-                            (save-excursion
-                              (goto-char (point-min))
-                              (when (re-search-forward "^<<<<<<< " nil t)
-                                (smerge-mode 1)))))
-  :config
-  (define-key smerge-mode-map (kbd "M-r") #'smerge-refine)
-  (define-key smerge-mode-map (kbd "M-RET") #'smerge-keep-current))
 
 (eat-package dired
   :init
@@ -242,6 +218,7 @@
   :config
   (setq flyspell-mode-map nil))
 
+;;; project managent
 (eat-package project
   :init
   ;; `project'
@@ -307,6 +284,7 @@ No tab will created if the command is cancelled."
   (global-set-key (kbd "C-x t l") #'+tab-bar-switch-project))
 
 
+;;; shell
 ;; The interactive shell.
 ;;
 ;; It can be used as a `sh-mode' REPL.
@@ -348,6 +326,30 @@ If popup is focused, kill it."
   :init
   (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
 
+;;; programming
+(eat-package paren
+  :hook (prog-mode-hook . show-paren-mode)
+  :init
+  (setq
+   show-paren-when-point-in-periphery t
+   show-paren-when-point-inside-paren t
+   ;; NOTE emacs 29
+   show-paren-context-when-offscreen t))
+
+(eat-package elec-pair
+  :hook (prog-mode-hook . electric-pair-mode)
+  :init
+  (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
+
+(eat-package smerge-mode
+  :hook (find-file-hook . (lambda ()
+                            (save-excursion
+                              (goto-char (point-min))
+                              (when (re-search-forward "^<<<<<<< " nil t)
+                                (smerge-mode 1)))))
+  :config
+  (define-key smerge-mode-map (kbd "M-r") #'smerge-refine)
+  (define-key smerge-mode-map (kbd "M-RET") #'smerge-keep-current))
 
 (eat-package cc-mode
   :init
@@ -368,6 +370,7 @@ If popup is focused, kill it."
   (setq
    sql-mysql-login-params '(user password server database port)))
 
+;;; search
 (eat-package isearch
   :init
   (setq
@@ -391,6 +394,7 @@ If popup is focused, kill it."
   (define-key isearch-mode-map [remap isearch-delete-chac] #'isearch-del-chac))
 
 
+;;; browse
 (eat-package xwidget
   :init
   (setq browse-url-browser-function 'xwidget-webkit-browse-url)
@@ -427,9 +431,10 @@ If popup is focused, kill it."
   (setq-default indicate-buffer-boundaries 'left)
   (setq-default display-fill-column-indicator-character ?\u254e))
 
-;; `modus-theme'
+;;; `modus-theme'
 (setq modus-themes-mode-line '(accented barderless))
 
+;;; save session
 (eat-package desktop
   :hook (desktop-after-read-hook . desktop-load-theme)
   :init
@@ -501,5 +506,13 @@ If popup is focused, kill it."
   ;; Restore histories and registers after saving
   (setq-default history-length 1000))
 
+;;; outline
+(eat-package outline
+  :init
+  (setq
+   outline-minor-mode-cycle t
+   outline-minor-mode-highlight t))
 
+
+;;; init-builtin.el ends here
 (provide 'init-builtin)

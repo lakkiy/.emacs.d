@@ -1,6 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 ;; Do not use `eat-package' with themes.
 
+;;; theme
 ;; disable previous theme when load theme
 (defun +load-theme-advice (f theme-id &optional no-confirm no-enable &rest args)
   "Enhance `load-theme' by disabling other enabled themes & calling hooks"
@@ -13,14 +14,19 @@
         (`(,_ . ,f) (funcall f))))))
 (advice-add 'load-theme :around #'+load-theme-advice)
 
-;; `color-theme-sanityinc-tomorrow'
+(defun +load-theme ()
+  (if (boundp 'ns-system-appearance)
+      (add-to-list 'ns-system-appearance-change-functions
+                   (lambda (l?d)
+                     (if (eq l?d 'light)
+                         (load-theme +theme-system-light t)
+                       (load-theme +theme-system-dark t))))
+    (load-theme +theme t)))
+
+;;; `color-theme-sanityinc-tomorrow'
 (straight-use-package 'color-theme-sanityinc-tomorrow)
 
-;; `base16-theme'
-(straight-use-package 'base16-theme)
-(setq base16-distinct-fringe-background nil)
-
-;; `spacemacs-theme'
+;;; `spacemacs-theme'
 (straight-use-package 'spacemacs-theme)
 
 (setq
@@ -34,7 +40,7 @@
  spacemacs-theme-org-bold t
  spacemacs-theme-underline-parens t)
 
-;; `kaolin-themes'
+;;; `kaolin-themes'
 (straight-use-package 'kaolin-themes)
 
 (setq
@@ -47,7 +53,7 @@
     (with-eval-after-load 'all-the-icons
       (kaolin-treemacs-theme))))
 
-;; font
+;;; font
 (defun +load-base-font ()
   (let ((font-spec (format "%s-%d" +font-default +font-size)))
     (set-frame-font font-spec)
@@ -77,15 +83,7 @@
   (+load-face-font)
   (+load-ext-font))
 
-(defun +load-theme ()
-  (if (boundp 'ns-system-appearance)
-      (add-to-list 'ns-system-appearance-change-functions
-                   (lambda (l?d)
-                     (if (eq l?d 'light)
-                         (load-theme +theme-system-light t)
-                       (load-theme +theme-system-dark t))))
-    (load-theme +theme t)))
-
+;;; packages
 (eat-package dimmer
   :straight t
   :hook (after-init-hook . dimmer-mode)
@@ -118,6 +116,7 @@
   :straight t
   :hook (after-init-hook . default-text-scale-mode))
 
+;;; opacity
 (defun sanityinc/adjust-opacity (frame incr)
   "Adjust the background opacity of FRAME by increment INCR."
   (unless (display-graphic-p frame)
@@ -139,24 +138,21 @@
 (global-set-key (kbd "M-C-9") (lambda () (interactive) (sanityinc/adjust-opacity nil 2)))
 (global-set-key (kbd "M-C-7") (lambda () (interactive) (modify-frame-parameters nil `((alpha . 100)))))
 
+;;; title format
 (setq frame-title-format
       '((:eval (if (buffer-file-name)
                    (abbreviate-file-name (buffer-file-name))
                  "%b"))))
 
-;; tui: only load tui theme
+;;; tui: only load tui theme
 (add-hook 'after-make-console-frame-hooks (lambda ()
                                             (when (fboundp 'menu-bar-mode)
                                               (menu-bar-mode -1))
                                             (load-theme +theme-tui t)))
-;; gui frame: load font and theme
+;;; gui frame: load font and theme
 (add-hook 'after-make-window-system-frame-hooks (lambda ()
                                                   (+load-font)
                                                   (+load-theme)))
-
-;; TODO
-;; spc a id agenda, not m-x
-;; daemon start on tui, bui if you create a frame, it's gui, also `windows-system' become to non nil from nil
 
 ;;; mode-line
 (eat-package which-func
@@ -220,4 +216,9 @@ The padding pushes TEXT to the right edge of the mode-line."
                   ;; (:eval (concat ,spaces "(%l) " ,percentage "%%"))
                   )))
 
+;;; TODO
+;; spc a id agenda, not m-x
+;; daemon start on tui, bui if you create a frame, it's gui, also `windows-system' become to non nil from nil
+
+;;; init-ui.el ends here
 (provide 'init-ui)

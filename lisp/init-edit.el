@@ -133,5 +133,16 @@
   (setq imenu-list-auto-resize t
         imenu-list-mode-line-format nil))
 
+;;; outline
+(eat-package color-outline
+  :commands color-outline-mode
+  :hook (prog-mode-hook . color-outline-mode)
+  :config
+  ;; TODO /* ?
+  (push '(go-mode "/") color-outline-comment-char-alist))
 
+(eat-package outline+)
+
+
+;;; init-edit.el ends here
 (provide 'init-edit)
