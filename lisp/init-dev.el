@@ -74,6 +74,7 @@
 
 (eat-package citre
   :straight (citre :type git :host github :repo "universal-ctags/citre")
+  :hook (emacs-lisp-mode-hook . citre-mode)
   :init
   (global-set-key (kbd "C-x c j") 'citre-jump)
   (global-set-key (kbd "C-x c k") 'citre-jump-back)

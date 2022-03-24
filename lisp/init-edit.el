@@ -85,6 +85,11 @@
   :straight (vundo :type git :host github :repo "casouri/vundo")
   :commands vundo)
 
+(eat-package undo-hl
+  :straight (undo-hl :type git :host github :repo "casouri/undo-hl")
+  :hook
+  ((prog-mode-hook conf-mode-hook) . undo-hl-mode))
+
 (eat-package avy
   :straight t
   :init
