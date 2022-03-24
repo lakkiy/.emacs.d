@@ -32,29 +32,29 @@
 (add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))
 
 (let ((file-name-handler-alist nil))
-  ;; 1. must work on emacs -Q
+  ;;  must work on emacs -Q
   (require 'init-straight)
   (require 'init-builtin)
-  ;; 2. some funcs
+  ;; font theme modeline
+  (require 'init-ui)
+  ;;  some funcs
   (require 'init-utils)
-  ;; 3. must work on normal
+  ;;  must work on normal
   (require 'init-dog)
   (require 'init-edit)
   (require 'init-completion)
   (require 'init-dev)
   (require 'init-windows)
-  ;; 4. 鸡肋
+  ;;  鸡肋
   (when (and +icons-p (display-graphic-p))
     (require 'init-icons))
-  ;; 5. theme modeline
-  (require 'init-ui)
-  ;; 6. emacs app，telega，magit
+  ;;  emacs app，telega，magit
   (require 'init-app)
-  ;; 7. modes
+  ;;  modes
   (require 'init-mode)
   (require 'init-org)
-  ;; 8. lib like all-the-icons
+  ;;  lib like all-the-icons
   (require 'init-lib)
-  ;; 9. just straight
+  ;;  just straight
   (require 'init-mole)
   (require 'init-xterm))
