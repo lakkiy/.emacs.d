@@ -8,7 +8,7 @@
   "Emoji font.")
 (defvar +font-cn "LXGW WenKai"
   "Just used for chinese font.")
-(defvar +font-variable-pitch "DejaVu Serif"
+(defvar +font-variable-pitch "Cardo"
   "Used for `variable-pitch-mode'")
 
 (defvar +theme 'nano

@@ -158,4 +158,6 @@
 ;; spc a id agenda, not m-x
 ;; daemon start on tui, bui if you create a frame, it's gui, also `windows-system' become to non nil from nil
 
+;;; mode-line
+
 (provide 'init-ui)

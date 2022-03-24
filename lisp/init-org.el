@@ -1,5 +1,10 @@
 ;;; -*- lexical-binding: t -*-
 
+;;; ! from casouri
+(eat-package iimg
+  :commands iimg-enable
+  :hook (text-mode-hook . iimg-enable))
+
 (eat-package org-modern
   :straight (org-modern :type git :host github :repo "minad/org-modern")
   :hook (org-mode-hook . org-modern-mode))
