@@ -81,6 +81,8 @@
   :config
   (auto-save-enable))
 
+;;; undo things
+
 (eat-package vundo
   :straight (vundo :type git :host github :repo "casouri/vundo")
   :commands vundo)
@@ -89,6 +91,25 @@
   :straight (undo-hl :type git :host github :repo "casouri/undo-hl")
   :hook
   ((prog-mode-hook conf-mode-hook) . undo-hl-mode))
+
+;;;
+
+(eat-package ghelp
+  :straight (ghelp :type git :host github :repo "casouri/ghelp")
+  :commands
+  ghelp-describe
+  ghelp-describe-function
+  ghelp-describe-variable
+  ghelp-describe-key
+  ghelp-describe-elisp
+  :init
+  (global-set-key (kbd "C-h C-h") #'ghelp-describe)
+  (global-set-key (kbd "C-h C-f") #'ghelp-describe-function)
+  (global-set-key (kbd "C-h C-v") #'ghelp-describe-variable)
+  (global-set-key (kbd "C-h C-k") #'ghelp-describe-key)
+  (global-set-key (kbd "C-h o") #'ghelp-describe-elisp)
+  :config
+  (global-set-key (kbd "C-h r") #'ghelp-resume))
 
 (eat-package avy
   :straight t
@@ -140,8 +161,6 @@
   :config
   ;; TODO /* ?
   (push '(go-mode "/") color-outline-comment-char-alist))
-
-(eat-package outline+)
 
 
 ;;; init-edit.el ends here

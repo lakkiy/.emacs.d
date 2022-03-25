@@ -139,6 +139,7 @@
   (setq winner-dont-bind-my-keys t))
 
 (eat-package dired
+  :hook (dired-mode-hook . dired-hide-details-mode)
   :init
   (setq
    dired-dwim-target t

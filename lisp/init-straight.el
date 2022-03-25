@@ -1,6 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 ;; config should work under emacs -Q like straight and gc...
 
+;;; bootstrap straight.el
 ;; DOOM core/core-packages.el#L87-L90
 ;; https://www.reddit.com/r/emacs/comments/mtb05k/emacs_init_time_decreased_65_after_i_realized_the/
 (setq straight-check-for-modifications '(check-on-save find-when-checking))
@@ -19,11 +20,13 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+;;; eat-package
 ;; require all packages in emacsclient
 (setq eat-all-packages-daemon t)
 (require 'eat-package)
 
 
+;;; benchmark
 (defun sanityinc/time-subtract-millis (b a)
   (* 1000.0 (float-time (time-subtract b a))))
 
@@ -104,7 +107,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
   (add-hook 'after-init-hook 'benchmark-init/deactivate))
 
 
-
+;;; frame hooks
 (defvar after-make-console-frame-hooks '()
   "Hooks to run after creating a new TTY frame")
 (defvar after-make-window-system-frame-hooks '()
@@ -128,6 +131,7 @@ Selectively runs either `after-make-console-frame-hooks' or
           (lambda () (when sanityinc/initial-frame
                        (run-after-make-frame-hooks sanityinc/initial-frame))))
 
+;;; consts
 (defconst *is-a-mac*
   (eq system-type 'darwin)
   "Are we running on a Mac system?")
@@ -140,6 +144,7 @@ Selectively runs either `after-make-console-frame-hooks' or
   (>= emacs-major-version 29)
   "Emacs is 29 or above.")
 
+;;; mac specific configuration
 (when *is-a-mac*
   (eat-package exec-path-from-shell
     :straight t
@@ -181,6 +186,7 @@ Selectively runs either `after-make-console-frame-hooks' or
 (unless *is-a-mac*
   (setq command-line-ns-option-alist nil))
 
+;;; linux specific configuration
 (when sys/linuxp
   ;; Linux specific
   (setq x-underline-at-descent-line t)
@@ -196,6 +202,7 @@ Selectively runs either `after-make-console-frame-hooks' or
 (unless sys/linuxp
   (setq command-line-x-option-alist nil))
 
+;;; better default config
 ;; GC automatically while unfocusing the frame
 ;; `focus-out-hook' is obsolete since 27.1
 (add-function :after after-focus-change-function
@@ -309,12 +316,13 @@ Selectively runs either `after-make-console-frame-hooks' or
 (global-set-key (kbd "C-c j") 'select-frame-by-name)
 (global-set-key (kbd "C-c J") 'set-frame-name)
 
-;; Load `custom-file'
+;;; Load custom-file
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (and (file-exists-p custom-file)
            (file-readable-p custom-file))
   (load custom-file :no-error :no-message))
 
+;;; packages
 (eat-package gcmh
   :straight t
   :hook (after-init-hook . gcmh-mode)
@@ -322,8 +330,11 @@ Selectively runs either `after-make-console-frame-hooks' or
   (setq gcmh-idle-delay 5
         gcmh-high-cons-threshold #x6400000)) ;; 100 MB
 
+;;; better for Dvorak keyboard layout
 ;; Make “C-t” act like “C-x”, so it's easier to type on Dvorak layout
 ;; And do not bind any key to "C-t" cause it will translate to "C-x"
 (keyboard-translate ?\C-t ?\C-x)
 
+
+;;; init-straight.el ends here
 (provide 'init-straight)

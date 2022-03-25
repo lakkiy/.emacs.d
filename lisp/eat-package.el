@@ -1,6 +1,6 @@
 ;;; eat-package.el --- Just eat your package!        -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2021  Liu Bo
+;; Copyright (C) 2021-2022  Liu Bo
 
 ;; Author: Liu Bo <liubolovelife@gmail.com>
 
@@ -25,12 +25,16 @@
 
 (require 'pcase)
 
+;;; Variables
+
 (defvar eat-all-packages-daemon nil
   "If it's value is t, all package in `eat-package' will be required in dameon.")
 
 (defconst eat--all-packages-p
   (and eat-all-packages-daemon (daemonp))
   "")
+
+;;; Functions
 
 (defun eat-package-split-command-args (args)
   "Split args into commands and args.
@@ -185,5 +189,5 @@ ARGS.
        ((debug error) (warn "Error when loading %s: %s" ',package
                             (error-message-string err))))))
 
-(provide 'eat-package)
 ;;; eat-package.el ends here
+(provide 'eat-package)

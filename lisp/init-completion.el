@@ -124,6 +124,7 @@
                                         (when-let (project (project-current))
                                           (car (project-roots project)))))
   :config
+  ;; (global-set-key (kbd "C-c C-s") #'consult-line)
   (with-no-warnings
     (consult-customize consult-ripgrep consult-git-grep consult-grep
                        consult-bookmark
@@ -151,4 +152,5 @@
                  nil
                  (window-parameters (mode-line-format . none)))))
 
+;;; init-completion.el ends here
 (provide 'init-completion)
