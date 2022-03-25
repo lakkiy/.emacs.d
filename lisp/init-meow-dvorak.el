@@ -149,6 +149,7 @@
    '("}" . tab-bar-switch-to-next-tab)
    '("S" . save-buffer)
    '("s" . ace-window)
+   '("C" . xeft)
    ))
 
 (provide 'init-meow-dvorak)

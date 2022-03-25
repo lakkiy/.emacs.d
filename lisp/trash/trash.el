@@ -239,3 +239,65 @@ prepended to the element after the #+HEADER: tag."
   :straight (zeft :type git :host github :repo "casouri/zeft")
   :init
   (setq zeft-directory (expand-file-name "~/Dropbox/org/roam")))
+
+(eat-package org-roam
+  :straight t
+  :init
+  (eat-package emacsql-sqlite :straight t)
+  ;; for org-roam-buffer-toggle
+  ;; Use side-window like V1
+  ;; This can take advantage of slots available with it
+  (add-to-list 'display-buffer-alist
+               '("\\*org-roam\\*"
+                 (display-buffer-in-side-window)
+                 (side . right)
+                 (slot . 0)
+                 (window-width . 0.25)
+                 (preserve-size . (t nil))
+                 (window-parameters . ((no-other-window . t)
+                                       (no-delete-other-windows . t)))))
+  (setq org-roam-v2-ack t
+        org-roam-capture-templates
+        '(("d" "default" plain "%?"
+           :target (file+head "%<Y%m%d%H%M%S>-${slug}.org"
+                              "#+title: ${title}\n")
+           :unnarrowed t)
+          ("l" "leetcode" plain "%?"
+           :target (file+head+olp
+                    "%<%Y%m%d%H%M%S>-${slug}.org"
+                    "#+title: ${title}\n#+filetags:"
+                    ("References\n* Description\n* Code\n* Time & Space\n* Related & Recommend"))
+           :clock-in t :clock-resume t :unnarrowed t))
+        org-roam-directory (let ((p (expand-file-name (concat org-directory "/roam"))))
+                             (unless (file-directory-p p) (make-directory p))
+                             p))
+  (add-to-list 'org-agenda-files org-roam-directory)
+  (global-set-key (kbd "C-c n l") 'org-roam-buffer-toggle)
+  (global-set-key (kbd "C-c n f") 'org-roam-node-find)
+  (global-set-key (kbd "C-c n g") 'org-roam-graph)
+  (global-set-key (kbd "C-c n i") 'org-roam-node-insert)
+  (global-set-key (kbd "C-c n c") 'org-roam-capture)
+  (global-set-key (kbd "C-c n j") 'org-roam-dailies-capture-today)
+  (global-set-key (kbd "C-c n s") 'org-roam-db-sync)
+  :config
+  (require 'org-roam-protocol)
+  (org-roam-setup))
+
+(eat-package org-roam-ui
+  :straight
+  (org-roam-ui :type git :host github :repo "org-roam/org-roam-ui"
+               :branch "main" :files ("*.el" "out")))
+
+(eat-package org-download
+  :straight t
+  :commands
+  org-download-clipboard
+  org-download-yank
+  org-download-screenshot
+  :init
+  (setq-default org-download-image-dir (concat org-directory "/pictures"))
+  (setq org-download-image-org-width 300
+        org-download-backend "curl"
+        org-download-screenshot-method (cond (*is-a-mac* "screencapture -ci")
+                                             (sys/linuxp "flameshot gui --raw > %s")
+                                             (t ""))))

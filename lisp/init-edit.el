@@ -104,9 +104,9 @@
   ghelp-describe-elisp
   :init
   (global-set-key (kbd "C-h C-h") #'ghelp-describe)
-  (global-set-key (kbd "C-h C-f") #'ghelp-describe-function)
-  (global-set-key (kbd "C-h C-v") #'ghelp-describe-variable)
-  (global-set-key (kbd "C-h C-k") #'ghelp-describe-key)
+  (global-set-key [remap describe-function] #'ghelp-describe-function)
+  (global-set-key [remap describe-variable] #'ghelp-describe-variable)
+  (global-set-key [remap describe-key] #'ghelp-describe-key)
   (global-set-key (kbd "C-h o") #'ghelp-describe-elisp)
   :config
   (global-set-key (kbd "C-h r") #'ghelp-resume))
