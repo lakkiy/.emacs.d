@@ -67,8 +67,11 @@
 
   (meow-setup-indicator) ;; NOTE use default modeline
 
-  ;; SPC h f to describe-funtion
-  (global-set-key (kbd "C-h C-f") 'describe-funtion)
+  ;; specific font so that line won't break
+  (advice-add 'meow-cheatsheet :after (lambda ()
+                                        (interactive)
+                                        (setq buffer-face-mode-face '(:family "Menlo"))
+                                        (buffer-face-mode +1)))
 
   ;; normal mode list
   (dolist (mode '(go-dot-mod-mode
