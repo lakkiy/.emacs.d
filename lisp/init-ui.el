@@ -53,6 +53,9 @@
     (with-eval-after-load 'all-the-icons
       (kaolin-treemacs-theme))))
 
+;;; `stimmung-themes'
+(straight-use-package 'stimmung-themes)
+
 ;;; font
 (defun +load-base-font ()
   (let ((font-spec (format "%s-%d" +font-default +font-size)))
