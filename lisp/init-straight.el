@@ -1,8 +1,8 @@
 ;;; -*- lexical-binding: t -*-
 ;; config should work under emacs -Q like straight and gc...
 
-;;; bootstrap straight.el
-;; DOOM core/core-packages.el#L87-L90
+;;; Bootstrap straight.el
+
 ;; https://www.reddit.com/r/emacs/comments/mtb05k/emacs_init_time_decreased_65_after_i_realized_the/
 (setq straight-check-for-modifications '(check-on-save find-when-checking))
 (setq straight-vc-git-default-clone-depth 1)
@@ -21,12 +21,14 @@
   (load bootstrap-file nil 'nomessage))
 
 ;;; eat-package
+
 ;; require all packages in emacsclient
 (setq eat-all-packages-daemon t)
 (require 'eat-package)
 
 
-;;; benchmark
+;;; Benchmark
+
 (defun sanityinc/time-subtract-millis (b a)
   (* 1000.0 (float-time (time-subtract b a))))
 
@@ -107,7 +109,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
   (add-hook 'after-init-hook 'benchmark-init/deactivate))
 
 
-;;; frame hooks
+;;; Frame
 (defvar after-make-console-frame-hooks '()
   "Hooks to run after creating a new TTY frame")
 (defvar after-make-window-system-frame-hooks '()
@@ -131,7 +133,7 @@ Selectively runs either `after-make-console-frame-hooks' or
           (lambda () (when sanityinc/initial-frame
                        (run-after-make-frame-hooks sanityinc/initial-frame))))
 
-;;; consts
+;;; Consts
 (defconst *is-a-mac*
   (eq system-type 'darwin)
   "Are we running on a Mac system?")
@@ -144,7 +146,7 @@ Selectively runs either `after-make-console-frame-hooks' or
   (>= emacs-major-version 29)
   "Emacs is 29 or above.")
 
-;;; mac specific configuration
+;;; Mac specific configuration
 (when *is-a-mac*
   (eat-package exec-path-from-shell
     :straight t
@@ -186,7 +188,7 @@ Selectively runs either `after-make-console-frame-hooks' or
 (unless *is-a-mac*
   (setq command-line-ns-option-alist nil))
 
-;;; linux specific configuration
+;;; Linux specific configuration
 (when sys/linuxp
   ;; Linux specific
   (setq x-underline-at-descent-line t)
@@ -202,45 +204,73 @@ Selectively runs either `after-make-console-frame-hooks' or
 (unless sys/linuxp
   (setq command-line-x-option-alist nil))
 
-;;; better default config
+;;; GC
+
 ;; GC automatically while unfocusing the frame
-;; `focus-out-hook' is obsolete since 27.1
 (add-function :after after-focus-change-function
               (lambda ()
                 (unless (frame-focus-state)
                   (garbage-collect))))
 
+(eat-package gcmh
+  :straight t
+  :hook (after-init-hook . gcmh-mode)
+  :init
+  (setq gcmh-idle-delay 5
+        gcmh-high-cons-threshold #x6400000)) ;; 100 MB
+
+;;; UTF-8
+
 ;; Contrary to what many Emacs users have in their configs, you don't need
 ;; more than this to make UTF-8 the default coding system:
 (set-language-environment "UTF-8")
 
-;; Speed up startup
+;;; Speed up startup
+
 (setq auto-mode-case-fold nil)
+
+;; Optimization
+(setq idle-update-delay 1.0)
+
+;; Don't ping things that look like domain names.
+(setq ffap-machine-p-known 'reject)
+
+;;; Scroll
 
 ;; The nano style for truncated long lines.
 (setq auto-hscroll-mode 'current-line)
 
-;; in emacs29 from Po Lu!
 (when emacs/>=29p
   ;; for mouse scroll
   (setq pixel-scroll-precision-large-scroll-height 60)
   (setq pixel-scroll-precision-interpolation-factor 30.0)
   (add-hook 'after-init-hook (lambda () (pixel-scroll-precision-mode))))
 
+;; scroll nand hscroll
+(setq-default
+ scroll-step 2
+ scroll-margin 2
+ hscroll-step 2                                     ; Horizontal Scroll
+ hscroll-margin 2
+ scroll-conservatively 101
+ scroll-up-aggressively 0.01
+ scroll-down-aggressively 0.01
+ scroll-preserve-screen-position 'always
+ auto-window-vscroll nil
+ fast-but-imprecise-scrolling nil
+ mouse-wheel-scroll-amount '(1 ((shift) . hscroll)) ; use shift + mouse wheel to scrll horizontally
+ mouse-wheel-progressive-speed nil)
+
+;;; Cursor
+
 ;; Disable cursor blink
 (add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
 
-;; Optimization
-(setq idle-update-delay 1.0)
 
 ;; Do not show cursor in nonselected windows
 (setq-default cursor-in-non-selected-windows nil)
 
-;; Do not highlight symbol in nonselected windows, see `highlight-symbol-at-point'
-;; (setq highlight-nonselected-windows nil)
-
-;; Don't ping things that look like domain names.
-(setq ffap-machine-p-known 'reject)
+;;; GUI features
 
 ;; Suppress GUI features and more
 (setq use-file-dialog nil
@@ -259,8 +289,32 @@ Selectively runs either `after-make-console-frame-hooks' or
 (setq window-resize-pixelwise t
       frame-resize-pixelwise t)
 
+;;; Start up message/screen
+
 ;; Shut up!
 (defun display-startup-echo-area-message() (message nil))
+
+
+;;; Indent tab
+
+;; indent with whitespace by default
+(setq-default
+ tab-width 4
+ indent-tabs-mode nil)
+
+
+;;; Disable default auto backup and save file
+(setq-default
+ create-lockfiles nil                               ; Don't create lockfiles
+ make-backup-files nil                              ; Disable auto save and backup
+ auto-save-default nil
+ auto-save-list-file-prefix nil)
+
+
+;;; Misc
+
+;; Do not highlight symbol in nonselected windows, see `highlight-symbol-at-point'
+;; (setq highlight-nonselected-windows nil)
 
 ;; TODO set line height, but `line-spacing' only add space below line
 
@@ -288,51 +342,14 @@ Selectively runs either `after-make-console-frame-hooks' or
  word-wrap-by-category t ;; Emacs 之光！
  )
 
-;; indent with whitespace by default
-(setq-default
- tab-width 4
- indent-tabs-mode nil)
-
-;; disable default auto backup and save file
-(setq-default
- create-lockfiles nil                               ; Don't create lockfiles
- make-backup-files nil                              ; Disable auto save and backup
- auto-save-default nil
- auto-save-list-file-prefix nil)
-
-;; scroll nand hscroll
-(setq-default
- scroll-step 2
- scroll-margin 2
- hscroll-step 2                                     ; Horizontal Scroll
- hscroll-margin 2
- scroll-conservatively 101
- scroll-up-aggressively 0.01
- scroll-down-aggressively 0.01
- scroll-preserve-screen-position 'always
- auto-window-vscroll nil
- fast-but-imprecise-scrolling nil
- mouse-wheel-scroll-amount '(1 ((shift) . hscroll)) ; use shift + mouse wheel to scrll horizontally
- mouse-wheel-progressive-speed nil)
-
-(global-set-key (kbd "C-c j") 'select-frame-by-name)
-(global-set-key (kbd "C-c J") 'set-frame-name)
-
 ;;; Load custom-file
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (and (file-exists-p custom-file)
            (file-readable-p custom-file))
   (load custom-file :no-error :no-message))
 
-;;; packages
-(eat-package gcmh
-  :straight t
-  :hook (after-init-hook . gcmh-mode)
-  :init
-  (setq gcmh-idle-delay 5
-        gcmh-high-cons-threshold #x6400000)) ;; 100 MB
+;;; Dvorak keyboard layout
 
-;;; better for Dvorak keyboard layout
 ;; Make “C-t” act like “C-x”, so it's easier to type on Dvorak layout
 ;; And do not bind any key to "C-t" cause it will translate to "C-x"
 (keyboard-translate ?\C-t ?\C-x)

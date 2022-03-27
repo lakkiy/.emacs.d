@@ -78,7 +78,8 @@
                   diff-mode))
     (add-to-list 'meow-mode-state-list `(,mode . normal)))
   ;; motion mode list
-  (dolist (mode '(notmuch-hello-mode
+  (dolist (mode '(xeft-mode
+                  notmuch-hello-mode
                   notmuch-search-mode
                   notmuch-tree-mode))
     (add-to-list 'meow-mode-state-list `(,mode . motion)))

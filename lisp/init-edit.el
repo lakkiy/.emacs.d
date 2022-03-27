@@ -1,9 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(eat-package mode-line-bell
-  :straight t
-  :hook (after-init-hook . mode-line-bell-mode))
-
 (eat-package symbol-overlay
   :straight t
   :hook

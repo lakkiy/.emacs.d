@@ -1,7 +1,8 @@
 ;;; -*- lexical-binding: t -*-
 ;; Do not use `eat-package' with themes.
 
-;;; theme
+;;; Theme
+
 ;; disable previous theme when load theme
 (defun +load-theme-advice (f theme-id &optional no-confirm no-enable &rest args)
   "Enhance `load-theme' by disabling other enabled themes & calling hooks"
@@ -23,10 +24,10 @@
                        (load-theme +theme-system-dark t))))
     (load-theme +theme t)))
 
-;;; `color-theme-sanityinc-tomorrow'
+;; `color-theme-sanityinc-tomorrow'
 (straight-use-package 'color-theme-sanityinc-tomorrow)
 
-;;; `spacemacs-theme'
+;; `spacemacs-theme'
 (straight-use-package 'spacemacs-theme)
 
 (setq
@@ -40,7 +41,7 @@
  spacemacs-theme-org-bold t
  spacemacs-theme-underline-parens t)
 
-;;; `kaolin-themes'
+;; `kaolin-themes'
 (straight-use-package 'kaolin-themes)
 
 (setq
@@ -53,14 +54,14 @@
     (with-eval-after-load 'all-the-icons
       (kaolin-treemacs-theme))))
 
-;;; `stimmung-themes'
+;; `stimmung-themes'
 (straight-use-package 'stimmung-themes)
 
 (setq
  stimmung-themes-light-highlight-color "cornsilk1"
  stimmung-themes-dark-highlight-color "#40382b")
 
-;;; font
+;;; Font
 (defun +load-base-font ()
   (let ((font-spec (format "%s-%d" +font-default +font-size)))
     (set-frame-font font-spec)
@@ -90,7 +91,7 @@
   (+load-face-font)
   (+load-ext-font))
 
-;;; packages
+;;; Packages
 (eat-package dimmer
   :straight t
   :hook (after-init-hook . dimmer-mode)
@@ -123,7 +124,7 @@
   :straight t
   :hook (after-init-hook . default-text-scale-mode))
 
-;;; opacity
+;;; Opacity
 (defun sanityinc/adjust-opacity (frame incr)
   "Adjust the background opacity of FRAME by increment INCR."
   (unless (display-graphic-p frame)
@@ -145,23 +146,31 @@
 (global-set-key (kbd "M-C-9") (lambda () (interactive) (sanityinc/adjust-opacity nil 2)))
 (global-set-key (kbd "M-C-7") (lambda () (interactive) (modify-frame-parameters nil `((alpha . 100)))))
 
-;;; title format
+;;; Title format
+
 (setq frame-title-format
       '((:eval (if (buffer-file-name)
                    (abbreviate-file-name (buffer-file-name))
                  "%b"))))
 
-;;; tui: only load tui theme
+;;; TUI: only load tui theme
+
 (add-hook 'after-make-console-frame-hooks (lambda ()
                                             (when (fboundp 'menu-bar-mode)
                                               (menu-bar-mode -1))
                                             (load-theme +theme-tui t)))
-;;; gui frame: load font and theme
+;;; GUI frame: load font and theme
+
 (add-hook 'after-make-window-system-frame-hooks (lambda ()
                                                   (+load-font)
                                                   (+load-theme)))
 
-;;; mode-line
+;;; Mode-line
+
+(eat-package mode-line-bell
+  :straight t
+  :hook (after-init-hook . mode-line-bell-mode))
+
 (eat-package which-func
   :straight t
   :commands which-func-mode
@@ -202,6 +211,8 @@ The padding pushes TEXT to the right edge of the mode-line."
                         "[%%l] %d%%"
                         (/ (* (window-end) 100.0) (point-max)))))
                 `(,fringe
+                  (:eval (when (fboundp 'rime-lighter) (rime-lighter)))
+                  " "
                   (:eval (if (window-dedicated-p) "🚷" ""))
                   (:eval (if buffer-read-only "🔒" ""))
                   (:propertize "%[%b%]" face (:weight bold))

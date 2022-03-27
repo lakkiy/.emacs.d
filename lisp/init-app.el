@@ -50,6 +50,7 @@
   :hook (git-commit-setup-hook . git-commit-turn-on-flyspell)
   :commands magit
   :config
+  (fullframe magit-status magit-mode-quit-window)
   (setq-default magit-diff-refine-hunk t)
   (global-set-key (kbd "C-x g") 'magit-status)
   (global-set-key (kbd "C-x M-g") 'magit-dispatch))
@@ -151,7 +152,13 @@ Used in the default value of `notmuch-tag-formats'."
 
 (eat-package docker
   :straight t
-  :commands docker)
+  :commands docker
+  :config
+  (fullframe docker-images tablist-quit)
+  (fullframe docker-machines tablist-quit)
+  (fullframe docker-volumes tablist-quit)
+  (fullframe docker-networks tablist-quit)
+  (fullframe docker-containers tablist-quit))
 
 (eat-package kubernetes
   :straight t

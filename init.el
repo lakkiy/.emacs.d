@@ -11,13 +11,13 @@
 (defvar +font-variable-pitch "Cardo"
   "Used for `variable-pitch-mode'")
 
-(defvar +theme 'nano
+(defvar +theme 'stimmung-themes-light
   "Default theme.")
-(defvar +theme-tui 'carbon
+(defvar +theme-tui 'stimmung-themes-dark
   "Default theme in terminal.")
-(defvar +theme-system-light 'nano
+(defvar +theme-system-light 'stimmung-themes-light
   "Default light theme after system appearance changed.")
-(defvar +theme-system-dark 'carbon
+(defvar +theme-system-dark 'stimmung-themes-dark
   "Default dark theme. after system appearance changed.")
 (defvar +theme-hooks nil
   "((theme-id . function) ...)")

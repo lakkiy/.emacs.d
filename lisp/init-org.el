@@ -14,7 +14,7 @@
   (setq org-highlight-latex-and-related '(latex))
 
   (setq
-   ;; org-startup-indented t ;; NOTE conflict with org-modern
+   org-startup-indented t ;; NOTE maybe conflict with org-modern, but don't have other choice
    org-hide-emphasis-markers t
    org-pretty-entities t
    org-ellipsis "…"

@@ -1,7 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 ;; my functions, keys, mode, window...
 
-;; Notifications
+;;; Notifications
 ;;
 ;; Actually, `notify-send' is not defined in notifications package, but the
 ;; autoload cookie will make Emacs load `notifications' first, then our
@@ -177,5 +177,5 @@ typical word processor."
     (kill-local-variable 'line-spacing)
     (text-scale-decrease 1)))
 
-
+;;; init-utils.el ends here
 (provide 'init-utils)
