@@ -145,23 +145,27 @@
 (global-set-key (kbd "M-C-9") (lambda () (interactive) (sanityinc/adjust-opacity nil 2)))
 (global-set-key (kbd "M-C-7") (lambda () (interactive) (modify-frame-parameters nil `((alpha . 100)))))
 
-;;; title format
+;;; Title format
+
 (setq frame-title-format
       '((:eval (if (buffer-file-name)
                    (abbreviate-file-name (buffer-file-name))
                  "%b"))))
 
-;;; tui: only load tui theme
+;;; TUI: only load tui theme
+
 (add-hook 'after-make-console-frame-hooks (lambda ()
                                             (when (fboundp 'menu-bar-mode)
                                               (menu-bar-mode -1))
                                             (load-theme +theme-tui t)))
-;;; gui frame: load font and theme
+;;; GUI frame: load font and theme
+
 (add-hook 'after-make-window-system-frame-hooks (lambda ()
                                                   (+load-font)
                                                   (+load-theme)))
 
-;;; mode-line
+;;; Mode-line
+
 (eat-package which-func
   :straight t
   :commands which-func-mode
@@ -202,6 +206,8 @@ The padding pushes TEXT to the right edge of the mode-line."
                         "[%%l] %d%%"
                         (/ (* (window-end) 100.0) (point-max)))))
                 `(,fringe
+                  (:eval (when (fboundp 'rime-lighter) (rime-lighter)))
+                  " "
                   (:eval (if (window-dedicated-p) "🚷" ""))
                   (:eval (if buffer-read-only "🔒" ""))
                   (:propertize "%[%b%]" face (:weight bold))

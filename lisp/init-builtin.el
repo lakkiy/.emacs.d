@@ -514,6 +514,10 @@ If popup is focused, kill it."
    outline-minor-mode-cycle t
    outline-minor-mode-highlight t))
 
+;;;; Frame
+(eat-package fullframe :straight t)
+(with-eval-after-load 'ibuffer
+  (fullframe ibuffer ibuffer-quit))
 
 ;;; init-builtin.el ends here
 (provide 'init-builtin)

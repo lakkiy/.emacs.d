@@ -177,5 +177,5 @@ typical word processor."
     (kill-local-variable 'line-spacing)
     (text-scale-decrease 1)))
 
-
+;;; init-utils.el ends here
 (provide 'init-utils)
