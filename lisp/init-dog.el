@@ -35,24 +35,24 @@
   (define-key rime-mode-map (kbd "C-`") 'rime-send-keybinding)
   (define-key rime-mode-map (kbd "M-j") 'rime-force-enable))
 
-;; TODO remoce `dash.el'
-(defun +project-previous-buffer (arg)
-  "Toggle to the previous buffer that belongs to current project."
-  (interactive "P")
-  (if (equal '(4) arg)
-      (if-let ((pr (project-current)))
-          (switch-to-buffer
-           (->> (project--buffer-list pr)
-                (--remove (or (minibufferp it)
-                              (get-buffer-window-list it)))
-                (car))))
-    (mode-line-other-buffer)))
-
 (eat-package meow
   :straight t
   :hook
   (after-init-hook . (lambda ()
                        (meow-global-mode 1)))
+  :init
+  ;; TODO remoce `dash.el'
+  (defun +project-previous-buffer (arg)
+    "Toggle to the previous buffer that belongs to current project."
+    (interactive "P")
+    (if (equal '(4) arg)
+        (if-let ((pr (project-current)))
+            (switch-to-buffer
+             (->> (project--buffer-list pr)
+                  (--remove (or (minibufferp it)
+                                (get-buffer-window-list it)))
+                  (car))))
+      (mode-line-other-buffer)))
   :config
   (setq meow-esc-delay 0.001
         meow-keypad-describe-delay 1.0)

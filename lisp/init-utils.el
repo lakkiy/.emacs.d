@@ -151,6 +151,7 @@ name and search again. Typically OP is nil or \"common\"."
   :straight t
   :commands olivetti-mode)
 
+;; FIXME do not run `xwidget-webkit-browse-url' with the buffer that enable this mode
 (define-minor-mode prose-mode
   "Set up a buffer for prose editing.
 This enables or modifies a number of settings so that the

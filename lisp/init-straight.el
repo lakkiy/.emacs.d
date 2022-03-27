@@ -262,6 +262,8 @@ Selectively runs either `after-make-console-frame-hooks' or
 ;; Shut up!
 (defun display-startup-echo-area-message() (message nil))
 
+;; TODO set line height, but `line-spacing' only add space below line
+
 (setq-default
  initial-scratch-message (concat ";; Happy hacking, " user-login-name " - Emacs ♥ you!\n\n")
  initial-major-mode 'fundamental-mode

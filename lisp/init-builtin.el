@@ -407,7 +407,7 @@ If popup is focused, kill it."
 
 (eat-package webjump
   :init
-  (global-set-key (kbd "C-c /") #'webjump)
+  (global-set-key (kbd "C-c C-/") #'webjump)
   (setq webjump-sites
         '(("Emacs Wiki" .
            [simple-query "www.emacswiki.org" "www.emacswiki.org/cgi-bin/wiki/" #1=""])

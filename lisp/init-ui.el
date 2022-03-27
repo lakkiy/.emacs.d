@@ -56,6 +56,10 @@
 ;;; `stimmung-themes'
 (straight-use-package 'stimmung-themes)
 
+(setq
+ stimmung-themes-light-highlight-color "cornsilk1"
+ stimmung-themes-dark-highlight-color "#40382b")
+
 ;;; font
 (defun +load-base-font ()
   (let ((font-spec (format "%s-%d" +font-default +font-size)))

@@ -4,6 +4,8 @@
 ;; concept: these are the panels within an Emacs frame which contain
 ;; buffers.
 
+;; TODO maybe use `eyebrowse' replace `ta-bar'
+
 (eat-package window-numbering
   :straight (window-numbering :type git :host github :repo "DogLooksGood/window-numbering.el")
   :hook (after-init-hook . (lambda ()
@@ -31,10 +33,16 @@
           "\\*Compile-Log\\*"
           "\\*Completions\\*"
           "\\*Warnings\\*"
+
+          ;; shell
           shell-mode
           eshell-mode
           term-mode
+
+          ;; help & message
           help-mode
+          ghelp-page-mode
+
           compilation-mode))
   (with-eval-after-load 'project
     (setq popper-group-function 'popper-group-by-project))
