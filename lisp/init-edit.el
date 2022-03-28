@@ -159,5 +159,11 @@
   (push '(go-mode "/") color-outline-comment-char-alist))
 
 
+;;; TODO
+;; make mode-line height 0.1 when in note
+;; rime wont work in xeft because it's default is meow motion
+;; iimg after drap image but emacs didn't get focus
+;; iimg always save img as separe file
+
 ;;; init-edit.el ends here
 (provide 'init-edit)

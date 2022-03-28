@@ -91,13 +91,15 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
     (tabulated-list-revert)
     (display-buffer (current-buffer))))
 
-
-(defun sanityinc/show-init-time ()
-  (message "init completed in %.2fms"
-           (sanityinc/time-subtract-millis after-init-time before-init-time)))
-
-(add-hook 'after-init-hook 'sanityinc/show-init-time)
-
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message
+             "Emacs loaded in %s with %d garbage collections."
+             (format
+              "%.2f seconds"
+              (float-time
+               (time-subtract after-init-time before-init-time)))
+             gcs-done)))
 
 (eat-package benchmark-init
   :straight
