@@ -88,7 +88,7 @@
   :hook
   ((prog-mode-hook conf-mode-hook) . undo-hl-mode))
 
-;;;
+;;; Help
 
 (eat-package ghelp
   :straight (ghelp :type git :host github :repo "casouri/ghelp")
@@ -100,12 +100,14 @@
   ghelp-describe-elisp
   :init
   (global-set-key (kbd "C-h C-h") #'ghelp-describe)
-  (global-set-key [remap describe-function] #'ghelp-describe-function)
-  (global-set-key [remap describe-variable] #'ghelp-describe-variable)
-  (global-set-key [remap describe-key] #'ghelp-describe-key)
+  (global-set-key (kbd "C-h f") #'ghelp-describe-function)
+  (global-set-key (kbd "C-h v") #'ghelp-describe-variable)
+  (global-set-key (kbd "C-h k") #'ghelp-describe-key)
   (global-set-key (kbd "C-h o") #'ghelp-describe-elisp)
   :config
   (global-set-key (kbd "C-h r") #'ghelp-resume))
+
+;;;
 
 (eat-package avy
   :straight t
