@@ -1,7 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 ;; my functions, keys, mode, window...
 
-;; Notifications
+;;; Notifications
 ;;
 ;; Actually, `notify-send' is not defined in notifications package, but the
 ;; autoload cookie will make Emacs load `notifications' first, then our

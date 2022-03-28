@@ -16,8 +16,9 @@
       (member rime--current-input-key '(91 93 96))))
 
   (setq rime-disable-predicates '(meow-normal-mode-p
-                                  meow-motion-mode-p
+                                  ;; meow-motion-mode-p
                                   meow-keypad-mode-p
+                                  meow-beacon-mode-p
                                   +rime-predicate-org-syntax-punc-p
                                   +rime-predicate-md-syntax-punc-p)
         rime-inline-predicates '(rime-predicate-space-after-cc-p
