@@ -98,14 +98,6 @@
     (orderless-regexp (pinyinlib-build-regexp-string str)))
   (add-to-list 'orderless-matching-styles 'completion--regex-pinyin))
 
-(eat-package affe
-  :straight t
-  :init
-  (defun sanityinc/affe-grep-at-point (&optional dir initial)
-    (interactive (list prefix-arg (when-let ((s (symbol-at-point)))
-                                    (symbol-name s))))
-    (affe-grep dir initial)))
-
 (eat-package marginalia
   :straight t
   :hook (after-init-hook . marginalia-mode))

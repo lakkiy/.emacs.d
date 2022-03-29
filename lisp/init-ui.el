@@ -109,7 +109,7 @@
 ;; maybe use puslar ?
 (eat-package beacon
   :straight t
-  :hook (aftel-init-hook . beacon-mode)
+  :hook (aftel-init-hook . (lambda () (beacon-mode 1)))
   :init
   (setq-default beacon-lighter "")
   (setq-default beacon-size 20))
