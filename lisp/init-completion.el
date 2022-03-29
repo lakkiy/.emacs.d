@@ -92,7 +92,11 @@
   :hook (minibuffer-setup-hook . sanityinc/use-orderless-in-minibuffer)
   :init
   (defun sanityinc/use-orderless-in-minibuffer ()
-    (setq-local completion-styles '(substring orderless))))
+    (setq-local completion-styles '(substring orderless)))
+  :config
+  (defun completion--regex-pinyin (str)
+    (orderless-regexp (pinyinlib-build-regexp-string str)))
+  (add-to-list 'orderless-matching-styles 'completion--regex-pinyin))
 
 (eat-package affe
   :straight t

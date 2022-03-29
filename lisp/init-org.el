@@ -181,6 +181,7 @@
 
 (eat-package flique)
 
+;; TODO search in pinyin
 (eat-package xeft
   :straight (xeft
              :type git :host github :repo "casouri/xeft"
