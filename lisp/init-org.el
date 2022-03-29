@@ -2,7 +2,8 @@
 
 (eat-package org-modern
   :straight (org-modern :type git :host github :repo "minad/org-modern")
-  :hook (org-mode-hook . org-modern-mode))
+  :hook
+  (org-mode-hook . org-modern-mode))
 
 (eat-package org
   :straight (org :type built-in)
@@ -114,6 +115,8 @@
   (setq org-agenda-files (list org-directory))
   (global-set-key (kbd "C-c a") 'org-agenda)
   :config
+  (setq org-agenda-current-time-string
+        "⭠ now ─────────────────────────────────────────────────")
   ;; https://200ok.ch/posts/2022-02-13_integrating_org_mode_agenda_into_other_calendar_apps.html
   ;; export agenda to iCalendar
   ;; Setting variables for the ics file path

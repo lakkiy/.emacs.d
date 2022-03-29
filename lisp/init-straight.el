@@ -291,8 +291,8 @@ Selectively runs either `after-make-console-frame-hooks' or
 ;;; Dvorak keyboard layout
 
 ;; Make “C-t” act like “C-x”, so it's easier to type on Dvorak layout
-;; And do not bind any key to "C-t" cause it will translate to "C-x"
 (keyboard-translate ?\C-t ?\C-x)
+(keyboard-translate ?\C-x ?\C-t)
 
 
 ;;; init-straight.el ends here

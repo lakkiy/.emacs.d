@@ -86,6 +86,7 @@
   :straight t
   :config
   (dirvish-override-dired-mode))
+(eat-package fd-dired :straight t)
 
 (eat-package message
   :hook (message-mode-hook . auto-fill-mode)

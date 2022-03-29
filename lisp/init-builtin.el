@@ -369,7 +369,9 @@ If popup is focused, kill it."
 (eat-package sql
   :init
   (setq
-   sql-mysql-login-params '(user password server database port)))
+   sql-mysql-login-params '(user password server database port))
+  ;; `sql-connect' don't create new frame
+  (add-to-list 'same-window-buffer-names "*SQL*"))
 
 ;;; search
 (eat-package isearch
@@ -420,6 +422,8 @@ If popup is focused, kill it."
            [simple-query "duckduckgo.com" "duckduckgo.com/?q=" #1#])
           ("Google" .
            [simple-query "google.com" "google.com/search?q=" #1#])
+          ("Youtube" .
+           [simple-query "youtube.com" "youtube.com/results?search_query=" #1#])
           ("Google Groups" .
            [simple-query "groups.google.com" "groups.google.com/groups?q=" #1#])
           ("Wikipedia" .
@@ -504,6 +508,7 @@ If popup is focused, kill it."
           tags-file-name
           tags-table-list)))
 
+
 (eat-package savehist
   :hook (after-init-hook . savehist-mode)
   :init
@@ -521,6 +526,12 @@ If popup is focused, kill it."
 (eat-package fullframe :straight t)
 (with-eval-after-load 'ibuffer
   (fullframe ibuffer ibuffer-quit))
+
+;;;; Info
+(eat-package info
+  :hook (Info-mode-hook . (lambda ()
+                            (variable-pitch-mode)
+                            (text-scale-increase 2))))
 
 ;;; init-builtin.el ends here
 (provide 'init-builtin)

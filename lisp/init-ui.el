@@ -69,12 +69,10 @@
     (add-to-list 'default-frame-alist `(font . ,font-spec)))
   (set-fontset-font t '(#x4e00 . #x9fff) +font-cn))
 
-(defun +load-face-font (&optional frame)
-  (let ((variable-pitch-font-spec (format "%s-%d" +font-variable-pitch +font-size))
-        (fixed-pitch-font-spec (format "%s-%d" +font-default +font-size)))
-    (set-face-attribute 'variable-pitch frame :font variable-pitch-font-spec)
-    (set-face-attribute 'fixed-pitch frame :font fixed-pitch-font-spec)
-    (set-face-attribute 'fixed-pitch-serif frame :font fixed-pitch-font-spec))
+(defun +load-face-font ()
+  (set-face-attribute 'variable-pitch nil :font +font-variable-pitch)
+  (set-face-attribute 'fixed-pitch nil :font +font-default)
+  (set-face-attribute 'fixed-pitch-serif nil :font +font-default)
   (custom-set-faces
    '(mode-line ((t :inherit variable-pitch)))
    '(mode-line-inactive ((t :inherit variable-pitch)))))

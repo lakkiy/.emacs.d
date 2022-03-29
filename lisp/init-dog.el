@@ -80,6 +80,7 @@
     (add-to-list 'meow-mode-state-list `(,mode . normal)))
   ;; motion mode list
   (dolist (mode '(xeft-mode
+                  Info-mode
                   notmuch-hello-mode
                   notmuch-search-mode
                   notmuch-tree-mode))
