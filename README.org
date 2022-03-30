@@ -16,7 +16,7 @@ Enable snippets completion on gopls(require =yasnippet=).
                    (usePlaceholders . t))))
 #+end_src
 
-To setup elfeed, add this to =custom.el=
+To set up elfeed, add this to =custom.el=
 #+begin_src emacs-lisp
   (setq
    elfeed-feeds (list
@@ -42,3 +42,9 @@ Setup sql connections, then run =sql-connect=
            (sql-database "mysql")
            (sql-port 3306))))
 #+end_src
+
+Exclude directory for citer(ctags):
+Run =citre-edit-tags-file-recipe= and add this command --exclude=build.
+Because package installed by =straight.el=  already store its source file
+in =emacs/straight/repos=, so exclude =emacs/straight/build=, or it is
+noise when find definition.

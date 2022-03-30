@@ -78,7 +78,9 @@
 
 (eat-package page-break-lines
   :straight t
-  :hook (after-init-hook . global-page-break-lines-mode))
+  :hook (after-init-hook . global-page-break-lines-mode)
+  :config
+  (add-to-list 'page-break-lines-modes 'text-mode))
 
 
 (eat-package olivetti
