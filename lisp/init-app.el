@@ -125,6 +125,7 @@ Used in the default value of `notmuch-tag-formats'."
 Used in the default value of `notmuch-tag-formats'."
   :group 'notmuch-faces)
 
+;; TODO notmuch-show should use \n to split each mail
 (eat-package notmuch
   :straight t
   :commands notmuch

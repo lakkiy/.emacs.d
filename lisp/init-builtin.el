@@ -366,12 +366,11 @@ If popup is focused, kill it."
    python-indent-guess-indent-offset nil))
 
 ;; TODO init-sql.el
+;;
 (eat-package sql
   :init
   (setq
-   sql-mysql-login-params '(user password server database port))
-  ;; `sql-connect' don't create new frame
-  (add-to-list 'same-window-buffer-names "*SQL*"))
+   sql-mysql-login-params '(user password server database port)))
 
 ;;; search
 (eat-package isearch
@@ -426,6 +425,8 @@ If popup is focused, kill it."
            [simple-query "youtube.com" "youtube.com/results?search_query=" #1#])
           ("Google Groups" .
            [simple-query "groups.google.com" "groups.google.com/groups?q=" #1#])
+          ("stackoverflow" .
+           [simple-query "stackoverflow.com" "stackoverflow.com/search?q=" #1#])
           ("Wikipedia" .
            [simple-query "wikipedia.org" "wikipedia.org/wiki/" #1#]))))
 

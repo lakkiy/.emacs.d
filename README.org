@@ -18,15 +18,27 @@ Enable snippets completion on gopls(require =yasnippet=).
 
 To setup elfeed, add this to =custom.el=
 #+begin_src emacs-lisp
-(setq
- elfeed-feeds (list
-               (list "fever+https://root@example.com"
-                     :api-url "https://example.com/api/fever.php"
-                     :password "p4ssw0rd"
-                     :autotags nil)))
+  (setq
+   elfeed-feeds (list
+                 (list "fever+https://root@example.com"
+                       :api-url "https://example.com/api/fever.php"
+                       :password "p4ssw0rd"
+                       :autotags nil)))
 #+end_src
 
 Maximized screen
 #+begin_src emacs-lisp
-(push '(fullscreen . maximized) initial-frame-alist)
+  (push '(fullscreen . maximized) initial-frame-alist)
+#+end_src
+
+Setup sql connections, then run =sql-connect=
+#+begin_src emacs-lisp
+  (setq sql-connection-alist
+        '((mysql
+           (sql-product 'mysql)
+           (sql-server "127.0.0.1")
+           (sql-user "root")
+           (sql-password "password")
+           (sql-database "mysql")
+           (sql-port 3306))))
 #+end_src
