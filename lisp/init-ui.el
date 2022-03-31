@@ -221,6 +221,7 @@ The padding pushes TEXT to the right edge of the mode-line."
                        'minions-mode-line-modes
                      'mode-line-modes)
                   ,(propertize " " 'display '(raise -0.3))
+                  (:eval (when (bound-and-true-p flymake-mode) flymake-mode-line-format))
                   ,spaces
                   (:eval (if (buffer-modified-p)
                              ,(if (display-graphic-p) "ΦAΦ" "OAO")

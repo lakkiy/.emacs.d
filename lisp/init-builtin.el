@@ -531,7 +531,7 @@ If popup is focused, kill it."
 ;;;; Info
 (eat-package info
   :hook (Info-mode-hook . (lambda ()
-                            (variable-pitch-mode)
+                            (variable-pitch-mode) ;; TODO defun an minor mode for this
                             (text-scale-increase 2))))
 
 ;;; init-builtin.el ends here

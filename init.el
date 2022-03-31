@@ -61,11 +61,11 @@
   (require 'eat-package)
   ;;  must work on emacs -Q
   (require 'init-straight)
+  ;;  some funcs
+  (require 'init-utils)
   (require 'init-builtin)
   ;; font theme modeline
   (require 'init-ui)
-  ;;  some funcs
-  (require 'init-utils)
   ;;  must work on normal
   (require 'init-dog)
   (require 'init-edit)

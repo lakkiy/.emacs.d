@@ -81,6 +81,7 @@
   ;; motion mode list
   (dolist (mode '(xeft-mode
                   Info-mode
+                  ghelp-page-mode
                   notmuch-hello-mode
                   notmuch-search-mode
                   notmuch-tree-mode))

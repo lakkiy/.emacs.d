@@ -104,14 +104,27 @@
 
 ;;; Lint
 
-;; TODO custom mode line status 危
 (eat-package flymake
-  :hook (prog-mode-hook . flymake-mode))
+  :hook (prog-mode-hook . flymake-mode)
+  :init
+  (defun sekiro-flymake-mode-line-format ()
+    (let* ((counter (string-to-number
+                     (nth 1
+                          (cadr
+                           (flymake--mode-line-counter :error t)))))
+           (face (if (> counter 0)
+                     'compilation-error
+                   'mode-line)))
+      `(:propertize
+        "危"
+        face ,face)))
+  (setq
+   flymake-mode-line-format '(" " (:eval (sekiro-flymake-mode-line-format)))))
 
 (eat-package flymake-flycheck
   :straight t
   :after flymake
-  :hook (flymake-mode-hook . enable-flymake-flycheck)
+  ;; :hook (flymake-mode-hook . enable-flymake-flycheck)
   :init
   (defun enable-flymake-flycheck ()
     (setq-local flymake-diagnostic-functions
@@ -120,7 +133,11 @@
   (with-eval-after-load 'flycheck
     (setq-default flycheck-disabled-checkers
                   (append (default-value 'flycheck-disabled-checkers)
-                          '(emacs-lisp emacs-lisp-checkdoc emacs-lisp-package)))))
+                          '(emacs-lisp emacs-lisp-checkdoc emacs-lisp-package)))
+    (with-eval-after-load 'go
+      (setq flycheck-disabled-checkers
+            (append (default-value 'flycheck-disabled-checkers)
+                    '(go-gofmt go-golint go-vet go-build go-test go-errcheck))))))
 
 ;;; Misc
 

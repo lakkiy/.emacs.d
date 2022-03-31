@@ -173,24 +173,6 @@ Used in the default value of `notmuch-tag-formats'."
 
 (eat-package devdocs :straight t)
 
-;; TODO only enable this in comment?
-(eat-package svg-tag-mode
-  :straight (svg-tag-mode :type git :host github :repo "rougier/svg-tag-mode")
-  :commands svg-tag-mode
-  ;; :hook
-  ;; ((prog-mode-hook org-mode-hook) . (lambda ()
-  ;;                                     (let ((inhibit-message t))
-  ;;                                       (svg-tag-mode))))
-  :config
-  (setq svg-tag-tags
-        '(("DONE" . ((lambda (tag) (svg-tag-make "DONE" :face 'org-done :margin 0))))
-          ("FIXME" . ((lambda (tag) (svg-tag-make "FIXME" :face 'org-todo :inverse t :margin 0))))
-          ("\\/\\/\\W?MARK:\\|MARK:" . ((lambda (tag) (svg-tag-make "MARK" :face 'font-lock-doc-face :inverse t :margin 0 :crop-right t))))
-          ("MARK:\\(.*\\)" . ((lambda (tag) (svg-tag-make tag :face 'font-lock-doc-face :crop-left t))))
-          ;; TODOS
-          ("\\/\\/\\W?TODO\\|TODO" . ((lambda (tag) (svg-tag-make "TODO" :face 'org-todo :inverse t :margin 0 :crop-right t))))
-          ("TODO\\(.*\\)" . ((lambda (tag) (svg-tag-make tag :face 'org-todo :crop-left t)))))))
-
 (eat-package ibuffer-vc
   :straight t
   :hook (ibuffer-hook . ibuffer-set-up-preferred-filters)
