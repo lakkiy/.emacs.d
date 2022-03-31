@@ -70,12 +70,13 @@
   (set-fontset-font t '(#x4e00 . #x9fff) +font-cn))
 
 (defun +load-face-font ()
-  (set-face-attribute 'variable-pitch nil :font +font-variable-pitch)
+  (set-face-attribute 'variable-pitch nil :font +font-variable-pitch :height 1.3)
   (set-face-attribute 'fixed-pitch nil :font +font-default)
   (set-face-attribute 'fixed-pitch-serif nil :font +font-default)
-  (custom-set-faces
-   '(mode-line ((t :inherit variable-pitch)))
-   '(mode-line-inactive ((t :inherit variable-pitch)))))
+  ;; make mode line use variable font but use original height
+  (set-face-attribute 'mode-line nil :font +font-variable-pitch)
+  (set-face-attribute 'mode-line-active nil :font +font-variable-pitch)
+  (set-face-attribute 'mode-line-inactive nil :font +font-variable-pitch))
 
 (defun +load-ext-font ()
   (let ((font (frame-parameter nil 'font))

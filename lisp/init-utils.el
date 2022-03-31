@@ -101,15 +101,13 @@ typical word processor."
         (olivetti-mode)
         (electric-pair-local-mode -1)
         (electric-quote-local-mode)
-        (setq-local line-spacing 0.2)
-        (text-scale-increase 2))
+        (setq-local line-spacing 0.2))
     (variable-pitch-mode -1)
     (auto-fill-mode -1)
     (olivetti-mode -1)
     (electric-pair-local-mode)
     (electric-quote-local-mode -1)
-    (kill-local-variable 'line-spacing)
-    (text-scale-decrease 2)))
+    (kill-local-variable 'line-spacing)))
 
 ;;; init-utils.el ends here
 (provide 'init-utils)
