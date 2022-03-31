@@ -51,17 +51,9 @@
       (cdr project))
     (add-hook 'project-find-functions #'project-find-go-module)))
 
-(eat-package flycheck-golangci-lint
-  :straight t
-  :hook (go-mode-hook . (lambda ()
-                          "Enable golangci-lint."
-                          (setq flycheck-disabled-checkers '(go-gofmt
-                                                             go-golint
-                                                             go-vet
-                                                             go-build
-                                                             go-test
-                                                             go-errcheck))
-                          (flycheck-golangci-lint-setup))))
+;; FIXME not work for now
+;; write own version
+(eat-package flymake-golangci :straight t)
 
 (eat-package gotest
   :straight t

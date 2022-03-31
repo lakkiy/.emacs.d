@@ -1,12 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(eat-package flymake
-  :init
-  (autoload #'flymake "flymake" nil t)
-  :config
-  (define-key flymake-mode-map (kbd "C-c C-b") 'flymake-show-buffer-diagnostics)
-  (define-key flymake-mode-map (kbd "C-c C-S-b") 'flymake-show-project-diagnostics))
-
 (eat-package tree-sitter
   :straight t
   :init
@@ -109,26 +102,27 @@
   (define-key citre-peek-keymap (kbd "M-l J") #'citre-peek-move-current-def-up)
   (define-key citre-peek-keymap (kbd "M-l K") #'citre-peek-move-current-def-down))
 
-(eat-package flycheck
-  :straight t
-  ;; :hook (prog-mode-hook . flycheck-mode)
-  :init
-  (setq flycheck-temp-prefix ".flycheck"
-        flycheck-check-syntax-automatically '(save mode-enabled)
-        flycheck-emacs-lisp-load-path 'inherit
-        flycheck-indication-mode (if (display-graphic-p)
-                                     'left-fringe
-                                   'left-margin))
-  :config
-  (define-key flycheck-mode-map (kbd "C-c C-b") 'flycheck-list-errors))
+;;; Lint
+
+;; TODO custom mode line status 危
+(eat-package flymake
+  :hook (prog-mode-hook . flymake-mode))
 
 (eat-package flymake-flycheck
   :straight t
   :after flymake
-  :config
-  (setq-local flymake-diagnostic-functions
-              (append flymake-diagnostic-functions
-                      (flymake-flycheck-all-chained-diagnostic-functions))))
+  :hook (flymake-mode-hook . enable-flymake-flycheck)
+  :init
+  (defun enable-flymake-flycheck ()
+    (setq-local flymake-diagnostic-functions
+                (append flymake-diagnostic-functions
+                        (flymake-flycheck-all-chained-diagnostic-functions))))
+  (with-eval-after-load 'flycheck
+    (setq-default flycheck-disabled-checkers
+                  (append (default-value 'flycheck-disabled-checkers)
+                          '(emacs-lisp emacs-lisp-checkdoc emacs-lisp-package)))))
+
+;;; Misc
 
 (eat-package aggressive-indent
   :straight t
@@ -149,24 +143,35 @@
 
 (eat-package eglot
   :straight t
-  :commands
-  eglot-ensure
-  ;; enable `eglot' manually
-  ;; :hook (go-mode-hook . eglot-ensure)
+  :commands eglot-ensure
   :init
-  (setq eglot-ignored-server-capabilites '(:documentHighlightProvider)
-        ;; don't block of LSP connection attempts
-        eglot-sync-connect nil
-        ;; I will manage `company-capf' myself
-        eglot-stay-out-of '(company)
-        ;; make eglot manage file out of project by `xref-find-definitions'
-        eglot-extend-to-xref t)
+  (setq
+   eglot-ignored-server-capabilites '(:documentHighlightProvider)
+
+   ;; don't block of LSP connection attempts
+   eglot-sync-connect nil
+
+   ;; I will manage these myself
+   eglot-stay-out-of '(company flymake)
+
+   ;; make eglot manage file out of project by `xref-find-definitions'
+   eglot-extend-to-xref t)
+
   :config
   (eat-package consult-eglot :straight t)
+
+  ;; Add `eglot-flymake-backend' to `flymake-diagnostic-functions' manually
+  ;; So that can run other lints together with `eglot-flymake'
+  ;; And make sure that lsp check first run
+  (with-eval-after-load 'flymake
+    (add-to-list 'flymake-diagnostic-functions 'eglot-flymake-backend))
+
+  ;; keybindings
   (define-key eglot-mode-map (kbd "M-RET") 'eglot-code-actions)
   (define-key eglot-mode-map (kbd "C-c r") 'eglot-rename)
   (define-key eglot-mode-map (kbd "C-c h") 'eldoc)
   (define-key eglot-mode-map (kbd "M-'") 'eglot-find-implementation)
+
   ;; TODO code actions
   (add-to-list 'eglot-server-programs
                '(sql-mode . ("sqls" "-config" "~/.config/sqls/config.yaml")))

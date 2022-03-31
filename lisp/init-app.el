@@ -139,6 +139,7 @@ Used in the default value of `notmuch-tag-formats'."
         notmuch-show-empty-searches t)
   (defun +async-notmuch-poll ()
     (interactive)
+    (message "Start polling email...")
     (async-start
      `(lambda ()
         ,(async-inject-variables "\\`load-path\\'")
