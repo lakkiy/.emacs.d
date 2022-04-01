@@ -211,6 +211,8 @@
     (require 'eglot-ltex)
     (call-interactively #'eglot)))
 
+(eat-package geiser-chez :straight t)
+
 (require 'init-go)
 (require 'init-python)
 (require 'init-web)
