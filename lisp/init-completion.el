@@ -106,7 +106,7 @@
   :straight t
   :init
   ;; In buffer action
-  (global-set-key [remap isearch-forward] 'consult-line)
+  (global-set-key (kbd "C-c C-s") 'consult-line)
   (global-set-key [remap imenu] 'consult-imenu)
   (global-set-key [remap goto-line] 'consult-goto-line)
   (global-set-key [remap yank-pop] 'consult-yank-pop)
@@ -127,6 +127,54 @@
                        consult-recent-file
                        consult-buffer
                        :preview-key nil)))
+
+(eat-package isearch
+  :init
+  (setq
+   ;; Match count next to the minibuffer prompt
+   isearch-lazy-count t
+   ;; Don't be stingy with history; default is to keep just 16 entries
+   search-ring-max 200
+   regexp-search-ring-max 200
+   ;; htighlighted all matching
+   isearch-lazy-highlight t
+   lazy-highlight-buffer t
+   ;; show search count, TODO not work in isearch-mb-mode
+   lazy-count-prefix-format nil
+   lazy-count-suffix-format " [%s/%s]"
+   ;; Record isearch in minibuffer history, so C-x ESC ESC can repeat it.
+   isearch-resume-in-command-history t
+   ;; M-< and M-> move to the first/last occurrence of the current search string.
+   isearch-allow-motion t
+   isearch-motion-changes-direction t
+   ;; space matches any sequence of characters in a line.
+   isearch-regexp-lax-whitespace t
+   search-whitespace-regexp ".*?")
+  (global-set-key (kbd "C-s") 'isearch-forward-regexp)
+  (global-set-key (kbd "C-r") 'isearch-backward-regexp)
+  :config
+  (define-advice isearch-occur (:after (_regexp &optional _nlines))
+    (isearch-exit))
+  (define-key isearch-mode-map (kbd "C-c C-o") #'isearch-occur)
+  (define-key isearch-mode-map [escape] #'isearch-cancel)
+  ;; Edit the search string instead of jumping back
+  (define-key isearch-mode-map [remap isearch-delete-chac] #'isearch-del-chac))
+
+;; also chekc https://github.com/astoff/isearch-mb/wiki
+(eat-package isearch-mb
+  :straight t
+  :hook (after-init-hook . isearch-mb-mode)
+  :config
+  (define-advice isearch-mb--update-prompt (:around (fn &rest _) show-case-fold-info)
+    "Show case fold info in the prompt."
+    (cl-letf* ((isearch--describe-regexp-mode-orig
+                (symbol-function 'isearch--describe-regexp-mode))
+               ((symbol-function 'isearch--describe-regexp-mode)
+                (lambda (regexp-function &optional space-before)
+                  (concat (if isearch-case-fold-search "[Case Fold] " "")
+                          (funcall isearch--describe-regexp-mode-orig
+                                   regexp-function space-before)))))
+      (funcall fn _))))
 
 (eat-package consult-yasnippet :straight t)
 

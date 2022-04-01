@@ -372,30 +372,6 @@ If popup is focused, kill it."
   (setq
    sql-mysql-login-params '(user password server database port)))
 
-;;; search
-(eat-package isearch
-  :init
-  (setq
-   isearch-lazy-count t
-   isearch-lazy-highlight t
-   lazy-count-prefix-format nil
-   lazy-count-suffix-format " [%s/%s]"
-   lazy-highlight-buffer t
-   lazy-highlight-cleanup nil
-   ;; Record isearch in minibuffer history, so C-x ESC ESC can repeat it.
-   isearch-resume-in-command-history t
-   ;; M-< and M-> move to the first/last occurrence of the current search string.
-   isearch-allow-motion t
-   isearch-motion-changes-direction t)
-  :config
-  (define-advice isearch-occur (:after (_regexp &optional _nlines))
-    (isearch-exit))
-  (define-key isearch-mode-map (kbd "C-c C-o") #'isearch-occur)
-  (define-key isearch-mode-map [escape] #'isearch-cancel)
-  ;; Edit the search string instead of jumping back
-  (define-key isearch-mode-map [remap isearch-delete-chac] #'isearch-del-chac))
-
-
 ;;; browse
 (eat-package xwidget
   :init
