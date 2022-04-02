@@ -27,6 +27,14 @@
 ;; `color-theme-sanityinc-tomorrow'
 (straight-use-package 'color-theme-sanityinc-tomorrow)
 
+;; `doom-themes'
+(straight-use-package 'doom-themes)
+
+(with-eval-after-load 'doom-themes
+  (setq doom-themes-treemacs-theme "doom-atom")
+  (doom-themes-treemacs-config)
+  (doom-themes-org-config))
+
 ;; `spacemacs-theme'
 (straight-use-package 'spacemacs-theme)
 

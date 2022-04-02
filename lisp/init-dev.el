@@ -158,6 +158,8 @@
   (setf (alist-get 'gofmt apheleia-formatters)
         '("goimports")))
 
+(eat-package xscheme)
+
 (eat-package eglot
   :straight t
   :commands eglot-ensure

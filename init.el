@@ -64,6 +64,7 @@
   ;;  some funcs
   (require 'init-utils)
   (require 'init-builtin)
+  (require 'init-shell)
   ;; font theme modeline
   (require 'init-ui)
   ;;  must work on normal

@@ -34,15 +34,14 @@
           "\\*Completions\\*"
           "\\*Warnings\\*"
 
-          ;; shell
-          shell-mode
-          eshell-mode
-          term-mode
+          "^\\*eshell.*\\*$" eshell-mode ;eshell as a popup
+          "^\\*shell.*\\*$"  shell-mode  ;shell as a popup
+          "^\\*term.*\\*$"   term-mode   ;term as a popup
+          "^\\*vterm.*\\*$"  vterm-mode  ;vterm as a popup
 
           ;; help & message
           help-mode
           ghelp-page-mode
-
           compilation-mode))
   (with-eval-after-load 'project
     (setq popper-group-function 'popper-group-by-project))

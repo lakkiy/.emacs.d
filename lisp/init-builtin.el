@@ -285,48 +285,6 @@ No tab will created if the command is cancelled."
   (global-set-key (kbd "C-x t l") #'+tab-bar-switch-project))
 
 
-;;; shell
-;; The interactive shell.
-;;
-;; It can be used as a `sh-mode' REPL.
-;;
-;; `shell' is recommended to use over `tramp'.
-(eat-package shell
-  :hook
-  (comint-mode-hook
-   . (my-comint-init revert-tab-width-to-default))
-  :init
-  (defun my-comint-init ()
-    (setq-local
-     comint-input-ignoredups t
-     comint-process-echoes t))
-
-  (defun shell-toggle ()
-    "Toggle a persistent shell popup window.
-If popup is visible but unselected, select it.
-If popup is focused, kill it."
-    (interactive)
-    (if-let ((win (get-buffer-window "*shell-popup*")))
-        (when (eq (selected-window) win)
-          ;; If users attempt to delete the sole ordinary window, silence it.
-          (ignore-errors (delete-window win)))
-      (let ((display-comint-buffer-action '(display-buffer-at-bottom
-                                            (inhibit-same-window . nil))))
-
-        (shell "*shell-popup*"))))
-  (global-set-key (kbd "M-`") #'shell-toggle)
-
-  ;; Correct indentation for `ls'
-  (defun revert-tab-width-to-default ()
-    "Revert `tab-width' to default value."
-    (setq-local tab-width 8)))
-
-(eat-package eshell)
-
-(eat-package term
-  :init
-  (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
-
 ;;; programming
 (eat-package paren
   :hook (prog-mode-hook . show-paren-mode)
