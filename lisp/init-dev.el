@@ -211,7 +211,9 @@
     (require 'eglot-ltex)
     (call-interactively #'eglot)))
 
-(eat-package geiser-chez :straight t)
+(eat-package docstr
+  :straight t
+  :hook (prog-mode-hook . (lambda () (docstr-mode 1))))
 
 (require 'init-go)
 (require 'init-python)
