@@ -18,13 +18,16 @@
 
 (eat-package separedit
   :straight t
+  :hook (separedit-mode-hook . (lambda () (auto-fill-mode 1)))
   :init
   ;; use C-u C-c ' to select major mode
   (global-set-key (kbd "C-c '") #'separedit))
 
 (eat-package puni
   :straight (puni :type git :host github :repo "AmaiKinono/puni")
-  :hook (emacs-lisp-mode-hook . puni-mode)
+  :hook
+  ((emacs-lisp-mode-hook scheme-mode-hook)
+   . puni-mode)
   :config
   (define-key puni-mode-map (kbd "M-r") 'puni-splice)
   (define-key puni-mode-map (kbd "C-(") 'puni-slurp-backward)
