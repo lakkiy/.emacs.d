@@ -222,7 +222,7 @@ The padding pushes TEXT to the right edge of the mode-line."
                   " "
                   (:eval (if (window-dedicated-p) "🚷" ""))
                   (:eval (if buffer-read-only "🔒" ""))
-                  (:propertize "%[%b%]" face (:weight bold))
+                  (:propertize "%[%b%]" face (:inherit 'mode-line-buffer-id :weight bold))
                   (:eval (luna-mode-line-coding-system))
                   ,spaces
                   ,(propertize " " 'display '(raise 0.3))
