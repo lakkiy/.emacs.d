@@ -256,6 +256,9 @@ Selectively runs either `after-make-console-frame-hooks' or
  word-wrap-by-category t ;; Emacs 之光！
  )
 
+;;; bind `describe-keymap', added in emacs 28
+(global-set-key (kbd "C-h C-k") #'describe-keymap)
+
 ;;; Load custom-file
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (and (file-exists-p custom-file)

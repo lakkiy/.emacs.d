@@ -1,5 +1,8 @@
 ;;; -*- lexical-binding: t -*-
 
+(eat-package mouse
+  :hook (after-init-hook . context-menu-mode))
+
 (eat-package recentf
   :hook (after-init-hook . recentf-mode)
   :init
@@ -287,7 +290,7 @@ No tab will created if the command is cancelled."
 
 ;;; programming
 (eat-package paren
-  :hook (prog-mode-hook . show-paren-mode)
+  ;; :hook (prog-mode-hook . show-paren-mode) ;; NOTE enable by default since emacs 28
   :init
   (setq
    show-paren-when-point-in-periphery t
