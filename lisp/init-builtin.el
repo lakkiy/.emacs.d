@@ -13,9 +13,13 @@
 (eat-package minibuffer
   :init
   (setq
-   ;; `selectrum', `vertico' and `icomplete' will honoring
-   ;; completion-styles '(basic partial-completion substring flex)
-   ;; completion-category-overrides '((buffer (styles . (flex))))
+   ;; TODO Efoo should put Efoobar at first not AbarEfoobar(strat with A)
+   ;; like this
+   ;; Efoo
+   ;;    : AfooEfoobar
+   ;;    : Efoobar
+   completion-styles '(basic partial-completion)
+   completion-category-overrides '((file (styles basic partial-completion)))
    completion-cycle-threshold t
    minibuffer-depth-indicate-mode t
    minibuffer-eldef-shorten-default t

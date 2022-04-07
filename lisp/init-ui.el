@@ -82,9 +82,9 @@
   (set-face-attribute 'fixed-pitch nil :font +font-default)
   (set-face-attribute 'fixed-pitch-serif nil :font +font-default)
   ;; make mode line use variable font but use original height
-  (set-face-attribute 'mode-line nil :font +font-variable-pitch)
-  (set-face-attribute 'mode-line-active nil :font +font-variable-pitch)
-  (set-face-attribute 'mode-line-inactive nil :font +font-variable-pitch))
+  (custom-set-faces
+   `(mode-line ((t (:family ,+font-variable-pitch))))
+   `(mode-line-inactive ((t (:family ,+font-variable-pitch))))))
 
 (defun +load-ext-font ()
   (let ((font (frame-parameter nil 'font))
@@ -223,7 +223,7 @@ The padding pushes TEXT to the right edge of the mode-line."
                   " "
                   (:eval (if (window-dedicated-p) "🚷" ""))
                   (:eval (if buffer-read-only "🔒" ""))
-                  (:propertize "%[%b%]" face (:inherit 'mode-line-buffer-id :weight bold))
+                  (:propertize "%[%b%]" face (:inherit mode-line-buffer-id :weight bold))
                   (:eval (luna-mode-line-coding-system))
                   ,spaces
                   ,(propertize " " 'display '(raise 0.3))

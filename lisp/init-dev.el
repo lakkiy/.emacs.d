@@ -210,10 +210,6 @@
     (require 'eglot-ltex)
     (call-interactively #'eglot)))
 
-(eat-package docstr
-  :straight t
-  :hook (prog-mode-hook . (lambda () (docstr-mode 1))))
-
 (require 'init-go)
 (require 'init-python)
 (require 'init-web)
