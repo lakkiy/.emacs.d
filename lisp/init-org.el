@@ -154,7 +154,9 @@
 (when (display-graphic-p)
   (eat-package valign
     :straight t
-    :hook (org-mode-hook . valign-mode)))
+    :hook (org-mode-hook . valign-mode)
+    :init
+    (setq valign-fancy-bar t)))
 
 (eat-package easy-hugo
   :straight t
