@@ -301,3 +301,7 @@ prepended to the element after the #+HEADER: tag."
         org-download-screenshot-method (cond (*is-a-mac* "screencapture -ci")
                                              (sys/linuxp "flameshot gui --raw > %s")
                                              (t ""))))
+
+(eat-package docstr
+  :straight t
+  :hook (prog-mode-hook . (lambda () (docstr-mode 1))))

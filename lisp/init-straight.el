@@ -74,6 +74,11 @@ Selectively runs either `after-make-console-frame-hooks' or
   (setq mac-option-modifier 'meta
         mac-command-modifier 'super)
 
+  ;; hide title bar
+  ;; (push '(undecorated . t) default-frame-alist)
+  ;; (push '(drag-internal-border . 1) default-frame-alist)
+  ;; (push '(internal-border-width . 5) default-frame-alist)
+
   (global-set-key [(super a)] #'mark-whole-buffer)
   (global-set-key [(super v)] #'yank)
   (global-set-key [(super c)] #'kill-ring-save)
