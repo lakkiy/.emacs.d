@@ -13,9 +13,8 @@
 (eat-package minibuffer
   :init
   (setq
-   ;; `selectrum', `vertico' and `icomplete' will honoring
-   ;; completion-styles '(basic partial-completion substring flex)
-   ;; completion-category-overrides '((buffer (styles . (flex))))
+   completion-styles '(basic partial-completion)
+   completion-category-overrides '((file (styles basic partial-completion)))
    completion-cycle-threshold t
    minibuffer-depth-indicate-mode t
    minibuffer-eldef-shorten-default t
