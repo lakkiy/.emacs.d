@@ -100,28 +100,6 @@
   (+load-ext-font))
 
 ;;; Packages
-(eat-package dimmer
-  :straight t
-  :hook (after-init-hook . dimmer-mode)
-  :init
-  (setq-default dimmer-fraction 0.15)
-  :config
-  (advice-add 'frame-set-background-mode :after (lambda (&rest args) (dimmer-process-all)))
-  ;; Don't dim in terminal windows. Even with 256 colours it can
-  ;; lead to poor contrast.  Better would be to vary dimmer-fraction
-  ;; according to frame type.
-  (defun sanityinc/display-non-graphic-p ()
-    (not (display-graphic-p)))
-  (add-to-list 'dimmer-exclusion-predicates 'sanityinc/display-non-graphic-p))
-
-;; maybe use puslar ?
-(eat-package beacon
-  :straight t
-  :hook (aftel-init-hook . (lambda () (beacon-mode 1)))
-  :init
-  (setq-default beacon-lighter "")
-  (setq-default beacon-size 20))
-
 (eat-package diredfl
   :straight t
   :hook (dired-mode-hook . diredfl-global-mode)
