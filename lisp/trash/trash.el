@@ -305,3 +305,77 @@ prepended to the element after the #+HEADER: tag."
 (eat-package docstr
   :straight t
   :hook (prog-mode-hook . (lambda () (docstr-mode 1))))
+
+;;; corfu
+
+;;; `company'
+(eat-package company
+  :straight t
+  ;; :hook
+  ;; ((prog-mode-hook conf-mode-hook eshell-mode-hook) . company-mode)
+  :commands company-mode
+  :init
+  (setq
+   company-minimum-prefix-length 2
+   company-idle-delay 0.1
+   company-begin-commands '(self-insert-command
+                            backward-delete-char)
+   ;; icons
+   company-vscode-icons-mapping nil
+   company-text-icons-add-background t
+   ;; thanks to r/emacs yyoncho
+   company-format-margin-function 'company-text-icons-margin
+   ;; tooltip frontend config
+   company-tooltip-align-annotations t
+   company-tooltip-limit 10
+   company-tooltip-width-grow-only t
+   company-tooltip-idle-delay 0.4
+   company-dabbrev-downcase nil
+   company-abort-manual-when-too-short t
+   company-require-match nil
+   company-backends '((company-capf :with company-yasnippet)
+                      (company-dabbrev-code company-keywords company-files)
+                      company-dabbrev)
+   company-files-exclusions '(".git/" ".DS_Store")
+   company-tooltip-margin 0)
+  :config
+  (defun +complete ()
+    (interactive)
+    (or (yas/expand)
+        (company-complete-selection)))
+  (define-key company-active-map [tab] '+complete)
+  (define-key company-active-map (kbd "TAB") '+complete)
+  (define-key company-active-map [return] nil)
+  (define-key company-active-map (kbd "RET") nil))
+
+;;; `beacon'
+;; didn't update since 2019 with 22 issue and 2 pr
+;; maybe use puslar ?
+(eat-package beacon
+  :straight t
+  :hook (aftel-init-hook . (lambda () (beacon-mode 1)))
+  :init
+  (setq-default beacon-lighter "")
+  (setq-default beacon-size 20))
+
+;;; `dimmer'
+;; not work well with corfu
+(eat-package dimmer
+  :straight t
+  :hook (after-init-hook . dimmer-mode)
+  :init
+  (setq-default dimmer-fraction 0.15)
+  :config
+  (advice-add 'frame-set-background-mode :after (lambda (&rest args) (dimmer-process-all)))
+  ;; Don't dim in terminal windows. Even with 256 colours it can
+  ;; lead to poor contrast.  Better would be to vary dimmer-fraction
+  ;; according to frame type.
+  (defun sanityinc/display-non-graphic-p ()
+    (not (display-graphic-p)))
+  (add-to-list 'dimmer-exclusion-predicates 'sanityinc/display-non-graphic-p))
+
+;;; mac specification
+(eat-package exec-path-from-shell
+  :straight t
+  :init
+  (add-hook 'after-init-hook #'exec-path-from-shell-initialize))

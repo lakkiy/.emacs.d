@@ -62,10 +62,16 @@ Selectively runs either `after-make-console-frame-hooks' or
 
 ;;; Mac specific configuration
 (when *is-a-mac*
-  (eat-package exec-path-from-shell
-    :straight t
-    :init
-    (add-hook 'after-init-hook #'exec-path-from-shell-initialize))
+  ;; https://emacs-china.org/t/emacs-mac-port-profile/2895/29?u=rua
+  ;; NOTE: When PATH is changed, run the following command
+  ;; $ sh -c 'printf "%s" "$PATH"' > ~/.path
+  (condition-case err
+      (let ((path (with-temp-buffer
+                    (insert-file-contents-literally "~/.path")
+                    (buffer-string))))
+        (setenv "PATH" path)
+        (setq exec-path (append (parse-colon-path path) (list exec-directory))))
+    (error (warn "%s" (error-message-string err))))
 
   (eat-package ns-auto-titlebar
     :straight t

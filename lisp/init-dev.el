@@ -87,8 +87,9 @@
     (with-eval-after-load 'citre-peek
       (define-key citre-peek-keymap (kbd "M-l r") 'citre-peek-through-references))
     :config
-    (with-eval-after-load "exec-path-from-shell"
-      (exec-path-from-shell-copy-envs '("GTAGSOBJDIRPREFIX" "GTAGSCONF" "GTAGSLABEL"))))
+    (setenv "GTAGSOBJDIRPREFIX" (concat (getenv "HOME") "/.cache/gtags"))
+    (setenv "GTAGSCONF" (concat (getenv "HOME") "/.globalrc"))
+    (setenv "GTAGSLABEL" "native-pygments"))
   :config
   (with-eval-after-load 'cc-mode (require 'citre-lang-c))
   (with-eval-after-load 'dired (require 'citre-lang-fileref))

@@ -1,3 +1,13 @@
+
+** Mac specification
+When PATH is changed, run the following command
+  #+begin_src sh
+  sh -c 'printf "%s" "$PATH"' > ~/.path
+  #+end_src
+
+Note some env about =gtags= is hard code in lisp/init-dev.el
+
+
 ** Just some snippets
 
 Replace =github.com= to =github.com.cnpmjs.org= in =straight.el=

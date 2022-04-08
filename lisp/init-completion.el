@@ -12,47 +12,60 @@
   (let ((inhibit-message t))
     (yas-reload-all)))
 
-;; TODO 有重复的选项
-;; TODO 有时有完全匹配的在最下面，不完全的反而在上面
-(eat-package company
+(eat-package corfu
   :straight t
   :hook
-  ((prog-mode-hook conf-mode-hook eshell-mode-hook) . company-mode)
-  :commands company-mode
+  ((prog-mode-hook shell-mode-hook eshell-mode-hook)
+   . corfu-mode)
   :init
-  (setq
-   company-minimum-prefix-length 2
-   company-idle-delay 0.1
-   company-begin-commands '(self-insert-command
-                            backward-delete-char)
-   ;; icons
-   company-vscode-icons-mapping nil
-   company-text-icons-add-background t
-   ;; thanks to r/emacs yyoncho
-   company-format-margin-function 'company-text-icons-margin
-   ;; tooltip frontend config
-   company-tooltip-align-annotations t
-   company-tooltip-limit 10
-   company-tooltip-width-grow-only t
-   company-tooltip-idle-delay 0.4
-   company-dabbrev-downcase nil
-   company-abort-manual-when-too-short t
-   company-require-match nil
-   company-global-modes '(not dired-mode dired-sidebar-mode)
-   company-backends '((company-capf :with company-yasnippet)
-                      (company-dabbrev-code company-keywords company-files)
-                      company-dabbrev)
-   company-files-exclusions '(".git/" ".DS_Store")
-   company-tooltip-margin 0)
-  :config
   (defun +complete ()
     (interactive)
-    (or (yas/expand)
-        (company-complete-selection)))
-  (define-key company-active-map [tab] '+complete)
-  (define-key company-active-map (kbd "TAB") '+complete)
-  (define-key company-active-map [return] nil)
-  (define-key company-active-map (kbd "RET") nil))
+    (or (yas-expand)
+        ;; NOTE `corfu-complete' sometimes didn't quit corfu after complete
+        (corfu-insert)))
+  (setq
+   corfu-quit-no-match t
+   corfu-quit-at-boundary t
+   corfu-auto t)
+  :config
+  ;; quit corfu completion and back to meow normal mode when it enable
+  (define-key corfu-map (kbd "<escape>") #'(lambda ()
+                                             (interactive)
+                                             (corfu-quit)
+                                             (when (meow-insert-mode-p)
+                                               (meow-insert-exit))))
+  (define-key corfu-map (kbd "<tab>") '+complete)
+  (define-key corfu-map (kbd "TAB") '+complete)
+  (define-key corfu-map (kbd "RET") nil))
+
+(eat-package corfu-doc
+  :straight t
+  :hook (corfu-mode-hook . corfu-doc-mode)
+  :config
+  (setq corfu-echo-documentation nil)
+  (define-key corfu-map (kbd "M-p") #'corfu-doc-scroll-down)
+  (define-key corfu-map (kbd "M-n") #'corfu-doc-scroll-up))
+
+(eat-package kind-icon
+  :straight t
+  :after corfu
+  :init
+  (setq kind-icon-default-face 'corfu-default)
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+
+(eat-package copilot
+  :straight (copilot :host github :repo "zerolfx/copilot.el"
+                     :files ("dist" "copilot.el"))
+  ;; :hook (prog-mode-hook . copilot-mode)
+  :config
+  (with-eval-after-load 'meow
+    (setq copilot-enable-predicates '(meow-insert-mode-p)))
+  (with-eval-after-load 'company
+    (define-key company-mode-map (kbd "<M-tab>") 'copilot-accept-completion)
+    (define-key company-active-map (kbd "<M-tab>") 'copilot-accept-completion))
+  (with-eval-after-load 'corfu
+    (define-key corfu-map (kbd "<M-tab>") 'copilot-accept-completion)))
 
 (eat-package vertico
   :straight (vertico :files (:defaults "extensions/*"))

@@ -40,8 +40,6 @@
   ;; (before-save-hook . gofmt-before-save)
   (go-test-mode-hook . visual-line-mode)
   :config
-  (with-eval-after-load "exec-path-from-shell"
-    (exec-path-from-shell-copy-envs '("GOPATH" "GO111MODULE" "GOPROXY")))
   ;; Look for the nearest parent `go.mod' file (that is, the root of the Go module) as the project root.
   (with-eval-after-load "project"
     (defun project-find-go-module (dir)
