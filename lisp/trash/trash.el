@@ -373,3 +373,9 @@ prepended to the element after the #+HEADER: tag."
   (defun sanityinc/display-non-graphic-p ()
     (not (display-graphic-p)))
   (add-to-list 'dimmer-exclusion-predicates 'sanityinc/display-non-graphic-p))
+
+;;; mac specification
+(eat-package exec-path-from-shell
+  :straight t
+  :init
+  (add-hook 'after-init-hook #'exec-path-from-shell-initialize))
