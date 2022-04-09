@@ -80,24 +80,7 @@
     :init
     (define-key vertico-map (kbd "DEL") #'vertico-directory-delete-char)
     (define-key vertico-map (kbd "M-DEL") #'vertico-directory-delete-word)
-    (define-key vertico-map (kbd "RET") #'vertico-directory-enter))
-  ;; (eat-package vertico-grid
-  ;;   :init
-  ;;   (setq vertico-grid-separator "    "))
-  ;; (eat-package vertico-multiform
-  ;;   :init
-  ;;   (setq vertico-multiform-categories
-  ;;         '((file grid reverse)
-  ;;           (consult-location reverse)
-  ;;           (consult-grep buffer)
-  ;;           (minor-mode reverse)
-  ;;           (imenu buffer)
-  ;;           (t unobtrusive)))
-  ;;   (vertico-multiform-mode)
-  ;;   (define-key vertico-map (kbd "`") #'(lambda () (interactive)
-  ;;                                             (vertico-multiform-unobtrusive)
-  ;;                                             (vertico-multiform-reverse))))
-  )
+    (define-key vertico-map (kbd "RET") #'vertico-directory-enter)))
 
 (eat-package orderless
   :straight t
@@ -114,32 +97,6 @@
 (eat-package marginalia
   :straight t
   :hook (after-init-hook . marginalia-mode))
-
-(eat-package consult
-  :straight t
-  :init
-  ;; In buffer action
-  (global-set-key (kbd "C-c C-s") 'consult-line)
-  (global-set-key [remap imenu] 'consult-imenu)
-  (global-set-key [remap goto-line] 'consult-goto-line)
-  (global-set-key [remap yank-pop] 'consult-yank-pop)
-  (global-set-key (kbd "M-g o") 'consult-outline)
-  ;; Disable preview
-  (global-set-key [remap project-search] 'consult-ripgrep)
-  (global-set-key [remap switch-to-buffer] 'consult-buffer)
-  (global-set-key [remap bookmark-jump] 'consult-bookmark)
-  (global-set-key [remap recentf-open-files] 'consult-recent-file)
-  (setq consult-project-root-function (lambda ()
-                                        (when-let (project (project-current))
-                                          (car (project-roots project)))))
-  :config
-  ;; (global-set-key (kbd "C-c C-s") #'consult-line)
-  (with-no-warnings
-    (consult-customize consult-ripgrep consult-git-grep consult-grep
-                       consult-bookmark
-                       consult-recent-file
-                       consult-buffer
-                       :preview-key nil)))
 
 (eat-package isearch
   :init
@@ -189,8 +146,6 @@
                                    regexp-function space-before)))))
       (funcall fn _))))
 
-(eat-package consult-yasnippet :straight t)
-
 (eat-package embark
   :straight (embark :files ("*.el"))
   :init
@@ -199,10 +154,6 @@
     (define-key vertico-map (kbd "C-c C-c") 'embark-act))
   :config
   (define-key embark-meta-map (kbd "<escape>") #'keyboard-escape-quit)
-  ;; Consult users will also want the embark-consult package.
-  (eat-package embark-consult
-    :after consult
-    :hook (embark-collect-mode-hook . embark-consult-preview-minor-mode))
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"

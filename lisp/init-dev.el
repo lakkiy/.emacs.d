@@ -177,8 +177,6 @@
    eglot-extend-to-xref t)
 
   :config
-  (eat-package consult-eglot :straight t)
-
   ;; Add `eglot-flymake-backend' to `flymake-diagnostic-functions' manually
   ;; So that can run other lints together with `eglot-flymake'
   ;; And make sure that lsp check first run

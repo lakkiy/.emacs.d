@@ -379,3 +379,37 @@ prepended to the element after the #+HEADER: tag."
   :straight t
   :init
   (add-hook 'after-init-hook #'exec-path-from-shell-initialize))
+
+;;; `consult'
+(eat-package consult
+  :straight t
+  :init
+  ;; In buffer action
+  (global-set-key (kbd "C-c C-s") 'consult-line)
+  (global-set-key [remap imenu] 'consult-imenu)
+  (global-set-key [remap goto-line] 'consult-goto-line)
+  (global-set-key [remap yank-pop] 'consult-yank-pop)
+  (global-set-key (kbd "M-g o") 'consult-outline)
+  ;; Disable preview
+  (global-set-key [remap project-search] 'consult-ripgrep)
+  (global-set-key [remap switch-to-buffer] 'consult-buffer)
+  (global-set-key [remap bookmark-jump] 'consult-bookmark)
+  (global-set-key [remap recentf-open-files] 'consult-recent-file)
+  (setq consult-project-root-function (lambda ()
+                                        (when-let (project (project-current))
+                                          (car (project-roots project)))))
+  :config
+  ;; (global-set-key (kbd "C-c C-s") #'consult-line)
+  (with-no-warnings
+    (consult-customize consult-ripgrep consult-git-grep consult-grep
+                       consult-bookmark
+                       consult-recent-file
+                       consult-buffer
+                       :preview-key nil)))
+
+;; Consult users will also want the embark-consult package.
+(eat-package embark-consult
+  :after embark consult
+  :hook (embark-collect-mode-hook . embark-consult-preview-minor-mode))
+
+(eat-package consult-yasnippet :straight t)

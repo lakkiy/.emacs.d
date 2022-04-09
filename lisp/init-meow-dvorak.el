@@ -34,7 +34,7 @@
    '("(" . "M-(")
    '(")" . "M-)") ;; unwrap
    ;; project TODO
-   '("p s" . project-search)
+   '("p s" . project-find-regexp)
    '("p p" . project-switch-project)
    '("p f" . project-find-file)
    '("p b" . project-switch-to-buffer)
