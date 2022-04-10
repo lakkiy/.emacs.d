@@ -15,7 +15,15 @@
   ;; NOTE key defined in leader same as bind to C-c
   ;; so make sure it didn't conflict with keybindings
   ;; defined in other files or bulitin that start with C-c
+  ;; or use this to make it start with C-c m
+  (defalias 'meow-leader-command-prefix (make-sparse-keymap))
+  (defvar meow-leader-map (symbol-function 'meow-leader-command-prefix)
+    "Keymap for characters following C-c m.")
+  (define-key global-map "\C-c\ m" 'meow-leader-command-prefix)
+  (add-to-list 'meow-keymap-alist (cons 'leader 'meow-leader-command-prefix))
+
   (meow-leader-define-key
+   '("a" . execute-extended-command)
    '("e" . eval-last-sexp)
    '(";" . comment-dwim)
 
@@ -195,6 +203,6 @@
 
    ;; misc
    '("'" . repeat)
-))
+   ))
 
 (provide 'init-meow-dvorak)
