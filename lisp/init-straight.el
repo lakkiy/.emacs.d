@@ -73,17 +73,14 @@ Selectively runs either `after-make-console-frame-hooks' or
         (setq exec-path (append (parse-colon-path path) (list exec-directory))))
     (error (warn "%s" (error-message-string err))))
 
-  (eat-package ns-auto-titlebar
-    :straight t
-    :hook (after-init-hook . ns-auto-titlebar-mode))
-
-  (setq mac-option-modifier 'meta
-        mac-command-modifier 'super)
-
+  (push '(ns-transparent-titlebar . t) default-frame-alist)
   ;; hide title bar
   ;; (push '(undecorated . t) default-frame-alist)
   ;; (push '(drag-internal-border . 1) default-frame-alist)
   ;; (push '(internal-border-width . 5) default-frame-alist)
+
+  (setq mac-option-modifier 'meta
+        mac-command-modifier 'super)
 
   (global-set-key [(super a)] #'mark-whole-buffer)
   (global-set-key [(super v)] #'yank)

@@ -413,3 +413,7 @@ prepended to the element after the #+HEADER: tag."
   :hook (embark-collect-mode-hook . embark-consult-preview-minor-mode))
 
 (eat-package consult-yasnippet :straight t)
+
+(eat-package ns-auto-titlebar
+  :straight t
+  :hook (after-init-hook . ns-auto-titlebar-mode))
