@@ -57,6 +57,15 @@
      (floor (frame-height) 3)))
   (setq popper-window-height #'my-popper-fit-window-height))
 
+(defun eat-project-other-buffer-maybe ()
+  "Return buffer in current project but not show in current windows, or run `other-buffer'."
+  (if-let ((pr (project-current))
+           (pb (car (cdr (project-buffers pr))))
+           ((minibufferp pb)) ;; TODO auto return buffer in project but not minibuffer and in current window
+           ((get-buffer-window-list pb)))
+      pb
+    (other-buffer)))
+
 ;; When splitting window, show (other-buffer) in the new window
 
 (defun split-window-func-with-other-buffer (split-function)
@@ -65,7 +74,7 @@
     (interactive "P")
     (funcall split-function)
     (let ((target-window (next-window)))
-      (set-window-buffer target-window (other-buffer))
+      (set-window-buffer target-window (eat-project-other-buffer-maybe))
       (unless arg
         (select-window target-window)))))
 
