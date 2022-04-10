@@ -42,19 +42,6 @@
   (after-init-hook . (lambda ()
                        (meow-global-mode 1)))
   :init
-  ;; TODO bind key in normal mode for C-u
-  (defun +project-previous-buffer (arg)
-    "Toggle to the previous buffer that belongs to current project."
-    (interactive "P")
-    (if (equal '(4) arg)
-        (if-let ((pr (project-current)))
-            (switch-to-buffer
-             (->> (project--buffer-list pr)
-                  (--remove (or (minibufferp it)
-                                (get-buffer-window-list it)))
-                  (car))))
-      (mode-line-other-buffer)))
-
   (setq meow-visit-sanitize-completion nil)
   :config
   (setq meow-esc-delay 0.001
