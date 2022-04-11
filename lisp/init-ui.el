@@ -138,7 +138,6 @@
   :hook (after-init-hook . mode-line-bell-mode))
 
 (eat-package which-func
-  :straight t
   :commands which-func-mode
   :hook (after-init-hook . which-func-mode))
 

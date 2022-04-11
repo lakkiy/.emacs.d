@@ -4,6 +4,8 @@
   :straight t
   :hook
   ((prog-mode-hook conf-mode-hook) . symbol-overlay-mode)
+  :init
+  (advice-add 'symbol-overlay-basic-jump :after #'my-pulse-momentary-line)
   :config
   (define-key symbol-overlay-mode-map (kbd "M-i") 'symbol-over-put)
   (define-key symbol-overlay-mode-map (kbd "M-I") 'symbol-overlay-remove-all)
@@ -47,9 +49,12 @@
   :init
   (defun +treemacs-scale-font-size ()
     (face-remap-add-relative 'default :height 0.8))
+
   (setq treemacs-no-png-images t
         treemacs-width 30
         treemacs-user-mode-line-format 'none)
+
+  (advice-add 'treemacs-select-window :after #'my-pulse-momentary-line)
   (global-set-key (kbd "<f1>") 'treemacs-select-window)
   :config
   (define-key treemacs-mode-map (kbd "<f1>") 'treemacs)

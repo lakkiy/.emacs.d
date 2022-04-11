@@ -19,7 +19,10 @@
   ace-window
   :init
   (setq aw-keys '(?a ?o ?e ?u ?i)
-        aw-scope 'frame))
+        aw-scope 'frame)
+  (dolist (cmd '(ace-window
+                 aw--select-window))
+    (advice-add cmd :after #'my-pulse-momentary-line)))
 
 (eat-package popper
   :straight t

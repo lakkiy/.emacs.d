@@ -47,7 +47,9 @@
 
 (eat-package magit
   :straight t
-  :hook (git-commit-setup-hook . git-commit-turn-on-flyspell)
+  :hook
+  (git-commit-setup-hook . git-commit-turn-on-flyspell)
+  (magit-diff-visit-file . my-recenter-and-pulse-line)
   :commands magit
   :config
   (fullframe magit-status magit-mode-quit-window)

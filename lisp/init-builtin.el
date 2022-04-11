@@ -1,5 +1,47 @@
 ;;; -*- lexical-binding: t -*-
 
+(eat-package pulse
+  :hook
+  ((imenu-after-jump-hook isearch-update-post-hook)
+   . my-recenter-and-pulse)
+  ((bookmark-after-jump  next-error)
+   . my-recenter-and-pulse-line)
+  :init
+  (custom-set-faces
+   '(pulse-highlight-start-face ((t (:inherit region))))
+   '(pulse-highlight-face ((t (:inherit region)))))
+
+  (with-no-warnings
+    (defun my-pulse-momentary-line (&rest _)
+      "Pulse the current line."
+      (pulse-momentary-highlight-one-line (point)))
+
+    (defun my-pulse-momentary (&rest _)
+      "Pulse the region or the current line."
+      (if (fboundp 'xref-pulse-momentarily)
+          (xref-pulse-momentarily)
+        (my-pulse-momentary-line)))
+
+    (defun my-recenter-and-pulse(&rest _)
+      "Recenter and pulse the region or the current line."
+      (recenter)
+      (my-pulse-momentary))
+
+    (defun my-recenter-and-pulse-line (&rest _)
+      "Recenter and pulse the current line."
+      (recenter)
+      (my-pulse-momentary-line))
+
+    (dolist (cmd '(recenter-top-bottom
+                   other-window windmove-do-window-select
+                   pager-page-down pager-page-up))
+      (advice-add cmd :after #'my-pulse-momentary-line))
+
+    (dolist (cmd '(pop-to-mark-command
+                   pop-global-mark
+                   goto-last-change))
+      (advice-add cmd :after #'my-recenter-and-pulse))))
+
 (eat-package mouse
   :hook (after-init-hook . context-menu-mode))
 
