@@ -195,7 +195,7 @@
              :files (:defaults "Makefile" "*.h" "*.cc" "*.so"))
   :init
   (setq xeft-directory "~/Dropbox/org/roam"
-        xeft-database "~/Dropbox/org/roam/db")
+        xeft-database "~/.xeft/db")
   :config
   (require 'flique)
   (defun xeft-setup ()
