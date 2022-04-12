@@ -24,7 +24,7 @@
 
   (meow-leader-define-key
    '("a" . execute-extended-command)
-   '("e" . eval-last-sexp)
+   '("e" . "C-x C-e")
    '(";" . comment-dwim)
 
    ;; file
