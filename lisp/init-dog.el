@@ -55,8 +55,6 @@
           (motion . "🅜")
           (keypad . "🅚")))
 
-  (meow-setup-indicator) ;; NOTE use default modeline
-
   ;; specific font so that line won't break
   (advice-add 'meow-cheatsheet :after (lambda ()
                                         (interactive)
