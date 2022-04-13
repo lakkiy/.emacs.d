@@ -176,7 +176,7 @@ The padding pushes TEXT to the right edge of the mode-line."
                         "[%%l] %d%%"
                         (/ (* (window-end) 100.0) (point-max)))))
                 `(,fringe
-                  (:eval (when (fboundp 'meow-setup-indicator) (meow-setup-indicator)))
+                  (:eval (when (fboundp 'meow-indicator) (meow-indicator)))
                   (:eval (when (fboundp 'rime-lighter) (rime-lighter)))
                   " "
                   (:eval (if (window-dedicated-p) "🚷" ""))

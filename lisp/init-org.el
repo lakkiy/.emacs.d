@@ -7,7 +7,6 @@
 
 (eat-package org
   :straight (org :type built-in)
-  :hook (org-mode-hook . prose-mode)
   :init
   ;; rescale image with for org-download
   ;; use #+attr_org :width 300px to rescale

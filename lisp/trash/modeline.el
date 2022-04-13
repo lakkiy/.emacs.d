@@ -234,6 +234,13 @@
                              (require 'awesome-tray)
                              (awesome-tray-mode 1)))
   :init
+  (setq
+   awesome-tray-minibuffer nil
+   awesome-tray-essential-modules nil
+   awesome-tray-info-padding-right 2 ;; or it will warp by meow
+   ;; TODO buffer-read-only and belong not work
+   awesome-tray-active-modules '("buffer-read-only" "buffer-name" "mode-name" "belong" "location"))
+
   ;;Make the modeline in GUI a thin bar.
   (defface mini-modeline-mode-line
     '((((background light))
@@ -283,7 +290,4 @@
       (string-trim (meow-indicator)))
     (add-to-list 'awesome-tray-module-alist
                  '("meow" . (awesome-tray-module-meow-info awesome-tray-module-evil-face)))
-    (add-to-list 'awesome-tray-active-modules "meow"))
-  :config
-  ;; TODO reenable after load theme
-  )
+    (add-to-list 'awesome-tray-active-modules "meow")))
