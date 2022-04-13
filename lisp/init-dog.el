@@ -32,6 +32,8 @@
   (when *is-a-mac*
     (setq rime-librime-root (expand-file-name "librime/dist" user-emacs-directory)))
   :config
+  (set-face-attribute 'rime-indicator-face nil :height 0.9)
+  (set-face-attribute 'rime-indicator-dim-face nil :height 0.9)
   (define-key rime-active-mode-map [tab] 'rime-inline-ascii)
   (define-key rime-mode-map (kbd "C-`") 'rime-send-keybinding)
   (define-key rime-mode-map (kbd "M-j") 'rime-force-enable))
