@@ -132,78 +132,84 @@
                                                   (+load-theme)))
 
 ;;; Mode-line
+(eat-package awesome-tray
+  :straight (awesome-tray :type git :host github :repo "manateelazycat/awesome-tray")
+  :hook (after-init-hook . (lambda ()
+                             (require 'awesome-tray)
+                             (awesome-tray-mode 1)))
+  :init
+  (setq
+   awesome-tray-update-interval 0.5
+   awesome-tray-minibuffer nil
+   awesome-tray-essential-modules nil
+   awesome-tray-info-padding-right 2 ;; or it will warp by meow
+   ;; TODO  belong not work
+   awesome-tray-active-modules '("buffer-read-only" "buffer-name" "mode-name" "belong" "location"))
 
-(eat-package mode-line-bell
-  :straight t
-  :hook (after-init-hook . mode-line-bell-mode))
+  ;;Make the modeline in GUI a thin bar.
+  (defface mini-modeline-mode-line
+    '((((background light))
+       :background "#55ced1" :height 0.14 :box nil)
+      (t
+       :background "#008b8b" :height 0.14 :box nil))
+    "Modeline face for active window.")
 
-(eat-package which-func
-  :commands which-func-mode
-  :hook (after-init-hook . which-func-mode))
+  (defface mini-modeline-mode-line-inactive
+    '((((background light))
+       :background "#dddddd" :height 0.1 :box nil)
+      (t
+       :background "#333333" :height 0.1 :box nil))
+    "Modeline face for inactive window.")
 
-(eat-package minions
-  :straight t
-  :hook (after-init-hook . minions-mode))
+  :config
+  (setq-default mode-line-format (when (display-graphic-p)
+                                   '(" ")))
 
-(defun luna-mode-line-with-padding (text)
-  "Return TEXT with padding on the left.
-The padding pushes TEXT to the right edge of the mode-line."
-  (if (display-graphic-p)
-      (let* ((len (string-pixel-width text))
-             (space-prop
-              `(space :align-to (- (+ right right-margin) (,len))))
-             (padding (propertize "-" 'display space-prop)))
-        (concat padding text))
-    (concat " " text)))
+  ;; Do the same thing with opening buffers.
+  (mapc
+   (lambda (buf)
+     (with-current-buffer buf
+       (when (local-variable-p 'mode-line-format)
+         (setq mode-line-format (when (display-graphic-p)
+                                  '(" "))))
+       ;; Make the modeline in GUI a thin bar.
+       (when (and (local-variable-p 'face-remapping-alist)
+                  (display-graphic-p))
+         (setf (alist-get 'mode-line face-remapping-alist)
+               'mini-modeline-mode-line
+               (alist-get 'mode-line-inactive face-remapping-alist)
+               'mini-modeline-mode-line-inactive))))
+   (buffer-list))
 
-(defun luna-mode-line-coding-system ()
-  "Display abnormal coding systems."
-  (let ((coding (symbol-name buffer-file-coding-system)))
-    (if (or (and (not (string-prefix-p "prefer-utf-8" coding))
-                 (not (string-prefix-p "utf-8" coding))
-                 (not (string-prefix-p "undecided" coding)))
-            (string-suffix-p "dos" coding))
-        (concat "  " coding)
-      "")))
+  ;; Make the modeline in GUI a thin bar.
+  (when (and (display-graphic-p))
+    (let ((face-remaps (default-value 'face-remapping-alist)))
+      (setf (alist-get 'mode-line face-remaps)
+            'mini-modeline-mode-line
+            (alist-get 'mode-line-inactive face-remaps)
+            'mini-modeline-mode-line-inactive
+            (default-value 'face-remapping-alist) face-remaps)))
 
-(setq-default mode-line-format
-              (let* ((spaces
-                      (propertize " " 'display '(space :width 1.5)))
-                     (fringe (propertize
-                              " " 'display '(space :width fringe)))
-                     (percentage
-                      '(format
-                        "[%%l] %d%%"
-                        (/ (* (window-end) 100.0) (point-max)))))
-                `(,fringe
-                  (:eval (when (fboundp 'meow-indicator) (meow-indicator)))
-                  (:eval (when (fboundp 'rime-lighter) (rime-lighter)))
-                  " "
-                  (:eval (if (window-dedicated-p) "🚷" ""))
-                  (:eval (if buffer-read-only "🔒" ""))
-                  (:propertize "%[%b%]" face (:inherit mode-line-buffer-id :weight bold))
-                  (:eval (luna-mode-line-coding-system))
-                  ,spaces
-                  ,(propertize " " 'display '(raise 0.3))
-                  ,(if (featurep 'minions)
-                       'minions-mode-line-modes
-                     'mode-line-modes)
-                  ,(propertize " " 'display '(raise -0.3))
-                  (:eval (when (bound-and-true-p flymake-mode) flymake-mode-line-format))
-                  ,spaces
-                  (:eval (if (buffer-modified-p)
-                             ,(if (display-graphic-p) "ΦAΦ" "OAO")
-                           ,(if (display-graphic-p) "ΦωΦ" "OwO")))
-                  ,spaces
-                  mode-line-misc-info
-                  (:eval (concat (luna-mode-line-with-padding ,percentage)
-                                 "%%"))
-                  ;; (:eval (concat ,spaces "(%l) " ,percentage "%%"))
-                  )))
+  ;; disable popper in mode-line
+  (with-eval-after-load 'popper
+    (setq popper-mode-line " "))
 
-;;; TODO
-;; spc a id agenda, not m-x
-;; daemon start on tui, bui if you create a frame, it's gui, also `windows-system' become to non nil from nil
+  ;; rime
+  (with-eval-after-load 'rime
+    ;; TODO show in message have some error, wont on screen after choose
+    (setq rime-show-candidate 'sidewindow)
+
+    (add-to-list 'awesome-tray-module-alist
+                 '("rime" . (rime-lighter)))
+    (add-to-list 'awesome-tray-active-modules "rime"))
+
+  ;; Add meow to awesome-tray
+  (with-eval-after-load 'meow
+    (defun awesome-tray-module-meow-info ()
+      (string-trim (meow-indicator)))
+    (add-to-list 'awesome-tray-module-alist
+                 '("meow" . (awesome-tray-module-meow-info awesome-tray-module-evil-face)))
+    (add-to-list 'awesome-tray-active-modules "meow")))
 
 ;;; init-ui.el ends here
 (provide 'init-ui)
