@@ -105,14 +105,14 @@
                      (nth 1
                           (cadr
                            (flymake--mode-line-counter :error t)))))
-           (face (if (> counter 0)
-                     'compilation-error
-                   'mode-line)))
-      `(:propertize
-        "危"
-        face ,face)))
-  (setq
-   flymake-mode-line-format '(" " (:eval (sekiro-flymake-mode-line-format)))))
+           (sekiro-flymake (if (> counter 0)
+                               'compilation-error
+                             'default)))
+      ;; TODO check flymake enable
+      (propertize
+       "危"
+       'face
+       sekiro-flymake))))
 
 (eat-package flymake-flycheck
   :straight t

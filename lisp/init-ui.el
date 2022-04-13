@@ -190,20 +190,31 @@
             'mini-modeline-mode-line-inactive
             (default-value 'face-remapping-alist) face-remaps)))
 
-  ;; disable popper in mode-line
+
+  ;; `popper', disable
   (with-eval-after-load 'popper
     (setq popper-mode-line " "))
 
-  ;; rime
+
+  ;; `rime', add
   (with-eval-after-load 'rime
     ;; TODO show in message have some error, wont on screen after choose
-    (setq rime-show-candidate 'sidewindow)
+    (setq rime-show-candidate 'sidewindow
+          rime-sidewindow-style 'simple)
 
     (add-to-list 'awesome-tray-module-alist
                  '("rime" . (rime-lighter)))
     (add-to-list 'awesome-tray-active-modules "rime"))
 
-  ;; Add meow to awesome-tray
+
+  ;; `flymake', add
+  (with-eval-after-load 'flymake
+    (add-to-list 'awesome-tray-module-alist
+                 '("flymake" . (sekiro-flymake-mode-line-format)))
+    (add-to-list 'awesome-tray-active-modules "flymake"))
+
+
+  ;; `meow', add
   (with-eval-after-load 'meow
     (defun awesome-tray-module-meow-info ()
       (string-trim (meow-indicator)))
