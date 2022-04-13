@@ -50,14 +50,8 @@
    '("," . "M-,")
    '("?" . "M-?")
 
-   ;; project
-   '("p s" . project-find-regexp)
-   '("p p" . project-switch-project)
-   '("p f" . project-find-file)
-   '("p b" . project-switch-to-buffer)
-   '("p K" . project-kill-buffers)
-   '("p e" . project-eshell)
-   '("p d" . project-dired)
+   ;; project, bind to keymap
+   (cons "p" project-prefix-map)
 
    ;; tab
    '("t t" . tab-bar-select-tab-by-name)
