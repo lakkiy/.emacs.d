@@ -69,6 +69,7 @@
   :hook
   ((prog-mode-hook conf-mode-hook) . diff-hl-mode)
   (dired-mode-hook . diff-hl-dired-mode)
+  (magit-pre-refresh-hook . diff-hl-magit-pre-refresh)
   (magit-post-refresh-hook . diff-hl-magit-post-refresh)
   :init
   (setq diff-hl-draw-borders nil)
@@ -87,7 +88,9 @@
 (eat-package dirvish
   :straight t
   :config
-  (dirvish-override-dired-mode))
+  ;; FIXME conflict with `awesome-tray'
+  ;; (dirvish-override-dired-mode)
+  )
 (eat-package fd-dired :straight t)
 
 (eat-package message

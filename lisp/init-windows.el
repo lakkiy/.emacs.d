@@ -49,6 +49,7 @@
   (with-eval-after-load 'project
     (setq popper-group-function 'popper-group-by-project))
   :config
+  (global-set-key (kbd "M-`") #'popper-cycle)
   (defun my-popper-fit-window-height (win)
     "Determine the height of popup window WIN by fitting it to the buffer's content."
     (fit-window-to-buffer

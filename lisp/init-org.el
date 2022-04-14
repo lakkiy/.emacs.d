@@ -3,7 +3,14 @@
 (eat-package org-modern
   :straight (org-modern :type git :host github :repo "minad/org-modern")
   :hook
-  (org-mode-hook . org-modern-mode))
+  (org-mode-hook . org-modern-mode)
+  :config
+  (setq
+   org-modern-star ["›"]
+   ;; For org-indent-mode works normally.
+   org-modern-hide-stars nil
+   ;; Use valign instead
+   org-modern-table nil))
 
 (eat-package org
   :straight (org :type built-in)

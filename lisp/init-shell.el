@@ -28,7 +28,6 @@ If popup is focused, kill it."
                                             (inhibit-same-window . nil))))
 
         (shell "*shell-popup*"))))
-  (global-set-key (kbd "M-`") #'shell-toggle)
 
   ;; Correct indentation for `ls'
   (defun revert-tab-width-to-default ()
@@ -42,6 +41,10 @@ If popup is focused, kill it."
   (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
 
 (eat-package vterm :straight t)
+(eat-package vterm-toggle
+  :straight t
+  :init
+  (global-set-key (kbd "C-`") #'vterm-toggle))
 
 ;;; init-shell.el ends here
 (provide 'init-shell)

@@ -417,3 +417,12 @@ prepended to the element after the #+HEADER: tag."
 (eat-package ns-auto-titlebar
   :straight t
   :hook (after-init-hook . ns-auto-titlebar-mode))
+
+;;; `kind-icon'
+(eat-package kind-icon
+  :straight t
+  :after corfu
+  :init
+  (setq kind-icon-default-face 'corfu-default)
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))

@@ -46,14 +46,6 @@
   (define-key corfu-map (kbd "M-p") #'corfu-doc-scroll-down)
   (define-key corfu-map (kbd "M-n") #'corfu-doc-scroll-up))
 
-(eat-package kind-icon
-  :straight t
-  :after corfu
-  :init
-  (setq kind-icon-default-face 'corfu-default)
-  :config
-  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
-
 (eat-package copilot
   :straight (copilot :host github :repo "zerolfx/copilot.el"
                      :files ("dist" "copilot.el"))

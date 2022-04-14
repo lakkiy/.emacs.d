@@ -298,7 +298,7 @@
    tab-bar-tab-name-truncated-max 10)
 
   (custom-set-faces
-   `(tab-bar ((t (:height 1.2 :family ,(format "%s-10" +font-variable-pitch))))))
+   `(tab-bar ((t (:family ,+font-variable-pitch)))))
 
   (defun +tab-bar-switch-project ()
     "Switch to project in a new tab, project name will be used as tab name.
@@ -319,9 +319,9 @@ No tab will created if the command is cancelled."
   (defun +tab-bar-tab-format-function (tab i)
     (let ((current-p (eq (car tab) 'current-tab)))
       (propertize (concat
-                   "    "
+                   "   "
                    (alist-get 'name tab)
-                   "    ")
+                   "   ")
                   'face
                   (funcall tab-bar-tab-face-function tab))))
   :config
@@ -409,7 +409,62 @@ No tab will created if the command is cancelled."
            [simple-query "wikipedia.org" "wikipedia.org/wiki/" #1#]))))
 
 ;;; `modus-theme'
-(setq modus-themes-mode-line '(accented barderless))
+(setq
+ modus-themes-mode-line '(barderless)
+ modus-themes-italic-constructs t
+ modus-themes-bold-constructs t
+ modus-themes-markup '(background italic)
+ modus-themes-paren-match '(bold intense)
+ modus-themes-links '(neutral-underline background)
+ modus-themes-prompts '(intense bold)
+ modus-themes-org-blocks 'gray-background
+ modus-themes-region '(bg-only no-extend)
+ modus-themes-headings
+ '((1 . (1.15))
+   (2 . (1.05))
+   (t . (semibold))))
+
+(defun +custom-modus-operandi()
+;;;; default face
+  (progn
+    (set-face-foreground 'link "#0168da")
+    (set-face-background 'isearch "#feff00")
+    (set-face-foreground 'isearch nil)
+    (set-face-background 'lazy-highlight "#feff00"))
+
+;;;; programming face
+  (progn
+    (set-face-foreground 'font-lock-function-name-face "#0168da")
+    (set-face-foreground 'font-lock-keyword-face "#874bf8")
+    (set-face-foreground 'font-lock-comment-face "DarkGray")
+    (set-face-foreground 'font-lock-constant-face "dark cyan")
+    (set-face-foreground 'font-lock-string-face "chocolate"))
+
+;;;; org mode
+  (progn
+    (with-eval-after-load 'org
+      (set-face-foreground 'org-meta-line "Gray")
+      (set-face-foreground 'org-drawer "Gray")
+      (set-face-foreground 'org-document-info-keyword "Gray")
+      (set-face-foreground 'org-date "Gray")
+      (set-face-foreground 'org-link "#0168da")
+
+      (set-face-attribute 'org-level-1 nil :foreground "#0168da")
+      (set-face-attribute 'org-level-2 nil :foreground "#874bf8")
+      (set-face-attribute 'org-level-3 nil :foreground "dark cyan")
+      (set-face-attribute 'org-level-4 nil :foreground "violet red")
+      (set-face-attribute 'org-level-5 nil :foreground "SpringGreen4")
+      (set-face-attribute 'org-level-6 nil :foreground "orange red")
+      (set-face-attribute 'org-level-7 nil :foreground "light sea green")
+      (set-face-attribute 'org-level-8 nil :foreground "chocolate")
+
+      (set-face-attribute 'org-headline-done nil :foreground "gray")
+      (set-face-attribute 'org-done nil :foreground "gray" :weight 'normal)))
+;;;; +custom-modus-operandi
+  )
+
+(add-hook '+theme-hooks '(modus-operandi . +custom-modus-operandi))
+
 
 ;;; save session
 (eat-package desktop
@@ -502,6 +557,10 @@ No tab will created if the command is cancelled."
 ;;;; Info
 (eat-package info
   :hook (Info-mode-hook . variable-pitch-mode))
+
+;;; show url
+(eat-package goto-addr
+  :hook (after-init-hook . global-goto-address-mode))
 
 ;;; init-builtin.el ends here
 (provide 'init-builtin)

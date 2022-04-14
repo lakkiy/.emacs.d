@@ -9,8 +9,12 @@
  gc-cons-percentage 0.6)
 
 ;; Faster to disable these here (before they've been initialized)
-(push '(scroll-bar-mode . 0) default-frame-alist)
-(push '(vertical-scroll-bars) default-frame-alist)
-(push '(menu-bar-lines . 0) default-frame-alist)
-(push '(tool-bar-lines . 0) default-frame-alist)
-(push '(alpha-background . 90) default-frame-alist)
+;; Since `default-frame-alist' didnt have default value, just setq here
+(setq default-frame-alist
+      '((scroll-bar-mode . 0)
+        (vertical-scroll-bars . nil)
+        (menu-bar-lines . 0)
+        (tool-bar-lines . 0)
+        (alpha-background . 90)
+        (internal-border-width . 18)
+        (right-fringe   . 1)))
