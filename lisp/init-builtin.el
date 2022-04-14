@@ -408,13 +408,6 @@ No tab will created if the command is cancelled."
           ("Wikipedia" .
            [simple-query "wikipedia.org" "wikipedia.org/wiki/" #1#]))))
 
-
-(eat-package display-fill-column-indicator
-  :hook (prog-mode-hook . display-fill-column-indicator-mode)
-  :init
-  (setq-default indicate-buffer-boundaries 'left)
-  (setq-default display-fill-column-indicator-character ?\u254e))
-
 ;;; `modus-theme'
 (setq modus-themes-mode-line '(accented barderless))
 
