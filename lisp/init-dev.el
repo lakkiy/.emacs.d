@@ -108,7 +108,6 @@
            (sekiro-flymake (if (> counter 0)
                                'compilation-error
                              'default)))
-      ;; TODO check flymake enable
       (propertize
        "危"
        'face

@@ -184,4 +184,11 @@ Used in the default value of `notmuch-tag-formats'."
     (unless (eq ibuffer-sorting-mode 'filename/process)
       (ibuffer-do-sort-by-filename/process))))
 
+(eat-package popweb
+  :straight (popweb
+             :type git
+             :host github
+             :repo "manateelazycat/popweb"
+             :files ("*.el" "*.py" "*.js" "extension/latex/*" "extension/dict/*")))
+
 (provide 'init-app)
