@@ -429,6 +429,7 @@ No tab will created if the command is cancelled."
 (defun +custom-modus-operandi()
 ;;;; default face
   (progn
+    (set-face-background 'cursor "deep pink")
     (set-face-foreground 'link "#0168da")
     (set-face-background 'isearch "#feff00")
     (set-face-foreground 'isearch nil)
