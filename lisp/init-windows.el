@@ -10,14 +10,34 @@
   :hook (after-init-hook . (lambda ()
                              (eyebrowse-mode t)))
   :init
-  ;; TODO select window config by name, create it if not exist
-  ;;      open project in new workspace and rename to project name
   (setq
    eyebrowse-new-workspace t
    eyebrowse-mode-line-style 'current)
   :config
+  (defun +eyebrowse-switch-project ()
+    "Switch to project in a new window config, project name will be used as config name.
+
+No window config will created if the command is cancelled."
+    (interactive)
+    (let (succ)
+      (unwind-protect
+          (progn
+            (eyebrowse-create-window-config)
+            (call-interactively #'project-switch-project)
+            (when-let ((proj (project-root (project-current))))
+              (eyebrowse-rename-window-config
+               (eyebrowse--get 'current-slot)
+               (format "%s" (file-name-nondirectory (directory-file-name proj))))
+              (setq succ t)))
+        (unless succ
+          (eyebrowse-close-window-config)))))
+  ;; NOTE should update if `eyebrowse-keymap-prefix' changed
+  (define-key eyebrowse-mode-map (kbd "C-c C-w l") #'+eyebrowse-switch-project)
+  (define-key eyebrowse-mode-map (kbd "C-c C-w n") #'eyebrowse-create-named-window-config)
+
   (advice-add 'xwidget-webkit-browse-url :before #'(lambda (url &optional new-session)
                                                      "Run `xwidget-webkit-browse-url' in name window config 'xwidget'."
+                                                     ;; FIXME select config by name first
                                                      (eyebrowse-create-window-config)
                                                      (eyebrowse-rename-window-config
                                                       (eyebrowse--get 'current-slot)

@@ -200,6 +200,7 @@
   (with-eval-after-load 'rime
     ;; NOTE show in message have some error, wont on screen after choose
     (setq rime-show-candidate 'sidewindow
+          rime-sidewindow-keep-window t
           rime-sidewindow-side 'top
           rime-sidewindow-style 'horizontal)
 
