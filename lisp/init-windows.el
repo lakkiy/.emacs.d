@@ -14,7 +14,14 @@
   ;;      open project in new workspace and rename to project name
   (setq
    eyebrowse-new-workspace t
-   eyebrowse-mode-line-style 'current))
+   eyebrowse-mode-line-style 'current)
+  :config
+  (advice-add 'xwidget-webkit-browse-url :before #'(lambda (url &optional new-session)
+                                                     "Run `xwidget-webkit-browse-url' in name window config 'xwidget'."
+                                                     (eyebrowse-create-window-config)
+                                                     (eyebrowse-rename-window-config
+                                                      (eyebrowse--get 'current-slot)
+                                                      "xwidget"))))
 
 (eat-package window-numbering
   :straight (window-numbering :type git :host github :repo "DogLooksGood/window-numbering.el")
