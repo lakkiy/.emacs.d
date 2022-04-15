@@ -4,7 +4,17 @@
 ;; concept: these are the panels within an Emacs frame which contain
 ;; buffers.
 
-;; TODO maybe use `eyebrowse' replace `ta-bar'
+;; replace `tab-bar'
+(eat-package eyebrowse
+  :straight t
+  :hook (after-init-hook . (lambda ()
+                             (eyebrowse-mode t)))
+  :init
+  ;; TODO select window config by name, create it if not exist
+  ;;      open project in new workspace and rename to project name
+  (setq
+   eyebrowse-new-workspace t
+   eyebrowse-mode-line-style 'current))
 
 (eat-package window-numbering
   :straight (window-numbering :type git :host github :repo "DogLooksGood/window-numbering.el")

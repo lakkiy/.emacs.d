@@ -198,9 +198,10 @@
 
   ;; `rime', add
   (with-eval-after-load 'rime
-    ;; TODO show in message have some error, wont on screen after choose
+    ;; NOTE show in message have some error, wont on screen after choose
     (setq rime-show-candidate 'sidewindow
-          rime-sidewindow-style 'simple)
+          rime-sidewindow-side 'top
+          rime-sidewindow-style 'horizontal)
 
     (add-to-list 'awesome-tray-module-alist
                  '("rime" . (rime-lighter)))
@@ -220,7 +221,14 @@
       (string-trim (meow-indicator)))
     (add-to-list 'awesome-tray-module-alist
                  '("meow" . (awesome-tray-module-meow-info awesome-tray-module-evil-face)))
-    (add-to-list 'awesome-tray-active-modules "meow")))
+    (add-to-list 'awesome-tray-active-modules "meow"))
+
+
+  ;; `eyebrowse', add
+  (with-eval-after-load 'eyebrowse
+    (add-to-list 'awesome-tray-module-alist
+                 '("eyebrowse" . (eyebrowse-mode-line-indicator)))
+    (add-to-list 'awesome-tray-active-modules "eyebrowse")))
 
 ;;; init-ui.el ends here
 (provide 'init-ui)

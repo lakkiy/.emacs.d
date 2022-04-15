@@ -75,8 +75,8 @@ Selectively runs either `after-make-console-frame-hooks' or
 
   (push '(ns-transparent-titlebar . t) default-frame-alist)
   ;; hide title bar
-  ;; (push '(undecorated . t) default-frame-alist)
-  ;; (push '(drag-internal-border . 1) default-frame-alist)
+  (push '(undecorated . t) default-frame-alist)
+  (push '(drag-internal-border . 1) default-frame-alist)
   ;; (push '(internal-border-width . 5) default-frame-alist)
 
   (setq mac-option-modifier 'meta
