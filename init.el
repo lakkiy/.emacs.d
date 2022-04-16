@@ -60,7 +60,7 @@
 (let ((file-name-handler-alist nil))
   (require 'eat-package)
   ;;  must work on emacs -Q
-  (require 'init-straight)
+  (require 'init-default)
   ;;  some funcs
   (require 'init-utils)
   (require 'init-builtin)

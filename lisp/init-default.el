@@ -302,5 +302,5 @@ Selectively runs either `after-make-console-frame-hooks' or
 (keyboard-translate ?\C-x ?\C-t)
 
 
-;;; init-straight.el ends here
-(provide 'init-straight)
+;;; init-default.el ends here
+(provide 'init-default)
