@@ -19,7 +19,7 @@
 
 
 ;;; Variable for config
-(defvar +font-default "Menlo"
+(defvar +font-default "Roboto Mono"
   "Default font.")
 (defvar +icons-p nil
   "Whether to enable `all-the-icons'.")
@@ -38,7 +38,7 @@
   "Default theme in terminal.")
 (defvar +theme-system-light 'modus-operandi
   "Default light theme after system appearance changed.")
-(defvar +theme-system-dark 'modus-vivendi
+(defvar +theme-system-dark 'spacemacs-dark
   "Default dark theme. after system appearance changed.")
 (defvar +theme-hooks nil
   "((theme-id . function) ...)")
