@@ -35,13 +35,28 @@ No window config will created if the command is cancelled."
   (define-key eyebrowse-mode-map (kbd "C-c C-w l") #'+eyebrowse-switch-project)
   (define-key eyebrowse-mode-map (kbd "C-c C-w n") #'eyebrowse-create-named-window-config)
 
+
+  (defun +eyebrowse-switch-named-window-config (name)
+    "Switch to a window config with `NAME', or create it if not exist."
+    (let* ((window-configs (eyebrowse--get 'window-configs))
+           (current-slot (eyebrowse--get 'current-slot))
+           (name-window-slot nil))
+      (while window-configs
+        (let* ((window-config (car window-configs))
+               (window-name (nth 2 window-config)))
+          (if (string= name window-name)
+              (setq window-configs nil
+                    name-window-slot (car window-config))
+            (setq window-configs (cdr window-configs)))))
+      (if name-window-slot
+          (when (not (= current-slot name-window-slot))
+            (eyebrowse-switch-to-window-config name-window-slot))
+        (eyebrowse-create-window-config)
+        (eyebrowse-rename-window-config
+         (eyebrowse--get 'current-slot)
+         name))))
   (advice-add 'xwidget-webkit-browse-url :before #'(lambda (url &optional new-session)
-                                                     "Run `xwidget-webkit-browse-url' in name window config 'xwidget'."
-                                                     ;; FIXME select config by name first
-                                                     (eyebrowse-create-window-config)
-                                                     (eyebrowse-rename-window-config
-                                                      (eyebrowse--get 'current-slot)
-                                                      "xwidget"))))
+                                                     (+eyebrowse-switch-named-window-config "xwidget"))))
 
 (eat-package window-numbering
   :straight (window-numbering :type git :host github :repo "DogLooksGood/window-numbering.el")
