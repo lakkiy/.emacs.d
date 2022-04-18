@@ -68,7 +68,8 @@
   (global-set-key (kbd "C-x c u") 'citre-update-this-tags-file)
   (setq citre-default-create-tags-file-location 'global-cache
         citre-use-project-root-when-creating-tags t
-        citre-prompt-language-for-ctags-command t)
+        citre-prompt-language-for-ctags-command t
+        citre-auto-enable-citre-mode-modes '(prog-mode))
   (eat-package citre-global
     :init
     (global-set-key (kbd "C-x c r") 'citre-jump-to-reference)
@@ -83,7 +84,11 @@
     (setenv "GTAGSOBJDIRPREFIX" (concat (getenv "HOME") "/.cache/gtags"))
     (setenv "GTAGSCONF" (concat (getenv "HOME") "/.globalrc"))
     (setenv "GTAGSLABEL" "native-pygments"))
+  (require 'citre-config)
   :config
+  (defun +citer-edit-cmd-buf-add-dir-from-godotmod ()
+    ;; TODO Add all third part package to ctire command line.
+    (interactive))
   (with-eval-after-load 'cc-mode (require 'citre-lang-c))
   (with-eval-after-load 'dired (require 'citre-lang-fileref))
   (with-eval-after-load 'verilog-mode (require 'citre-lang-verilog))
@@ -119,6 +124,7 @@
   ;; :hook (flymake-mode-hook . enable-flymake-flycheck)
   :init
   (defun enable-flymake-flycheck ()
+    (interactive)
     (setq-local flymake-diagnostic-functions
                 (append flymake-diagnostic-functions
                         (flymake-flycheck-all-chained-diagnostic-functions))))
