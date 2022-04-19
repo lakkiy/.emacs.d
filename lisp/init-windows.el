@@ -110,16 +110,16 @@ No window config will created if the command is cancelled."
      (floor (frame-height) 3)))
   (setq popper-window-height #'my-popper-fit-window-height))
 
-(defun eat-project-other-buffer-maybe ()
-  "Return buffer in current project but not show in current windows, or run `other-buffer'."
-  (if-let ((pr (project-current))
-           (pb (car (cdr (project-buffers pr))))
-           ((minibufferp pb)) ;; TODO auto return buffer in project but not minibuffer and in current window
-           ((get-buffer-window-list pb)))
-      pb
-    (other-buffer)))
-
 ;; When splitting window, show (other-buffer) in the new window
+
+;; TODO drop dash.el
+(defun +project-previous-buffer ()
+  "Toggle to the previous buffer that belongs to current project."
+  (if-let ((pr (project-current)))
+      (->> (project--buffer-list pr)
+           (--remove (or (minibufferp it)
+                         (get-buffer-window-list it)))
+           (car))))
 
 (defun split-window-func-with-other-buffer (split-function)
   (lambda (&optional arg)
@@ -127,7 +127,7 @@ No window config will created if the command is cancelled."
     (interactive "P")
     (funcall split-function)
     (let ((target-window (next-window)))
-      (set-window-buffer target-window (eat-project-other-buffer-maybe))
+      (set-window-buffer target-window (+project-previous-buffer))
       (unless arg
         (select-window target-window)))))
 
