@@ -160,6 +160,14 @@
 
 (eat-package xscheme)
 
+(eat-package dumb-jump
+  :straight t
+  :init
+  (setq
+   dumb-jump-quiet t
+   dumb-jump-aggressive t
+   dumb-jump-selector 'completing-read))
+
 (eat-package eglot
   :straight t
   :commands eglot-ensure
