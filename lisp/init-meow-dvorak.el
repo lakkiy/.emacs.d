@@ -61,6 +61,9 @@
    ;; `eyebrowse'
    (cons "t" eyebrowse-keymap-prefix)
 
+   ;; `smerge-mode'
+   (cons "=" smerge-basic-map)
+
    ;; app
    '("d" . dired)
    '("v" . magit)

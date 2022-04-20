@@ -84,7 +84,9 @@
     (setenv "GTAGSOBJDIRPREFIX" (concat (getenv "HOME") "/.cache/gtags"))
     (setenv "GTAGSCONF" (concat (getenv "HOME") "/.globalrc"))
     (setenv "GTAGSLABEL" "native-pygments"))
-  (require 'citre-config)
+  (defun +citer-enable ()
+    (interactive)
+    (require 'citre-config))
   :config
   (defun +citer-edit-cmd-buf-add-dir-from-godotmod ()
     ;; TODO Add all third part package to ctire command line.

@@ -349,10 +349,7 @@ No tab will created if the command is cancelled."
                             (save-excursion
                               (goto-char (point-min))
                               (when (re-search-forward "^<<<<<<< " nil t)
-                                (smerge-mode 1)))))
-  :config
-  (define-key smerge-mode-map (kbd "M-r") #'smerge-refine)
-  (define-key smerge-mode-map (kbd "M-RET") #'smerge-keep-current))
+                                (smerge-mode 1))))))
 
 (eat-package cc-mode
   :init
