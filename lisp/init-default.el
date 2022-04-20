@@ -301,6 +301,11 @@ Selectively runs either `after-make-console-frame-hooks' or
 (keyboard-translate ?\C-t ?\C-x)
 (keyboard-translate ?\C-x ?\C-t)
 
+;;; for emacs 29
+(setq
+ ;; 'e' on a value in *Help* will pop you to a new buffer where you can edit the value.
+ help-enable-variable-value-editing t)
+
 
 ;;; init-default.el ends here
 (provide 'init-default)
