@@ -167,6 +167,8 @@
   (setq hs-set-up-overlay #'hideshow-folded-overlay-fn))
 
 (eat-package xref
+  :hook
+  ((xref-after-return-hook xref-after-jump-hook) . recenter)
   :init
   (global-unset-key (kbd "C-<down-mouse-1>"))
   (global-set-key (kbd "C-<mouse-1>") #'xref-find-definitions-at-mouse)
