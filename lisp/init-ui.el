@@ -146,12 +146,13 @@
    ;; TODO  belong not work
    awesome-tray-active-modules '("buffer-read-only" "buffer-name" "mode-name" "belong" "location"))
 
+  :config
   ;;Make the modeline in GUI a thin bar.
   (defface mini-modeline-mode-line
-    '((((background light))
-       :background "#55ced1" :height 0.14 :box nil)
+    `((((background light))
+       :background ,awesome-tray-mode-line-active-color :height 0.14 :box nil)
       (t
-       :background "#008b8b" :height 0.14 :box nil))
+       :background ,awesome-tray-mode-line-active-color :height 0.14 :box nil))
     "Modeline face for active window.")
 
   (defface mini-modeline-mode-line-inactive
@@ -161,7 +162,6 @@
        :background "#333333" :height 0.1 :box nil))
     "Modeline face for inactive window.")
 
-  :config
   (setq-default mode-line-format (when (display-graphic-p)
                                    '(" ")))
 
