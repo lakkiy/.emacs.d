@@ -205,6 +205,7 @@
   :init
   (fset 'list-buffers 'ibuffer)
   (setq-default ibuffer-show-empty-filter-groups nil)
+  (global-set-key (kbd "C-c B") 'ibuffer)
 
   ;; Modify the default ibuffer-formats (toggle with `)
   (setq ibuffer-formats

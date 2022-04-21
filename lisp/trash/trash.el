@@ -308,46 +308,6 @@ prepended to the element after the #+HEADER: tag."
 
 ;;; corfu
 
-;;; `company'
-(eat-package company
-  :straight t
-  ;; :hook
-  ;; ((prog-mode-hook conf-mode-hook eshell-mode-hook) . company-mode)
-  :commands company-mode
-  :init
-  (setq
-   company-minimum-prefix-length 2
-   company-idle-delay 0.1
-   company-begin-commands '(self-insert-command
-                            backward-delete-char)
-   ;; icons
-   company-vscode-icons-mapping nil
-   company-text-icons-add-background t
-   ;; thanks to r/emacs yyoncho
-   company-format-margin-function 'company-text-icons-margin
-   ;; tooltip frontend config
-   company-tooltip-align-annotations t
-   company-tooltip-limit 10
-   company-tooltip-width-grow-only t
-   company-tooltip-idle-delay 0.4
-   company-dabbrev-downcase nil
-   company-abort-manual-when-too-short t
-   company-require-match nil
-   company-backends '((company-capf :with company-yasnippet)
-                      (company-dabbrev-code company-keywords company-files)
-                      company-dabbrev)
-   company-files-exclusions '(".git/" ".DS_Store")
-   company-tooltip-margin 0)
-  :config
-  (defun +complete ()
-    (interactive)
-    (or (yas/expand)
-        (company-complete-selection)))
-  (define-key company-active-map [tab] '+complete)
-  (define-key company-active-map (kbd "TAB") '+complete)
-  (define-key company-active-map [return] nil)
-  (define-key company-active-map (kbd "RET") nil))
-
 ;;; `beacon'
 ;; didn't update since 2019 with 22 issue and 2 pr
 ;; maybe use puslar ?
@@ -379,40 +339,6 @@ prepended to the element after the #+HEADER: tag."
   :straight t
   :init
   (add-hook 'after-init-hook #'exec-path-from-shell-initialize))
-
-;;; `consult'
-(eat-package consult
-  :straight t
-  :init
-  ;; In buffer action
-  (global-set-key (kbd "C-c C-s") 'consult-line)
-  (global-set-key [remap imenu] 'consult-imenu)
-  (global-set-key [remap goto-line] 'consult-goto-line)
-  (global-set-key [remap yank-pop] 'consult-yank-pop)
-  (global-set-key (kbd "M-g o") 'consult-outline)
-  ;; Disable preview
-  (global-set-key [remap project-search] 'consult-ripgrep)
-  (global-set-key [remap switch-to-buffer] 'consult-buffer)
-  (global-set-key [remap bookmark-jump] 'consult-bookmark)
-  (global-set-key [remap recentf-open-files] 'consult-recent-file)
-  (setq consult-project-root-function (lambda ()
-                                        (when-let (project (project-current))
-                                          (car (project-roots project)))))
-  :config
-  ;; (global-set-key (kbd "C-c C-s") #'consult-line)
-  (with-no-warnings
-    (consult-customize consult-ripgrep consult-git-grep consult-grep
-                       consult-bookmark
-                       consult-recent-file
-                       consult-buffer
-                       :preview-key nil)))
-
-;; Consult users will also want the embark-consult package.
-(eat-package embark-consult
-  :after embark consult
-  :hook (embark-collect-mode-hook . embark-consult-preview-minor-mode))
-
-(eat-package consult-yasnippet :straight t)
 
 (eat-package ns-auto-titlebar
   :straight t

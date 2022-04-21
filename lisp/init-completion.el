@@ -12,22 +12,68 @@
   (let ((inhibit-message t))
     (yas-reload-all)))
 
+(eat-package company
+  :straight t
+  :hook
+  (after-make-console-frame-hooks
+   . (lambda ()
+       (add-hook 'prog-mode-hook 'company-mode)
+       (add-hook 'conf-mode-hook 'company-mode)
+       (add-hook 'eshell-mode-hook 'company-mode)))
+  :commands company-mode
+  :init
+  (setq
+   company-minimum-prefix-length 2
+   company-idle-delay 0.1
+   company-begin-commands '(self-insert-command
+                            backward-delete-char)
+   ;; icons
+   company-vscode-icons-mapping nil
+   company-text-icons-add-background t
+   ;; thanks to r/emacs yyoncho
+   company-format-margin-function 'company-text-icons-margin
+   ;; tooltip frontend config
+   company-tooltip-align-annotations t
+   company-tooltip-limit 10
+   company-tooltip-width-grow-only t
+   company-tooltip-idle-delay 0.4
+   company-dabbrev-downcase nil
+   company-abort-manual-when-too-short t
+   company-require-match nil
+   company-backends '((company-capf :with company-yasnippet)
+                      (company-dabbrev-code company-keywords company-files)
+                      company-dabbrev)
+   company-files-exclusions '(".git/" ".DS_Store")
+   company-tooltip-margin 0)
+  :config
+  (defun +complete ()
+    (interactive)
+    (or (yas/expand)
+        (company-complete-selection)))
+  (define-key company-active-map [tab] '+complete)
+  (define-key company-active-map (kbd "TAB") '+complete)
+  (define-key company-active-map [return] nil)
+  (define-key company-active-map (kbd "RET") nil))
+
 (eat-package corfu
   :straight t
   :hook
-  ((prog-mode-hook shell-mode-hook eshell-mode-hook)
-   . corfu-mode)
+  (after-make-window-system-frame-hooks
+   . (lambda ()
+       (add-hook 'prog-mode-hook 'corfu-mode)
+       (add-hook 'conf-mode-hook 'corfu-mode)
+       (add-hook 'eshell-mode-hook 'corfu-mode)))
   :init
-  (defun +complete ()
-    (interactive)
-    (or (yas-expand)
-        ;; NOTE `corfu-complete' sometimes didn't quit corfu after complete
-        (corfu-insert)))
   (setq
    corfu-quit-no-match t
    corfu-quit-at-boundary t
    corfu-auto t)
   :config
+  (defun +complete ()
+    (interactive)
+    (or (yas-expand)
+        ;; NOTE `corfu-complete' sometimes didn't quit corfu after complete
+        (corfu-insert)))
   ;; quit corfu completion and back to meow normal mode when it enable
   (define-key corfu-map (kbd "<escape>") #'(lambda ()
                                              (interactive)
@@ -145,12 +191,43 @@
     (define-key vertico-map (kbd "C-c C-o") 'embark-export)
     (define-key vertico-map (kbd "C-c C-c") 'embark-act))
   :config
+  ;; Consult users will also want the embark-consult package.
+  (eat-package embark-consult
+    :after embark consult
+    :hook (embark-collect-mode-hook . embark-consult-preview-minor-mode))
   (define-key embark-meta-map (kbd "<escape>") #'keyboard-escape-quit)
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                  nil
                  (window-parameters (mode-line-format . none)))))
+
+(eat-package consult
+  :straight t
+  :init
+  (eat-package consult-yasnippet :straight t)
+  ;; In buffer action
+  (global-set-key (kbd "C-c C-s") 'consult-line)
+  (global-set-key [remap imenu] 'consult-imenu)
+  (global-set-key [remap goto-line] 'consult-goto-line)
+  (global-set-key [remap yank-pop] 'consult-yank-pop)
+  (global-set-key (kbd "M-g o") 'consult-outline)
+  ;; Disable preview
+  (global-set-key [remap project-find-regexp] 'consult-ripgrep)
+  (global-set-key [remap switch-to-buffer] 'consult-buffer)
+  (global-set-key [remap bookmark-jump] 'consult-bookmark)
+  (global-set-key [remap recentf-open-files] 'consult-recent-file)
+  (setq consult-project-root-function (lambda ()
+                                        (when-let (project (project-current))
+                                          (car (project-roots project)))))
+  :config
+  ;; (global-set-key (kbd "C-c C-s") #'consult-line)
+  (with-no-warnings
+    (consult-customize consult-ripgrep consult-git-grep consult-grep
+                       consult-bookmark
+                       consult-recent-file
+                       consult-buffer
+                       :preview-key nil)))
 
 ;;; init-completion.el ends here
 (provide 'init-completion)

@@ -134,9 +134,11 @@
 ;;; Mode-line
 (eat-package awesome-tray
   :straight (awesome-tray :type git :host github :repo "manateelazycat/awesome-tray")
-  :hook (after-init-hook . (lambda ()
-                             (require 'awesome-tray)
-                             (awesome-tray-mode 1)))
+  :hook
+  (after-make-window-system-frame-hooks
+   . (lambda ()
+       (require 'awesome-tray)
+       (awesome-tray-mode 1)))
   :init
   (setq
    awesome-tray-update-interval 0.5
@@ -227,6 +229,77 @@
     (add-to-list 'awesome-tray-module-alist
                  '("eyebrowse" . (eyebrowse-mode-line-indicator)))
     (add-to-list 'awesome-tray-active-modules "eyebrowse")))
+
+(progn
+  (eat-package mode-line-bell
+    :straight t
+    :hook (after-init-hook . mode-line-bell-mode))
+
+  (eat-package which-func
+    :commands which-func-mode
+    :hook (after-init-hook . which-func-mode))
+
+  (eat-package minions
+    :straight t
+    :hook (after-init-hook . minions-mode))
+
+  (defun luna-mode-line-with-padding (text)
+    "Return TEXT with padding on the left.
+The padding pushes TEXT to the right edge of the mode-line."
+    (if (display-graphic-p)
+        (let* ((len (string-pixel-width text))
+               (space-prop
+                `(space :align-to (- (+ right right-margin) (,len))))
+               (padding (propertize "-" 'display space-prop)))
+          (concat padding text))
+      (concat " " text)))
+
+  (defun luna-mode-line-coding-system ()
+    "Display abnormal coding systems."
+    (let ((coding (symbol-name buffer-file-coding-system)))
+      (if (or (and (not (string-prefix-p "prefer-utf-8" coding))
+                   (not (string-prefix-p "utf-8" coding))
+                   (not (string-prefix-p "undecided" coding)))
+              (string-suffix-p "dos" coding))
+          (concat "  " coding)
+        "")))
+
+  (defun +setup-mode-line ()
+    (setq-default mode-line-format
+                  (let* ((spaces
+                          (propertize " " 'display '(space :width 1.5)))
+                         (fringe (propertize
+                                  " " 'display '(space :width fringe)))
+                         (percentage
+                          '(format
+                            "[%%l] %d%%"
+                            (/ (* (window-end) 100.0) (point-max)))))
+                    `(,fringe
+                      (:eval (when (fboundp 'meow-indicator) (meow-indicator)))
+                      (:eval (when (fboundp 'rime-lighter) (rime-lighter)))
+                      " "
+                      (:eval (if (window-dedicated-p) "🚷" ""))
+                      (:eval (if buffer-read-only "🔒" ""))
+                      (:propertize "%[%b%]" face (:inherit mode-line-buffer-id :weight bold))
+                      (:eval (luna-mode-line-coding-system))
+                      ,spaces
+                      ,(propertize " " 'display '(raise 0.3))
+                      ,(if (featurep 'minions)
+                           'minions-mode-line-modes
+                         'mode-line-modes)
+                      ,(propertize " " 'display '(raise -0.3))
+                      (:eval (when (bound-and-true-p flymake-mode) (sekiro-flymake-mode-line-format)))
+                      ,spaces
+                      (:eval (if (buffer-modified-p)
+                                 ,(if (display-graphic-p) "ΦAΦ" "OAO")
+                               ,(if (display-graphic-p) "ΦωΦ" "OwO")))
+                      ,spaces
+                      mode-line-misc-info
+                      (:eval (concat (luna-mode-line-with-padding ,percentage)
+                                     "%%"))
+                      )))))
+
+(add-hook 'after-make-console-frame-hooks #'+setup-mode-line)
 
 ;;; init-ui.el ends here
 (provide 'init-ui)
