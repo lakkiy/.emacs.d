@@ -197,7 +197,6 @@
 (eat-package xeft
   :straight (xeft
              :type git :host github :repo "casouri/xeft"
-             :pre-build ("make")
              :files (:defaults "Makefile" "*.h" "*.cc" "*.so"))
   :init
   (setq xeft-directory "~/Dropbox/org/roam"

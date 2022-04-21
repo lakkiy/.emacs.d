@@ -40,7 +40,11 @@ If popup is focused, kill it."
   :init
   (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
 
-(eat-package vterm :straight t)
+(eat-package vterm
+  :straight t
+  :init
+  (setq vterm-always-compile-module t))
+
 (eat-package vterm-toggle
   :straight t
   :init
