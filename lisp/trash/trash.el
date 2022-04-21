@@ -352,3 +352,10 @@ prepended to the element after the #+HEADER: tag."
   (setq kind-icon-default-face 'corfu-default)
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+
+;; awful color
+(eat-package diredfl
+  :straight t
+  :hook (dired-mode-hook . diredfl-global-mode)
+  :config
+  (require 'dired-x))

@@ -100,11 +100,6 @@
   (+load-ext-font))
 
 ;;; Packages
-(eat-package diredfl
-  :straight t
-  :hook (dired-mode-hook . diredfl-global-mode)
-  :config
-  (require 'dired-x))
 
 (eat-package default-text-scale
   :straight t
