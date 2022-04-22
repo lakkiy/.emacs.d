@@ -118,7 +118,10 @@
    ;; Always use file cache when using tramp
    remote-file-name-inhibit-cache nil
    ;; C-x C-f /ssh:
-   tramp-default-method "ssh"))
+   tramp-default-method "ssh"
+   vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
+                                vc-ignore-dir-regexp
+                                tramp-file-name-regexp)))
 
 (eat-package eldoc
   :init
