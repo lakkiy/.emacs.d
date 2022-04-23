@@ -121,7 +121,12 @@
    tramp-default-method "ssh"
    vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
                                 vc-ignore-dir-regexp
-                                tramp-file-name-regexp)))
+                                tramp-file-name-regexp))
+  :config
+  ;; ‘Private Directories’ are the settings of the $PATH environment,
+  ;; as given in your ‘~/.profile’.  This entry is represented in
+  ;; the list by the special value ‘tramp-own-remote-path’.
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 
 (eat-package eldoc
   :init
