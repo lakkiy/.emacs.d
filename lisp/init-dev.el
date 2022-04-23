@@ -16,19 +16,12 @@
              :host github
              :repo "manateelazycat/grammatical-edit")
   :hook
-  ((c-mode-common-hook
-    c-mode-hook
-    c++-mode-hook
-    haskell-mode-hook
-    sh-mode-hook
-    python-mode-hook
+  ;; NOTE not work well in sh mode, and tramp, see tramp debug buffer
+  ((python-mode-hook
     js-mode-hook
-    go-mode-hook
-    css-mode-hook
-    rust-mode-hook
-    lua-mode-hook
-    swift-mode-hook)
+    go-mode-hook)
    . (lambda () (grammatical-edit-mode 1)))
+  (go-dot-mod-mode-hook . (lambda () (grammatical-edit-mode -1)))
   :config
   (define-key grammatical-edit-mode-map (kbd "(") 'grammatical-edit-open-round)
   (define-key grammatical-edit-mode-map (kbd "[") 'grammatical-edit-open-bracket)
