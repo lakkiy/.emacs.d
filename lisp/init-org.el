@@ -69,6 +69,7 @@
            (setq-default org-babel-load-languages backup-languages)
            err)))))
   (advice-add 'org-babel-execute-src-block :before #'my/org-babel-execute-src-block )
+  (setq org-confirm-babel-evaluate nil)
   :config
   (require 'org-tempo)
   (require 'ob)
