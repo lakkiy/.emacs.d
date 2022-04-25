@@ -15,42 +15,13 @@
 (eat-package org
   :straight (org :type built-in)
   :init
-  (global-set-key (kbd "C-c b") #'org-switchb)
-  ;; rescale image with for org-download
-  ;; use #+attr_org :width 300px to rescale
-  (setq org-image-actual-width nil)
   (setq org-directory "~/Dropbox/org")
-  (setq org-highlight-latex-and-related '(latex))
 
-  (setq
-   org-startup-indented t ;; NOTE maybe conflict with org-modern, but don't have other choice
-   org-hide-emphasis-markers t
-   org-pretty-entities t
-   org-ellipsis "…"
-   org-catch-invisible-edits 'show-and-error
-   org-special-ctrl-a/e t
-   org-insert-heading-respect-content t
-   org-tags-column 0
-   ;; Highlight latex text in org mode
-   org-highlight-latex-and-related '(latex script entities)
-   org-src-window-setup 'current-window
-   org-log-done t
-   org-html-checkbox-type 'unicode
-   org-todo-keywords        (quote ((sequence "TODO(t)" "WIP(w/!)" "WAIT(W@/!)" "HOLD(h)" "|" "CANCELLED(c@/!)" "DONE(d!/!)")))
-   org-todo-repeat-to-state "NEXT"
-   org-todo-keyword-faces   (quote (("NEXT" :inherit warning)
-  				                    ("WAIT" :inherit font-lock-string-face))))
   (defvar load-language-list '((emacs-lisp . t)
-                               (perl . t)
                                (python . t)
-                               (ruby . t)
                                (js . t)
-                               (css . t)
-                               (sass . t)
                                (C . t)
-                               (java . t)
-                               (shell . t)
-                               (plantuml . t)))
+                               (shell . t)))
 
   ;; `org-babel-load-languages' 在初始化的时候只存放 (LANG . nil)，表示需禁止的语言。
   ;; 其它所有需要的语言都动态加载，加载成功后存入 `org-babel-load-languages'
@@ -70,9 +41,34 @@
            (setq-default org-babel-load-languages backup-languages)
            err)))))
   (advice-add 'org-babel-execute-src-block :before #'my/org-babel-execute-src-block )
-  (setq org-confirm-babel-evaluate nil)
   :config
-  (require 'org-tempo)
+  (setq
+   ;; Faster loading
+   org-modules nil
+   ;; NOTE maybe conflict with org-modern, but don't have other choice
+   org-startup-indented t
+   ;; run src block without confirm
+   org-confirm-babel-evaluate nil
+   ;; rescale image with for org-download
+   ;; use #+attr_org :width 300px to rescale
+   org-image-actual-width nil
+   org-highlight-latex-and-related '(latex)
+   org-hide-emphasis-markers t
+   org-pretty-entities t
+   org-ellipsis "…"
+   org-catch-invisible-edits 'show-and-error
+   org-special-ctrl-a/e t
+   org-insert-heading-respect-content t
+   org-tags-column 0
+   ;; Highlight latex text in org mode
+   org-highlight-latex-and-related '(latex script entities)
+   org-src-window-setup 'current-window
+   org-log-done t
+   org-html-checkbox-type 'unicode)
+
+  (global-set-key (kbd "C-c b") #'org-switchb)
+
+  (require 'org-tempo) ;; see `org-structure-template-alist'
   (require 'ob)
   (require 'ob-dot)
   (org-babel-do-load-languages 'org-babel-load-languages load-language-list))
