@@ -132,6 +132,9 @@
             (append (default-value 'flycheck-disabled-checkers)
                     '(go-gofmt go-golint go-vet go-build go-test go-errcheck))))))
 
+(eat-package flymake-collection
+  :straight (flymake-collection :type git :host github :repo "mohkale/flymake-collection"))
+
 ;;; Misc
 
 (eat-package aggressive-indent
