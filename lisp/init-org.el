@@ -15,6 +15,7 @@
 (eat-package org
   :straight (org :type built-in)
   :init
+  (global-set-key (kbd "C-c b") #'org-switchb)
   ;; rescale image with for org-download
   ;; use #+attr_org :width 300px to rescale
   (setq org-image-actual-width nil)
