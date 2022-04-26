@@ -192,6 +192,7 @@
   (define-key eglot-mode-map (kbd "C-c r") 'eglot-rename)
   (define-key eglot-mode-map (kbd "C-c h") 'eldoc)
   (define-key eglot-mode-map (kbd "M-'") 'eglot-find-implementation)
+  (global-set-key (kbd "<f2>") 'eglot)
 
   ;; TODO code actions
   (add-to-list 'eglot-server-programs

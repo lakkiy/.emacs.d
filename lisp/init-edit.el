@@ -80,7 +80,8 @@
   :init
   (setq
    auto-save-silent t
-   auto-save-idle 3)
+   ;; most time I will save manually
+   auto-save-idle 7)
   :require t
   :config
   (auto-save-enable))
