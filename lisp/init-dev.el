@@ -150,6 +150,8 @@
 (eat-package apheleia
   :straight t
   :hook (go-mode-hook . apheleia-mode)
+  :init
+  (setq apheleia-remote-algorithm 'local)
   :config
   (setf (alist-get 'gofmt apheleia-formatters)
         '("goimports")))
