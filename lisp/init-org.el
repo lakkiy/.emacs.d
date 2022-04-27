@@ -71,6 +71,7 @@
   (require 'org-tempo) ;; see `org-structure-template-alist'
   (require 'ob)
   (require 'ob-dot)
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
   (org-babel-do-load-languages 'org-babel-load-languages load-language-list))
 
 (eat-package org-capture
@@ -139,11 +140,15 @@
 
 (eat-package ob-restclient
   :straight t
-  :init (cl-pushnew '(restclient . t) load-language-list))
+  :init (cl-pushnew '(restclient . t) load-language-list)
+  :config
+  (add-to-list 'org-structure-template-alist '("rc" . "src restclient")))
 
 (eat-package ob-go
   :straight t
-  :init (cl-pushnew '(go .t) load-language-list))
+  :init (cl-pushnew '(go .t) load-language-list)
+  :config
+  (add-to-list 'org-structure-template-alist '("go" . "src go")))
 
 (eat-package restclient
   :straight t
