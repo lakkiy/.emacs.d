@@ -77,7 +77,8 @@ Selectively runs either `after-make-console-frame-hooks' or
   ;; hide title bar
   (push '(undecorated . t) default-frame-alist)
   (push '(drag-internal-border . 1) default-frame-alist)
-  ;; (push '(internal-border-width . 5) default-frame-alist)
+  (push '(internal-boder-width . 18) default-frame-alist)
+  (push '(right-fringe . 1) default-frame-alist)
 
   (setq mac-option-modifier 'meta
         mac-command-modifier 'super)

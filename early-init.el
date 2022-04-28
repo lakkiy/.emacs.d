@@ -15,6 +15,4 @@
         (vertical-scroll-bars . nil)
         (menu-bar-lines . 0)
         (tool-bar-lines . 0)
-        (alpha-background . 90)
-        (internal-border-width . 18)
-        (right-fringe   . 1)))
+        (alpha-background . 90)))
