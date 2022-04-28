@@ -385,7 +385,6 @@ No tab will created if the command is cancelled."
 ;;; browse
 (eat-package xwidget
   :init
-  (setq browse-url-browser-function 'xwidget-webkit-browse-url)
   ;; use `eyebrowse' replace `tab-bar'
   ;; run `xwidget-webkit-browse-url' in other tab
   ;; (advice-add 'xwidget-webkit-browse-url :before #'(lambda (url &optional new-session)
