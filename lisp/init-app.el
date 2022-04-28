@@ -53,6 +53,10 @@
   (git-commit-setup-hook . git-commit-turn-on-flyspell)
   (magit-diff-visit-file . my-recenter-and-pulse-line)
   :commands magit
+  :init
+  (defun +magit-yadm ()
+    (interactive)
+    (magit-status "/yadm::"))
   :config
   (fullframe magit-status magit-mode-quit-window)
   (setq-default magit-diff-refine-hunk t)

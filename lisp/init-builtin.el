@@ -123,6 +123,14 @@
                                 vc-ignore-dir-regexp
                                 tramp-file-name-regexp))
   :config
+  ;; use `magit' with yadm, (magit-status "/yadm::")
+  (add-to-list 'tramp-methods
+               '("yadm"
+                 (tramp-login-program "yadm")
+                 (tramp-login-args (("enter")))
+                 (tramp-login-env (("SHELL") ("/bin/sh")))
+                 (tramp-remote-shell "/bin/sh")
+                 (tramp-remote-shell-args ("-c"))))
   ;; ‘Private Directories’ are the settings of the $PATH environment,
   ;; as given in your ‘~/.profile’.  This entry is represented in
   ;; the list by the special value ‘tramp-own-remote-path’.
