@@ -200,10 +200,4 @@ Used in the default value of `notmuch-tag-formats'."
              :repo "manateelazycat/popweb"
              :files ("*.el" "*.py" "*.js" "extension/latex/*" "extension/dict/*")))
 
-(eat-package pulsing-cursor
-  :straight (pulsing-cursor :type git :host github :repo "jasonjckn/pulsing-cursor")
-  :hook (after-init-hook . (lambda ()
-                             (require 'pulsing-cursor)
-                             (pulsing-cursor-mode +1))))
-
 (provide 'init-app)
