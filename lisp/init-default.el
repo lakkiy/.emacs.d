@@ -73,12 +73,9 @@ Selectively runs either `after-make-console-frame-hooks' or
         (setq exec-path (append (parse-colon-path path) (list exec-directory))))
     (error (warn "%s" (error-message-string err))))
 
-  (push '(ns-transparent-titlebar . t) default-frame-alist)
   ;; hide title bar
   (push '(undecorated . t) default-frame-alist)
-  (push '(drag-internal-border . 1) default-frame-alist)
-  (push '(internal-boder-width . 18) default-frame-alist)
-  (push '(right-fringe . 1) default-frame-alist)
+  (push '(ns-transparent-titlebar . t) default-frame-alist)
 
   (setq mac-option-modifier 'meta
         mac-command-modifier 'super)

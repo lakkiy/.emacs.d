@@ -580,5 +580,8 @@ No tab will created if the command is cancelled."
 (eat-package goto-addr
   :hook (after-init-hook . global-goto-address-mode))
 
+;; use C-q C-l to add page break symbol
+(eat-package page)
+
 ;;; init-builtin.el ends here
 (provide 'init-builtin)
