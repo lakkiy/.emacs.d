@@ -28,7 +28,7 @@
 (eat-package puni
   :straight (puni :type git :host github :repo "AmaiKinono/puni")
   :hook
-  ((emacs-lisp-mode-hook scheme-mode-hook)
+  ((emacs-lisp-mode-hook scheme-mode-hook clojure-mode-hook)
    . puni-mode)
   :config
   (define-key puni-mode-map (kbd "M-r") 'puni-splice)

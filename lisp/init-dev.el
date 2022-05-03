@@ -219,5 +219,6 @@
 (require 'init-go)
 (require 'init-python)
 (require 'init-web)
+(require 'init-clojure)
 
 (provide 'init-dev)

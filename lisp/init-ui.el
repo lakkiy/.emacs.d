@@ -196,7 +196,9 @@
   ;; `rime', add
   (with-eval-after-load 'rime
     ;; NOTE show in message have some error, wont on screen after choose
-    (setq rime-show-candidate 'message)
+    (setq rime-show-candidate 'sidewindow
+          rime-sidewindow-side 'top
+          rime-sidewindow-keep-window t)
 
     (add-to-list 'awesome-tray-module-alist
                  '("rime" . (rime-lighter)))
