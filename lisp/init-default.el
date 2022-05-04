@@ -13,15 +13,10 @@
                (time-subtract after-init-time before-init-time)))
              gcs-done)))
 
-(eat-package benchmark-init
-  :straight
-  (benchmark-init :type git :host github :repo "404cn/benchmark-init-el")
+(eat-package on
+  :straight (on :type git :host github :repo "ajgrf/on.el")
   :init
-  (when +enable-benchmark
-    (require 'benchmark-init))
-  :config
-  (add-hook 'after-init-hook 'benchmark-init/deactivate))
-
+  (require 'on))
 
 ;;; Frame
 (defvar after-make-console-frame-hooks '()
@@ -186,7 +181,7 @@ Selectively runs either `after-make-console-frame-hooks' or
   ;; for mouse scroll
   (setq pixel-scroll-precision-large-scroll-height 60)
   (setq pixel-scroll-precision-interpolation-factor 30.0)
-  (add-hook 'after-init-hook (lambda () (pixel-scroll-precision-mode))))
+  (add-hook 'on-init-ui-hook (lambda () (pixel-scroll-precision-mode))))
 
 ;; scroll nand hscroll
 (setq-default
@@ -206,7 +201,7 @@ Selectively runs either `after-make-console-frame-hooks' or
 ;;; Cursor
 
 ;; Disable cursor blink
-(add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
+(add-hook 'on-init-ui-hook (lambda () (blink-cursor-mode -1)))
 
 
 ;; Do not show cursor in nonselected windows
@@ -304,6 +299,13 @@ Selectively runs either `after-make-console-frame-hooks' or
  ;; 'e' on a value in *Help* will pop you to a new buffer where you can edit the value.
  help-enable-variable-value-editing t)
 
+(eat-package benchmark-init
+  :straight t
+  :init
+  (when +enable-benchmark
+    (benchmark-init/activate))
+  :config
+  (add-hook 'after-init-hook 'benchmark-init/deactivate))
 
 ;;; init-default.el ends here
 (provide 'init-default)

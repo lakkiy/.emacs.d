@@ -43,10 +43,10 @@
       (advice-add cmd :after #'my-recenter-and-pulse))))
 
 (eat-package mouse
-  :hook (after-init-hook . context-menu-mode))
+  :hook (on-init-ui-hook . context-menu-mode))
 
 (eat-package recentf
-  :hook (after-init-hook . recentf-mode)
+  :hook (on-first-file-hook . recentf-mode)
   :init
   (setq-default
    recentf-max-saved-items 1000)
@@ -90,7 +90,7 @@
         read-extended-command-predicate #'command-completion-default-include-p))
 
 (eat-package so-long
-  :hook (after-init-hook . global-so-long-mode))
+  :hook (on-first-buffer-hook . global-so-long-mode))
 
 (eat-package repeat
   :init
@@ -107,10 +107,10 @@
   (setq-default hl-line-sticky-flag nil))
 
 (eat-package autorevert
-  :hook (after-init-hook . global-auto-revert-mode))
+  :hook (on-first-buffer-hook . global-auto-revert-mode))
 
 (eat-package saveplace ;; TODO
-  :hook (after-init-hook . save-place-mode))
+  :hook (on-first-buffer-hook . save-place-mode))
 
 (eat-package tramp
   :init
@@ -196,7 +196,7 @@
    xref-show-definitions-function #'xref-show-definitions-completing-read))
 
 (eat-package winner
-  :hook (after-init-hook . winner-mode)
+  :hook (on-init-ui-hook . winner-mode)
   :init
   (setq winner-dont-bind-my-keys t))
 
@@ -555,7 +555,7 @@ No tab will created if the command is cancelled."
 
 
 (eat-package savehist
-  :hook (after-init-hook . savehist-mode)
+  :hook (on-init-ui-hook . savehist-mode)
   :init
   ;; Restore histories and registers after saving
   (setq-default history-length 1000))
@@ -578,7 +578,7 @@ No tab will created if the command is cancelled."
 
 ;;; show url
 (eat-package goto-addr
-  :hook (after-init-hook . global-goto-address-mode))
+  :hook (on-init-ui-hook . global-goto-address-mode))
 
 ;; use C-q C-l to add page break symbol
 (eat-package page)

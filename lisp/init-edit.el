@@ -76,15 +76,18 @@
   :hook (visual-fill-column-mode-hook . visual-line-mode))
 
 (eat-package auto-save
-  :straight (auto-save :type git :host github :repo "manateelazycat/auto-save")
+  :straight (auto-save
+             :type git
+             :host github
+             :repo "manateelazycat/auto-save")
+  :commands auto-save-enable
+  :hook (on-first-file-hook . (lambda ()
+                                (auto-save-enable)))
   :init
   (setq
    auto-save-silent t
    ;; most time I will save manually
-   auto-save-idle 7)
-  :require t
-  :config
-  (auto-save-enable))
+   auto-save-idle 7))
 
 ;;; undo things
 
@@ -129,7 +132,7 @@
 (eat-package ligature
   :straight (ligature :type git :host github :repo "mickeynp/ligature.el")
   :commands global-ligature-mode
-  :hook (after-init-hook . (lambda () (global-ligature-mode t)))
+  :hook (prog-mode-hook . (lambda () (ligature-mode t)))
   :config
   ;; https://htmlpreview.github.io/?https://github.com/kiliman/operator-mono-lig/blob/master/images/preview/normal/index.html
   (ligature-set-ligatures 'prog-mode
@@ -145,7 +148,7 @@
 
 (eat-package which-key
   :straight t
-  :hook (after-init-hook . which-key-mode)
+  :hook (on-first-input-hook . which-key-mode)
   :init
   (setq-default which-key-idle-delay 1.5))
 

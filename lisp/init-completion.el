@@ -107,7 +107,7 @@
 
 (eat-package vertico
   :straight (vertico :files (:defaults "extensions/*"))
-  :hook (after-init-hook . vertico-mode)
+  :hook (on-first-input-hook . vertico-mode)
   :config
   (define-key vertico-map (kbd "C-j") #'(lambda () (interactive)
                                           (if minibuffer--require-match
@@ -134,7 +134,7 @@
 
 (eat-package marginalia
   :straight t
-  :hook (after-init-hook . marginalia-mode))
+  :hook (on-first-input-hook . marginalia-mode))
 
 (eat-package isearch
   :init
@@ -171,7 +171,7 @@
 ;; also chekc https://github.com/astoff/isearch-mb/wiki
 (eat-package isearch-mb
   :straight t
-  :hook (after-init-hook . isearch-mb-mode)
+  :hook (on-first-input-hook . isearch-mb-mode)
   :config
   (define-advice isearch-mb--update-prompt (:around (fn &rest _) show-case-fold-info)
     "Show case fold info in the prompt."

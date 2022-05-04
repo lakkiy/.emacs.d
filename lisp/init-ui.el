@@ -228,17 +228,9 @@
     (add-to-list 'awesome-tray-active-modules "eyebrowse")))
 
 (progn
-  (eat-package mode-line-bell
-    :straight t
-    :hook (after-init-hook . mode-line-bell-mode))
-
-  (eat-package which-func
-    :commands which-func-mode
-    :hook (after-init-hook . which-func-mode))
-
-  (eat-package minions
-    :straight t
-    :hook (after-init-hook . minions-mode))
+  (eat-package mode-line-bell :straight t)
+  (eat-package which-func :commands which-func-mode)
+  (eat-package minions :straight t)
 
   (defun luna-mode-line-with-padding (text)
     "Return TEXT with padding on the left.
@@ -262,6 +254,9 @@ The padding pushes TEXT to the right edge of the mode-line."
         "")))
 
   (defun +setup-mode-line ()
+    (mode-line-bell-mode)
+    (which-func-mode)
+    (minions-mode)
     (setq-default mode-line-format
                   (let* ((spaces
                           (propertize " " 'display '(space :width 1.5)))

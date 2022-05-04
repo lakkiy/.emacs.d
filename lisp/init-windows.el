@@ -7,10 +7,13 @@
 ;; replace `tab-bar'
 (eat-package eyebrowse
   :straight t
-  :hook (after-init-hook . (lambda ()
+  :hook (on-init-ui-hook . (lambda ()
                              (eyebrowse-mode t)))
   :init
   (setq
+   ;; since this used in meow config, must set here
+   ;; if enable eyebrowse in on-init-ui-hook
+   eyebrowse-keymap-prefix (kbd "C-c C-w")
    eyebrowse-new-workspace t
    eyebrowse-mode-line-style 'current)
   :config
@@ -60,7 +63,7 @@ No window config will created if the command is cancelled."
 
 (eat-package window-numbering
   :straight (window-numbering :type git :host github :repo "DogLooksGood/window-numbering.el")
-  :hook (after-init-hook . (lambda ()
+  :hook (on-init-ui-hook . (lambda ()
                              (require 'window-numbering)
                              (window-numbering-mode 1))))
 
@@ -78,7 +81,7 @@ No window config will created if the command is cancelled."
 
 (eat-package popper
   :straight t
-  :hook (after-init-hook . (lambda ()
+  :hook (on-init-ui-hook . (lambda ()
                              (popper-mode +1)))
   :init
   (setq popper-reference-buffers

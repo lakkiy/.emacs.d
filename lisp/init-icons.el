@@ -19,8 +19,8 @@
              :type git
              :host github
              :repo "iyefrat/all-the-icons-completion")
-  :hook (after-init-hook . (lambda ()
-                             (all-the-icons-completion-mode)))
+  :hook (on-first-input-hook . (lambda ()
+                                 (all-the-icons-completion-mode)))
   :config
   (with-eval-after-load 'marginalia
     (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup)))
