@@ -284,6 +284,7 @@
 
 ;;; project managent
 (eat-package project
+  :hook (project-find-functions . my/project-try-local)
   :init
   ;; `project'
   (defun my/project-files-in-directory (dir)
@@ -298,11 +299,27 @@
   (when (executable-find "fd")
     (cl-defmethod project-files ((project (head local)) &optional dirs)
       "Override `project-files' to use `fd' in local projects."
-      (mapcan #'my/project-files-in-director
+      (mapcan #'my/project-files-in-directory
               (or dirs (list (project-root project))))))
 
   (defun +project-name ()
-    (file-name-nondirectory (directory-file-name (project-root (project-current))))))
+    (file-name-nondirectory
+     (directory-file-name
+      (project-root
+       (project-current)))))
+
+  (defun my/project-try-local (dir)
+    "Determine if DIR is a non-Git project."
+    (catch 'ret
+      (let ((pr-flags '((".project")
+                        ("go.mod" "Cargo.toml" "project.clj" "pom.xml" "package.json") ;; higher priority
+                        ("Makefile" "README.org" "README.md"))))
+        (dolist (current-level pr-flags)
+          (dolist (f current-level)
+            (when-let ((root (locate-dominating-file dir f)))
+              (throw 'ret (cons 'local root))))))))
+  (cl-defmethod project-root ((project (head local)))
+    (cdr project)))
 
 (eat-package tab-bar
   :init

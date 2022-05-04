@@ -38,16 +38,7 @@
   :hook
   ;; HACK use `apheleia' instead
   ;; (before-save-hook . gofmt-before-save)
-  (go-test-mode-hook . visual-line-mode)
-  :config
-  ;; Look for the nearest parent `go.mod' file (that is, the root of the Go module) as the project root.
-  (with-eval-after-load "project"
-    (defun project-find-go-module (dir)
-      (when-let ((root (locate-dominating-file dir "go.mod")))
-        (cons 'go-module root)))
-    (cl-defmethod project-root ((project (head go-module)))
-      (cdr project))
-    (add-hook 'project-find-functions #'project-find-go-module)))
+  (go-test-mode-hook . visual-line-mode))
 
 ;; FIXME not work for now
 ;; write own version
