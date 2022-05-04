@@ -68,7 +68,7 @@
   :hook (fanyi-mode-hook . visual-line-mode)
   :init
   (setq fanyi-verbose nil)
-  (global-set-key (kbd "C-c y") 'fanyi-dwim))
+  (global-set-key (kbd "C-c Y") 'fanyi-dwim))
 
 (eat-package visual-fill-column
   :straight t
@@ -171,6 +171,17 @@
   :config
   ;; TODO /* ?
   (push '(go-mode "/") color-outline-comment-char-alist))
+
+(eat-package go-translate
+  :straight t
+  :init
+  (setq gts-translate-list '(("en" "zh")))
+  (global-set-key (kbd "C-c y") #'gts-do-translate)
+  :config
+  (setq gts-default-translator (gts-translator
+                                :picker (gts-noprompt-picker)
+                                :engines (list (gts-bing-engine) (gts-google-rpc-engine))
+                                :render (gts-buffer-render))))
 
 
 ;;; TODO
