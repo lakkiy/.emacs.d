@@ -21,7 +21,7 @@
 ;;; Variable for config
 (defvar +font-default "Roboto Mono"
   "Default font.")
-(defvar +icons-p nil
+(defvar +icons-p t
   "Whether to enable `all-the-icons'.")
 (defvar +font-size 12
   "Default font size")
