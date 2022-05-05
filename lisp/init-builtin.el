@@ -296,11 +296,12 @@
        (sort (split-string (shell-command-to-string command) "\0" t)
              #'string<))))
 
-  (when (executable-find "fd")
-    (cl-defmethod project-files ((project (head local)) &optional dirs)
-      "Override `project-files' to use `fd' in local projects."
-      (mapcan #'my/project-files-in-directory
-              (or dirs (list (project-root project))))))
+  ;; this cause wrong encoding when project-find-file FIXME
+  ;; (when (executable-find "fd")
+  ;;   (cl-defmethod project-files ((project (head local)) &optional dirs)
+  ;;     "Override `project-files' to use `fd' in local projects."
+  ;;     (mapcan #'my/project-files-in-directory
+  ;;             (or dirs (list (project-root project))))))
 
   (defun +project-name ()
     (file-name-nondirectory
