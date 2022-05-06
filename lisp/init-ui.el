@@ -9,7 +9,7 @@
   (unless no-enable ;
     (mapc #'disable-theme custom-enabled-themes))
   (prog1
-      (apply f theme-id no-confirm no-enable args)
+      (apply f theme-id t no-enable args)
     (unless no-enable ;
       (pcase (assq theme-id +theme-hooks)
         (`(,_ . ,f) (funcall f))))))
