@@ -17,21 +17,33 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+(defun font-installed-p (font-name)
+  "Check if font with FONT-NAME is available."
+  (find-font (font-spec :name font-name)))
 
-;;; Variable for config
-(defvar +font-default "Roboto Mono"
+(defun my/font-installed (list)
+  "Return first installed font from LIST."
+  (catch 'value
+    (dolist (font list)
+      (when (font-installed-p font)
+        (throw 'value font)))))
+
+;; first installed font will be set
+;; last font is the fall back font on system
+(defvar +fonts-default '("Roboto Mono" "Iosevka" "Menlo" "Source Code Pro")
   "Default font.")
-(defvar +icons-p t
-  "Whether to enable `all-the-icons'.")
+(defvar +fonts-unicode '("Apple Color Emoji" "Noto Color Emoji")
+  "Emoji font.")
+(defvar +fonts-cn '("LXGW WenKai" "PingFang SC")
+  "Chinese font.")
+(defvar +fonts-variable-pitch '("Cardo" "Bookerly" "Nimbus Sans" "Helvetica")
+  "Variable font.")
+
 (defvar +font-size 12
   "Default font size")
-(defvar +font-unicode "Apple Color Emoji"
-  "Emoji font.")
-(defvar +font-cn "LXGW WenKai"
-  "Just used for chinese font.")
-(defvar +font-variable-pitch "Cardo"
-  "Used for `variable-pitch-mode'")
 
+(defvar +icons-p t
+  "Whether to enable `all-the-icons'.")
 (defvar +theme 'modus-operandi
   "Default theme.")
 (defvar +theme-tui 'carbon

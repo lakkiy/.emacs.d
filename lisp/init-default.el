@@ -315,5 +315,10 @@ Selectively runs either `after-make-console-frame-hooks' or
   :config
   (add-hook 'after-init-hook 'benchmark-init/deactivate))
 
+(defconst +font-default (my/font-installed +fonts-default))
+(defconst +font-unicode (my/font-installed +fonts-unicode))
+(defconst +font-cn (my/font-installed +fonts-cn))
+(defconst +font-variable-pitch (my/font-installed +fonts-variable-pitch))
+
 ;;; init-default.el ends here
 (provide 'init-default)
