@@ -15,15 +15,6 @@
         (`(,_ . ,f) (funcall f))))))
 (advice-add 'load-theme :around #'+load-theme-advice)
 
-(defun +load-theme ()
-  (if (boundp 'ns-system-appearance)
-      (add-to-list 'ns-system-appearance-change-functions
-                   (lambda (l?d)
-                     (if (eq l?d 'light)
-                         (load-theme +theme-system-light t)
-                       (load-theme +theme-system-dark t))))
-    (load-theme +theme t)))
-
 ;; `color-theme-sanityinc-tomorrow'
 (straight-use-package 'color-theme-sanityinc-tomorrow)
 

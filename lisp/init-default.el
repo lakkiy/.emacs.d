@@ -55,8 +55,18 @@ Selectively runs either `after-make-console-frame-hooks' or
   (>= emacs-major-version 29)
   "Emacs is 29 or above.")
 
+(defun +load-theme ()
+  (load-theme +theme t))
+
 ;;; Mac specific configuration
 (when *is-a-mac*
+  (when (boundp 'ns-system-appearance)
+    (defun +load-theme ()
+      (add-to-list 'ns-system-appearance-change-functions
+                   (lambda (l?d)
+                     (if (eq l?d 'light)
+                         (load-theme +theme-system-light t)
+                       (load-theme +theme-system-dark t))))))
   ;; https://emacs-china.org/t/emacs-mac-port-profile/2895/29?u=rua
   ;; NOTE: When PATH is changed, run the following command
   ;; $ sh -c 'printf "%s" "$PATH"' > ~/.path
