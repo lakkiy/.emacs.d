@@ -359,3 +359,46 @@ prepended to the element after the #+HEADER: tag."
   :hook (dired-mode-hook . diredfl-global-mode)
   :config
   (require 'dired-x))
+
+(eat-package company
+  :straight t
+  :hook
+  (after-make-console-frame-hooks
+   . (lambda ()
+       (add-hook 'prog-mode-hook 'company-mode)
+       (add-hook 'conf-mode-hook 'company-mode)
+       (add-hook 'eshell-mode-hook 'company-mode)))
+  :commands company-mode
+  :init
+  (setq
+   company-minimum-prefix-length 2
+   company-idle-delay 0.1
+   company-begin-commands '(self-insert-command
+                            backward-delete-char)
+   ;; icons
+   company-vscode-icons-mapping nil
+   company-text-icons-add-background t
+   ;; thanks to r/emacs yyoncho
+   company-format-margin-function 'company-text-icons-margin
+   ;; tooltip frontend config
+   company-tooltip-align-annotations t
+   company-tooltip-limit 10
+   company-tooltip-width-grow-only t
+   company-tooltip-idle-delay 0.4
+   company-dabbrev-downcase nil
+   company-abort-manual-when-too-short t
+   company-require-match nil
+   company-backends '((company-capf :with company-yasnippet)
+                      (company-dabbrev-code company-keywords company-files)
+                      company-dabbrev)
+   company-files-exclusions '(".git/" ".DS_Store")
+   company-tooltip-margin 0)
+  :config
+  (defun +complete ()
+    (interactive)
+    (or (yas/expand)
+        (company-complete-selection)))
+  (define-key company-active-map [tab] '+complete)
+  (define-key company-active-map (kbd "TAB") '+complete)
+  (define-key company-active-map [return] nil)
+  (define-key company-active-map (kbd "RET") nil))
