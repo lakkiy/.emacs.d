@@ -115,16 +115,14 @@
 
 (add-hook 'after-make-window-system-frame-hooks (lambda ()
                                                   (+load-font)
-                                                  (+load-theme)))
+                                                  (+load-theme)
+                                                  ;; enable awesome tray after theme loaded
+                                                  (require 'awesome-tray)
+                                                  (awesome-tray-mode 1)))
 
 ;;; Mode-line
 (eat-package awesome-tray
   :straight (awesome-tray :type git :host github :repo "manateelazycat/awesome-tray")
-  :hook
-  (after-make-window-system-frame-hooks
-   . (lambda ()
-       (require 'awesome-tray)
-       (awesome-tray-mode 1)))
   :init
   (setq
    awesome-tray-update-interval 0.5
@@ -144,10 +142,10 @@
     "Modeline face for active window.")
 
   (defface mini-modeline-mode-line-inactive
-    '((((background light))
-       :background "#dddddd" :height 0.1 :box nil)
+    `((((background light))
+       :background ,awesome-tray-mode-line-inactive-color :height 0.1 :box nil)
       (t
-       :background "#333333" :height 0.1 :box nil))
+       :background ,awesome-tray-mode-line-inactive-color :height 0.1 :box nil))
     "Modeline face for inactive window.")
 
   (setq-default mode-line-format (when (display-graphic-p)
