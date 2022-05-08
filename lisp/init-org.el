@@ -186,7 +186,7 @@
 
 (eat-package iimg
   :commands iimg-enable
-  :hook (text-mode-hook . iimg-enable))
+  :hook (on-first-file-hook . iimg-enable))
 
 (eat-package bklink
   :commands bklink-minor-mode

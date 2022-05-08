@@ -14,5 +14,4 @@
       '((scroll-bar-mode . 0)
         (vertical-scroll-bars . nil)
         (menu-bar-lines . 0)
-        (tool-bar-lines . 0)
-        (alpha-background . 100)))
+        (tool-bar-lines . 0)))

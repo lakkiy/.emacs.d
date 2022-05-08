@@ -87,7 +87,8 @@
   :init
   (setq visual-line-fringe-indicators '(nil right-curly-arrow)
         ;; List only applicable commands.
-        read-extended-command-predicate #'command-completion-default-include-p))
+        read-extended-command-predicate #'command-completion-default-include-p
+        fill-column 72))
 
 (eat-package so-long
   :hook (on-first-buffer-hook . global-so-long-mode))

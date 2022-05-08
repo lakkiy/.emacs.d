@@ -135,6 +135,8 @@ Selectively runs either `after-make-console-frame-hooks' or
 
 ;;; Linux specific configuration
 (when sys/linuxp
+  ;; TODO not works well for light theme
+  (push '(alpha-background . 80) default-frame-alist)
   ;; Linux specific
   (setq x-underline-at-descent-line t)
 
