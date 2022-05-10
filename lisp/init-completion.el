@@ -13,7 +13,7 @@
     (yas-reload-all)))
 
 (eat-package corfu
-  :straight t
+  :straight (corfu :files (:defaults "extensions/*.el"))
   :hook
   (after-make-window-system-frame-hooks
    . (lambda ()

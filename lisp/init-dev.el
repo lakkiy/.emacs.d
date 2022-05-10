@@ -216,6 +216,20 @@
     (require 'eglot-ltex)
     (call-interactively #'eglot)))
 
+;; this need pip install epc
+(eat-package lsp-bridge
+  :straight (lsp-bridge
+             :type git
+             :host github
+             :repo "manateelazycat/lsp-bridge"
+             :files (:defaults "*.py" "core/*" "langserver/*"))
+  :init
+  (defun +lsp-bridge-enable ()
+    (interactive)
+    (require 'lsp-bridge)
+    (require 'lsp-bridge-icon)
+    (lsp-bridge-enable 1)))
+
 (require 'init-go)
 (require 'init-python)
 (require 'init-web)
