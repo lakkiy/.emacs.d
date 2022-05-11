@@ -48,8 +48,10 @@
 (eat-package recentf
   :hook (on-first-file-hook . recentf-mode)
   :init
-  (setq-default
-   recentf-max-saved-items 1000)
+  (setq
+   recentf-max-saved-items 1000
+   recentf-exclude `(,tramp-file-name-regexp
+                     "COMMIT_EDITMSG"))
   (global-set-key (kbd "C-x C-r") #'recentf-open-files))
 
 (eat-package minibuffer
@@ -116,6 +118,7 @@
 (eat-package tramp
   :init
   (setq
+   tramp-auto-save-directory temporary-file-directory
    ;; Always use file cache when using tramp
    remote-file-name-inhibit-cache nil
    ;; C-x C-f /ssh:
@@ -287,6 +290,14 @@
 (eat-package project
   :hook (project-find-functions . my/project-try-local)
   :init
+  ;; don't remember tramp project
+  (defun my/project-remember-advice (fn pr &optional no-write)
+    (let* ((remote? (file-remote-p (project-root pr)))
+           (no-write (if remote? t no-write)))
+      (funcall fn pr no-write)))
+  (advice-add 'project-remember-project :around
+              'my/project-remember-advice)
+
   ;; `project'
   (defun my/project-files-in-directory (dir)
     "Use `fd' to list files in DIR."
