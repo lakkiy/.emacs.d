@@ -223,12 +223,9 @@
              :host github
              :repo "manateelazycat/lsp-bridge"
              :files (:defaults "*.py" "core/*" "langserver/*"))
-  :init
-  (defun +lsp-bridge-enable ()
-    (interactive)
-    (require 'lsp-bridge)
-    (require 'lsp-bridge-icon)
-    (lsp-bridge-enable 1)))
+  :commands lsp-bridge-mode
+  :config
+  (require 'lsp-bridge-icon))
 
 (require 'init-go)
 (require 'init-python)
