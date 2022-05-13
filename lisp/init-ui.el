@@ -90,6 +90,20 @@
   (+load-face-font)
   (+load-ext-font))
 
+(defun my/adjust-opacity (frame incr)
+  "Adjust the background opacity of FRAME by increment INCR."
+  (unless (display-graphic-p frame)
+    (error "Cannot adjust opacity of this frame"))
+  (let* ((oldalpha (or (frame-parameter frame 'alpha-background) 100))
+         (oldalpha (if (listp oldalpha) (car oldalpha) oldalpha))
+         (newalpha (+ incr oldalpha)))
+    (when (and (<= frame-alpha-lower-limit newalpha) (>= 100 newalpha))
+      (modify-frame-parameters frame (list (cons 'alpha-background newalpha))))))
+
+(global-set-key (kbd "M-C-8") (lambda () (interactive) (my/adjust-opacity nil -2)))
+(global-set-key (kbd "M-C-9") (lambda () (interactive) (my/adjust-opacity nil 2)))
+(global-set-key (kbd "M-C-7") (lambda () (interactive) (modify-frame-parameters nil `((alpha-background . 100)))))
+
 ;;; Packages
 
 (eat-package default-text-scale
