@@ -22,6 +22,9 @@
        (add-hook 'eshell-mode-hook 'corfu-mode)))
   :init
   (setq
+   corfu-preview-current nil
+   corfu-auto-delay 0.5
+   corfu-auto-prefix 2
    corfu-quit-no-match t
    corfu-quit-at-boundary t
    corfu-auto t)
