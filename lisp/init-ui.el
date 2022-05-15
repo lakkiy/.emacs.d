@@ -15,6 +15,9 @@
         (`(,_ . ,f) (funcall f))))))
 (advice-add 'load-theme :around #'+load-theme-advice)
 
+;; `tao-theme'
+(straight-use-package 'tao-theme)
+
 ;; `color-theme-sanityinc-tomorrow'
 (straight-use-package 'color-theme-sanityinc-tomorrow)
 
