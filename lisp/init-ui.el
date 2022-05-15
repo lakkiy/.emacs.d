@@ -150,9 +150,9 @@
   ;;Make the modeline in GUI a thin bar.
   (defface mini-modeline-mode-line
     `((((background light))
-       :background ,awesome-tray-mode-line-active-color :height 0.14 :box nil)
+       :background ,awesome-tray-mode-line-active-color :height 0.1 :box nil)
       (t
-       :background ,awesome-tray-mode-line-active-color :height 0.14 :box nil))
+       :background ,awesome-tray-mode-line-active-color :height 0.1 :box nil))
     "Modeline face for active window.")
 
   (defface mini-modeline-mode-line-inactive
