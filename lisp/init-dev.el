@@ -222,12 +222,14 @@
              :type git
              :host github
              :repo "manateelazycat/lsp-bridge"
-             :files (:defaults "*.py" "core/*" "langserver/*"))
-  :commands
-  lsp-bridge-monitor-window-buffer-change
-  lsp-bridge-mode
+             :files (:defaults "*.py" "core/*" "langserver/*")
+             ;; do not generate autoload file
+             ;; it has an annoying hook to `post-command-hook'
+             ;; and emacs have to load this package or
+             ;; it will cause an error on startup
+             :build (:not autoloads))
+  :commands lsp-bridge-mode
   :config
-  (require 'lsp-bridge-icon)
   (define-key lsp-bridge-mode-map (kbd "M-.") #'lsp-bridge-find-def)
   (define-key lsp-bridge-mode-map (kbd "M-,") #'lsp-bridge-return-from-def)
   (define-key lsp-bridge-mode-map (kbd "M-?") #'lsp-bridge-find-references)
