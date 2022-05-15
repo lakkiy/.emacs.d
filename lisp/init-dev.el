@@ -223,9 +223,17 @@
              :host github
              :repo "manateelazycat/lsp-bridge"
              :files (:defaults "*.py" "core/*" "langserver/*"))
-  :commands lsp-bridge-mode
+  :commands
+  lsp-bridge-monitor-window-buffer-change
+  lsp-bridge-mode
   :config
-  (require 'lsp-bridge-icon))
+  (require 'lsp-bridge-icon)
+  (define-key lsp-bridge-mode-map (kbd "M-.") #'lsp-bridge-find-def)
+  (define-key lsp-bridge-mode-map (kbd "M-,") #'lsp-bridge-return-from-def)
+  (define-key lsp-bridge-mode-map (kbd "M-?") #'lsp-bridge-find-references)
+  (define-key lsp-bridge-mode-map (kbd "M-'") #'lsp-bridge-find-impl)
+  (define-key lsp-bridge-mode-map (kbd "C-x 4 .") #'lsp-bridge-find-def-other-window)
+  (define-key lsp-bridge-mode-map (kbd "C-c r") #'lsp-bridge-rename))
 
 (require 'init-go)
 (require 'init-python)
