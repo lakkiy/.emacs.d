@@ -127,6 +127,11 @@
                                 vc-ignore-dir-regexp
                                 tramp-file-name-regexp))
   :config
+  (defun eat/tramp-cleanup-all-buffers-connections ()
+    "Kill all tramp buffers and clean all connections."
+    (interactive)
+    (tramp-cleanup-all-buffers)
+    (tramp-cleanup-all-connections))
   ;; use `magit' with yadm, (magit-status "/yadm::")
   (add-to-list 'tramp-methods
                '("yadm"
