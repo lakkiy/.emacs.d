@@ -9,11 +9,13 @@
     (setq buffer-face-mode-face `(:family ,+font-cn))
     (buffer-face-mode +1))
   :hook
-  ;; ignore blocked user
-  (telega-msg-ignore-predicates . telega-msg-from-blocked-sender-p)
   ;; font setup
   ((telega-root-mode-hook telega-chat-mode-hook) . +telega-font-setup)
   :config
+  ;; ignore blocked user
+  (add-hook 'telega-msg-ignore-predicates
+            (telega-match-gen-predicate "msg-" '(sender blocked)))
+
   (setq telega-chat-input-prompt "> "
         telega-animation-play-inline nil
         telega-video-play-inline nil

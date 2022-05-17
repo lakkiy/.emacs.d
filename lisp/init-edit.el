@@ -1,17 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(eat-package symbol-overlay
-  :straight t
-  :hook
-  ((prog-mode-hook conf-mode-hook) . symbol-overlay-mode)
-  :init
-  (advice-add 'symbol-overlay-basic-jump :after #'my-pulse-momentary-line)
-  :config
-  (define-key symbol-overlay-mode-map (kbd "M-i") 'symbol-over-put)
-  (define-key symbol-overlay-mode-map (kbd "M-I") 'symbol-overlay-remove-all)
-  (define-key symbol-overlay-mode-map (kbd "M-n") 'symbol-overlay-jump-next)
-  (define-key symbol-overlay-mode-map (kbd "M-p") 'symbol-overlay-jump-prev))
-
 (eat-package anzu
   :straight t
   :init
@@ -146,12 +134,6 @@
   :hook
   ((dired-mode-hook prog-mode-hook conf-mode-hook) . hl-todo-mode))
 
-(eat-package which-key
-  :straight t
-  :hook (on-first-input-hook . which-key-mode)
-  :init
-  (setq-default which-key-idle-delay 1.5))
-
 (eat-package imenu-list
   :straight t
   :hook
@@ -182,13 +164,6 @@
                                 :picker (gts-noprompt-picker)
                                 :engines (list (gts-bing-engine) (gts-google-rpc-engine))
                                 :render (gts-buffer-render))))
-
-
-;;; TODO
-;; make mode-line height 0.1 when in note
-;; rime wont work in xeft because it's default is meow motion
-;; iimg after drap image but emacs didn't get focus
-;; iimg always save img as separe file
 
 ;;; init-edit.el ends here
 (provide 'init-edit)

@@ -17,15 +17,15 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-(defun font-installed-p (font-name)
+(defun eat/font-installed-p (font-name)
   "Check if font with FONT-NAME is available."
   (find-font (font-spec :name font-name)))
 
-(defun my/font-installed (list)
+(defun eat/font-installed (list)
   "Return first installed font from LIST."
   (catch 'value
     (dolist (font list)
-      (when (font-installed-p font)
+      (when (eat/font-installed-p font)
         (throw 'value font)))))
 
 ;; first installed font will be set

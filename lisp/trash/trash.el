@@ -402,3 +402,21 @@ prepended to the element after the #+HEADER: tag."
   (define-key company-active-map (kbd "TAB") '+complete)
   (define-key company-active-map [return] nil)
   (define-key company-active-map (kbd "RET") nil))
+
+(eat-package symbol-overlay
+  :straight t
+  :hook
+  ((prog-mode-hook conf-mode-hook) . symbol-overlay-mode)
+  :init
+  (advice-add 'symbol-overlay-basic-jump :after #'my-pulse-momentary-line)
+  :config
+  (define-key symbol-overlay-mode-map (kbd "M-i") 'symbol-over-put)
+  (define-key symbol-overlay-mode-map (kbd "M-I") 'symbol-overlay-remove-all)
+  (define-key symbol-overlay-mode-map (kbd "M-n") 'symbol-overlay-jump-next)
+  (define-key symbol-overlay-mode-map (kbd "M-p") 'symbol-overlay-jump-prev))
+
+(eat-package which-key
+  :straight t
+  :hook (on-first-input-hook . which-key-mode)
+  :init
+  (setq-default which-key-idle-delay 1.5))
