@@ -8,8 +8,6 @@
     (interactive)
     (setq buffer-face-mode-face `(:family ,+font-cn))
     (buffer-face-mode +1))
-  (when sys/linuxp
-    (setq telega-use-docker t))
   :hook
   ;; ignore blocked user
   (telega-msg-ignore-predicates . telega-msg-from-blocked-sender-p)
