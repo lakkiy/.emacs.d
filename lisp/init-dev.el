@@ -171,6 +171,7 @@
   :commands eglot-ensure
   :init
   (setq
+   eglot-events-buffer-size 0
    eglot-ignored-server-capabilites '(:documentHighlightProvider)
 
    ;; don't block of LSP connection attempts
