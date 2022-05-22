@@ -225,3 +225,98 @@
   (defun setup-custom-doom-modeline ()
     (doom-modeline-set-modeline 'my 'default))
   (add-hook 'doom-modeline-mode-hook 'setup-custom-doom-modeline))
+
+(eat-package awesome-tray
+  :straight (awesome-tray :type git :host github :repo "manateelazycat/awesome-tray")
+  :init
+  (setq
+   awesome-tray-update-interval 0.5
+   awesome-tray-minibuffer nil
+   awesome-tray-essential-modules nil
+   awesome-tray-info-padding-right 2 ;; or it will warp by meow
+   ;; TODO  belong not work
+   awesome-tray-active-modules '("buffer-read-only" "buffer-name" "mode-name" "belong" "location"))
+
+  :config
+  ;;Make the modeline in GUI a thin bar.
+  (defface mini-modeline-mode-line
+    `((((background light))
+       :background ,awesome-tray-mode-line-active-color :height 0.1 :box nil)
+      (t
+       :background ,awesome-tray-mode-line-active-color :height 0.1 :box nil))
+    "Modeline face for active window.")
+
+  (defface mini-modeline-mode-line-inactive
+    `((((background light))
+       :background ,awesome-tray-mode-line-inactive-color :height 0.1 :box nil)
+      (t
+       :background ,awesome-tray-mode-line-inactive-color :height 0.1 :box nil))
+    "Modeline face for inactive window.")
+
+  (setq-default mode-line-format (when (display-graphic-p)
+                                   '(" ")))
+
+  ;; Do the same thing with opening buffers.
+  (mapc
+   (lambda (buf)
+     (with-current-buffer buf
+       (when (local-variable-p 'mode-line-format)
+         (setq mode-line-format (when (display-graphic-p)
+                                  '(" "))))
+       ;; Make the modeline in GUI a thin bar.
+       (when (and (local-variable-p 'face-remapping-alist)
+                  (display-graphic-p))
+         (setf (alist-get 'mode-line face-remapping-alist)
+               'mini-modeline-mode-line
+               (alist-get 'mode-line-inactive face-remapping-alist)
+               'mini-modeline-mode-line-inactive))))
+   (buffer-list))
+
+  ;; Make the modeline in GUI a thin bar.
+  (when (and (display-graphic-p))
+    (let ((face-remaps (default-value 'face-remapping-alist)))
+      (setf (alist-get 'mode-line face-remaps)
+            'mini-modeline-mode-line
+            (alist-get 'mode-line-inactive face-remaps)
+            'mini-modeline-mode-line-inactive
+            (default-value 'face-remapping-alist) face-remaps)))
+
+
+  ;; `popper', disable
+  (with-eval-after-load 'popper
+    (setq popper-mode-line " "))
+
+
+  ;; `rime', add
+  (with-eval-after-load 'rime
+    ;; NOTE show in message have some error, wont on screen after choose
+    (setq rime-show-candidate 'sidewindow
+          rime-sidewindow-side 'top
+          rime-sidewindow-keep-window t)
+
+    (add-to-list 'awesome-tray-module-alist
+                 '("rime" . (rime-lighter)))
+    (add-to-list 'awesome-tray-active-modules "rime"))
+
+
+  ;; `flymake', add
+  (with-eval-after-load 'flymake
+    (add-to-list 'awesome-tray-module-alist
+                 '("flymake" . (sekiro-flymake-mode-line-format)))
+    (add-to-list 'awesome-tray-active-modules "flymake"))
+
+
+  ;; `meow', add
+  (with-eval-after-load 'meow
+    (defun awesome-tray-module-meow-info ()
+      (string-trim (meow-indicator)))
+    (add-to-list 'awesome-tray-module-alist
+                 '("meow" . (awesome-tray-module-meow-info awesome-tray-module-evil-face)))
+    (add-to-list 'awesome-tray-active-modules "meow"))
+
+
+  ;; `eyebrowse', add
+  (with-eval-after-load 'eyebrowse
+    (add-to-list 'awesome-tray-module-alist
+                 '("eyebrowse" . (eyebrowse-mode-line-indicator)))
+    (add-to-list 'awesome-tray-active-modules "eyebrowse")))
