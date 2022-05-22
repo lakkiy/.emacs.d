@@ -132,10 +132,7 @@
 
 (add-hook 'after-make-window-system-frame-hooks (lambda ()
                                                   (+load-font)
-                                                  (+load-theme)
-                                                  ;; enable awesome tray after theme loaded
-                                                  (require 'awesome-tray)
-                                                  (awesome-tray-mode 1)))
+                                                  (+load-theme)))
 
 ;;; Mode-line
 
