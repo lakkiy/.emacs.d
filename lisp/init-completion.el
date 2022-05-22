@@ -48,10 +48,10 @@
 (eat-package popon
   :straight (popon :type git :repo "https://codeberg.org/akib/emacs-popon.git"))
 
-(eat-package corfu-popup
-  :straight (corfu-popup :type git :repo "https://codeberg.org/akib/emacs-corfu-popup.git")
+(eat-package corfu-terminal
+  :straight (corfu-terminal :type git :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
   :hook (after-make-console-frame-hook . (lambda ()
-                                           (corfu-popup-mode +1))))
+                                           (corfu-terminal-mode +1))))
 
 (eat-package corfu-doc
   :straight t
