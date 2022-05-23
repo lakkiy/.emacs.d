@@ -22,10 +22,6 @@
   (define-key global-map "\C-c\ m" 'meow-leader-command-prefix)
   (add-to-list 'meow-keymap-alist (cons 'leader 'meow-leader-command-prefix))
 
-  ;; `smerge-mode'
-  (with-eval-after-load 'smerge
-    (meow-leader-define-key (cons "=" smerge-basic-map)))
-
   (meow-leader-define-key
    '("a" . execute-extended-command)
    '("e" . "C-x C-e")
@@ -56,6 +52,8 @@
 
    ;; project, bind to keymap
    (cons "p" project-prefix-map)
+   ;; smerge
+   ;; (cons "=" smerge-basic-map)
 
    ;; tab
    ;; '("t t" . tab-bar-select-tab-by-name)
