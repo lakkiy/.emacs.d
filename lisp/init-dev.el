@@ -230,6 +230,8 @@
              ;; it will cause an error on startup
              :build (:not autoloads))
   :commands lsp-bridge-mode
+  :init
+  (setq lsp-bridge-completion-provider 'corfu)
   :config
   (add-hook 'xref-backend-functions #'lsp-bridge-xref-backend nil t)
   (define-key lsp-bridge-mode-map (kbd "M-?") #'lsp-bridge-find-references)
