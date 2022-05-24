@@ -51,7 +51,13 @@
 (eat-package corfu-terminal
   :straight (corfu-terminal :type git :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
   :hook (after-make-console-frame-hook . (lambda ()
-                                           (corfu-terminal-mode +1))))
+                                           (add-hook 'prog-mode-hook 'eat/corfu-terminal-mode)
+                                           (add-hook 'conf-mode-hook 'eat/corfu-terminal-mode)
+                                           (add-hook 'eshell-mode-hook 'eat/corfu-terminal-mode)))
+  :init
+  (defun eat/corfu-terminal-mode ()
+    (interactive)
+    (corfu-terminal-mode +1)))
 
 (eat-package corfu-doc
   :straight t
