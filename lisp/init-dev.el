@@ -63,6 +63,16 @@
         citre-use-project-root-when-creating-tags t
         citre-prompt-language-for-ctags-command t
         citre-auto-enable-citre-mode-modes '(prog-mode))
+  (defun eat/citre-enable ()
+    (interactive)
+    (unless citre-mode
+      (citre-mode 1)
+      (require 'citre-config)))
+  (defun eat/citre-disable ()
+    (interactive)
+    (when citre-mode
+      (citre-mode 0)
+      (remove-hook 'find-file-hook #'citre-auto-enable-citre-mode)))
   (eat-package citre-global
     :init
     (global-set-key (kbd "C-x c r") 'citre-jump-to-reference)
@@ -81,12 +91,6 @@
     (interactive)
     (require 'citre-config))
   :config
-  (defun +citer-edit-cmd-buf-add-dir-from-godotmod ()
-    ;; TODO Add all third part package to ctire command line.
-    (interactive))
-  (with-eval-after-load 'cc-mode (require 'citre-lang-c))
-  (with-eval-after-load 'dired (require 'citre-lang-fileref))
-  (with-eval-after-load 'verilog-mode (require 'citre-lang-verilog))
   (define-key citre-peek-keymap (kbd "M-l s") #'citre-peek-save-session)
   (define-key citre-peek-keymap (kbd "M-l h") #'citre-peek-chain-backward)
   (define-key citre-peek-keymap (kbd "M-l l") #'citre-peek-chain-forward)
