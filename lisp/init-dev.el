@@ -65,14 +65,12 @@
         citre-auto-enable-citre-mode-modes '(prog-mode))
   (defun eat/citre-enable ()
     (interactive)
-    (unless citre-mode
-      (citre-mode 1)
-      (require 'citre-config)))
+    (citre-mode 1)
+    (require 'citre-config))
   (defun eat/citre-disable ()
     (interactive)
-    (when citre-mode
-      (citre-mode 0)
-      (remove-hook 'find-file-hook #'citre-auto-enable-citre-mode)))
+    (citre-mode 0)
+    (remove-hook 'find-file-hook #'citre-auto-enable-citre-mode))
   (eat-package citre-global
     :init
     (global-set-key (kbd "C-x c r") 'citre-jump-to-reference)
@@ -119,10 +117,10 @@
 
 (eat-package flymake-flycheck
   :straight t
-  :after flymake
-  ;; :hook (flymake-mode-hook . enable-flymake-flycheck)
   :init
-  (defun enable-flymake-flycheck ()
+  (setq flycheck-check-syntax-automatically '(mode-enabled save))
+
+  (defun eat/enable-flymake-flycheck ()
     (interactive)
     (setq-local flymake-diagnostic-functions
                 (append flymake-diagnostic-functions
@@ -131,13 +129,10 @@
     (setq-default flycheck-disabled-checkers
                   (append (default-value 'flycheck-disabled-checkers)
                           '(emacs-lisp emacs-lisp-checkdoc emacs-lisp-package)))
-    (with-eval-after-load 'go
-      (setq flycheck-disabled-checkers
-            (append (default-value 'flycheck-disabled-checkers)
-                    '(go-gofmt go-golint go-vet go-build go-test go-errcheck))))))
-
-(eat-package flymake-collection
-  :straight (flymake-collection :type git :host github :repo "mohkale/flymake-collection"))
+    ;; for go, just use staticcheck
+    (setq flycheck-disabled-checkers
+          (append (default-value 'flycheck-disabled-checkers)
+                  '(go-gofmt go-golint go-vet go-build go-test go-errcheck go-unconvert)))))
 
 ;;; Misc
 

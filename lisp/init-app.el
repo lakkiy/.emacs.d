@@ -91,12 +91,7 @@
       (add-to-list 'desktop-minor-mode-table
                    '(diff-hl-margin-mode nil)))))
 
-(eat-package dirvish
-  :straight t
-  :config
-  ;; FIXME conflict with `awesome-tray'
-  ;; (dirvish-override-dired-mode)
-  )
+(eat-package dirvish :straight t)
 (eat-package fd-dired :straight t)
 
 (eat-package message
@@ -122,21 +117,20 @@
    smtpmail-smtp-service 587
    smptmail-stream-type 'ssl))
 
-(defface notmuch-tag-emacs
+(defface eat/notmuch-tag-emacs
   '((t :foreground "systemPurpleColor"))
-  "Default face used for the emacs tag.
+  "Default face used for the Emacs tag.
 
 Used in the default value of `notmuch-tag-formats'."
   :group 'notmuch-faces)
 
-(defface notmuch-tag-golang
+(defface eat/notmuch-tag-golang
   '((t :foreground "systemBlueColor"))
   "Default face used for the golang tag.
 
 Used in the default value of `notmuch-tag-formats'."
   :group 'notmuch-faces)
 
-;; TODO notmuch-show should use \n to split each mail
 (eat-package notmuch
   :straight t
   :commands notmuch
@@ -148,7 +142,7 @@ Used in the default value of `notmuch-tag-formats'."
                                        ("subject" . "%-40s ")
                                        ("tags" . "(%s)"))
         notmuch-show-empty-searches t)
-  (defun +async-notmuch-poll ()
+  (defun eat/async-notmuch-poll ()
     (interactive)
     (message "Start polling email...")
     (async-start
@@ -157,12 +151,12 @@ Used in the default value of `notmuch-tag-formats'."
         (require 'notmuch)
         (notmuch-poll))
      (lambda (result)
-       (message "+async-notmuch-poll: %s" result)
+       (message "eat/async-notmuch-poll: %s" result)
        (notify-send :title "Emacs" :body result :urgency 'critical))))
   :config
-  (add-to-list 'notmuch-tag-formats '("emacs" (propertize tag 'face 'notmuch-tag-emacs)))
-  (add-to-list 'notmuch-tag-formats '("golang" (propertize tag 'face 'notmuch-tag-golang)))
-  (global-set-key [remap notmuch-poll-and-refresh-this-buffer] #'+async-notmuch-poll))
+  (add-to-list 'notmuch-tag-formats '("emacs" (propertize tag 'face 'eat/notmuch-tag-emacs)))
+  (add-to-list 'notmuch-tag-formats '("golang" (propertize tag 'face 'eat/notmuch-tag-golang)))
+  (global-set-key [remap notmuch-poll-and-refresh-this-buffer] #'eat/async-notmuch-poll))
 
 (eat-package docker
   :straight t
