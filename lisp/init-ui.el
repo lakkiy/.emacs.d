@@ -1,37 +1,21 @@
 ;;; -*- lexical-binding: t -*-
-;; Do not use `eat-package' with themes.
 
-;;; Theme
-
-;; disable previous theme when load theme
-(defun +load-theme-advice (f theme-id &optional no-confirm no-enable &rest args)
-  "Enhance `load-theme' by disabling other enabled themes & calling hooks"
-  (unless no-enable ;
-    (mapc #'disable-theme custom-enabled-themes))
-  (prog1
-      (apply f theme-id t no-enable args)
-    (unless no-enable ;
-      (pcase (assq theme-id +theme-hooks)
-        (`(,_ . ,f) (funcall f))))))
-(advice-add 'load-theme :around #'+load-theme-advice)
-
-;; `tao-theme'
 (straight-use-package 'tao-theme)
-
-;; `color-theme-sanityinc-tomorrow'
 (straight-use-package 'color-theme-sanityinc-tomorrow)
-
-;; `doom-themes'
 (straight-use-package 'doom-themes)
+(straight-use-package 'spacemacs-theme)
+(straight-use-package 'kaolin-themes)
+(straight-use-package 'stimmung-themes)
 
+
+;;; Theme
+;; `doom-themes'
 (with-eval-after-load 'doom-themes
   (setq doom-themes-treemacs-theme "doom-atom")
   (doom-themes-treemacs-config)
   (doom-themes-org-config))
 
 ;; `spacemacs-theme'
-(straight-use-package 'spacemacs-theme)
-
 (setq
  spacemacs-theme-comment-italic t
  spacemacs-theme-keyword-italic t
@@ -44,8 +28,6 @@
  spacemacs-theme-underline-parens t)
 
 ;; `kaolin-themes'
-(straight-use-package 'kaolin-themes)
-
 (setq
  kaolin-themes-underline-wave nil
  kaolin-themes-modeline-border nil
@@ -56,84 +38,50 @@
     (with-eval-after-load 'all-the-icons
       (kaolin-treemacs-theme))))
 
-;; `stimmung-themes'
-(straight-use-package 'stimmung-themes)
-
-(setq
- stimmung-themes-light-highlight-color "cornsilk1"
- stimmung-themes-dark-highlight-color "#40382b")
-
+
 ;;; Font
-(defun +load-base-font ()
-  (let ((font-spec (format "%s-%d" +font-default +font-size)))
+(defun eat/load-base-font ()
+  (let ((font-spec (format "%s-%d" eat/font-default eat/font-size)))
     (set-frame-font font-spec)
     (set-face-attribute 'default nil :font font-spec)
     (add-to-list 'default-frame-alist `(font . ,font-spec)))
-  (set-fontset-font t '(#x4e00 . #x9fff) +font-cn))
+  (set-fontset-font t '(#x4e00 . #x9fff) eat/font-cn))
 
-(defun +load-face-font ()
-  (set-face-attribute 'variable-pitch nil :font +font-variable-pitch :height 1.3)
-  (set-face-attribute 'fixed-pitch nil :font +font-default)
-  (set-face-attribute 'fixed-pitch-serif nil :font +font-default)
+(defun eat/load-face-font ()
+  (set-face-attribute 'variable-pitch nil :font eat/font-variable-pitch :height 1.3)
+  (set-face-attribute 'fixed-pitch nil :font eat/font-default)
+  (set-face-attribute 'fixed-pitch-serif nil :font eat/font-default)
   ;; make mode line use variable font but use original height
   (custom-set-faces
-   `(mode-line ((t (:family ,+font-variable-pitch))))
-   `(mode-line-inactive ((t (:family ,+font-variable-pitch))))))
+   `(mode-line ((t (:family ,eat/font-variable-pitch))))
+   `(mode-line-inactive ((t (:family ,eat/font-variable-pitch))))))
 
-(defun +load-ext-font ()
+(defun eat/load-ext-font ()
   (let ((font (frame-parameter nil 'font))
-        (font-spec (font-spec :family +font-unicode)))
+        (font-spec (font-spec :family eat/font-unicode)))
     (dolist (charset '(kana han hangul cjk-misc bopomofo symbol))
       (set-fontset-font font charset font-spec)))
-  (set-fontset-font t 'emoji (font-spec :family +font-unicode) nil 'prepend)
-  (setf (alist-get +font-unicode face-font-rescale-alist 0.7 nil 'string=) 0.7))
+  (set-fontset-font t 'emoji (font-spec :family eat/font-unicode) nil 'prepend)
+  (setf (alist-get eat/font-unicode face-font-rescale-alist 0.7 nil 'string=) 0.7))
 
-(defun +load-font ()
-  (+load-base-font)
-  (+load-face-font)
-  (+load-ext-font))
-
-(defun my/adjust-opacity (frame incr)
-  "Adjust the background opacity of FRAME by increment INCR."
-  (unless (display-graphic-p frame)
-    (error "Cannot adjust opacity of this frame"))
-  (let* ((oldalpha (or (frame-parameter frame 'alpha-background) 100))
-         (oldalpha (if (listp oldalpha) (car oldalpha) oldalpha))
-         (newalpha (+ incr oldalpha)))
-    (when (and (<= frame-alpha-lower-limit newalpha) (>= 100 newalpha))
-      (modify-frame-parameters frame (list (cons 'alpha-background newalpha))))))
-
-(global-set-key (kbd "M-C-8") (lambda () (interactive) (my/adjust-opacity nil -2)))
-(global-set-key (kbd "M-C-9") (lambda () (interactive) (my/adjust-opacity nil 2)))
-(global-set-key (kbd "M-C-7") (lambda () (interactive) (modify-frame-parameters nil `((alpha-background . 100)))))
-
-;;; Packages
-
-(eat-package default-text-scale
-  :straight t
-  :init
-  (global-set-key (kbd "C-x C-=") #'default-text-scale-increase)
-  (global-set-key (kbd "C-x C--") #'default-text-scale-decrease))
-
-;;; Title format
-
-(setq frame-title-format
-      '((:eval (if (buffer-file-name)
-                   (abbreviate-file-name (buffer-file-name))
-                 "%b"))))
+(defun eat/load-font ()
+  (eat/load-base-font)
+  (eat/load-face-font)
+  (eat/load-ext-font))
 
 ;;; TUI: only load tui theme
 
 (add-hook 'after-make-console-frame-hooks (lambda ()
                                             (when (fboundp 'menu-bar-mode)
                                               (menu-bar-mode -1))
-                                            (load-theme +theme-tui t)))
+                                            (eat/load-theme eat/theme-tui)))
 ;;; GUI frame: load font and theme
 
 (add-hook 'after-make-window-system-frame-hooks (lambda ()
-                                                  (+load-font)
-                                                  (+load-theme)))
+                                                  (eat/load-font)
+                                                  (eat/load-theme eat/theme)))
 
+
 ;;; Mode-line
 
 (progn
@@ -162,7 +110,7 @@ The padding pushes TEXT to the right edge of the mode-line."
           (concat "  " coding)
         "")))
 
-  (defun +setup-mode-line ()
+  (defun eat/setup-mode-line ()
     (mode-line-bell-mode)
     (which-func-mode)
     (minions-mode)
@@ -199,8 +147,7 @@ The padding pushes TEXT to the right edge of the mode-line."
                       (:eval (concat (luna-mode-line-with-padding ,percentage)
                                      "%%"))
                       )))))
-
-(add-hook 'after-init-hook #'+setup-mode-line)
+(add-hook 'after-init-hook #'eat/setup-mode-line)
 
 ;;; init-ui.el ends here
 (provide 'init-ui)

@@ -363,7 +363,7 @@
    tab-bar-tab-name-truncated-max 10)
 
   (custom-set-faces
-   `(tab-bar ((t (:family ,+font-variable-pitch)))))
+   `(tab-bar ((t (:family ,eat/font-variable-pitch)))))
 
   (defun +tab-bar-switch-project ()
     "Switch to project in a new tab, project name will be used as tab name.
@@ -628,6 +628,30 @@ No tab will created if the command is cancelled."
 
 ;; use C-q C-l to add page break symbol
 (eat-package page)
+
+;;; `message'
+(eat-package message
+  :hook (message-mode-hook . auto-fill-mode)
+  :init
+  (setq
+   user-full-name eat/user-full-name
+   user-mail-address eat/user-mail-address
+   message-kill-buffer-on-exit t
+   message-mail-alias-type 'ecomplete
+   message-send-mail-function #'message-use-send-mail-function
+   message-signature user-full-name))
+
+(eat-package sendmail
+  :init
+  (setq send-mail-function #'smtpmail-send-it))
+
+(eat-package smtpmail
+  :init
+  (setq
+   smtpmail-smtp-server "smtp.gmail.com"
+   smtpmail-smtp-user user-mail-address
+   smtpmail-smtp-service 587
+   smptmail-stream-type 'ssl))
 
 ;;; init-builtin.el ends here
 (provide 'init-builtin)

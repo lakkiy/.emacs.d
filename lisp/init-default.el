@@ -1,18 +1,6 @@
 ;;; -*- lexical-binding: t -*-
 ;; config should work under emacs -Q like straight and gc...
 
-;;; Benchmark
-
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (message
-             "Emacs loaded in %s with %d garbage collections."
-             (format
-              "%.2f seconds"
-              (float-time
-               (time-subtract after-init-time before-init-time)))
-             gcs-done)))
-
 (eat-package on
   :straight (on :type git :host github :repo "ajgrf/on.el")
   :init
@@ -42,31 +30,16 @@ Selectively runs either `after-make-console-frame-hooks' or
           (lambda () (when sanityinc/initial-frame
                        (run-after-make-frame-hooks sanityinc/initial-frame))))
 
-;;; Consts
-(defconst *is-a-mac*
-  (eq system-type 'darwin)
-  "Are we running on a Mac system?")
-
-(defconst sys/linuxp
-  (eq system-type 'gnu/linux)
-  "Are we running on a GNU/Linux system?")
-
-(defconst emacs/>=29p
-  (>= emacs-major-version 29)
-  "Emacs is 29 or above.")
-
-(defun +load-theme ()
-  (load-theme +theme t))
-
+
 ;;; Mac specific configuration
-(when *is-a-mac*
+(when eat/macp
   (when (boundp 'ns-system-appearance)
-    (defun +load-theme ()
-      (add-to-list 'ns-system-appearance-change-functions
-                   (lambda (l?d)
-                     (if (eq l?d 'light)
-                         (load-theme +theme-system-light t)
-                       (load-theme +theme-system-dark t))))))
+    (add-to-list 'ns-system-appearance-change-functions
+                 (lambda (l?d)
+                   (if (eq l?d 'light)
+                       (eat/load-theme eat/theme-system-light)
+                     (eat/load-theme eat/theme-system-dark t)))))
+
   ;; https://emacs-china.org/t/emacs-mac-port-profile/2895/29?u=rua
   ;; NOTE: When PATH is changed, run the following command
   ;; $ sh -c 'printf "%s" "$PATH"' > ~/.path
@@ -113,11 +86,12 @@ Selectively runs either `after-make-console-frame-hooks' or
   ;; Don't open a file in a new frame
   (setq ns-pop-up-frames nil))
 
-(unless *is-a-mac*
+(unless eat/macp
   (setq command-line-ns-option-alist nil))
 
+
 ;;; Linux specific configuration
-(when sys/linuxp
+(when eat/linuxp
   ;; NOTE use C-M-8 to set manually
   ;; (push '(alpha-background . 80) default-frame-alist)
   ;; Linux specific
@@ -131,17 +105,11 @@ Selectively runs either `after-make-console-frame-hooks' or
   (when (boundp 'x-gtk-use-system-tooltips)
     (setq x-gtk-use-system-tooltips nil)))
 
-(unless sys/linuxp
+(unless eat/linuxp
   (setq command-line-x-option-alist nil))
 
+
 ;;; GC
-
-;; GC automatically while unfocusing the frame
-(add-function :after after-focus-change-function
-              (lambda ()
-                (unless (frame-focus-state)
-                  (garbage-collect))))
-
 (eat-package gcmh
   :straight t
   :hook (after-init-hook . gcmh-mode)
@@ -170,7 +138,7 @@ Selectively runs either `after-make-console-frame-hooks' or
 ;; The nano style for truncated long lines.
 (setq auto-hscroll-mode 'current-line)
 
-(when emacs/>=29p
+(when eat/emacs29p
   ;; for mouse scroll
   (setq pixel-scroll-precision-large-scroll-height 60)
   (setq pixel-scroll-precision-interpolation-factor 30.0)
@@ -295,15 +263,21 @@ Selectively runs either `after-make-console-frame-hooks' or
 (eat-package benchmark-init
   :straight t
   :init
-  (when +enable-benchmark
+  (when eat/enable-benchmark
     (benchmark-init/activate))
   :config
   (add-hook 'after-init-hook 'benchmark-init/deactivate))
 
-(defconst +font-default (eat/font-installed +fonts-default))
-(defconst +font-unicode (eat/font-installed +fonts-unicode))
-(defconst +font-cn (eat/font-installed +fonts-cn))
-(defconst +font-variable-pitch (eat/font-installed +fonts-variable-pitch))
+(eat-package default-text-scale
+  :straight t
+  :init
+  (global-set-key (kbd "C-x C-=") #'default-text-scale-increase)
+  (global-set-key (kbd "C-x C--") #'default-text-scale-decrease))
+
+(setq frame-title-format
+      '((:eval (if (buffer-file-name)
+                   (abbreviate-file-name (buffer-file-name))
+                 "%b"))))
 
 ;;; init-default.el ends here
 (provide 'init-default)

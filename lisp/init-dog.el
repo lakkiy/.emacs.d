@@ -29,7 +29,7 @@
         default-input-method "rime"
         rime-cursor "|"
         rime-show-candidate 'minibuffer)
-  (when *is-a-mac*
+  (when eat/macp
     (setq rime-librime-root (expand-file-name "librime/dist" user-emacs-directory)))
   :config
   (set-face-attribute 'rime-indicator-face nil :height 0.9)
@@ -76,11 +76,7 @@
     (add-to-list 'meow-mode-state-list `(,mode . motion)))
 
   ;; setup meow with selected keyboard layout
-  (cond ((eq +meow-layout 'dvorak)
-         (require 'init-meow-dvorak)
-         (meow-setup-dvorak))
-        ((eq +meow-layout 'qwerty)
-         (require 'init-meow-qwerty)
-         (meow-setup-qwerty))))
+  (require 'init-meow-dvorak)
+  (meow-setup-dvorak))
 
 (provide 'init-dog)
