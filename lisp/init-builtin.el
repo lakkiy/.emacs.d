@@ -487,7 +487,7 @@ No tab will created if the command is cancelled."
    (2 . (1.05))
    (t . (semibold))))
 
-(defun +custom-modus-operandi()
+(defun eat/custom-modus-operandi()
 ;;;; default face
   (progn
     (set-face-background 'cursor "deep pink")
@@ -527,7 +527,7 @@ No tab will created if the command is cancelled."
 ;;;; +custom-modus-operandi
   )
 
-(add-hook '+theme-hooks '(modus-operandi . +custom-modus-operandi))
+(add-hook 'eat/theme-hooks '(modus-operandi . eat/custom-modus-operandi))
 
 
 ;;; save session

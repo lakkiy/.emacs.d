@@ -6,7 +6,7 @@
   :init
   (defun +telega-font-setup ()
     (interactive)
-    (setq buffer-face-mode-face `(:family ,+font-cn))
+    (setq buffer-face-mode-face `(:family ,eat/font-cn))
     (buffer-face-mode +1))
   :hook
   ;; font setup
