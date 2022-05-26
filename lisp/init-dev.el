@@ -1,20 +1,13 @@
 ;;; -*- lexical-binding: t -*-
 
-(eat-package tree-sitter
-  :straight t
-  :init
-  (eat-package tree-sitter-langs :straight t)
-  :hook
-  ((go-mode-hook) . tree-sitter-mode)
-  (tree-sitter-after-on-hook . tree-sitter-hl-mode)
-  :config
-  (require 'tree-sitter-langs))
-
 (eat-package grammatical-edit
   :straight (grammatical-edit
              :type git
              :host github
              :repo "manateelazycat/grammatical-edit")
+  :init
+  (eat-package tree-sitter :straight t)
+  (eat-package tree-sitter-langs :straight t)
   :hook
   ;; NOTE not work well in sh mode, and tramp, see tramp debug buffer
   ((python-mode-hook
@@ -120,19 +113,24 @@
   :init
   (setq flycheck-check-syntax-automatically '(mode-enabled save))
 
+  (with-eval-after-load 'flycheck
+    (setq flycheck-disabled-checkers (append (default-value 'flycheck-disabled-checkers)
+                                             '(emacs-lisp
+                                               emacs-lisp-checkdoc
+                                               emacs-lisp-package
+                                               go-gofmt
+                                               go-golint
+                                               go-vet
+                                               go-build
+                                               go-test
+                                               go-errcheck
+                                               go-unconvert))))
+
   (defun eat/enable-flymake-flycheck ()
     (interactive)
     (setq-local flymake-diagnostic-functions
                 (append flymake-diagnostic-functions
-                        (flymake-flycheck-all-chained-diagnostic-functions))))
-  (with-eval-after-load 'flycheck
-    (setq-default flycheck-disabled-checkers
-                  (append (default-value 'flycheck-disabled-checkers)
-                          '(emacs-lisp emacs-lisp-checkdoc emacs-lisp-package)))
-    ;; for go, just use staticcheck
-    (setq flycheck-disabled-checkers
-          (append (default-value 'flycheck-disabled-checkers)
-                  '(go-gofmt go-golint go-vet go-build go-test go-errcheck go-unconvert)))))
+                        (flymake-flycheck-all-chained-diagnostic-functions)))))
 
 ;;; Misc
 
