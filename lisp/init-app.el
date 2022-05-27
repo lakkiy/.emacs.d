@@ -54,7 +54,7 @@
   (magit-diff-visit-file . my-recenter-and-pulse-line)
   :commands magit
   :init
-  (defun +magit-yadm ()
+  (defun eat/magit-yadm ()
     (interactive)
     (magit-status "/yadm::"))
   :config
