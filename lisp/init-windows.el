@@ -60,13 +60,6 @@ No window config will created if the command is cancelled."
          name))))
   (advice-add 'xwidget-webkit-browse-url :before #'(lambda (url &optional new-session)
                                                      (+eyebrowse-switch-named-window-config "xwidget"))))
-
-(eat-package window-numbering
-  :straight (window-numbering :type git :host github :repo "DogLooksGood/window-numbering.el")
-  :hook (on-init-ui-hook . (lambda ()
-                             (require 'window-numbering)
-                             (window-numbering-mode 1))))
-
 (eat-package ace-window
   :straight t
   :commands

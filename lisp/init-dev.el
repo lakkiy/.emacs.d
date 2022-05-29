@@ -238,7 +238,6 @@
   (define-key lsp-bridge-mode-map (kbd "C-c r") #'lsp-bridge-rename))
 
 (require 'init-go)
-(require 'init-python)
 (require 'init-web)
 (require 'init-clojure)
 

@@ -40,10 +40,6 @@
   ;; (before-save-hook . gofmt-before-save)
   (go-test-mode-hook . visual-line-mode))
 
-;; FIXME not work for now
-;; write own version
-(eat-package flymake-golangci :straight t)
-
 (eat-package gotest
   :straight t
   :after go-mode
@@ -78,11 +74,6 @@
 (eat-package go-guru :straight t)
 (eat-package go-rename :straight t)
 (eat-package go-impl :straight t)
-
 (eat-package go-dlv :straight t)
-
-(eat-package go-playground
-  :straight t
-  :commands go-playground-mode)
 
 (provide 'init-go)
