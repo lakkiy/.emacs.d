@@ -17,7 +17,7 @@
    eyebrowse-new-workspace t
    eyebrowse-mode-line-style 'current)
   :config
-  (defun +eyebrowse-switch-project ()
+  (defun eat/eyebrowse-switch-project ()
     "Switch to project in a new window config, project name will be used as config name.
 
 No window config will created if the command is cancelled."
@@ -35,11 +35,11 @@ No window config will created if the command is cancelled."
         (unless succ
           (eyebrowse-close-window-config)))))
   ;; NOTE should update if `eyebrowse-keymap-prefix' changed
-  (define-key eyebrowse-mode-map (kbd "C-c C-w l") #'+eyebrowse-switch-project)
+  (define-key eyebrowse-mode-map (kbd "C-c C-w l") #'eat/eyebrowse-switch-project)
   (define-key eyebrowse-mode-map (kbd "C-c C-w n") #'eyebrowse-create-named-window-config)
 
 
-  (defun +eyebrowse-switch-named-window-config (name)
+  (defun eat/eyebrowse-switch-named-window-config (name)
     "Switch to a window config with `NAME', or create it if not exist."
     (let* ((window-configs (eyebrowse--get 'window-configs))
            (current-slot (eyebrowse--get 'current-slot))
@@ -59,7 +59,7 @@ No window config will created if the command is cancelled."
          (eyebrowse--get 'current-slot)
          name))))
   (advice-add 'xwidget-webkit-browse-url :before #'(lambda (url &optional new-session)
-                                                     (+eyebrowse-switch-named-window-config "xwidget"))))
+                                                     (eat/eyebrowse-switch-named-window-config "xwidget"))))
 (eat-package ace-window
   :straight t
   :commands

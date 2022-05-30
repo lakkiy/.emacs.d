@@ -164,5 +164,15 @@ Used in the default value of `notmuch-tag-formats'."
     (unless (eq ibuffer-sorting-mode 'filename/process)
       (ibuffer-do-sort-by-filename/process))))
 
+(eat-package vterm
+  :straight t
+  :init
+  (setq vterm-always-compile-module t))
+
+(eat-package vterm-toggle
+  :straight t
+  :init
+  (global-set-key (kbd "C-`") #'vterm-toggle))
+
 ;;; init-app.el ends here
 (provide 'init-app)

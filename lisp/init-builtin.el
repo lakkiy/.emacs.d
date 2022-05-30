@@ -291,7 +291,6 @@
   :config
   (setq flyspell-mode-map nil))
 
-;;; project managent
 (eat-package project
   :init
   (defun eat/project-name ()
@@ -393,8 +392,6 @@ No tab will created if the command is cancelled."
   (global-set-key (kbd "C-x t .") #'tab-bar-rename-tab)
   (global-set-key (kbd "C-x t l") #'+tab-bar-switch-project))
 
-
-;;; programming
 (eat-package paren
   ;; :hook (prog-mode-hook . show-paren-mode) ;; NOTE enable by default since emacs 28
   :init
@@ -429,14 +426,12 @@ No tab will created if the command is cancelled."
    python-shell-interpreter "ipython"
    python-indent-guess-indent-offset nil))
 
-;; TODO init-sql.el
-;;
+;; TODO
 (eat-package sql
   :init
   (setq
    sql-mysql-login-params '(user password server database port)))
 
-;;; browse
 (eat-package xwidget
   :init
   ;; use `eyebrowse' replace `tab-bar'
@@ -471,41 +466,32 @@ No tab will created if the command is cancelled."
           ("Wikipedia" .
            [simple-query "wikipedia.org" "wikipedia.org/wiki/" #1#]))))
 
-;;; `modus-theme'
-(setq
- modus-themes-mode-line '(barderless)
- modus-themes-italic-constructs t
- modus-themes-bold-constructs t
- modus-themes-markup '(background italic)
- modus-themes-paren-match '(bold intense)
- modus-themes-links '(neutral-underline background)
- modus-themes-prompts '(intense bold)
- modus-themes-org-blocks 'gray-background
- modus-themes-region '(bg-only no-extend)
- modus-themes-headings
- '((1 . (1.15))
-   (2 . (1.05))
-   (t . (semibold))))
-
-(defun eat/custom-modus-operandi()
-;;;; default face
-  (progn
+(progn
+  (setq
+   modus-themes-mode-line '(barderless)
+   modus-themes-italic-constructs t
+   modus-themes-bold-constructs t
+   modus-themes-markup '(background italic)
+   modus-themes-paren-match '(bold intense)
+   modus-themes-links '(neutral-underline background)
+   modus-themes-prompts '(intense bold)
+   modus-themes-org-blocks 'gray-background
+   modus-themes-region '(bg-only no-extend)
+   modus-themes-headings
+   '((1 . (1.15))
+     (2 . (1.05))
+     (t . (semibold))))
+  (defun eat/custom-modus-operandi()
     (set-face-background 'cursor "deep pink")
     (set-face-foreground 'link "#0168da")
     (set-face-background 'isearch "#feff00")
     (set-face-foreground 'isearch nil)
-    (set-face-background 'lazy-highlight "#feff00"))
-
-;;;; programming face
-  (progn
+    (set-face-background 'lazy-highlight "#feff00")
     (set-face-foreground 'font-lock-function-name-face "#0168da")
     (set-face-foreground 'font-lock-keyword-face "#874bf8")
     (set-face-foreground 'font-lock-comment-face "DarkGray")
     (set-face-foreground 'font-lock-constant-face "dark cyan")
-    (set-face-foreground 'font-lock-string-face "chocolate"))
-
-;;;; org mode
-  (progn
+    (set-face-foreground 'font-lock-string-face "chocolate")
     (with-eval-after-load 'org
       (set-face-foreground 'org-meta-line "Gray")
       (set-face-foreground 'org-drawer "Gray")
@@ -523,16 +509,11 @@ No tab will created if the command is cancelled."
       (set-face-attribute 'org-level-8 nil :foreground "chocolate")
 
       (set-face-attribute 'org-headline-done nil :foreground "gray")
-      (set-face-attribute 'org-done nil :foreground "gray" :weight 'normal)))
-;;;; +custom-modus-operandi
-  )
+      ))
+  (add-hook 'eat/theme-hooks '(modus-operandi . eat/custom-modus-operandi)))
 
-(add-hook 'eat/theme-hooks '(modus-operandi . eat/custom-modus-operandi))
-
-
-;;; save session
 (eat-package desktop
-  :hook (desktop-after-read-hook . desktop-load-theme)
+  :hook (desktop-after-read-hook . eat/desktop-load-theme)
   :init
   (setq desktop-path (list user-emacs-directory)
         desktop-auto-save-timeout 600)
@@ -542,11 +523,10 @@ No tab will created if the command is cancelled."
   ;; But it doesn't prevent the desktop-save-mode from saving the theme
   ;; in the .desktop file, instead it restores the theme after loading
   ;; the desktop.
-  (defun desktop-load-theme ()
+  (defun eat/desktop-load-theme ()
     "load custom theme"
     (interactive)
-    (dolist (th custom-enabled-themes)
-      (load-theme th)))
+    (eat/load-theme (car custom-enabled-themes)))
 
   (defun sanityinc/time-subtract-millis (b a)
     (* 1000.0 (float-time (time-subtract b a))))
@@ -606,30 +586,25 @@ No tab will created if the command is cancelled."
   ;; Restore histories and registers after saving
   (setq-default history-length 1000))
 
-;;; outline
 (eat-package outline
   :init
   (setq
    outline-minor-mode-cycle t
    outline-minor-mode-highlight t))
 
-;;;; Frame
 (eat-package fullframe :straight t)
 (with-eval-after-load 'ibuffer
   (fullframe ibuffer ibuffer-quit))
 
-;;;; Info
 (eat-package info
   :hook (Info-mode-hook . variable-pitch-mode))
 
-;;; show url
 (eat-package goto-addr
   :hook (on-init-ui-hook . global-goto-address-mode))
 
 ;; use C-q C-l to add page break symbol
 (eat-package page)
 
-;;; `message'
 (eat-package message
   :hook (message-mode-hook . auto-fill-mode)
   :init
@@ -652,6 +627,127 @@ No tab will created if the command is cancelled."
    smtpmail-smtp-user user-mail-address
    smtpmail-smtp-service 587
    smptmail-stream-type 'ssl))
+
+(eat-package flymake
+  :hook (prog-mode-hook . flymake-mode)
+  :init
+  (defun sekiro-flymake-mode-line-format ()
+    (let* ((counter (string-to-number
+                     (nth 1
+                          (cadr
+                           (flymake--mode-line-counter :error t)))))
+           (sekiro-flymake (if (> counter 0)
+                               'compilation-error
+                             'default)))
+      (propertize
+       "危"
+       'face
+       sekiro-flymake))))
+
+(defun term-mode-common-init ()
+  "The common initialization procedure for term/shell."
+  (setq-local scroll-margin 0)
+  (setq-local truncate-lines t)
+  (setq-local global-hl-line-mode nil))
+
+(eat-package term
+  :hook
+  (term-mode-hook . (term-mode-prompt-regexp-setup term-mode-common-init))
+  :init
+  (defun term-mode-prompt-regexp-setup ()
+    "Setup `term-prompt-regexp' for term-mode."
+    (setq-local term-prompt-regexp "^[^#$%>\n]*[#$%>] *")))
+
+(eat-package eshell
+  :hook
+  (eshell-mode-hook . (lambda ()
+                        (term-mode-common-init)
+                        ;; Eshell is not fully functional
+                        (setenv "PAGER" "cat")))
+  :config
+  ;; Prevent accident typing
+  (defalias 'eshell/vi 'find-file)
+  (defalias 'eshell/vim 'find-file)
+
+  (defun eshell/bat (file)
+    "cat FILE with syntax highlight."
+    (with-temp-buffer
+      (insert-file-contents file)
+      (let ((buffer-file-name file))
+        (delay-mode-hooks
+          (set-auto-mode)
+          (font-lock-ensure)))
+      (buffer-string)))
+
+  (defun eshell/f (filename &optional dir)
+    "Search for files matching FILENAME in either DIR or the
+current directory."
+    (let ((cmd (concat
+                (executable-find "find")
+                " " (or dir ".")
+                "      -not -path '*/.git*'"
+                " -and -not -path 'build'"    ;; the cmake build directory
+                " -and"
+                " -type f"
+                " -and"
+                " -iname '*" filename "*'")))
+      (eshell-command-result cmd)))
+
+  (defun eshell/z ()
+    "cd to directory with completion."
+    (let ((dir (completing-read "Directory: " (ring-elements eshell-last-dir-ring) nil t)))
+      (eshell/cd dir)))
+
+  (defun eshell-prompt ()
+    "Prompt for eshell."
+    (concat
+     (propertize user-login-name 'face 'font-lock-keyword-face)
+     "@"
+     "Noobmaster "
+     (if (equal (eshell/pwd) "~")
+         "~"
+       (abbreviate-file-name (eshell/pwd)))
+     " "
+     (if-let* ((vc (ignore-errors (vc-responsible-backend default-directory)))
+               (br (car (vc-git-branches))))
+         (concat (propertize "(" 'face 'success)
+                 (format "%s" vc)
+                 (propertize ")" 'face 'success)
+                 (propertize "-" 'face 'font-lock-string-face)
+                 (propertize "[" 'face 'success)
+                 (propertize br 'face 'font-lock-constant-face)
+                 (propertize "]" 'face 'success)
+                 " ")
+       "")
+     "% ")))
+
+;; The interactive shell.
+;;
+;; It can be used as a `sh-mode' REPL.
+;;
+;; `shell' is recommended to use over `tramp'.
+(eat-package shell
+  :hook
+  (shell-mode-hook . (term-mode-common-init revert-tab-width-to-default))
+  :init
+  (defun shell-toggle ()
+    "Toggle a persistent shell popup window.
+If popup is visible but unselected, select it.
+If popup is focused, kill it."
+    (interactive)
+    (if-let ((win (get-buffer-window "*shell-popup*")))
+        (when (eq (selected-window) win)
+          ;; If users attempt to delete the sole ordinary window, silence it.
+          (ignore-errors (delete-window win)))
+      (let ((display-comint-buffer-action '(display-buffer-at-bottom
+                                            (inhibit-same-window . nil))))
+
+        (shell "*shell-popup*"))))
+
+  ;; Correct indentation for `ls'
+  (defun revert-tab-width-to-default ()
+    "Revert `tab-width' to default value."
+    (setq-local tab-width 8)))
 
 ;;; init-builtin.el ends here
 (provide 'init-builtin)
