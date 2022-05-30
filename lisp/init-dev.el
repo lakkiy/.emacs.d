@@ -47,11 +47,8 @@
 (eat-package citre
   :straight (citre :type git :host github :repo "universal-ctags/citre")
   :init
-  (global-set-key (kbd "C-x c j") 'citre-jump)
-  (global-set-key (kbd "C-x c k") 'citre-jump-back)
-  (global-set-key (kbd "C-x c p") 'citre-peek)
-  (global-set-key (kbd "C-x c P") 'citre-ace-peek)
   (global-set-key (kbd "C-x c u") 'citre-update-this-tags-file)
+  (global-set-key (kbd "C-x c p") 'citre-peek)
   (setq citre-default-create-tags-file-location 'global-cache
         citre-use-project-root-when-creating-tags t
         citre-prompt-language-for-ctags-command t
@@ -66,47 +63,17 @@
     (remove-hook 'find-file-hook #'citre-auto-enable-citre-mode))
   (eat-package citre-global
     :init
-    (global-set-key (kbd "C-x c r") 'citre-jump-to-reference)
-    (global-set-key (kbd "C-x c R") 'citre-ace-peek-references)
     ;; NOTE
     ;; Notice that GTAGSOBJDIRPREFIX must exist for gtags to use it. So you need to run:
     ;; $ mkdir -p ~/.cache/gtags/
     (global-set-key (kbd "C-x c U") 'citre-global-update-database)
-    (with-eval-after-load 'citre-peek
-      (define-key citre-peek-keymap (kbd "M-l r") 'citre-peek-through-references))
+    (global-set-key (kbd "C-x c P") 'citre-peek-references)
     :config
     (setenv "GTAGSOBJDIRPREFIX" (concat (getenv "HOME") "/.cache/gtags"))
     (setenv "GTAGSCONF" (concat (getenv "HOME") "/.globalrc"))
-    (setenv "GTAGSLABEL" "native-pygments"))
-  (defun +citer-enable ()
-    (interactive)
-    (require 'citre-config))
-  :config
-  (define-key citre-peek-keymap (kbd "M-l s") #'citre-peek-save-session)
-  (define-key citre-peek-keymap (kbd "M-l h") #'citre-peek-chain-backward)
-  (define-key citre-peek-keymap (kbd "M-l l") #'citre-peek-chain-forward)
-  (define-key citre-peek-keymap (kbd "M-l j") #'citre-peek-prev-branch)
-  (define-key citre-peek-keymap (kbd "M-l k") #'citre-peek-next-branch)
-  (define-key citre-peek-keymap (kbd "M-l J") #'citre-peek-move-current-def-up)
-  (define-key citre-peek-keymap (kbd "M-l K") #'citre-peek-move-current-def-down))
+    (setenv "GTAGSLABEL" "native-pygments")))
 
 ;;; Lint
-
-(eat-package flymake
-  :hook (prog-mode-hook . flymake-mode)
-  :init
-  (defun sekiro-flymake-mode-line-format ()
-    (let* ((counter (string-to-number
-                     (nth 1
-                          (cadr
-                           (flymake--mode-line-counter :error t)))))
-           (sekiro-flymake (if (> counter 0)
-                               'compilation-error
-                             'default)))
-      (propertize
-       "危"
-       'face
-       sekiro-flymake))))
 
 (eat-package flymake-flycheck
   :straight t
@@ -123,11 +90,12 @@
                                      go-errcheck
                                      go-unconvert))
 
-  (defun eat/enable-flymake-flycheck ()
+  (defun eat/flymake-flycheck-enable ()
     (interactive)
     (setq-local flymake-diagnostic-functions
                 (append flymake-diagnostic-functions
-                        (flymake-flycheck-all-chained-diagnostic-functions)))))
+                        (flymake-flycheck-all-chained-diagnostic-functions)))
+    (flymake-mode 1)))
 
 ;;; Misc
 

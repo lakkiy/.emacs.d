@@ -31,7 +31,6 @@
   (require 'init-default)
   (require 'init-utils)
   (require 'init-builtin)
-  (require 'init-shell)
   (require 'init-ui)
   (require 'init-dog)
   (require 'init-edit)
