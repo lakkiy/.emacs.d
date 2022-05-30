@@ -111,20 +111,17 @@
 (eat-package flymake-flycheck
   :straight t
   :init
-  (setq flycheck-check-syntax-automatically '(mode-enabled save))
-
-  (with-eval-after-load 'flycheck
-    (setq flycheck-disabled-checkers (append (default-value 'flycheck-disabled-checkers)
-                                             '(emacs-lisp
-                                               emacs-lisp-checkdoc
-                                               emacs-lisp-package
-                                               go-gofmt
-                                               go-golint
-                                               go-vet
-                                               go-build
-                                               go-test
-                                               go-errcheck
-                                               go-unconvert))))
+  (setq flycheck-check-syntax-automatically '(mode-enabled save)
+        flycheck-disabled-checkers '(emacs-lisp
+                                     emacs-lisp-checkdoc
+                                     emacs-lisp-package
+                                     go-gofmt
+                                     go-golint
+                                     go-vet
+                                     go-build
+                                     go-test
+                                     go-errcheck
+                                     go-unconvert))
 
   (defun eat/enable-flymake-flycheck ()
     (interactive)
