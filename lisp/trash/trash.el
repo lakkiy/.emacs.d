@@ -420,3 +420,47 @@ prepended to the element after the #+HEADER: tag."
   :hook (on-first-input-hook . which-key-mode)
   :init
   (setq-default which-key-idle-delay 1.5))
+
+;; 问题很多，很多时候没法删除字符，还需要安装 tree-sitter
+;; 而且括号换行后没有缩进，正常用 emacs 内置的缩进是正常的
+;; 语义删除很好用，但是用 meow 的 thing 代替也不是不行
+(eat-package grammatical-edit
+  :straight (grammatical-edit
+             :type git
+             :host github
+             :repo "manateelazycat/grammatical-edit")
+  :init
+  (eat-package tree-sitter :straight t)
+  (eat-package tree-sitter-langs :straight t)
+  :hook
+  ;; NOTE not work well in sh mode, and tramp, see tramp debug buffer
+  ((python-mode-hook
+    js-mode-hook
+    go-mode-hook)
+   . (lambda () (grammatical-edit-mode 1)))
+  (go-dot-mod-mode-hook . (lambda () (grammatical-edit-mode -1)))
+  :config
+  (define-key grammatical-edit-mode-map (kbd "(") 'grammatical-edit-open-round)
+  (define-key grammatical-edit-mode-map (kbd "[") 'grammatical-edit-open-bracket)
+  (define-key grammatical-edit-mode-map (kbd "{") 'grammatical-edit-open-curly)
+  (define-key grammatical-edit-mode-map (kbd ")") 'grammatical-edit-close-round)
+  (define-key grammatical-edit-mode-map (kbd "]") 'grammatical-edit-close-bracket)
+  (define-key grammatical-edit-mode-map (kbd "}") 'grammatical-edit-close-curly)
+  (define-key grammatical-edit-mode-map (kbd "=") 'grammatical-edit-equal)
+
+  (define-key grammatical-edit-mode-map (kbd "%") 'grammatical-edit-match-paren)
+  (define-key grammatical-edit-mode-map (kbd "\"") 'grammatical-edit-double-quote)
+  (define-key grammatical-edit-mode-map (kbd "'") 'grammatical-edit-single-quote)
+
+  (define-key grammatical-edit-mode-map (kbd "SPC") 'grammatical-edit-space)
+  (define-key grammatical-edit-mode-map (kbd "RET") 'grammatical-edit-newline)
+
+  (define-key grammatical-edit-mode-map (kbd "M-o") 'grammatical-edit-backward-delete)
+  (define-key grammatical-edit-mode-map (kbd "C-d") 'grammatical-edit-forward-delete)
+  (define-key grammatical-edit-mode-map (kbd "C-k") 'grammatical-edit-kill)
+
+  (define-key grammatical-edit-mode-map (kbd "M-p") 'grammatical-edit-jump-right)
+  (define-key grammatical-edit-mode-map (kbd "M-n") 'grammatical-edit-jump-left)
+  (define-key grammatical-edit-mode-map (kbd "M-:") 'grammatical-edit-jump-out-pair-and-newline)
+
+  (define-key grammatical-edit-mode-map (kbd "C-j") 'grammatical-edit-jump-up))

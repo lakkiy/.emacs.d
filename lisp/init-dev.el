@@ -1,46 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(eat-package grammatical-edit
-  :straight (grammatical-edit
-             :type git
-             :host github
-             :repo "manateelazycat/grammatical-edit")
-  :init
-  (eat-package tree-sitter :straight t)
-  (eat-package tree-sitter-langs :straight t)
-  :hook
-  ;; NOTE not work well in sh mode, and tramp, see tramp debug buffer
-  ((python-mode-hook
-    js-mode-hook
-    go-mode-hook)
-   . (lambda () (grammatical-edit-mode 1)))
-  (go-dot-mod-mode-hook . (lambda () (grammatical-edit-mode -1)))
-  :config
-  (define-key grammatical-edit-mode-map (kbd "(") 'grammatical-edit-open-round)
-  (define-key grammatical-edit-mode-map (kbd "[") 'grammatical-edit-open-bracket)
-  (define-key grammatical-edit-mode-map (kbd "{") 'grammatical-edit-open-curly)
-  (define-key grammatical-edit-mode-map (kbd ")") 'grammatical-edit-close-round)
-  (define-key grammatical-edit-mode-map (kbd "]") 'grammatical-edit-close-bracket)
-  (define-key grammatical-edit-mode-map (kbd "}") 'grammatical-edit-close-curly)
-  (define-key grammatical-edit-mode-map (kbd "=") 'grammatical-edit-equal)
-
-  (define-key grammatical-edit-mode-map (kbd "%") 'grammatical-edit-match-paren)
-  (define-key grammatical-edit-mode-map (kbd "\"") 'grammatical-edit-double-quote)
-  (define-key grammatical-edit-mode-map (kbd "'") 'grammatical-edit-single-quote)
-
-  (define-key grammatical-edit-mode-map (kbd "SPC") 'grammatical-edit-space)
-  (define-key grammatical-edit-mode-map (kbd "RET") 'grammatical-edit-newline)
-
-  (define-key grammatical-edit-mode-map (kbd "M-o") 'grammatical-edit-backward-delete)
-  (define-key grammatical-edit-mode-map (kbd "C-d") 'grammatical-edit-forward-delete)
-  (define-key grammatical-edit-mode-map (kbd "C-k") 'grammatical-edit-kill)
-
-  (define-key grammatical-edit-mode-map (kbd "M-p") 'grammatical-edit-jump-right)
-  (define-key grammatical-edit-mode-map (kbd "M-n") 'grammatical-edit-jump-left)
-  (define-key grammatical-edit-mode-map (kbd "M-:") 'grammatical-edit-jump-out-pair-and-newline)
-
-  (define-key grammatical-edit-mode-map (kbd "C-j") 'grammatical-edit-jump-up))
-
 (eat-package clue
   :straight (clue :type git :host github :repo "AmaiKinono/clue"))
 
