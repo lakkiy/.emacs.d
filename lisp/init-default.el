@@ -38,7 +38,7 @@ Selectively runs either `after-make-console-frame-hooks' or
                  (lambda (l?d)
                    (if (eq l?d 'light)
                        (eat/load-theme eat/theme-system-light)
-                     (eat/load-theme eat/theme-system-dark t)))))
+                     (eat/load-theme eat/theme-system-dark)))))
 
   ;; https://emacs-china.org/t/emacs-mac-port-profile/2895/29?u=rua
   ;; NOTE: When PATH is changed, run the following command
