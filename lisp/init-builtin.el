@@ -636,9 +636,8 @@ No tab will created if the command is cancelled."
                      (nth 1
                           (cadr
                            (flymake--mode-line-counter :error t)))))
-           (sekiro-flymake (if (> counter 0)
-                               'compilation-error
-                             'default)))
+           (sekiro-flymake (when (> counter 0)
+                             'compilation-error)))
       (propertize
        "危"
        'face
