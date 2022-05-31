@@ -1,5 +1,36 @@
 ;;; -*- lexical-binding: t -*-
 
+(eat-package aggressive-indent
+  :straight t
+  :commands aggressive-indent-mode
+  :hook ((emacs-lisp-mode-hook
+          lisp-interaction-mode-hook
+          scheme-mode-hook
+          lisp-mode-hook)
+         . aggressive-indent-mode))
+
+(eat-package apheleia
+  :straight t
+  :hook (go-mode-hook . apheleia-mode)
+  :init
+  (setq apheleia-remote-algorithm 'local)
+  :config
+  (setf (alist-get 'gofmt apheleia-formatters)
+        '("goimports")))
+
+(eat-package xscheme)
+
+(eat-package dumb-jump
+  :straight t
+  ;; NOTE use `dumb-jump' as default xref backend
+  ;; you can run `eglot' or `eat/citre-enable' to reset this
+  :hook (xref-backend-functions . #'dumb-jump-xref-activate)
+  :init
+  (setq
+   dumb-jump-quiet t
+   dumb-jump-aggressive t
+   dumb-jump-selector 'completing-read))
+
 (eat-package clue
   :straight (clue :type git :host github :repo "AmaiKinono/clue"))
 
@@ -32,8 +63,6 @@
     (setenv "GTAGSCONF" (concat (getenv "HOME") "/.globalrc"))
     (setenv "GTAGSLABEL" "native-pygments")))
 
-;;; Lint
-
 (eat-package flymake-flycheck
   :straight t
   :init
@@ -55,37 +84,6 @@
                 (append flymake-diagnostic-functions
                         (flymake-flycheck-all-chained-diagnostic-functions)))
     (flymake-mode 1)))
-
-;;; Misc
-
-(eat-package aggressive-indent
-  :straight t
-  :commands aggressive-indent-mode
-  :hook ((emacs-lisp-mode-hook
-          lisp-interaction-mode-hook
-          scheme-mode-hook
-          lisp-mode-hook)
-         . aggressive-indent-mode))
-
-;; HACK Doesn't support `TRAMP' now
-(eat-package apheleia
-  :straight t
-  :hook (go-mode-hook . apheleia-mode)
-  :init
-  (setq apheleia-remote-algorithm 'local)
-  :config
-  (setf (alist-get 'gofmt apheleia-formatters)
-        '("goimports")))
-
-(eat-package xscheme)
-
-(eat-package dumb-jump
-  :straight t
-  :init
-  (setq
-   dumb-jump-quiet t
-   dumb-jump-aggressive t
-   dumb-jump-selector 'completing-read))
 
 (eat-package eglot
   :straight t
@@ -125,18 +123,6 @@
                '(python-mode . ("pyright-langserver" "--stdio")))
   (add-to-list 'eglot-server-programs
 			   '(rust-mode "rust-analyzer")))
-
-;; TODO auto download ltex-ls into emacs root dir and extract to ltex-ls
-(eat-package eglot-ltex
-  :straight (eglot-ltex :type git :host github :repo "emacs-languagetool/eglot-ltex")
-  :hook
-  ;; ((markdown-mode-hook org-mode-hook) . eglot-ltex) NOTE enable manually
-  :init
-  (defun eglot-ltex ()
-    (interactive)
-    (setq eglot-languagetool-server-path (expand-file-name "ltex-ls/" user-emacs-directory))
-    (require 'eglot-ltex)
-    (call-interactively #'eglot)))
 
 ;; this need pip install epc
 (eat-package lsp-bridge
