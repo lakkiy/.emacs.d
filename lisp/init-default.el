@@ -33,12 +33,13 @@ Selectively runs either `after-make-console-frame-hooks' or
 
 ;;; Mac specific configuration
 (when eat/macp
-  (when (boundp 'ns-system-appearance)
-    (add-to-list 'ns-system-appearance-change-functions
-                 (lambda (l?d)
-                   (if (eq l?d 'light)
-                       (eat/load-theme eat/theme-system-light)
-                     (eat/load-theme eat/theme-system-dark)))))
+  (setq mac-option-modifier 'meta
+        mac-command-modifier 'super
+        ;; Render thinner fonts
+        ns-use-thin-smoothing t
+        ;; Don't open a file in a new frame
+        ns-pop-up-frames nil)
+  (push '(ns-transparent-titlebar . t) default-frame-alist)
 
   ;; https://emacs-china.org/t/emacs-mac-port-profile/2895/29?u=rua
   ;; NOTE: When PATH is changed, run the following command
@@ -51,10 +52,13 @@ Selectively runs either `after-make-console-frame-hooks' or
         (setq exec-path (append (parse-colon-path path) (list exec-directory))))
     (error (warn "%s" (error-message-string err))))
 
-  (push '(ns-transparent-titlebar . t) default-frame-alist)
-
-  (setq mac-option-modifier 'meta
-        mac-command-modifier 'super)
+  ;; load theme after system appearance changed
+  (when (boundp 'ns-system-appearance)
+    (add-to-list 'ns-system-appearance-change-functions
+                 (lambda (l?d)
+                   (if (eq l?d 'light)
+                       (eat/load-theme eat/theme-system-light)
+                     (eat/load-theme eat/theme-system-dark)))))
 
   (global-set-key [(super a)] #'mark-whole-buffer)
   (global-set-key [(super v)] #'yank)
@@ -63,31 +67,7 @@ Selectively runs either `after-make-console-frame-hooks' or
   (global-set-key [(super l)] #'goto-line)
   (global-set-key [(super w)] #'delete-frame)
   (global-set-key [(super q)] #'save-buffers-kill-terminal) ;; `save-buffers-kill-emacs' will shutdown emacs daemon
-  (global-set-key [(super z)] #'undo)
-
-  (when (fboundp 'toggle-frame-fullscreen)
-    ;; Command-Option-f to toggle fullscreen mode
-    ;; Hint: Customize `ns-use-native-fullscreen'
-    (global-set-key (kbd "M-ƒ") 'toggle-frame-fullscreen))
-
-  (defun copy-from-osx ()
-    (shell-command-to-string "pbpaste"))
-  (defun paste-to-osx (text &optional push)
-    (let ((process-connection-type nil))
-      (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
-        (process-send-string proc text)
-        (process-send-eof proc))))
-  ;; FIXME 乱码了
-  ;; (setq interprogram-cut-function 'paste-to-osx)
-  ;; (setq interprogram-paste-function 'copy-from-osx)
-
-  ;; Render thinner fonts
-  (setq ns-use-thin-smoothing t)
-  ;; Don't open a file in a new frame
-  (setq ns-pop-up-frames nil))
-
-(unless eat/macp
-  (setq command-line-ns-option-alist nil))
+  (global-set-key [(super z)] #'undo))
 
 
 ;;; Linux specific configuration
@@ -104,9 +84,6 @@ Selectively runs either `after-make-console-frame-hooks' or
   ;; Don't use GTK+ tooltip
   (when (boundp 'x-gtk-use-system-tooltips)
     (setq x-gtk-use-system-tooltips nil)))
-
-(unless eat/linuxp
-  (setq command-line-x-option-alist nil))
 
 
 ;;; GC
@@ -190,8 +167,8 @@ Selectively runs either `after-make-console-frame-hooks' or
 ;;; Start up message/screen
 
 ;; Shut up!
-(defun display-startup-echo-area-message() (message nil))
-
+(defun display-startup-echo-area-message()
+  (message nil))
 
 ;;; Indent tab
 
@@ -216,28 +193,29 @@ Selectively runs either `after-make-console-frame-hooks' or
 
 ;; TODO set line height, but `line-spacing' only add space below line
 
-(setq-default
+(setq
  initial-scratch-message (concat ";; Happy hacking, " user-login-name " - Emacs ♥ you!\n\n")
- initial-major-mode 'fundamental-mode
+ initial-major-mode 'fundamental-mode               ; Don't use prog-mode an stratup
+ ring-bell-function 'ignore
+ read-process-output-max (* 4 1024 1024)
+ suggest-key-bindings nil                           ; Disable "You can run the command balabala..."
+ word-wrap-by-category t                            ; Emacs 之光！
+ use-short-answers t                                ; yse-or-no -> y-or-n
+ )
+
+(setq-default
  inhibit-compacting-font-caches t                   ; Don’t compact font caches during GC.
- ring-bell-function 'ignore                         ; Disable osx bell ring
  require-final-newline t                            ; add final newline
- mouse-yank-at-point t                              ; Mouse yank at point instead of click position.
- comment-empty-lines t
  visible-cursor t
  bidi-inhibit-bpa t                                 ; Improve long line display performance
  bidi-paragraph-direction 'left-to-right
  echo-keystrokes 0.01                               ; don't wait for keystrokes display
- read-process-output-max (* 4 1024 1024)
  warning-suppress-log-types '((comp))               ; Don't display compile warnings
  truncate-partial-width-windows 65                  ; Don't truncate lines in a window narrower than 65 chars.
  vc-follow-symlinks t                               ; always follow link
  server-client-instructions nil                     ; no client startup messages
- use-short-answers t                                ; yse-or-no -> y-or-n
  split-height-threshold nil                         ; prefer horizental split
  split-width-threshold 120
- suggest-key-bindings nil                           ; disable "You can run the command balabala..."
- word-wrap-by-category t ;; Emacs 之光！
  )
 
 ;;; bind `describe-keymap', added in emacs 28
@@ -254,11 +232,6 @@ Selectively runs either `after-make-console-frame-hooks' or
 ;; Make “C-t” act like “C-x”, so it's easier to type on Dvorak layout
 (keyboard-translate ?\C-t ?\C-x)
 (keyboard-translate ?\C-x ?\C-t)
-
-;;; for emacs 29
-(setq
- ;; 'e' on a value in *Help* will pop you to a new buffer where you can edit the value.
- help-enable-variable-value-editing t)
 
 (eat-package benchmark-init
   :straight t
