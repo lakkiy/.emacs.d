@@ -27,6 +27,7 @@
   :hook (xref-backend-functions . #'dumb-jump-xref-activate)
   :init
   (setq
+   dumb-jump-force-searcher'rg
    dumb-jump-quiet t
    dumb-jump-aggressive t
    dumb-jump-selector 'completing-read))
@@ -66,8 +67,7 @@
 (eat-package flymake-flycheck
   :straight t
   :init
-  (setq flycheck-check-syntax-automatically '(mode-enabled save)
-        flycheck-disabled-checkers '(emacs-lisp
+  (setq flycheck-disabled-checkers '(emacs-lisp
                                      emacs-lisp-checkdoc
                                      emacs-lisp-package
                                      go-gofmt
@@ -82,8 +82,8 @@
     (interactive)
     (setq-local flymake-diagnostic-functions
                 (append flymake-diagnostic-functions
-                        (flymake-flycheck-all-chained-diagnostic-functions)))
-    (flymake-mode 1)))
+                        (flymake-flycheck-all-chained-diagnostic-functions))))
+  (add-hook 'flymake-mode-hook 'eat/flymake-flycheck-enable))
 
 (eat-package eglot
   :straight t
@@ -91,31 +91,15 @@
   :init
   (setq
    eglot-events-buffer-size 0
-   eglot-ignored-server-capabilites '(:documentHighlightProvider)
-
-   ;; don't block of LSP connection attempts
-   eglot-sync-connect nil
-
-   ;; I will manage these myself
-   eglot-stay-out-of '(company flymake)
-
-   ;; make eglot manage file out of project by `xref-find-definitions'
-   eglot-extend-to-xref t)
-
+   eglot-sync-connect nil       ;; don't block of LSP connection attempts
+   eglot-stay-out-of '(company) ;; I will manage these myself
+   eglot-extend-to-xref t       ;; make eglot manage file out of project by `xref-find-definitions'
+   eglot-ignored-server-capabilites '(:documentHighlightProvider))
   :config
-  ;; Add `eglot-flymake-backend' to `flymake-diagnostic-functions' manually
-  ;; So that can run other lints together with `eglot-flymake'
-  ;; And make sure that lsp check first run
-  (with-eval-after-load 'flymake
-    (add-to-list 'flymake-diagnostic-functions 'eglot-flymake-backend))
-
   ;; keybindings
   (define-key eglot-mode-map (kbd "M-RET") 'eglot-code-actions)
   (define-key eglot-mode-map (kbd "C-c r") 'eglot-rename)
-  (define-key eglot-mode-map (kbd "C-c h") 'eldoc)
   (define-key eglot-mode-map (kbd "M-'") 'eglot-find-implementation)
-  (global-set-key (kbd "<f2>") 'eglot)
-
   ;; TODO code actions
   (add-to-list 'eglot-server-programs
                '(sql-mode . ("sqls" "-config" "~/.config/sqls/config.yaml")))
@@ -148,7 +132,6 @@
   (define-key lsp-bridge-mode-map (kbd "C-c r") #'lsp-bridge-rename))
 
 (require 'init-go)
-(require 'init-web)
 (require 'init-clojure)
 
 (provide 'init-dev)

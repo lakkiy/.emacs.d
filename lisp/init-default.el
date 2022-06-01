@@ -117,8 +117,11 @@ Selectively runs either `after-make-console-frame-hooks' or
 
 (when eat/emacs29p
   ;; for mouse scroll
-  (setq pixel-scroll-precision-large-scroll-height 60)
-  (setq pixel-scroll-precision-interpolation-factor 30.0)
+  (setq pixel-scroll-precision-large-scroll-height 60
+        pixel-scroll-precision-interpolation-factor 30.0
+        dired-mouse-drag-files t
+        mouse-drag-and-drop-region t
+        mouse-drag-and-drop-region-cross-program t)
   (add-hook 'on-init-ui-hook (lambda () (pixel-scroll-precision-mode))))
 
 ;; scroll nand hscroll
