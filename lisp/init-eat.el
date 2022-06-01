@@ -33,6 +33,8 @@
 
 (defvar eat/user-mail-address "liubolovelife@gmail.com")
 
+(defvar eat/complete-delay 0.5)
+
 
 (defun eat/font-installed-p (font-name)
   "Check if font with FONT-NAME is available."

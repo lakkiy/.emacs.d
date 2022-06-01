@@ -23,13 +23,13 @@
   :init
   (setq
    corfu-preview-current nil
-   corfu-auto-delay 0.5
+   corfu-auto-delay eat/complete-delay
    corfu-auto-prefix 2
    corfu-quit-no-match t
    corfu-quit-at-boundary t
    corfu-auto t)
   :config
-  (defun +complete ()
+  (defun eat/corfu-complete ()
     (interactive)
     (or (yas-expand)
         ;; NOTE `corfu-complete' sometimes didn't quit corfu after complete
@@ -40,8 +40,8 @@
                                              (corfu-quit)
                                              (when (meow-insert-mode-p)
                                                (meow-insert-exit))))
-  (define-key corfu-map (kbd "<tab>") '+complete)
-  (define-key corfu-map (kbd "TAB") '+complete)
+  (define-key corfu-map (kbd "<tab>") 'eat/corfu-complete)
+  (define-key corfu-map (kbd "TAB") 'eat/corfu-complete)
   (define-key corfu-map (kbd "RET") nil))
 
 ;; corfu-popup need this
@@ -70,15 +70,13 @@
 (eat-package copilot
   :straight (copilot :host github :repo "zerolfx/copilot.el"
                      :files ("dist" "copilot.el"))
-  ;; :hook (prog-mode-hook . copilot-mode)
+  :hook (corfu-mode-hook . copilot-mode)
+  :init
+  (setq copilot-idle-delay eat/complete-delay)
   :config
+  (global-set-key (kbd "C-<tab>") 'copilot-accept-completion)
   (with-eval-after-load 'meow
-    (setq copilot-enable-predicates '(meow-insert-mode-p)))
-  (with-eval-after-load 'company
-    (define-key company-mode-map (kbd "<M-tab>") 'copilot-accept-completion)
-    (define-key company-active-map (kbd "<M-tab>") 'copilot-accept-completion))
-  (with-eval-after-load 'corfu
-    (define-key corfu-map (kbd "<M-tab>") 'copilot-accept-completion)))
+    (setq copilot-enable-predicates '(meow-insert-mode-p buffer-modified-p))))
 
 (eat-package vertico
   :straight (vertico :files (:defaults "extensions/*"))
