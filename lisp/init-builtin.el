@@ -587,8 +587,12 @@ No tab will created if the command is cancelled."
         smptmail-stream-type 'ssl))
 
 (eat-package flymake
-  :hook (prog-mode-hook . flymake-mode)
+  :hook
+  (prog-mode-hook . flymake-mode)
+  (emacs-lisp-mode-hook . (lambda ()
+                            (flymake-mode -1)))
   :init
+  (setq-default flymake-diagnostic-functions nil)
   (defun sekiro-flymake-mode-line-format ()
     (let* ((counter (string-to-number
                      (nth 1
