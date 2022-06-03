@@ -408,7 +408,7 @@ prepended to the element after the #+HEADER: tag."
   :hook
   ((prog-mode-hook conf-mode-hook) . symbol-overlay-mode)
   :init
-  (advice-add 'symbol-overlay-basic-jump :after #'my-pulse-momentary-line)
+  (advice-add 'symbol-overlay-basic-jump :after #'eat/pulse-momentary-line)
   :config
   (define-key symbol-overlay-mode-map (kbd "M-i") 'symbol-over-put)
   (define-key symbol-overlay-mode-map (kbd "M-I") 'symbol-overlay-remove-all)

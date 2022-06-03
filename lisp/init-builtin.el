@@ -3,44 +3,43 @@
 (eat-package pulse
   :hook
   ((imenu-after-jump-hook isearch-update-post-hook)
-   . my-recenter-and-pulse)
+   . eat/recenter-and-pulse)
   ((bookmark-after-jump  next-error)
-   . my-recenter-and-pulse-line)
+   . eat/recenter-and-pulse-line)
   :init
   (custom-set-faces
    '(pulse-highlight-start-face ((t (:inherit region))))
    '(pulse-highlight-face ((t (:inherit region)))))
 
-  (with-no-warnings
-    (defun my-pulse-momentary-line (&rest _)
-      "Pulse the current line."
-      (pulse-momentary-highlight-one-line (point)))
+  (defun eat/pulse-momentary-line (&rest _)
+    "Pulse the current line."
+    (pulse-momentary-highlight-one-line (point)))
 
-    (defun my-pulse-momentary (&rest _)
-      "Pulse the region or the current line."
-      (if (fboundp 'xref-pulse-momentarily)
-          (xref-pulse-momentarily)
-        (my-pulse-momentary-line)))
+  (defun eat/pulse-momentary (&rest _)
+    "Pulse the region or the current line."
+    (if (fboundp 'xref-pulse-momentarily)
+        (xref-pulse-momentarily)
+      (eat/pulse-momentary-line)))
 
-    (defun my-recenter-and-pulse(&rest _)
-      "Recenter and pulse the region or the current line."
-      (recenter)
-      (my-pulse-momentary))
+  (defun eat/recenter-and-pulse(&rest _)
+    "Recenter and pulse the region or the current line."
+    (recenter)
+    (eat/pulse-momentary))
 
-    (defun my-recenter-and-pulse-line (&rest _)
-      "Recenter and pulse the current line."
-      (recenter)
-      (my-pulse-momentary-line))
+  (defun eat/recenter-and-pulse-line (&rest _)
+    "Recenter and pulse the current line."
+    (recenter)
+    (eat/pulse-momentary-line))
 
-    (dolist (cmd '(recenter-top-bottom
-                   other-window windmove-do-window-select
-                   pager-page-down pager-page-up))
-      (advice-add cmd :after #'my-pulse-momentary-line))
+  (dolist (cmd '(recenter-top-bottom
+                 other-window windmove-do-window-select
+                 pager-page-down pager-page-up))
+    (advice-add cmd :after #'eat/pulse-momentary-line))
 
-    (dolist (cmd '(pop-to-mark-command
-                   pop-global-mark
-                   goto-last-change))
-      (advice-add cmd :after #'my-recenter-and-pulse))))
+  (dolist (cmd '(pop-to-mark-command
+                 pop-global-mark
+                 goto-last-change))
+    (advice-add cmd :after #'eat/recenter-and-pulse)))
 
 (eat-package mouse
   :hook (on-init-ui-hook . context-menu-mode))
@@ -65,21 +64,24 @@
    minibuffer-electric-default-mode t))
 
 (eat-package display-line-numbers
-  ;; :hook (prog-mode-hook . display-line-numbers-mode)
   :init
-  (setq-default
-   display-line-numbers-width 3))
+  (setq display-line-numbers-width 3))
 
 (eat-package hippie-exp
   :init
+  (global-set-key [remap dabbrev-expand] #'hippie-expand)
   (global-set-key (kbd "M-/") 'hippie-expand)
-
   (setq hippie-expand-try-functions-list
-        '(try-complete-file-name-partially
-          try-complete-file-name
-          try-expand-dabbrev
+        '(try-expand-dabbrev
           try-expand-dabbrev-all-buffers
-          try-expand-dabbrev-from-kill)))
+          try-expand-dabbrev-from-kill
+          try-complete-file-name-partially
+          try-complete-file-name
+          try-expand-all-abbrevs
+          try-expand-list
+          try-expand-line
+          try-complete-lisp-symbol-partially
+          try-complete-lisp-symbol)))
 
 (eat-package subword
   :hook (prog-mode-hook . subword-mode))
@@ -97,11 +99,10 @@
 
 (eat-package repeat
   :init
-  (setq
-   repeat-mode t
-   repeat-keep-prefix t
-   repeat-exit-timeout 3
-   repeat-exit-key (kbd "RET")))
+  (setq repeat-mode t
+        repeat-keep-prefix t
+        repeat-exit-timeout 3
+        repeat-exit-key (kbd "RET")))
 
 (eat-package hl-line
   :hook
@@ -112,7 +113,7 @@
 (eat-package autorevert
   :hook (on-first-buffer-hook . global-auto-revert-mode))
 
-(eat-package saveplace ;; TODO
+(eat-package saveplace
   :hook (on-first-buffer-hook . save-place-mode))
 
 (eat-package tramp
@@ -127,11 +128,6 @@
                                 vc-ignore-dir-regexp
                                 tramp-file-name-regexp))
   :config
-  (defun eat/tramp-cleanup-all-buffers-connections ()
-    "Kill all tramp buffers and clean all connections."
-    (interactive)
-    (tramp-cleanup-all-buffers)
-    (tramp-cleanup-all-connections))
   ;; use `magit' with yadm, (magit-status "/yadm::")
   (add-to-list 'tramp-methods
                '("yadm"
@@ -147,7 +143,7 @@
 
 (eat-package eldoc
   :init
-  (setq eldoc-idle-delay 2))
+  (setq eldoc-idle-delay 1))
 
 (eat-package whitespace
   :hook
@@ -162,9 +158,9 @@
 
   (defface hideshow-border-face
     '((((background light))
-       :background "light coral" :extend t)
+       :background "rosy brown" :extend t)
       (t
-       :background "firebrick" :extend t))
+       :background "sandy brown" :extend t))
     "Face used for hideshow fringe."
     :group 'hideshow)
 
@@ -182,13 +178,14 @@
     "Display a folded region indicator with the number of folded lines."
     (when (eq 'code (overlay-get ov 'hs))
       (let* ((nlines (count-lines (overlay-start ov) (overlay-end ov)))
-             (info (format "(%d)..." nlines)))
+             (info (format " (%d)..." nlines)))
         ;; fringe indicator
         (overlay-put ov 'before-string (propertize " "
                                                    'display '(left-fringe hideshow-folded-fringe
                                                                           hideshow-border-face)))
         ;; folding indicator
         (overlay-put ov 'display (propertize info 'face hideshow-folded-face)))))
+
   (setq hs-set-up-overlay #'hideshow-folded-overlay-fn))
 
 (eat-package xref
@@ -197,12 +194,10 @@
   :init
   (global-unset-key (kbd "C-<down-mouse-1>"))
   (global-set-key (kbd "C-<mouse-1>") #'xref-find-definitions-at-mouse)
-
-  (setq
-   xref-prompt-for-identifier nil
-   xref-search-program 'ripgrep
-   xref-show-xrefs-function #'xref-show-definitions-completing-read
-   xref-show-definitions-function #'xref-show-definitions-completing-read))
+  (setq xref-prompt-for-identifier nil
+        xref-search-program 'ripgrep
+        xref-show-xrefs-function #'xref-show-definitions-completing-read
+        xref-show-definitions-function #'xref-show-definitions-completing-read))
 
 (eat-package winner
   :hook (on-init-ui-hook . winner-mode)
@@ -218,8 +213,7 @@
    dired-listing-switches "-AGhlv"
    delete-by-moving-to-trash t)
   :config
-  (setq
-   dired-recursive-deletes 'top)
+  (setq dired-recursive-deletes 'top)
   ;; Prefer g-prefixed coreutils version of standard utilities when available
   (let ((gls (executable-find "gls")))
     (when gls (setq insert-directory-program gls)))
@@ -230,8 +224,7 @@
   :init
   (fset 'list-buffers 'ibuffer)
   (setq-default ibuffer-show-empty-filter-groups nil)
-  (global-set-key (kbd "C-c B") 'ibuffer)
-
+  (global-set-key (kbd "C-x B") 'ibuffer)
   ;; Modify the default ibuffer-formats (toggle with `)
   (setq ibuffer-formats
         '((mark modified read-only vc-status-mini " "
@@ -255,6 +248,7 @@
 
   (setq ibuffer-filter-group-name-face 'font-lock-doc-face)
   :config
+  (fullframe ibuffer ibuffer-quit)
   ;; Use human readable Size column instead of original one
   (define-ibuffer-column size-h
     (:name "Size" :inline t)
@@ -264,22 +258,21 @@
   :init
   (defvar local-ediff-saved-window-conf nil)
 
-  (defun ediff-save-window-conf ()
+  (defun eat/ediff-save-window-conf ()
     (setq local-ediff-saved-window-conf (current-window-configuration)))
 
-  (defun ediff-restore-window-conf ()
+  (defun eat/ediff-restore-window-conf ()
     (when (window-configuration-p local-ediff-saved-window-conf)
       (set-window-configuration local-ediff-saved-window-conf)))
 
-  (setq
-   ediff-window-setup-function #'ediff-setup-windows-plain
-   ediff-highlight-all-diffs t
-   ediff-split-window-function 'split-window-horizontally
-   ediff-merge-split-window-function 'split-window-horizontally)
+  (setq ediff-window-setup-function #'ediff-setup-windows-plain
+        ediff-highlight-all-diffs t
+        ediff-split-window-function 'split-window-horizontally
+        ediff-merge-split-window-function 'split-window-horizontally)
   :config
   ;; Restore window config after quitting ediff
-  (add-hook 'ediff-before-setup-hook #'ediff-save-window-conf)
-  (add-hook 'ediff-quit-hook #'ediff-restore-window-conf))
+  (add-hook 'ediff-before-setup-hook #'eat/ediff-save-window-conf)
+  (add-hook 'ediff-quit-hook #'eat/ediff-restore-window-conf))
 
 (eat-package flyspell
   :init
@@ -351,20 +344,19 @@
 
 (eat-package tab-bar
   :init
-  (setq
-   tab-bar-border nil
-   tab-bar-close-button nil
-   tab-bar-back-button nil
-   tab-bar-new-button nil
-   tab-bar-format '(tab-bar-format-tabs)
-   tab-bar-tab-name-format-function '+tab-bar-tab-format-function
-   tab-bar-separator ""
-   tab-bar-tab-name-truncated-max 10)
+  (setq tab-bar-border nil
+        tab-bar-close-button nil
+        tab-bar-back-button nil
+        tab-bar-new-button nil
+        tab-bar-format '(tab-bar-format-tabs)
+        tab-bar-tab-name-format-function 'eat/tab-bar-tab-format-function
+        tab-bar-separator ""
+        tab-bar-tab-name-truncated-max 10)
 
   (custom-set-faces
    `(tab-bar ((t (:family ,eat/font-variable-pitch)))))
 
-  (defun +tab-bar-switch-project ()
+  (defun eat/tab-bar-switch-project ()
     "Switch to project in a new tab, project name will be used as tab name.
 
 No tab will created if the command is cancelled."
@@ -380,7 +372,7 @@ No tab will created if the command is cancelled."
         (unless succ
           (tab-bar-close-tab)))))
 
-  (defun +tab-bar-tab-format-function (tab i)
+  (defun eat/tab-bar-tab-format-function (tab i)
     (let ((current-p (eq (car tab) 'current-tab)))
       (propertize (concat
                    "   "
@@ -390,16 +382,14 @@ No tab will created if the command is cancelled."
                   (funcall tab-bar-tab-face-function tab))))
   :config
   (global-set-key (kbd "C-x t .") #'tab-bar-rename-tab)
-  (global-set-key (kbd "C-x t l") #'+tab-bar-switch-project))
+  (global-set-key (kbd "C-x t l") #'eat/tab-bar-switch-project))
 
 (eat-package paren
-  ;; :hook (prog-mode-hook . show-paren-mode) ;; NOTE enable by default since emacs 28
   :init
-  (setq
-   show-paren-when-point-in-periphery t
-   show-paren-when-point-inside-paren t
-   ;; NOTE emacs 29
-   show-paren-context-when-offscreen t))
+  (setq show-paren-when-point-in-periphery t
+        show-paren-when-point-inside-paren t)
+  (when eat/emacs29p
+    (setq show-paren-context-when-offscreen t)))
 
 (eat-package elec-pair
   :hook (prog-mode-hook . electric-pair-mode)
@@ -415,22 +405,19 @@ No tab will created if the command is cancelled."
 
 (eat-package cc-mode
   :init
-  (setq c-default-style "linux")
-  (setq-default c-basic-offset 4))
+  (setq c-default-style "linux"
+        c-basic-offset 4))
 
 (eat-package python
   :init
-  (setq
-   python-indent-offset 4
-   python-shell-completion-native-enable nil
-   python-shell-interpreter "ipython"
-   python-indent-guess-indent-offset nil))
+  (setq python-indent-offset 4
+        python-shell-completion-native-enable nil
+        python-shell-interpreter "ipython"
+        python-indent-guess-indent-offset nil))
 
-;; TODO
 (eat-package sql
   :init
-  (setq
-   sql-mysql-login-params '(user password server database port)))
+  (setq sql-mysql-login-params '(user password server database port)))
 
 (eat-package xwidget
   :init
@@ -444,7 +431,7 @@ No tab will created if the command is cancelled."
 
 (eat-package webjump
   :init
-  (global-set-key (kbd "C-c C-/") #'webjump)
+  (global-set-key (kbd "C-x C-/") #'webjump)
   (setq webjump-sites
         '(("Emacs Wiki" .
            [simple-query "www.emacswiki.org" "www.emacswiki.org/cgi-bin/wiki/" #1=""])
@@ -508,8 +495,7 @@ No tab will created if the command is cancelled."
       (set-face-attribute 'org-level-7 nil :foreground "light sea green")
       (set-face-attribute 'org-level-8 nil :foreground "chocolate")
 
-      (set-face-attribute 'org-headline-done nil :foreground "gray")
-      ))
+      (set-face-attribute 'org-headline-done nil :foreground "gray")))
   (add-hook 'eat/theme-hooks '(modus-operandi . eat/custom-modus-operandi)))
 
 (eat-package desktop
@@ -527,29 +513,6 @@ No tab will created if the command is cancelled."
     "load custom theme"
     (interactive)
     (eat/load-theme (car custom-enabled-themes)))
-
-  (defun sanityinc/time-subtract-millis (b a)
-    (* 1000.0 (float-time (time-subtract b a))))
-
-  (defun sanityinc/desktop-time-restore (orig &rest args)
-    (let ((start-time (current-time)))
-      (prog1
-          (apply orig args)
-        (message "Desktop restored in %.2fms"
-                 (sanityinc/time-subtract-millis (current-time)
-                                                 start-time)))))
-  (advice-add 'desktop-read :around 'sanityinc/desktop-time-restore)
-
-  (defun sanityinc/desktop-time-buffer-create (orig ver filename &rest args)
-    (let ((start-time (current-time)))
-      (prog1
-          (apply orig ver filename args)
-        (message "Desktop: %.2fms to restore %s"
-                 (sanityinc/time-subtract-millis (current-time)
-                                                 start-time)
-                 (when filename
-                   (abbreviate-file-name filename))))))
-  (advice-add 'desktop-create-buffer :around 'sanityinc/desktop-time-buffer-create)
 
   ;; save a bunch of variables to the desktop file
   ;; for lists specify the len of the maximal saved data also
@@ -584,17 +547,14 @@ No tab will created if the command is cancelled."
   :hook (on-init-ui-hook . savehist-mode)
   :init
   ;; Restore histories and registers after saving
-  (setq-default history-length 1000))
+  (setq history-length 1000))
 
 (eat-package outline
   :init
-  (setq
-   outline-minor-mode-cycle t
-   outline-minor-mode-highlight t))
+  (setq outline-minor-mode-cycle t
+        outline-minor-mode-highlight t))
 
 (eat-package fullframe :straight t)
-(with-eval-after-load 'ibuffer
-  (fullframe ibuffer ibuffer-quit))
 
 (eat-package info
   :hook (Info-mode-hook . variable-pitch-mode))
@@ -608,13 +568,12 @@ No tab will created if the command is cancelled."
 (eat-package message
   :hook (message-mode-hook . auto-fill-mode)
   :init
-  (setq
-   user-full-name eat/user-full-name
-   user-mail-address eat/user-mail-address
-   message-kill-buffer-on-exit t
-   message-mail-alias-type 'ecomplete
-   message-send-mail-function #'message-use-send-mail-function
-   message-signature user-full-name))
+  (setq user-full-name eat/user-full-name
+        user-mail-address eat/user-mail-address
+        message-kill-buffer-on-exit t
+        message-mail-alias-type 'ecomplete
+        message-send-mail-function #'message-use-send-mail-function
+        message-signature user-full-name))
 
 (eat-package sendmail
   :init
@@ -622,11 +581,10 @@ No tab will created if the command is cancelled."
 
 (eat-package smtpmail
   :init
-  (setq
-   smtpmail-smtp-server "smtp.gmail.com"
-   smtpmail-smtp-user user-mail-address
-   smtpmail-smtp-service 587
-   smptmail-stream-type 'ssl))
+  (setq smtpmail-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-user user-mail-address
+        smtpmail-smtp-service 587
+        smptmail-stream-type 'ssl))
 
 (eat-package flymake
   :hook (prog-mode-hook . flymake-mode)

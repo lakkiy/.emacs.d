@@ -70,7 +70,7 @@ No window config will created if the command is cancelled."
         aw-scope 'frame)
   (dolist (cmd '(ace-window
                  aw--select-window))
-    (advice-add cmd :after #'my-pulse-momentary-line)))
+    (advice-add cmd :after #'eat/pulse-momentary-line)))
 
 (eat-package popper
   :straight t

@@ -42,7 +42,7 @@
         treemacs-width 30
         treemacs-user-mode-line-format 'none)
 
-  (advice-add 'treemacs-select-window :after #'my-pulse-momentary-line)
+  (advice-add 'treemacs-select-window :after #'eat/pulse-momentary-line)
   (global-set-key (kbd "<f1>") 'treemacs-select-window)
   :config
   (define-key treemacs-mode-map (kbd "<f1>") 'treemacs)
