@@ -15,7 +15,7 @@
 (eat-package corfu
   :straight (corfu :files (:defaults "extensions/*.el"))
   :hook
-  (after-make-window-system-frame-hooks
+  (eat/after-make-window-system-frame-hooks
    . (lambda ()
        (add-hook 'prog-mode-hook 'corfu-mode)
        (add-hook 'conf-mode-hook 'corfu-mode)

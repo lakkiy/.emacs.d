@@ -67,6 +67,6 @@
   (global-set-key [mouse-4] (lambda () (interactive) (scroll-down 1)))
   (global-set-key [mouse-5] (lambda () (interactive) (scroll-up 1))))
 
-(add-hook 'after-make-console-frame-hooks 'console-frame-setup)
+(add-hook 'eat/after-make-console-frame-hooks 'console-frame-setup)
 
 (provide 'init-xterm)

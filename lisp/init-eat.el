@@ -29,28 +29,28 @@
                    (abbreviate-file-name (buffer-file-name))
                  "%b"))))
 
-(defvar after-make-console-frame-hooks '()
+(defvar eat/after-make-console-frame-hooks '()
   "Hooks to run after creating a new TTY frame")
-(defvar after-make-window-system-frame-hooks '()
+(defvar eat/after-make-window-system-frame-hooks '()
   "Hooks to run after creating a new window-system frame")
 
-(defun run-after-make-frame-hooks (frame)
+(defun eat/run-after-make-frame-hooks (frame)
   "Run configured hooks in response to the newly-created FRAME.
-Selectively runs either `after-make-console-frame-hooks' or
-`after-make-window-system-frame-hooks'"
+Selectively runs either `eat/after-make-console-frame-hooks' or
+`eat/after-make-window-system-frame-hooks'"
   (with-selected-frame frame
     (run-hooks (if window-system
-                   'after-make-window-system-frame-hooks
-                 'after-make-console-frame-hooks))))
+                   'eat/after-make-window-system-frame-hooks
+                 'eat/after-make-console-frame-hooks))))
 
-(add-hook 'after-make-frame-functions 'run-after-make-frame-hooks)
+(add-hook 'after-make-frame-functions 'eat/run-after-make-frame-hooks)
 
 (defconst eat/initial-frame (selected-frame)
   "The frame (if any) active during Emacs initialization.")
 
 (add-hook 'after-init-hook
           (lambda () (when eat/initial-frame
-                       (run-after-make-frame-hooks eat/initial-frame))))
+                       (eat/run-after-make-frame-hooks eat/initial-frame))))
 
 
 ;;; Font
@@ -129,16 +129,8 @@ Selectively runs either `after-make-console-frame-hooks' or
   (eat/load-face-font)
   (eat/load-ext-font))
 
-;; TUI: only load tui theme
-(add-hook 'after-make-console-frame-hooks (lambda ()
-                                            (when (fboundp 'menu-bar-mode)
-                                              (menu-bar-mode -1))
-                                            (eat/load-theme eat/theme-tui)))
-
-;; GUI frame: load font and theme
-(add-hook 'after-make-window-system-frame-hooks (lambda ()
-                                                  (eat/load-font)
-                                                  (eat/load-theme eat/theme)))
+(add-hook 'eat/after-make-window-system-frame-hooks (lambda ()
+                                                      (eat/load-font)))
 
 
 ;;; Theme
@@ -189,8 +181,25 @@ Selectively runs either `after-make-console-frame-hooks' or
 (global-set-key (kbd "M-C-9") (lambda () (interactive) (eat/adjust-opacity nil 2)))
 (global-set-key (kbd "M-C-7") (lambda () (interactive) (modify-frame-parameters nil `((alpha-background . 100)))))
 
+(add-hook 'eat/after-make-console-frame-hooks (lambda ()
+                                                (when (fboundp 'menu-bar-mode)
+                                                  (menu-bar-mode -1))
+                                                (eat/load-theme eat/theme-tui)))
+
+(add-hook 'eat/after-make-window-system-frame-hooks (lambda ()
+                                                      (eat/load-theme eat/theme)))
+
 
 ;;; Optimization
+(setq package-enable-at-startup nil
+      frame-inhibit-implied-resize t
+      gc-cons-threshold most-positive-fixnum
+      gc-cons-percentage 0.6
+      default-frame-alist '((scroll-bar-mode . 0)
+                            (vertical-scroll-bars . nil)
+                            (menu-bar-lines . 0)
+                            (tool-bar-lines . 0)))
+
 (defun eat/show-startup-time ()
   "Print startup time."
   (message
@@ -558,6 +567,9 @@ ARGS.
 
 
 ;;; Built-in packages
+;; TODO enable `icomplete-vertical-mode' if just load one file
+(eat-package icomplete)
+
 (eat-package pulse
   :hook
   ((imenu-after-jump-hook isearch-update-post-hook)
@@ -1083,7 +1095,10 @@ No tab will created if the command is cancelled."
       (propertize
        "危"
        'face
-       sekiro-flymake))))
+       sekiro-flymake)))
+  (defun eat/flymake-mode ()
+    (interactive)
+    (add-hook 'prog-mode-hook #'flymake-mode)))
 
 
 ;;; init-eat.el ends here

@@ -84,6 +84,10 @@
                                 go-test
                                 go-errcheck
                                 go-unconvert))
+
+  (defun eat/flycheck-mode ()
+    (interactive)
+    (add-hook 'prog-mode-hook #'flycheck-mode))
   :config
   (define-fringe-bitmap 'flycheck-fringe-bitmap-arrow
     [16 48 112 240 112 48 16] nil nil 'center)

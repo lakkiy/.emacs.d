@@ -363,7 +363,7 @@ prepended to the element after the #+HEADER: tag."
 (eat-package company
   :straight t
   :hook
-  (after-make-console-frame-hooks
+  (eat/after-make-console-frame-hooks
    . (lambda ()
        (add-hook 'prog-mode-hook 'company-mode)
        (add-hook 'conf-mode-hook 'company-mode)
