@@ -1,89 +1,28 @@
 ;;; -*- lexical-binding: t -*-
 ;; config should work under emacs -Q like straight and gc...
 
+;;; Bootstrap straight.el
+;; https://www.reddit.com/r/emacs/comments/mtb05k/emacs_init_time_decreased_65_after_i_realized_the/
+(setq straight-check-for-modifications '(check-on-save find-when-checking))
+(setq straight-vc-git-default-clone-depth 1)
+
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
 (eat-package on
   :straight (on :type git :host github :repo "ajgrf/on.el")
   :init
   (require 'on))
-
-;;; Frame
-(defvar after-make-console-frame-hooks '()
-  "Hooks to run after creating a new TTY frame")
-(defvar after-make-window-system-frame-hooks '()
-  "Hooks to run after creating a new window-system frame")
-
-(defun run-after-make-frame-hooks (frame)
-  "Run configured hooks in response to the newly-created FRAME.
-Selectively runs either `after-make-console-frame-hooks' or
-`after-make-window-system-frame-hooks'"
-  (with-selected-frame frame
-    (run-hooks (if window-system
-                   'after-make-window-system-frame-hooks
-                 'after-make-console-frame-hooks))))
-
-(add-hook 'after-make-frame-functions 'run-after-make-frame-hooks)
-
-(defconst sanityinc/initial-frame (selected-frame)
-  "The frame (if any) active during Emacs initialization.")
-
-(add-hook 'after-init-hook
-          (lambda () (when sanityinc/initial-frame
-                       (run-after-make-frame-hooks sanityinc/initial-frame))))
-
-
-;;; Mac specific configuration
-(when eat/macp
-  (setq mac-option-modifier 'meta
-        mac-command-modifier 'super
-        ;; Render thinner fonts
-        ns-use-thin-smoothing t
-        ;; Don't open a file in a new frame
-        ns-pop-up-frames nil)
-  (push '(ns-transparent-titlebar . t) default-frame-alist)
-
-  ;; https://emacs-china.org/t/emacs-mac-port-profile/2895/29?u=rua
-  ;; NOTE: When PATH is changed, run the following command
-  ;; $ sh -c 'printf "%s" "$PATH"' > ~/.path
-  (condition-case err
-      (let ((path (with-temp-buffer
-                    (insert-file-contents-literally "~/.path")
-                    (buffer-string))))
-        (setenv "PATH" path)
-        (setq exec-path (append (parse-colon-path path) (list exec-directory))))
-    (error (warn "%s" (error-message-string err))))
-
-  ;; load theme after system appearance changed
-  (when (boundp 'ns-system-appearance)
-    (add-to-list 'ns-system-appearance-change-functions
-                 (lambda (l?d)
-                   (if (eq l?d 'light)
-                       (eat/load-theme eat/theme-system-light)
-                     (eat/load-theme eat/theme-system-dark)))))
-
-  (global-set-key [(super a)] #'mark-whole-buffer)
-  (global-set-key [(super v)] #'yank)
-  (global-set-key [(super c)] #'kill-ring-save)
-  (global-set-key [(super s)] #'save-buffer)
-  (global-set-key [(super l)] #'goto-line)
-  (global-set-key [(super w)] #'delete-frame)
-  (global-set-key [(super q)] #'save-buffers-kill-terminal) ;; `save-buffers-kill-emacs' will shutdown emacs daemon
-  (global-set-key [(super z)] #'undo))
-
-
-;;; Linux specific configuration
-(when eat/linuxp
-  ;; NOTE use C-M-8 to set manually
-  ;; (push '(alpha-background . 80) default-frame-alist)
-  ;; Linux specific
-  (setq x-underline-at-descent-line t)
-
-  (setq-default
-   pgtk-use-im-context-on-new-connection nil          ; Don't use Fcitx5 in Emacs in PGTK build
-   x-gtk-resize-child-frames nil)
-
-  ;; Don't use GTK+ tooltip
-  (when (boundp 'x-gtk-use-system-tooltips)
-    (setq x-gtk-use-system-tooltips nil)))
 
 
 ;;; GC
@@ -222,20 +161,12 @@ Selectively runs either `after-make-console-frame-hooks' or
  split-width-threshold 120
  )
 
-;;; bind `describe-keymap', added in emacs 28
-(global-set-key (kbd "C-h C-k") #'describe-keymap)
 
 ;;; Load custom-file
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (and (file-exists-p custom-file)
            (file-readable-p custom-file))
   (load custom-file :no-error :no-message))
-
-;;; Dvorak keyboard layout
-
-;; Make “C-t” act like “C-x”, so it's easier to type on Dvorak layout
-(keyboard-translate ?\C-t ?\C-x)
-(keyboard-translate ?\C-x ?\C-t)
 
 (eat-package benchmark-init
   :straight t
@@ -250,11 +181,6 @@ Selectively runs either `after-make-console-frame-hooks' or
   :init
   (global-set-key (kbd "C-x C-=") #'default-text-scale-increase)
   (global-set-key (kbd "C-x C--") #'default-text-scale-decrease))
-
-(setq frame-title-format
-      '((:eval (if (buffer-file-name)
-                   (abbreviate-file-name (buffer-file-name))
-                 "%b"))))
 
 ;;; init-default.el ends here
 (provide 'init-default)

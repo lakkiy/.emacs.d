@@ -39,49 +39,6 @@
       (kaolin-treemacs-theme))))
 
 
-;;; Font
-(defun eat/load-base-font ()
-  (let ((font-spec (format "%s-%d" eat/font-default eat/font-size)))
-    (set-frame-font font-spec)
-    (set-face-attribute 'default nil :font font-spec)
-    (add-to-list 'default-frame-alist `(font . ,font-spec)))
-  (set-fontset-font t '(#x4e00 . #x9fff) eat/font-cn))
-
-(defun eat/load-face-font ()
-  (set-face-attribute 'variable-pitch nil :font eat/font-variable-pitch :height 1.3)
-  (set-face-attribute 'fixed-pitch nil :font eat/font-default)
-  (set-face-attribute 'fixed-pitch-serif nil :font eat/font-default)
-  ;; make mode line use variable font but use original height
-  (custom-set-faces
-   `(mode-line ((t (:family ,eat/font-variable-pitch))))
-   `(mode-line-inactive ((t (:family ,eat/font-variable-pitch))))))
-
-(defun eat/load-ext-font ()
-  (let ((font (frame-parameter nil 'font))
-        (font-spec (font-spec :family eat/font-unicode)))
-    (dolist (charset '(kana han hangul cjk-misc bopomofo symbol))
-      (set-fontset-font font charset font-spec)))
-  (set-fontset-font t 'emoji (font-spec :family eat/font-unicode) nil 'prepend)
-  (setf (alist-get eat/font-unicode face-font-rescale-alist 0.7 nil 'string=) 0.7))
-
-(defun eat/load-font ()
-  (eat/load-base-font)
-  (eat/load-face-font)
-  (eat/load-ext-font))
-
-;;; TUI: only load tui theme
-
-(add-hook 'after-make-console-frame-hooks (lambda ()
-                                            (when (fboundp 'menu-bar-mode)
-                                              (menu-bar-mode -1))
-                                            (eat/load-theme eat/theme-tui)))
-;;; GUI frame: load font and theme
-
-(add-hook 'after-make-window-system-frame-hooks (lambda ()
-                                                  (eat/load-font)
-                                                  (eat/load-theme eat/theme)))
-
-
 ;;; Mode-line
 
 (progn
