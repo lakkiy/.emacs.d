@@ -9,6 +9,11 @@
 (defvar eat/complete-delay 0.5
   "Delay time before complete.")
 
+;; FIXME not work
+(defvar eat/minibuffer-completion-function 'icomplete-vertical-mode
+  "Minibuffer completion function, run after Emacs init.")
+(add-hook 'after-init-hook (lambda () (funcall eat/minibuffer-completion-function)))
+
 ;;;; Consts
 (defconst eat/macp
   (eq system-type 'darwin)
@@ -1099,6 +1104,68 @@ No tab will created if the command is cancelled."
   (defun eat/flymake-mode ()
     (interactive)
     (add-hook 'prog-mode-hook #'flymake-mode)))
+
+;;; mode-line
+(progn
+  (eat-package which-func :commands which-func-mode)
+
+  (defun luna-mode-line-with-padding (text)
+    "Return TEXT with padding on the left.
+The padding pushes TEXT to the right edge of the mode-line."
+    (if (display-graphic-p)
+        (let* ((len (string-pixel-width text))
+               (space-prop
+                `(space :align-to (- (+ right right-margin) (,len))))
+               (padding (propertize "-" 'display space-prop)))
+          (concat padding text))
+      (concat " " text)))
+
+  (defun luna-mode-line-coding-system ()
+    "Display abnormal coding systems."
+    (let ((coding (symbol-name buffer-file-coding-system)))
+      (if (or (and (not (string-prefix-p "prefer-utf-8" coding))
+                   (not (string-prefix-p "utf-8" coding))
+                   (not (string-prefix-p "undecided" coding)))
+              (string-suffix-p "dos" coding))
+          (concat "  " coding)
+        "")))
+
+  (defun eat/setup-mode-line ()
+    (which-func-mode)
+    (setq-default mode-line-format
+                  (let* ((spaces
+                          (propertize " " 'display '(space :width 1.5)))
+                         (fringe (propertize
+                                  " " 'display '(space :width fringe)))
+                         (percentage
+                          '(format
+                            "[%%l] %d%%"
+                            (/ (* (window-end) 100.0) (point-max)))))
+                    `(,fringe
+                      (:eval (when (fboundp 'meow-indicator) (meow-indicator)))
+                      (:eval (when (fboundp 'rime-lighter) (rime-lighter)))
+                      " "
+                      (:eval (if (window-dedicated-p) "🚷" ""))
+                      (:eval (if buffer-read-only "🔒" ""))
+                      (:propertize "%[%b%]" face (:inherit mode-line-buffer-id :weight bold))
+                      (:eval (luna-mode-line-coding-system))
+                      ,spaces
+                      ,(propertize " " 'display '(raise 0.3))
+                      ,(if (featurep 'minions)
+                           'minions-mode-line-modes
+                         'mode-line-modes)
+                      ,(propertize " " 'display '(raise -0.3))
+                      (:eval (when (bound-and-true-p flymake-mode) (sekiro-flymake-mode-line-format)))
+                      ,spaces
+                      (:eval (if (buffer-modified-p)
+                                 ,(if (display-graphic-p) "ΦAΦ" "OAO")
+                               ,(if (display-graphic-p) "ΦωΦ" "OwO")))
+                      ,spaces
+                      mode-line-misc-info
+                      (:eval (concat (luna-mode-line-with-padding ,percentage)
+                                     "%%"))
+                      )))))
+(add-hook 'after-init-hook #'eat/setup-mode-line)
 
 
 ;;; init-eat.el ends here
