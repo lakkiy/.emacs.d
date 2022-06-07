@@ -15,11 +15,8 @@
 (eat-package corfu
   :straight (corfu :files (:defaults "extensions/*.el"))
   :hook
-  (eat/after-make-window-system-frame-hooks
-   . (lambda ()
-       (add-hook 'prog-mode-hook 'corfu-mode)
-       (add-hook 'conf-mode-hook 'corfu-mode)
-       (add-hook 'eshell-mode-hook 'corfu-mode)))
+  ;; TODO didn't enable corfu mode under tui
+  ((proge-mode-hook conf-mode-hook eshell-mode-hook) . corfu-mode)
   :init
   (setq
    corfu-preview-current nil
@@ -44,20 +41,16 @@
   (define-key corfu-map (kbd "TAB") 'eat/corfu-complete)
   (define-key corfu-map (kbd "RET") nil))
 
-;; corfu-popup need this
+;; `corfu-terminal' need this
 (eat-package popon
   :straight (popon :type git :repo "https://codeberg.org/akib/emacs-popon.git"))
 
 (eat-package corfu-terminal
   :straight (corfu-terminal :type git :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
-  :hook (after-make-console-frame-hook . (lambda ()
-                                           (add-hook 'prog-mode-hook 'eat/corfu-terminal-mode)
-                                           (add-hook 'conf-mode-hook 'eat/corfu-terminal-mode)
-                                           (add-hook 'eshell-mode-hook 'eat/corfu-terminal-mode)))
-  :init
-  (defun eat/corfu-terminal-mode ()
-    (interactive)
-    (corfu-terminal-mode +1)))
+  :hook
+  (corfu-mode-hook . (lambda ()
+                       (unless (display-graphic-p)
+                         (corfu-terminal-mode +1)))))
 
 (eat-package corfu-doc
   :straight t
