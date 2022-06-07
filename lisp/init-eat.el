@@ -676,6 +676,8 @@ ARGS.
 (eat-package tramp
   :init
   (setq
+   tramp-verbose 1 ;; only show error message
+   tramp-completion-reread-directory-timeout nil ;;  speed up complete
    tramp-auto-save-directory temporary-file-directory
    ;; Always use file cache when using tramp
    remote-file-name-inhibit-cache nil
