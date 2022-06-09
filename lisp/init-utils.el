@@ -30,11 +30,6 @@
   (_
    (defalias 'notify-send 'ignore)))
 
-(defun +reopen-file-with-sudo ()
-  (interactive)
-  (find-alternate-file (format "/sudo::%s" (buffer-file-name))))
-(global-set-key (kbd "C-x C-z") #'+reopen-file-with-sudo)
-
 ;; Delete the current file
 
 (defun delete-this-file ()

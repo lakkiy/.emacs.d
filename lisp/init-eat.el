@@ -686,6 +686,11 @@ ARGS.
    vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
                                 vc-ignore-dir-regexp
                                 tramp-file-name-regexp))
+
+  (defun eat/reopen-file-with-sudo ()
+    (interactive)
+    (find-alternate-file (format "/sudo::%s" (buffer-file-name))))
+  (global-set-key (kbd "C-x C-z") #'eat/reopen-file-with-sudo)
   :config
   ;; use `magit' with yadm, (magit-status "/yadm::")
   (add-to-list 'tramp-methods
