@@ -16,7 +16,7 @@
   :straight (corfu :files (:defaults "extensions/*.el"))
   :hook
   ;; TODO didn't enable corfu mode under tui
-  ((proge-mode-hook conf-mode-hook eshell-mode-hook) . corfu-mode)
+  ((prog-mode-hook conf-mode-hook eshell-mode-hook) . corfu-mode)
   :init
   (setq
    corfu-preview-current nil

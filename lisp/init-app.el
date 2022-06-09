@@ -116,7 +116,7 @@ Used in the default value of `notmuch-tag-formats'."
         notmuch-search-result-format '(("date" . "%12s ")
                                        ("count" . "%-11s ")
                                        ("authors" . "%-20s ")
-                                       ("subject" . "%-40s ")
+                                       ("subject" . "%-80s ")
                                        ("tags" . "(%s)"))
         notmuch-show-empty-searches t)
   (defun eat/async-notmuch-poll ()
