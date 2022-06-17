@@ -623,8 +623,9 @@ ARGS.
         repeat-exit-timeout 3
         repeat-exit-key (kbd "RET")))
 
-(eat-package mouse
-  :hook (after-init-hook . context-menu-mode))
+(when eat/emacs29p
+  (eat-package mouse
+    :hook (after-init-hook . context-menu-mode)))
 
 (eat-package minibuffer
   :init
