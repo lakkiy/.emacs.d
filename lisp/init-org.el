@@ -12,6 +12,9 @@
    ;; Use valign instead
    org-modern-table nil))
 
+(eat-package org-variable-pitch
+  :hook (org-mode-hook . org-variable-pitch-minor-mode))
+
 (eat-package org
   :straight (org :type built-in)
   :init
