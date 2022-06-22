@@ -60,17 +60,6 @@
   (define-key corfu-map (kbd "M-p") #'corfu-doc-scroll-down)
   (define-key corfu-map (kbd "M-n") #'corfu-doc-scroll-up))
 
-(eat-package copilot
-  :straight (copilot :host github :repo "zerolfx/copilot.el"
-                     :files ("dist" "copilot.el"))
-  :hook (corfu-mode-hook . copilot-mode)
-  :init
-  (setq copilot-idle-delay eat/complete-delay)
-  :config
-  (global-set-key (kbd "C-<tab>") 'copilot-accept-completion)
-  (with-eval-after-load 'meow
-    (setq copilot-enable-predicates '(meow-insert-mode-p buffer-modified-p))))
-
 (eat-package vertico
   :straight (vertico :files (:defaults "extensions/*"))
   :init
