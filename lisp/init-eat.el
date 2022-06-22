@@ -1064,9 +1064,6 @@ No tab will created if the command is cancelled."
   (setq outline-minor-mode-cycle t
         outline-minor-mode-highlight t))
 
-(eat-package info
-  :hook (Info-mode-hook . variable-pitch-mode))
-
 ;; use C-q C-l to add page break symbol
 (eat-package page)
 
