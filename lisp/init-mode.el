@@ -14,6 +14,9 @@
   (add-to-list 'auto-mode-alist
                (cons "/.dockerignore\\'" 'gitignore-mode)))
 
+(eat-package rust-mode
+  :straight t)
+
 (eat-package kubedoc
   :straight
   (kubedoc :type git :host github :repo "r0bobo/kubedoc.el"))
