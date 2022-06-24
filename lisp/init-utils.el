@@ -104,5 +104,17 @@ typical word processor."
     (electric-quote-local-mode -1)
     (kill-local-variable 'line-spacing)))
 
+(defun read-lines (filePath)
+  "Return a list of lines of a file at filePath."
+  (with-temp-buffer
+    (insert-file-contents filePath)
+    (split-string (buffer-string) "\n" t)))
+
+(defun get-string-from-file (filePath)
+  "Return file content as string."
+  (with-temp-buffer
+    (insert-file-contents filePath)
+    (buffer-string)))
+
 ;;; init-utils.el ends here
 (provide 'init-utils)

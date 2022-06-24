@@ -174,5 +174,22 @@ Used in the default value of `notmuch-tag-formats'."
   :init
   (global-set-key (kbd "C-`") #'vterm-toggle))
 
+(eat-package org-static-blog
+  :straight t
+  :init
+  (setq org-static-blog-publish-title "An nil blog for now")
+  (setq org-static-blog-publish-url "https://404cn.github.io/")
+  (setq org-static-blog-publish-directory "~/p/blog/")
+  (setq org-static-blog-posts-directory "~/p/blog/posts/")
+  (setq org-static-blog-drafts-directory "~/p/blog/drafts/")
+  (setq org-static-blog-enable-tags t)
+  (setq org-export-with-toc nil)
+  (setq org-export-with-section-numbers nil)
+  (setq org-static-blog-index-front-matter "<h1> Pool blog </h1>\n")
+  :config
+  (setq org-static-blog-page-header (get-string-from-file "~/p/blog/static/header.html"))
+  (setq org-static-blog-page-preamble (get-string-from-file "~/p/blog/static/preamble.html"))
+  (setq org-static-blog-page-postamble (get-string-from-file "~/p/blog/static/postamble.html")))
+
 ;;; init-app.el ends here
 (provide 'init-app)
