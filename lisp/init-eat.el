@@ -72,7 +72,7 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
   "First installed font will be set to Chinese font.")
 
 (defvar eat/fonts-variable-pitch
-  '("Cardo" "Bookerly" "Nimbus Sans" "Helvetica")
+  '("Cardo" "Bookerly" "Nimbus Sans" "Helvetica" "Noto Sans")
   "First installed font will be set to variable font.")
 
 (defvar eat/font-size 12
@@ -1089,6 +1089,8 @@ No tab will created if the command is cancelled."
         smptmail-stream-type 'ssl))
 
 (eat-package flymake
+  :config
+  (setq flymake-no-changes-timeout nil)
   :init
   (setq-default flymake-diagnostic-functions nil)
   (defun sekiro-flymake-mode-line-format ()
