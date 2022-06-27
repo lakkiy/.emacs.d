@@ -138,7 +138,7 @@
              :type git
              :host github
              :repo "manateelazycat/lsp-bridge"
-             :files (:defaults "*.py" "core/*" "langserver/*")
+             :files (:defaults "*.py" "core/*" "langserver/*" "acm/*")
              ;; do not generate autoload file
              ;; it has an annoying hook to `post-command-hook'
              ;; and emacs have to load this package or
@@ -146,14 +146,23 @@
              :build (:not autoloads))
   :commands lsp-bridge-mode
   :init
-  (setq lsp-bridge-completion-provider 'corfu)
+  (defun eat/lsp-bridge-mode ()
+    "Disable corfu mode in lsp-bridge-mode, enable it after leave lsp-bridge-mode."
+    (interactive)
+    (require 'lsp-bridge)
+    (if lsp-bridge-mode
+        (corfu-mode -1)
+      (corfu-mode 1))
+    (lsp-bridge-mode))
   :config
   (define-key lsp-bridge-mode-map (kbd "M-.") #'lsp-bridge-find-def)
   (define-key lsp-bridge-mode-map (kbd "M-,") #'lsp-bridge-return-from-def)
   (define-key lsp-bridge-mode-map (kbd "M-?") #'lsp-bridge-find-references)
   (define-key lsp-bridge-mode-map (kbd "M-'") #'lsp-bridge-find-impl)
   (define-key lsp-bridge-mode-map (kbd "C-x 4 .") #'lsp-bridge-find-def-other-window)
-  (define-key lsp-bridge-mode-map (kbd "C-c r") #'lsp-bridge-rename))
+  (define-key lsp-bridge-mode-map (kbd "C-c r") #'lsp-bridge-rename)
+  (define-key lsp-bridge-mode-map (kbd "C-c <") #'lsp-bridge-jump-to-prev-diagnostic)
+  (define-key lsp-bridge-mode-map (kbd "C-c >") #'lsp-bridge-jump-to-next-diagnostic))
 
 (require 'init-go)
 (require 'init-clojure)
