@@ -145,15 +145,7 @@
              ;; it will cause an error on startup
              :build (:not autoloads))
   :commands lsp-bridge-mode
-  :init
-  (defun eat/lsp-bridge-mode ()
-    "Disable corfu mode in lsp-bridge-mode, enable it after leave lsp-bridge-mode."
-    (interactive)
-    (require 'lsp-bridge)
-    (if lsp-bridge-mode
-        (corfu-mode -1)
-      (corfu-mode 1))
-    (lsp-bridge-mode))
+  :hook (lsp-bridge-mode (lambda () (setq-local corfu-mode nil)))
   :config
   (define-key lsp-bridge-mode-map (kbd "M-.") #'lsp-bridge-find-def)
   (define-key lsp-bridge-mode-map (kbd "M-,") #'lsp-bridge-return-from-def)
