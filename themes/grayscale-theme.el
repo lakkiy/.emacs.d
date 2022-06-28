@@ -35,6 +35,9 @@
 (defvar grayscale-theme-header-scales '(1.4 1.4 1.2 1.0 1.0 1.0 1.0)
   "Scales for headers.")
 
+(setq awesome-tray-mode-line-active-color "#353535"
+      awesome-tray-mode-line-inactive-color "#a9bdb5")
+
 (let ((bg "#c4d3cd")
       (fg "#353535")
       (kw "#000000")
@@ -46,7 +49,8 @@
   (custom-theme-set-faces
    `grayscale
    ;; We don't specify default foreground/background in TTY.
-   `(default                        ((t :background ,bg :foreground ,fg)))
+   `(default                        ((((type tty)))
+                                     (((type graphic)) :background ,bg :foreground ,fg)))
    ;; Basics
    `(cursor                         ((t (:background ,cur))))
    `(region                         ((t (:background ,hl))))

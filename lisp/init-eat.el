@@ -14,6 +14,10 @@
   "Minibuffer completion function, run after Emacs init.")
 (add-hook 'after-init-hook (lambda () (funcall eat/minibuffer-completion-function)))
 
+(defvar eat/mode-line-setup-function 'eat/setup-mode-line
+  "Function to setup mode line.")
+(add-hook 'after-init-hook (lambda () (funcall eat/mode-line-setup-function)))
+
 ;;;; Consts
 (defconst eat/macp
   (eq system-type 'darwin)
@@ -1133,7 +1137,7 @@ The padding pushes TEXT to the right edge of the mode-line."
           (concat "  " coding)
         "")))
 
-  (defun eat/setup-mode-line ()
+  (defun eat/setup-mode-line()
     (which-func-mode)
     (setq-default mode-line-format
                   (let* ((spaces
@@ -1168,7 +1172,6 @@ The padding pushes TEXT to the right edge of the mode-line."
                       (:eval (concat (luna-mode-line-with-padding ,percentage)
                                      "%%"))
                       )))))
-(add-hook 'after-init-hook #'eat/setup-mode-line)
 
 
 ;;; init-eat.el ends here
