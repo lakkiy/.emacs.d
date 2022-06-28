@@ -514,7 +514,6 @@ ARGS.
         ns-use-thin-smoothing t
         ;; Don't open a file in a new frame
         ns-pop-up-frames nil)
-  (push '(ns-transparent-titlebar . t) default-frame-alist)
 
   ;; https://emacs-china.org/t/emacs-mac-port-profile/2895/29?u=rua
   ;; NOTE: When PATH is changed, run the following command
