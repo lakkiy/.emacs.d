@@ -188,7 +188,7 @@
 ;;; Writing
 
 (eat-package iimg
-  :commands iimg-enable
+  ;; FIXME hook is nil
   :hook (on-first-file-hook . iimg-enable))
 
 (eat-package bklink

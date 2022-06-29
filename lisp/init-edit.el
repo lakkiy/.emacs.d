@@ -69,6 +69,7 @@
              :host github
              :repo "manateelazycat/auto-save")
   :commands auto-save-enable
+  ;; FIXME hook is nil
   :hook (on-first-file-hook . (lambda ()
                                 (auto-save-enable)))
   :init

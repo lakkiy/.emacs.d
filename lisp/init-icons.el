@@ -19,10 +19,12 @@
              :type git
              :host github
              :repo "iyefrat/all-the-icons-completion")
+  ;; FIXME hook is nil
   :hook (on-first-input-hook . (lambda ()
                                  (all-the-icons-completion-mode)))
   :config
   (with-eval-after-load 'marginalia
+    ;; FIXME hook is nil
     (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup)))
 
 (provide 'init-icons)

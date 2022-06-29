@@ -90,6 +90,7 @@
 
 (eat-package marginalia
   :straight t
+  ;; FIXME hook is nil
   :hook (on-first-input-hook . marginalia-mode))
 
 (eat-package isearch
@@ -127,6 +128,7 @@
 ;; also chekc https://github.com/astoff/isearch-mb/wiki
 (eat-package isearch-mb
   :straight t
+  ;; FIXME
   :hook (on-first-input-hook . isearch-mb-mode)
   :config
   (define-advice isearch-mb--update-prompt (:around (fn &rest _) show-case-fold-info)

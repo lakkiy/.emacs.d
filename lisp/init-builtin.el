@@ -1,6 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
 (eat-package recentf
+  ;; FIXME
   :hook (on-first-file-hook . recentf-mode)
   :init
   (setq
@@ -10,12 +11,15 @@
   (global-set-key (kbd "C-x C-r") #'recentf-open-files))
 
 (eat-package so-long
+  ;; FIXME
   :hook (on-first-buffer-hook . global-so-long-mode))
 
 (eat-package autorevert
+  ;; FIXME
   :hook (on-first-buffer-hook . global-auto-revert-mode))
 
 (eat-package saveplace
+  ;; FIXME
   :hook (on-first-buffer-hook . save-place-mode))
 
 (eat-package winner
