@@ -6,7 +6,6 @@
 (straight-use-package 'spacemacs-theme)
 (straight-use-package 'kaolin-themes)
 (straight-use-package 'stimmung-themes)
-(straight-use-package '(mindre-theme :type git :host github :repo "erikbackman/mindre-theme"))
 
 
 ;;; Theme
