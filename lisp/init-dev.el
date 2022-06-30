@@ -106,8 +106,7 @@
     (interactive)
     (setq-local flymake-diagnostic-functions
                 (append flymake-diagnostic-functions
-                        (flymake-flycheck-all-chained-diagnostic-functions))))
-  (add-hook 'flymake-mode-hook 'eat/flymake-flycheck-enable))
+                        (flymake-flycheck-all-chained-diagnostic-functions)))))
 
 (eat-package eglot
   :straight t

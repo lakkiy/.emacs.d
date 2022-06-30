@@ -1092,8 +1092,6 @@ No tab will created if the command is cancelled."
         smptmail-stream-type 'ssl))
 
 (eat-package flymake
-  :config
-  (setq flymake-no-changes-timeout nil)
   :init
   (setq-default flymake-diagnostic-functions nil)
   (defun sekiro-flymake-mode-line-format ()
