@@ -184,6 +184,7 @@ Used in the default value of `notmuch-tag-formats'."
   (setq org-static-blog-drafts-directory "~/p/blog/drafts/")
   (setq org-static-blog-enable-tags t)
   (setq org-static-blog-use-preview t)
+  (setq org-static-blog-preview-ellipsis "")
   (setq org-export-with-toc nil)
   (setq org-export-with-section-numbers nil)
   :config

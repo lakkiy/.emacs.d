@@ -32,7 +32,7 @@
 
 ;; Delete the current file
 
-(defun delete-this-file ()
+(defun eat/delete-this-file ()
   "Delete the current file, and kill the buffer."
   (interactive)
   (unless (buffer-file-name)
@@ -45,7 +45,7 @@
 
 ;; Rename the current file
 
-(defun rename-this-file-and-buffer (new-name)
+(defun eat/rename-this-file-and-buffer (new-name)
   "Renames both current buffer and file it's visiting to NEW-NAME."
   (interactive "sNew name: ")
   (let ((name (buffer-name))
@@ -59,56 +59,11 @@
       (rename-buffer new-name))))
 
 
-;; Browse current HTML file
+(eat-package form-feed
+  :hook
+  ((emacs-lisp-mode-hook text-mode-hook special-mode-hook)
+   . form-feed-mode))
 
-(defun browse-current-file ()
-  "Open the current file as a URL using `browse-url'."
-  (interactive)
-  (let ((file-name (buffer-file-name)))
-    (if (and (fboundp 'tramp-tramp-file-p)
-             (tramp-tramp-file-p file-name))
-        (error "Cannot open tramp file")
-      (browse-url (concat "file://" file-name)))))
-
-
-(eat-package page-break-lines
-  :straight t
-  :hook (on-init-ui-hook . global-page-break-lines-mode)
-  :config
-  (add-to-list 'page-break-lines-modes 'text-mode))
-
-
-(eat-package olivetti
-  :straight t
-  :commands olivetti-mode)
-
-;; FIXME do not run `xwidget-webkit-browse-url' with the buffer that enable this mode
-(define-minor-mode prose-mode
-  "Set up a buffer for prose editing.
-This enables or modifies a number of settings so that the
-experience of editing prose is a little more like that of a
-typical word processor."
-  :init-value nil :lighter " Prose" :keymap nil
-  (if prose-mode
-      (progn
-        (variable-pitch-mode)
-        (auto-fill-mode 1)
-        (olivetti-mode)
-        (electric-pair-local-mode -1)
-        (electric-quote-local-mode)
-        (setq-local line-spacing 0.2))
-    (variable-pitch-mode -1)
-    (auto-fill-mode -1)
-    (olivetti-mode -1)
-    (electric-pair-local-mode)
-    (electric-quote-local-mode -1)
-    (kill-local-variable 'line-spacing)))
-
-(defun read-lines (filePath)
-  "Return a list of lines of a file at filePath."
-  (with-temp-buffer
-    (insert-file-contents filePath)
-    (split-string (buffer-string) "\n" t)))
 
 (defun get-string-from-file (filePath)
   "Return file content as string."
