@@ -4,16 +4,11 @@
   :straight (org-modern :type git :host github :repo "minad/org-modern")
   :hook
   (org-mode-hook . org-modern-mode)
+  (org-agenda-finalize-hook . org-modern-agenda)
   :config
-  (setq
-   org-modern-star ["›"]
-   ;; For org-indent-mode works normally.
-   org-modern-hide-stars nil
-   ;; Use valign instead
-   org-modern-table nil))
-
-(eat-package org-variable-pitch
-  :hook (org-mode-hook . org-variable-pitch-minor-mode))
+  (setq org-modern-star ["›"]
+        ;; Use valign instead
+        org-modern-table nil))
 
 (eat-package org
   :straight (org :type built-in)
@@ -48,14 +43,10 @@
   (setq
    ;; Faster loading
    org-modules nil
-   ;; NOTE maybe conflict with org-modern, but don't have other choice
-   org-startup-indented t
    ;; run src block without confirm
    org-confirm-babel-evaluate nil
-   ;; rescale image with for org-download
    ;; use #+attr_org :width 300px to rescale
    org-image-actual-width nil
-   org-highlight-latex-and-related '(latex)
    org-hide-emphasis-markers t
    org-pretty-entities t
    org-ellipsis "…"
@@ -66,10 +57,7 @@
    ;; Highlight latex text in org mode
    org-highlight-latex-and-related '(latex script entities)
    org-src-window-setup 'current-window
-   org-log-done t
-   org-html-checkbox-type 'unicode)
-
-  (global-set-key (kbd "C-c b") #'org-switchb)
+   org-log-done t)
 
   (require 'org-tempo) ;; see `org-structure-template-alist'
   (require 'ob)
@@ -81,36 +69,10 @@
   :init
   (global-set-key (kbd "C-c c") 'org-capture)
 
-  (defun get-year-and-month ()
-    (list (format-time-string "%Y年") (format-time-string "%m月")))
-
-  (defun find-month-tree ()
-    (let* ((path (get-year-and-month))
-           (level 1)
-           end)
-      (unless (derived-mode-p 'org-mode)
-        (error "Target buffer \"%s\" should be in Org mode" (current-buffer)))
-      (goto-char (point-min))
-      (dolist (heading path)
-        (let ((re (format org-complex-heading-regexp-format
-                          (regexp-quote heading)))
-              (cnt 0))
-          (if (re-search-forward re end t)
-              (goto-char (point-at-bol))
-            (progn
-              (or (bolp) (insert "\n"))
-              (if (/= (point) (point-min)) (org-end-of-subtree t t))
-              (insert (make-string level ?*) " " heading "\n"))))
-        (setq level (1+ level))
-        (setq end (save-excursion (org-end-of-subtree t t))))
-      (org-end-of-subtree)))
-
   (setq
    org-default-notes-file (concat org-directory "/default-notes.org")
    org-capture-templates
-   `(("b" "Billing" plain (file+function "~/Dropbox/org/Billing.org" (lambda () (find-month-tree)))
-      " | %U | %^{Category} | %^{Description} | %^{Amount} |")
-     ("w" "Work" entry (file+olp+datetree "~/Dropbox/org/Work.org")
+   `(("w" "Work" entry (file+olp+datetree "~/Dropbox/org/Work.org")
       "* %^{Title}\n:PROPERITIES:\n:Created: %T\n:END:" :tree-type week)
      ("j" "Journal" entry (file+olp+datetree "~/Dropbox/org/Journal.org")
       "*  %^{Title} %?\n%U\n%a\n" :clock-in t :clock-resume t)
@@ -125,16 +87,7 @@
   (global-set-key (kbd "C-c a") 'org-agenda)
   :config
   (setq org-agenda-current-time-string
-        "⭠ now ─────────────────────────────────────────────────")
-  ;; https://200ok.ch/posts/2022-02-13_integrating_org_mode_agenda_into_other_calendar_apps.html
-  ;; export agenda to iCalendar
-  ;; Setting variables for the ics file path
-  (setq org-agenda-private-local-path "/tmp/dummy.ics")
-  ;; (setq org-agenda-private-remote-path "/sshx:user@host:path/dummy.ics")
-  (setq org-agenda-private-remote-path "~/Sync/dummy.ics")
-  ;; Define a custom command to save the org agenda to a file
-  (setq org-agenda-custom-commands
-        `(("X" agenda "" nil ,(list org-agenda-private-local-path)))))
+        "⭠ now ─────────────────────────────────────────────────"))
 
 (eat-package ox-gfm
   :straight t
@@ -157,7 +110,7 @@
   :straight t
   :mode ("\\.rest\\'" . restclient-mode)
   :init
-  (defun sanityinc/restclient ()
+  (defun eat/restclient ()
     "Work with `rest' in the *restclient* buffer."
     (interactive)
     (with-current-buffer (get-buffer-create "*restclient*")
@@ -170,16 +123,6 @@
     :hook (org-mode-hook . valign-mode)
     :init
     (setq valign-fancy-bar t)))
-
-(eat-package easy-hugo
-  :straight t
-  :commands easy-hugo
-  :init
-  (setq easy-hugo-server-flags "-D"
-        easy-hugo-basedir "~/bookshelf/"
-        easy-hugo-previewtime "300"
-        easy-hugo-default-ext ".org"
-        easy-hugo-org-header t))
 
 (eat-package toc-org
   :straight t

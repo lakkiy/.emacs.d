@@ -64,19 +64,29 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 
 ;;; Font
 (defvar eat/fonts-default
-  '("Latin Modern Mono" "Roboto Mono" "Iosevka" "Menlo" "Source Code Pro")
+  '("Roboto Mono"
+    "Cascadia Code"
+    "Latin Modern Mono"
+    "Iosevka"
+    "Menlo"
+    "Source Code Pro")
   "First installed font will be set to default font.")
 
 (defvar eat/fonts-unicode
-  '("Apple Color Emoji" "Noto Color Emoji")
+  '("Apple Color Emoji"
+    "Noto Color Emoji")
   "First installed font will be set to unicode font.")
 
 (defvar eat/fonts-cn
-  '("LXGW WenKai" "PingFang SC")
+  '("LXGW WenKai"
+    "PingFang SC")
   "First installed font will be set to Chinese font.")
 
 (defvar eat/fonts-variable-pitch
-  '("Cardo" "Bookerly" "Nimbus Sans" "Helvetica" "Noto Sans")
+  '("Cardo"
+    "Bookerly"
+    "Helvetica"
+    "Noto Sans")
   "First installed font will be set to variable font.")
 
 (defvar eat/font-size 12
@@ -119,11 +129,7 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 (defun eat/load-face-font ()
   (set-face-attribute 'variable-pitch nil :font eat/font-variable-pitch :height 1.3)
   (set-face-attribute 'fixed-pitch nil :font eat/font-default)
-  (set-face-attribute 'fixed-pitch-serif nil :font eat/font-default)
-  ;; make mode line use variable font but use original height
-  (custom-set-faces
-   `(mode-line ((t (:family ,eat/font-variable-pitch))))
-   `(mode-line-inactive ((t (:family ,eat/font-variable-pitch))))))
+  (set-face-attribute 'fixed-pitch-serif nil :font eat/font-default))
 
 (defun eat/load-ext-font ()
   (let ((font (frame-parameter nil 'font))
@@ -506,6 +512,23 @@ ARGS.
                             (error-message-string err))))))
 
 
+;;; Setup PATH
+;; https://emacs-china.org/t/emacs-mac-port-profile/2895/29?u=rua
+;; NOTE: When PATH is changed, run the following command
+;; $ sh -c 'printf "%s" "$PATH"' > ~/.path
+(defun eat/getenv-path()
+  (interactive)
+  (unless (file-exists-p "~/.path")
+    (async-shell-command "sh -c 'printf \"%s\" \"$PATH\"' > ~/.path" nil nil))
+  (condition-case err
+      (let ((path (with-temp-buffer
+                    (insert-file-contents-literally "~/.path")
+                    (buffer-string))))
+        (setenv "PATH" path)
+        (setq exec-path (append (parse-colon-path path) (list exec-directory))))
+    (error (warn "%s" (error-message-string err)))))
+
+
 ;;; Mac specific configuration
 (when eat/macp
   (setq mac-option-modifier 'meta
@@ -515,16 +538,7 @@ ARGS.
         ;; Don't open a file in a new frame
         ns-pop-up-frames nil)
 
-  ;; https://emacs-china.org/t/emacs-mac-port-profile/2895/29?u=rua
-  ;; NOTE: When PATH is changed, run the following command
-  ;; $ sh -c 'printf "%s" "$PATH"' > ~/.path
-  (condition-case err
-      (let ((path (with-temp-buffer
-                    (insert-file-contents-literally "~/.path")
-                    (buffer-string))))
-        (setenv "PATH" path)
-        (setq exec-path (append (parse-colon-path path) (list exec-directory))))
-    (error (warn "%s" (error-message-string err))))
+  (add-hook 'after-init-hook #'eat/getenv-path)
 
   ;; load theme after system appearance changed
   (when (boundp 'ns-system-appearance)
@@ -1016,51 +1030,6 @@ No tab will created if the command is cancelled."
            [simple-query "stackoverflow.com" "stackoverflow.com/search?q=" #1#])
           ("Wikipedia" .
            [simple-query "wikipedia.org" "wikipedia.org/wiki/" #1#]))))
-
-(progn
-  (setq
-   modus-themes-mode-line '(barderless)
-   modus-themes-italic-constructs t
-   modus-themes-bold-constructs t
-   modus-themes-markup '(background italic)
-   modus-themes-paren-match '(bold intense)
-   modus-themes-links '(neutral-underline background)
-   modus-themes-prompts '(intense bold)
-   modus-themes-org-blocks 'gray-background
-   modus-themes-region '(bg-only no-extend)
-   modus-themes-headings
-   '((1 . (1.15))
-     (2 . (1.05))
-     (t . (semibold))))
-  (defun eat/custom-modus-operandi()
-    (set-face-background 'cursor "deep pink")
-    (set-face-foreground 'link "#0168da")
-    (set-face-background 'isearch "#feff00")
-    (set-face-foreground 'isearch nil)
-    (set-face-background 'lazy-highlight "#feff00")
-    (set-face-foreground 'font-lock-function-name-face "#0168da")
-    (set-face-foreground 'font-lock-keyword-face "#874bf8")
-    (set-face-foreground 'font-lock-comment-face "DarkGray")
-    (set-face-foreground 'font-lock-constant-face "dark cyan")
-    (set-face-foreground 'font-lock-string-face "chocolate")
-    (with-eval-after-load 'org
-      (set-face-foreground 'org-meta-line "Gray")
-      (set-face-foreground 'org-drawer "Gray")
-      (set-face-foreground 'org-document-info-keyword "Gray")
-      (set-face-foreground 'org-date "Gray")
-      (set-face-foreground 'org-link "#0168da")
-
-      (set-face-attribute 'org-level-1 nil :foreground "#0168da")
-      (set-face-attribute 'org-level-2 nil :foreground "#874bf8")
-      (set-face-attribute 'org-level-3 nil :foreground "dark cyan")
-      (set-face-attribute 'org-level-4 nil :foreground "violet red")
-      (set-face-attribute 'org-level-5 nil :foreground "SpringGreen4")
-      (set-face-attribute 'org-level-6 nil :foreground "orange red")
-      (set-face-attribute 'org-level-7 nil :foreground "light sea green")
-      (set-face-attribute 'org-level-8 nil :foreground "chocolate")
-
-      (set-face-attribute 'org-headline-done nil :foreground "gray")))
-  (add-hook 'eat/theme-hooks '(modus-operandi . eat/custom-modus-operandi)))
 
 (eat-package outline
   :init
