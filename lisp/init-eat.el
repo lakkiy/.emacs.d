@@ -64,7 +64,7 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 
 ;;; Font
 (defvar eat/fonts-default
-  '("Roboto Mono" "Iosevka" "Menlo" "Source Code Pro")
+  '("Latin Modern Mono" "Roboto Mono" "Iosevka" "Menlo" "Source Code Pro")
   "First installed font will be set to default font.")
 
 (defvar eat/fonts-unicode
