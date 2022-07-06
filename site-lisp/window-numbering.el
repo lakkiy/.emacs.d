@@ -36,6 +36,12 @@
 ;;       (lambda () (when (equal (buffer-name) "*Calculator*") 9)))
 ;;
 ;;; Changes Log:
+;; 2022-07-06
+;;
+;;   Use cl-lib instead of cl.
+;;   Update `define-minor-mode' key.
+;;
+;; Doglooksgod
 ;;
 ;;    Fix numbering of minibuffer for recent Emacs versions.
 ;;
@@ -52,7 +58,7 @@
 ;;
 ;;; Code:
 
-(eval-when-compile (require 'cl))
+(eval-when-compile (require 'cl-lib))
 
 (push "^No window numbered .$" debug-ignored-errors)
 
@@ -119,7 +125,7 @@ If prefix ARG is given, delete the window instead of selecting it."
       (let ((window (aref windows i)))
         (unless window
           (push (% (1+ i) 10) left)))
-      (decf i))
+      (cl-decf i))
     left))
 
 (defvar window-numbering-windows nil
@@ -199,7 +205,7 @@ windows to numbers."
 ;;;###autoload
 (define-minor-mode window-numbering-mode
   "A minor mode that assigns a number to each window."
-  nil nil window-numbering-keymap :global t
+  :init-value nil :lighter nil :keymap window-numbering-keymap :global t
   (if window-numbering-mode
       (unless window-numbering-table
         (save-excursion

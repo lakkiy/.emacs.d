@@ -1,4 +1,11 @@
 ;;; -*- lexical-binding: t -*-
+
+;;; Load custom-file
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(when (and (file-exists-p custom-file)
+           (file-readable-p custom-file))
+  (load custom-file :no-error :no-message))
+
 ;;; Basic
 ;;;; Variables
 
@@ -691,6 +698,7 @@ ARGS.
   :init
   (setq-default hl-line-sticky-flag nil))
 
+;; FIXME can't find remote program
 (eat-package tramp
   :init
   (setq
@@ -722,6 +730,38 @@ ARGS.
   ;; as given in your ‘~/.profile’.  This entry is represented in
   ;; the list by the special value ‘tramp-own-remote-path’.
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
+
+(eat-package isearch
+  :init
+  (setq
+   ;; Match count next to the minibuffer prompt
+   isearch-lazy-count t
+   ;; Don't be stingy with history; default is to keep just 16 entries
+   search-ring-max 200
+   regexp-search-ring-max 200
+   ;; htighlighted all matching
+   isearch-lazy-highlight t
+   lazy-highlight-buffer t
+   ;; show search count, TODO not work in isearch-mb-mode
+   lazy-count-prefix-format nil
+   lazy-count-suffix-format " [%s/%s]"
+   ;; Record isearch in minibuffer history, so C-x ESC ESC can repeat it.
+   isearch-resume-in-command-history t
+   ;; M-< and M-> move to the first/last occurrence of the current search string.
+   isearch-allow-motion t
+   isearch-motion-changes-direction t
+   ;; space matches any sequence of characters in a line.
+   isearch-regexp-lax-whitespace t
+   search-whitespace-regexp ".*?")
+  (global-set-key (kbd "C-s") 'isearch-forward-regexp)
+  (global-set-key (kbd "C-r") 'isearch-backward-regexp)
+  :config
+  (define-advice isearch-occur (:after (_regexp &optional _nlines))
+    (isearch-exit))
+  (define-key isearch-mode-map (kbd "C-c C-o") #'isearch-occur)
+  (define-key isearch-mode-map [escape] #'isearch-cancel)
+  ;; Edit the search string instead of jumping back
+  (define-key isearch-mode-map [remap isearch-delete-chac] #'isearch-del-chac))
 
 (eat-package eldoc
   :init

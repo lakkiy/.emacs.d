@@ -39,12 +39,6 @@
   (setq gcmh-idle-delay 5
         gcmh-high-cons-threshold #x6400000)) ;; 100 MB
 
-;;; Load custom-file
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(when (and (file-exists-p custom-file)
-           (file-readable-p custom-file))
-  (load custom-file :no-error :no-message))
-
 (eat-package benchmark-init
   :straight t
   :init
