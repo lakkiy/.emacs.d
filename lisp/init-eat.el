@@ -76,7 +76,8 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
     "Latin Modern Mono"
     "Iosevka"
     "Menlo"
-    "Source Code Pro")
+    "Source Code Pro"
+    "MonoLisa Nasy")
   "First installed font will be set to default font.")
 
 (defvar eat/fonts-unicode

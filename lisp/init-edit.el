@@ -60,8 +60,9 @@
 
 (eat-package visual-fill-column
   :straight t
-  ;; HACK Add `visuall-fill-column-mode' to `visual-line-mode-hook' will break `olivetti-mode' center window
-  :hook (visual-fill-column-mode-hook . visual-line-mode))
+  :hook (visual-fill-column-mode-hook . visual-line-mode)
+  :init
+  (setq-default visual-fill-column-center-text t))
 
 (eat-package auto-save
   :straight (auto-save

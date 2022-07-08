@@ -75,7 +75,6 @@
    '("@" . treemacs-select-window)
    '("A" . org-agenda-list)
    '("T" . telega)
-   '("P" . prose-mode)
    )
 
   (meow-normal-define-key
