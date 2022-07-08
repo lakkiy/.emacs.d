@@ -38,6 +38,18 @@
   (>= emacs-major-version 29)
   "Emacs is 29 or above.")
 
+(defun eat/delete-to-the-begining ()
+  (interactive)
+  (delete-region (point-min) (point)))
+
+(defun eat/delete-to-the-end ()
+  (interactive)
+  (delete-region (point) (point-max)))
+
+(defun eat/delete-whole-buffer ()
+  (interactive)
+  (delete-region (point-min) (point-max)))
+
 
 ;;; Frame
 (setq frame-title-format
