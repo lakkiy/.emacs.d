@@ -1133,7 +1133,10 @@ No tab will created if the command is cancelled."
 
 ;;; mode-line
 (progn
-  (eat-package which-func :commands which-func-mode)
+  (eat-package which-func
+    :commands
+    which-func-mode
+    which-function-mode)
 
   (defun luna-mode-line-with-padding (text)
     "Return TEXT with padding on the left.
@@ -1157,7 +1160,7 @@ The padding pushes TEXT to the right edge of the mode-line."
         "")))
 
   (defun eat/setup-mode-line()
-    (which-func-mode)
+    (if eat/emacs29p (which-function-mode) (which-func-mode))
     (setq-default mode-line-format
                   (let* ((spaces
                           (propertize " " 'display '(space :width 1.5)))
