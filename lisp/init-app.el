@@ -3,14 +3,9 @@
 (eat-package telega
   :straight t
   :commands telega
-  :init
-  (defun +telega-font-setup ()
-    (interactive)
-    (setq buffer-face-mode-face `(:family ,eat/font-cn))
-    (buffer-face-mode +1))
   :hook
   ;; font setup
-  ((telega-root-mode-hook telega-chat-mode-hook) . +telega-font-setup)
+  ((telega-root-mode-hook telega-chat-mode-hook) . eat/buffer-face-mono)
   :config
   ;; ignore blocked user
   (add-hook 'telega-msg-ignore-predicates

@@ -109,6 +109,10 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
     "Noto Sans")
   "First installed font will be set to variable font.")
 
+(defvar eat/fonts-mono
+  '("Sarasa Gothic SC")
+  "Fonts have same width for Chinese and English.")
+
 (defvar eat/font-size 12
   "Default font size.")
 
@@ -123,21 +127,20 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
       (when (eat/font-installed-p font)
         (throw 'value font)))))
 
-(defconst eat/font-default
-  (eat/font-installed eat/fonts-default)
-  "Default font.")
+(defconst eat/font-default (eat/font-installed eat/fonts-default))
 
-(defconst eat/font-unicode
-  (eat/font-installed eat/fonts-unicode)
-  "Unicode font.")
+(defconst eat/font-unicode (eat/font-installed eat/fonts-unicode))
 
-(defconst eat/font-cn
-  (eat/font-installed eat/fonts-cn)
-  "Chinese font.")
+(defconst eat/font-cn (eat/font-installed eat/fonts-cn))
 
-(defconst eat/font-variable-pitch
-  (eat/font-installed eat/fonts-variable-pitch)
-  "Variable pitch font.")
+(defconst eat/font-variable-pitch (eat/font-installed eat/fonts-variable-pitch))
+
+(defconst eat/font-mono (eat/font-installed eat/fonts-mono))
+
+(defun eat/buffer-face-mono ()
+  (interactive)
+  (setq buffer-face-mode-face `(:family ,eat/font-mono))
+  (buffer-face-mode +1))
 
 (defun eat/load-base-font ()
   (let ((font-spec (format "%s-%d" eat/font-default eat/font-size)))

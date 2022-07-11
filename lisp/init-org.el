@@ -69,21 +69,30 @@
   :init
   (global-set-key (kbd "C-c c") 'org-capture)
 
+  (defun eat/org-capture-inbox ()
+    (interactive)
+    (org-capture nil "i"))
+  (global-set-key (kbd "C-c i") #'eat/org-capture-inbox)
+
   (setq
    org-default-notes-file (concat org-directory "/default-notes.org")
    org-capture-templates
-   `(("w" "Work" entry (file+olp+datetree "~/Dropbox/org/Work.org")
+   `(("i" "Inbox" entry (file "~/Dropbox/org/inbox.org")
+      "* TODO %?\n:PROPERITIES:\n:Created: %T\n:END:")
+     ("w" "Work" entry (file+olp+datetree "~/Dropbox/org/Work.org")
       "* %^{Title}\n:PROPERITIES:\n:Created: %T\n:END:" :tree-type week)
-     ("j" "Journal" entry (file+olp+datetree "~/Dropbox/org/Journal.org")
-      "*  %^{Title} %?\n%U\n%a\n" :clock-in t :clock-resume t)
-     ("o" "Book" entry (file+olp+datetree "~/Dropbox/org/Book.org")
-	  "* Topic: %^{Description}  %^g %? Added: %U")
      ("n" "Note" entry (file "~/Dropbox/org/Notes.org")
       "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t))))
 
 (eat-package org-agenda
   :init
-  (setq org-agenda-files (list org-directory))
+  (setq org-agenda-files (list org-directory)
+        org-agenda-prefix-format '((agenda . " %i %-12:c%?-12t% s")
+                                   (todo   . " ")
+                                   (tags   . " %i %-12:c")
+                                   (search . " %i %-12:c"))
+        ;; hide any tag
+        org-agenda-hide-tags-regexp ".")
   (global-set-key (kbd "C-c a") 'org-agenda)
   :config
   (setq org-agenda-current-time-string
