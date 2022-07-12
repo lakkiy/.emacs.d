@@ -697,6 +697,11 @@ ARGS.
           try-complete-lisp-symbol-partially
           try-complete-lisp-symbol)))
 
+(eat-package windmove
+  :init
+  ;; TODO change keybindings
+  (windmove-default-keybindings))
+
 (eat-package subword
   :hook (prog-mode-hook . subword-mode))
 
@@ -1174,7 +1179,6 @@ The padding pushes TEXT to the right edge of the mode-line."
                             "[%%l] %d%%"
                             (/ (* (window-end) 100.0) (point-max)))))
                     `(,fringe
-                      (:eval (when (fboundp 'eat/window-numbering-modeline) (eat/window-numbering-modeline)))
                       (:eval (when (fboundp 'meow-indicator) (meow-indicator)))
                       (:eval (when (fboundp 'rime-lighter) (rime-lighter)))
                       " "

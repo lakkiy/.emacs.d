@@ -61,8 +61,7 @@
 (when (executable-find "delta")
   (eat-package magit-delta
     :straight t
-    :init
-    (add-hook 'magit-mode-hook (lambda () (magit-delta-mode +1)))))
+    :hook (magit-mode-hook . magit-delta-mode)))
 
 (eat-package diff-hl
   :straight t
