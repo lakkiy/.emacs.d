@@ -1,8 +1,6 @@
 ;;; -*- lexical-binding: t -*-
 
-(straight-use-package 'tao-theme)
 (straight-use-package 'color-theme-sanityinc-tomorrow)
-(straight-use-package 'doom-themes)
 (straight-use-package 'spacemacs-theme)
 (straight-use-package 'kaolin-themes)
 (straight-use-package 'stimmung-themes)
