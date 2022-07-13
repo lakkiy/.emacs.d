@@ -50,6 +50,50 @@
   (interactive)
   (delete-region (point-min) (point-max)))
 
+(defvar eat/proxy "127.0.0.1:7890")
+
+;; Network Proxy
+(defun eat/proxy-show ()
+  "Show HTTP/HTTPS proxy."
+  (interactive)
+  (if (or url-proxy-services (bound-and-true-p socks-noproxy))
+      (message "Current proxy is `%s'" eat/proxy)
+    (message "No proxy")))
+
+(defun eat/proxy-enable ()
+  "Enable proxy."
+  (interactive)
+  (setq url-proxy-services
+        `(("http" . ,eat/proxy)
+          ("https" . ,eat/proxy)
+          ("no_proxy" . "^\\(localhost\\|192.168.*\\|10.*\\)")))
+  (require 'socks)
+  (setq url-gateway-method 'socks
+        socks-noproxy '("localhost"))
+  (let* ((proxy (split-string eat/proxy ":"))
+         (host (car proxy))
+         (port (string-to-number (cadr proxy))))
+    (setq socks-server `("Default server" ,host ,port 5)))
+  (setenv "all_proxy" (concat "socks5://" eat/proxy))
+  (eat/proxy-show))
+
+(defun eat/proxy-disable ()
+  "Disable HTTP/HTTPS proxy."
+  (interactive)
+  (setq url-proxy-services nil)
+  (setq url-gateway-method 'native
+        socks-noproxy nil
+        socks-server nil)
+  (setenv "all_proxy" "")
+  (eat/proxy-show))
+
+(defun eat/proxy-toggle ()
+  "Toggle HTTP/HTTPS proxy."
+  (interactive)
+  (if (or (bound-and-true-p url-proxy-services) (bound-and-true-p socks-noproxy))
+      (eat/proxy-disable)
+    (eat/proxy-enable)))
+
 
 ;;; Frame
 (setq frame-title-format

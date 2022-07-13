@@ -72,6 +72,9 @@ No window config will created if the command is cancelled."
                  aw--select-window))
     (advice-add cmd :after #'eat/pulse-momentary-line)))
 
+(eat-package window-numbering
+  :hook (after-init-hook . window-numbering-mode))
+
 (eat-package popper
   :straight t
   :hook (on-init-ui-hook . (lambda ()
