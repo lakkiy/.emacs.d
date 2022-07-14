@@ -4,6 +4,7 @@
 (straight-use-package 'spacemacs-theme)
 (straight-use-package 'kaolin-themes)
 (straight-use-package 'stimmung-themes)
+(straight-use-package '(notink-theme :type git :host github :repo "MetroWind/notink-theme"))
 
 
 ;;; Theme
