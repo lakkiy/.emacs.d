@@ -1075,7 +1075,7 @@ No tab will created if the command is cancelled."
     (setq show-paren-context-when-offscreen t)))
 
 (eat-package elec-pair
-  :hook (prog-mode-hook . electric-pair-mode)
+  :hook (prog-mode-hook . electric-pair-local-mode)
   :init
   (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
 
@@ -1144,8 +1144,14 @@ No tab will created if the command is cancelled."
 ;; use C-q C-l to add page break symbol
 (eat-package page)
 
+(eat-package newcomment
+  :init
+  (setq comment-auto-fill-only-comments t))
+
 (eat-package message
-  :hook (message-mode-hook . auto-fill-mode)
+  :hook (message-mode-hook . (lambda ()
+                               (setq-local fill-column 72)
+                               (auto-fill-mode)))
   :init
   (setq user-full-name eat/user-full-name
         user-mail-address eat/user-mail-address

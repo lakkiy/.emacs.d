@@ -12,52 +12,22 @@
 
 (eat-package org
   :straight (org :type built-in)
+  :hook (org-mode-hook . eat/org-hook)
   :init
   (setq org-directory "~/Dropbox/org")
-
   (defvar load-language-list '((emacs-lisp . t)
                                (python . t)
                                (js . t)
                                (C . t)
                                (shell . t)))
-
-  ;; `org-babel-load-languages' 在初始化的时候只存放 (LANG . nil)，表示需禁止的语言。
-  ;; 其它所有需要的语言都动态加载，加载成功后存入 `org-babel-load-languages'
-  (defun my/org-babel-execute-src-block (&optional _arg info _params)
-    "Load language if needed"
-    (let* ((lang (nth 0 info))
-           (sym (if (member (downcase lang) '("c" "cpp" "c++")) 'C (intern lang)))
-           (backup-languages org-babel-load-languages))
-      ;; - (LANG . nil) 明确禁止的语言，不加载。
-      ;; - (LANG . t) 已加载过的语言，不重复载。
-      (unless (assoc sym backup-languages)
-        (condition-case err
-            (progn
-              (org-babel-do-load-languages 'org-babel-load-languages (list (cons sym t)))
-              (setq-default org-babel-load-languages (append (list (cons sym t)) backup-languages)))
-          (file-missing
-           (setq-default org-babel-load-languages backup-languages)
-           err)))))
-  (advice-add 'org-babel-execute-src-block :before #'my/org-babel-execute-src-block )
   :config
-  (setq
-   ;; Faster loading
-   org-modules nil
-   ;; run src block without confirm
-   org-confirm-babel-evaluate nil
-   ;; use #+attr_org :width 300px to rescale
-   org-image-actual-width nil
-   org-hide-emphasis-markers t
-   org-pretty-entities t
-   org-ellipsis "…"
-   org-catch-invisible-edits 'show-and-error
-   org-special-ctrl-a/e t
-   org-insert-heading-respect-content t
-   org-tags-column 0
-   ;; Highlight latex text in org mode
-   org-highlight-latex-and-related '(latex script entities)
-   org-src-window-setup 'current-window
-   org-log-done t)
+  (setq org-edit-src-content-indentation 0
+        org-confirm-babel-evaluate nil
+        org-image-actual-width '(300)
+        ;; Faster loading
+        org-modules nil
+        org-src-window-setup 'current-window
+        org-log-done t)
 
   (require 'org-tempo) ;; see `org-structure-template-alist'
   (require 'ob)
@@ -126,12 +96,12 @@
       (restclient-mode)
       (pop-to-buffer (current-buffer)))))
 
-(when (display-graphic-p)
-  (eat-package valign
-    :straight t
-    :hook (org-mode-hook . valign-mode)
-    :init
-    (setq valign-fancy-bar t)))
+(eat-package valign
+  :straight t
+  :init
+  (setq valign-fancy-bar t)
+  (when (display-graphic-p)
+    (add-hook 'org-mode-hook #'valign-mode)))
 
 (eat-package toc-org
   :straight t
@@ -162,7 +132,6 @@
   :config
   (require 'flique)
   (defun xeft-setup ()
-    (auto-fill-mode)
     (flique-append-to-index (buffer-file-name))
     (local-set-key (kbd "M-]") #'flique-forward)
     (local-set-key (kbd "M-[") #'flique-backward)
@@ -170,6 +139,40 @@
   (add-hook 'xeft-find-file-hook #'xeft-setup)
   (add-hook 'xeft-find-file-hook #'bklink-minor-mode))
 
+(defvar eat/prose-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-a") #'beginning-of-visual-line)
+    (define-key map (kbd "C-e") #'end-of-visual-line)
+    map)
+  "Mode map for ‘eat/prose-mode’.")
+
+(define-minor-mode eat/prose-mode
+  "A mode that optimizes for prose editing."
+  :lighter " PROSE"
+  :keymap eat/prose-mode-map
+  (if eat/prose-mode
+      (progn
+        (variable-pitch-mode)
+        (visual-fill-column-mode)
+        (electric-pair-local-mode -1)
+        (electric-quote-local-mode)
+        (setq-local cursor-type 'bar)
+        (setq-local line-spacing 0.15)
+        (corfu-mode -1)
+        (setq-local whitespace-style '(tab-mark))
+        (whitespace-mode))
+    (whitespace-mode -1)
+    (corfu-mode)
+    (variable-pitch-mode -1)
+    (electric-pair-local-mode)
+    (electric-quote-local-mode -1)
+    (kill-local-variable 'line-spacing)
+    (kill-local-variable 'cursor-type)))
+
+(defun eat/org-hook ()
+  "Configuration for Org Mode."
+  (eat/prose-mode)
+  (electric-indent-local-mode -1))
 
 ;;; init-org.el ends here
 (provide 'init-org)
