@@ -152,8 +152,8 @@
   :keymap eat/prose-mode-map
   (if eat/prose-mode
       (progn
-        (variable-pitch-mode)
-        (visual-fill-column-mode)
+        (variable-pitch-mode 1)
+        (visual-fill-column-mode 1)
         (electric-pair-local-mode -1)
         (electric-quote-local-mode)
         (setq-local cursor-type 'bar)
@@ -161,8 +161,8 @@
         (corfu-mode -1)
         (setq-local whitespace-style '(tab-mark))
         (whitespace-mode))
+    (visual-fill-column-mode -1)
     (whitespace-mode -1)
-    (corfu-mode)
     (variable-pitch-mode -1)
     (electric-pair-local-mode)
     (electric-quote-local-mode -1)
