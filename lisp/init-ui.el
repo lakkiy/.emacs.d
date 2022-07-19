@@ -48,14 +48,5 @@
   :straight t
   :hook (after-init-hook . minions-mode))
 
-
-;;; Mics
-(eat-package info-variable-pitch
-  :straight (info-variable-pitch
-             :type git
-             :host github
-             :repo "kisaragi-hiu/info-variable-pitch")
-  :hook (Info-mode-hook . #'info-variable-pitch-mode))
-
 ;;; init-ui.el ends here
 (provide 'init-ui)

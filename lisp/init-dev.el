@@ -1,9 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(eat-package sidekick
-  :straight (sidekick :type git :host github :repo "VernonGrant/sidekick.el")
-  :commands sidekick-at-point)
-
 (eat-package aggressive-indent
   :straight t
   :commands aggressive-indent-mode
