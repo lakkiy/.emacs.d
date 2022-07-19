@@ -1,8 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
 (eat-package recentf
-  ;; FIXME
-  :hook (on-first-file-hook . recentf-mode)
+  :hook (after-init-hook . recentf-mode)
   :init
   (setq
    recentf-max-saved-items 1000
@@ -11,19 +10,16 @@
   (global-set-key (kbd "C-x C-r") #'recentf-open-files))
 
 (eat-package so-long
-  ;; FIXME
-  :hook (on-first-buffer-hook . global-so-long-mode))
+  :hook (after-init-hook . global-so-long-mode))
 
 (eat-package autorevert
-  ;; FIXME
-  :hook (on-first-buffer-hook . global-auto-revert-mode))
+  :hook (after-init-hook . global-auto-revert-mode))
 
 (eat-package saveplace
-  ;; FIXME
-  :hook (on-first-buffer-hook . save-place-mode))
+  :hook (after-init-hook . save-place-mode))
 
 (eat-package winner
-  :hook (on-init-ui-hook . winner-mode)
+  :hook (after-init-hook . winner-mode)
   :init
   (setq winner-dont-bind-my-keys t))
 
@@ -73,7 +69,7 @@
 
 
 (eat-package savehist
-  :hook (on-init-ui-hook . savehist-mode)
+  :hook (after-init-hook . savehist-mode)
   :init
   ;; Restore histories and registers after saving
   (setq history-length 1000))
@@ -81,7 +77,7 @@
 (eat-package fullframe :straight t)
 
 (eat-package goto-addr
-  :hook (on-init-ui-hook . global-goto-address-mode))
+  :hook (after-init-hook . global-goto-address-mode))
 
 (defun term-mode-common-init ()
   "The common initialization procedure for term/shell."

@@ -90,8 +90,7 @@
 
 (eat-package marginalia
   :straight t
-  ;; FIXME hook is nil
-  :hook (on-first-input-hook . marginalia-mode))
+  :hook (after-init-hook . marginalia-mode))
 
 (eat-package embark
   :straight (embark :files ("*.el"))

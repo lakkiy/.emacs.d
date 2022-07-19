@@ -340,7 +340,7 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 (set-language-environment "UTF-8")
 
 ;; Disable cursor blink
-(add-hook 'on-init-ui-hook (lambda () (blink-cursor-mode -1)))
+(add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
 
 ;; Do not show cursor in nonselected windows
 (setq-default cursor-in-non-selected-windows nil)

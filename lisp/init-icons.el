@@ -19,9 +19,8 @@
              :type git
              :host github
              :repo "iyefrat/all-the-icons-completion")
-  ;; FIXME hook is nil
-  :hook (on-first-input-hook . (lambda ()
-                                 (all-the-icons-completion-mode)))
+  :hook (after-init-hook . (lambda ()
+                             (all-the-icons-completion-mode)))
   :config
   (with-eval-after-load 'marginalia
     ;; FIXME hook is nil

@@ -19,11 +19,6 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-(eat-package on
-  :straight (on :type git :host github :repo "ajgrf/on.el")
-  :init
-  (require 'on))
-
 (defvar eat/enable-benchmark nil
   "Enable `benchmark-init', run `benchmark-init/show-durations-tree' to see result.")
 

@@ -7,7 +7,7 @@
 ;; replace `tab-bar'
 (eat-package eyebrowse
   :straight t
-  :hook (on-init-ui-hook . (lambda ()
+  :hook (after-init-hook . (lambda ()
                              (eyebrowse-mode t)))
   :init
   (setq
@@ -77,7 +77,7 @@ No window config will created if the command is cancelled."
 
 (eat-package popper
   :straight t
-  :hook (on-init-ui-hook . (lambda ()
+  :hook (after-init-hook . (lambda ()
                              (popper-mode +1)))
   :init
   (setq popper-reference-buffers

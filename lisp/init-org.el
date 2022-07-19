@@ -110,8 +110,7 @@
 ;;; Writing
 
 (eat-package iimg
-  ;; FIXME hook is nil
-  :hook (on-first-file-hook . iimg-enable))
+  :hook (after-init-hook . iimg-enable))
 
 (eat-package bklink
   :commands bklink-minor-mode
