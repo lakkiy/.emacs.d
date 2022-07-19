@@ -17,6 +17,11 @@
 (eat-package rust-mode
   :straight t)
 
+(eat-package typescript-mode
+  :straight t
+  :init
+  (setq typescript-indent-level 2))
+
 (eat-package terraform-mode
   :straight t)
 
