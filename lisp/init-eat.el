@@ -219,16 +219,16 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 ;;; Theme
 ;;;; Variables
 
-(defvar eat/theme 'modus-operandi
+(defvar eat/theme 'leuven
   "Default theme.")
 
-(defvar eat/theme-tui 'modus-vivendi
+(defvar eat/theme-tui 'leuven-dark
   "Default theme in terminal.")
 
-(defvar eat/theme-system-light 'modus-operandi
+(defvar eat/theme-system-light 'leuven
   "Default light theme after system appearance changed.")
 
-(defvar eat/theme-system-dark 'modus-vivendi
+(defvar eat/theme-system-dark 'leuven-dark
   "Default dark theme after system appearance changed.")
 
 (defvar eat/theme-hooks nil
@@ -388,6 +388,7 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
  word-wrap-by-category t                            ; Emacs 之光！
  use-short-answers t                                ; yse-or-no -> y-or-n
  suggest-key-bindings nil
+ enable-recursive-minibuffers t
  )
 
 (setq-default
