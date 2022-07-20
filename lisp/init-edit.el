@@ -34,6 +34,7 @@
               :includes (treemacs-all-the-icons
                          treemacs-icons-dired
                          treemacs-magit))
+  :hook (treemacs-mode-hook . treemacs-toggle-fixed-width)
   :init
   (defun +treemacs-scale-font-size ()
     (face-remap-add-relative 'default :height 0.8))
