@@ -38,7 +38,9 @@
         markdown-asymmetric-header t
         markdown-make-gfm-checkboxes-buttons t
         markdown-gfm-uppercase-checkbox t
-        markdown-fontify-code-blocks-natively t))
+        markdown-fontify-code-blocks-natively t)
+  :config
+  (define-key markdown-mode-map (kbd "C-c v") #'gfm-view-mode))
 
 (eat-package markdown-toc
   :straight t
