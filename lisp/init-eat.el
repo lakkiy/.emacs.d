@@ -129,6 +129,7 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 (defvar eat/fonts-default
   '("Roboto Mono"
     "Cascadia Code"
+    "Monego"
     "Latin Modern Mono"
     "Iosevka"
     "Menlo"

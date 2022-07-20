@@ -153,8 +153,6 @@
       (progn
         (variable-pitch-mode 1)
         (visual-fill-column-mode 1)
-        (electric-pair-local-mode -1)
-        (electric-quote-local-mode)
         (setq-local cursor-type 'bar)
         (setq-local line-spacing 0.15)
         (corfu-mode -1)
@@ -163,14 +161,14 @@
     (visual-fill-column-mode -1)
     (whitespace-mode -1)
     (variable-pitch-mode -1)
-    (electric-pair-local-mode)
-    (electric-quote-local-mode -1)
     (kill-local-variable 'line-spacing)
     (kill-local-variable 'cursor-type)))
 
 (defun eat/org-hook ()
   "Configuration for Org Mode."
   (eat/prose-mode)
+  (electric-pair-local-mode -1)
+  (electric-quote-local-mode)
   (electric-indent-local-mode -1))
 
 ;;; init-org.el ends here
