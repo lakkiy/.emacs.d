@@ -110,7 +110,8 @@
 ;;; Writing
 
 (eat-package iimg
-  :hook (after-init-hook . iimg-enable))
+  :commands iimg-enable
+  :hook ((text-mode-hook org-mode-hook) . iimg-enable))
 
 (eat-package bklink
   :commands bklink-minor-mode

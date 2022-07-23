@@ -75,6 +75,7 @@
                   notmuch-tree-mode))
     (add-to-list 'meow-mode-state-list `(,mode . motion)))
 
+  (meow-setup-indicator)
   ;; setup meow with selected keyboard layout
   (require 'init-meow-dvorak)
   (meow-setup-dvorak))
