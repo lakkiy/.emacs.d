@@ -755,10 +755,15 @@ ARGS.
   :init
   (setq-default hl-line-sticky-flag nil)
   (when (display-graphic-p)
-    (add-hook prog-mode-hook hl-line-mode)
-    (add-hook conf-mode-hook hl-line-mode)))
+    (add-hook 'prog-mode-hook #'hl-line-mode)
+    (add-hook 'conf-mode-hook #'hl-line-mode))
+  :config
+  (add-hook 'post-command-hook #'(lambda ()
+                                   "When `hl-line-mode' is enable, unhighlight if region is active."
+                                   (when (and (bound-and-true-p hl-line-mode)
+                                              (region-active-p))
+                                     (hl-line-unhighlight)))))
 
-;; FIXME can't find remote program
 (eat-package tramp
   :init
   (setq
