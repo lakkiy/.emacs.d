@@ -752,10 +752,11 @@ ARGS.
         fill-column 72))
 
 (eat-package hl-line
-  :hook
-  ((prog-mode-hook conf-mode-hook) . hl-line-mode)
   :init
-  (setq-default hl-line-sticky-flag nil))
+  (setq-default hl-line-sticky-flag nil)
+  (when (display-graphic-p)
+    (add-hook prog-mode-hook hl-line-mode)
+    (add-hook conf-mode-hook hl-line-mode)))
 
 ;; FIXME can't find remote program
 (eat-package tramp
