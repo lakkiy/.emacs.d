@@ -154,6 +154,7 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
   '("Sarasa Gothic SC")
   "Fonts have same width for Chinese and English.")
 
+;; FIXME not work, even in emacs -q -l
 (defvar eat/font-size 12
   "Default font size.")
 
@@ -306,9 +307,7 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 
 (when eat/emacs29p
   ;; for mouse scroll
-  (setq pixel-scroll-precision-large-scroll-height 60
-        pixel-scroll-precision-interpolation-factor 30.0
-        dired-mouse-drag-files t
+  (setq dired-mouse-drag-files t
         mouse-drag-and-drop-region t
         mouse-drag-and-drop-region-cross-program t)
   (add-hook 'after-init-hook (lambda () (pixel-scroll-precision-mode))))
