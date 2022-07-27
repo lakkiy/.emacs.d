@@ -6,6 +6,7 @@
   :hook
   ;; font setup
   ((telega-root-mode-hook telega-chat-mode-hook) . eat/buffer-face-mono)
+  (telega-root-mode-hook . hl-line-mode)
   :config
   ;; ignore blocked user
   (add-hook 'telega-msg-ignore-predicates
