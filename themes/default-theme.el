@@ -1,23 +1,16 @@
-(deftheme default "A better default emacs theme.")
+(deftheme default "Emacs default theme, better version.")
 
-(let ((bg "#c4d3cd")
-      (fg "#353535")
-      (kw "#000000")
-      (cm "#61726b")
-      (ss "#96b0a5")
-      (hl "#a9bdb5")
-      (fn "#b6c6c0")
-      (cur "#202020"))
-  (custom-theme-set-faces
-   `default
-   ;; basic
-   `(fringe ((t (:background ,(face-background 'default)))))
+(custom-theme-set-faces
+ `default
+ ;; basic
+ `(fringe ((t (:background ,(face-background 'default)))))
+ `(cursor ((t (:background "black"))))
 
-   ;; mode-line
-   `(mode-line ((t (:foreground "black" :background "grey75" :box (:line-width 1 :style released-button)))))
-   `(mode-line-inactive ((t (:foreground "grey20" :background "grey90" :weight light
-                                         :box `(:line-width 1 :color "grey75" :style nil)))))
-   ))
+ ;; mode-line
+ `(mode-line ((t (:foreground "black" :background "grey75" :box (:line-width 1 :style released-button)))))
+ `(mode-line-inactive ((t (:foreground "grey20" :background "grey90" :weight light
+                                       :box `(:line-width 1 :color "grey75" :style nil)))))
+ )
 
 (and load-file-name
      (boundp 'custom-theme-load-path)

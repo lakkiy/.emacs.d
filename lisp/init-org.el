@@ -172,5 +172,23 @@
   (electric-quote-local-mode)
   (electric-indent-local-mode -1))
 
+(eat-package org-static-blog
+  :straight t
+  :init
+  (setq org-static-blog-publish-title "404cn's blog")
+  (setq org-static-blog-publish-url "https://404cn.github.io/")
+  (setq org-static-blog-publish-directory "~/p/blog/")
+  (setq org-static-blog-posts-directory "~/p/blog/posts/")
+  (setq org-static-blog-drafts-directory "~/p/blog/drafts/")
+  (setq org-static-blog-enable-tags t)
+  (setq org-static-blog-use-preview t)
+  (setq org-static-blog-preview-ellipsis "")
+  (setq org-export-with-toc nil)
+  (setq org-export-with-section-numbers nil)
+  :config
+  (setq org-static-blog-page-header (get-string-from-file "~/p/blog/static/header.html"))
+  (setq org-static-blog-page-preamble (get-string-from-file "~/p/blog/static/preamble.html"))
+  (setq org-static-blog-page-postamble (get-string-from-file "~/p/blog/static/postamble.html")))
+
 ;;; init-org.el ends here
 (provide 'init-org)

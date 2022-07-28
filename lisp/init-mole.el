@@ -17,4 +17,11 @@
   :config
   (elfeed-protocol-enable))
 
+(eat-package leetcode
+  :straight (leetcode :type git :host github :repo "ginqi7/leetcode-emacs")
+  :commands leetcode-list-all
+  :init
+  (eat-package ctable :straight t)
+  (setq leetcode-language "go"))
+
 (provide 'init-mole)
