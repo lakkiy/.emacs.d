@@ -1,5 +1,29 @@
 ;; -*- lexical-binding: t; -*-
 
+;; emacs as app launcher
+(eat-package app-launcher
+  :straight '(app-launcher :host github :repo "SebastienWae/app-launcher")
+  :init
+  (defun eat/emacs-app-launcher ()
+    "Create and select a frame called emacs-app-launcher which consists only of a minibuffer and has specific dimensions.
+Run `app-launcher-run-app' on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour.
+Delete the frame after that command has exited"
+    (interactive)
+    (let ((default-frame-alist '((undecorated . t)
+                                 (vertical-scroll-bars)
+                                 (scroll-bar-mode . 0)
+                                 (menu-bar-lines . 0)
+                                 (tool-bar-lines . 0))))
+      (with-selected-frame
+          (make-frame
+           '((name . "emacs-app-launcher")
+             (minibuffer . only)
+             (width . 120)
+             (height . 11)))
+        (unwind-protect
+            (app-launcher-run-app)
+          (delete-frame))))))
+
 (eat-package telega
   :straight t
   :commands telega

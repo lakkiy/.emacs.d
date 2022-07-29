@@ -123,9 +123,10 @@
 
 ;; TODO search in pinyin
 (eat-package xeft
-  :straight (xeft
-             :type git :host github :repo "casouri/xeft"
-             :files (:defaults "Makefile" "module"))
+  :straight (xeft :type git
+                  :host github
+                  :repo "casouri/xeft"
+                  :files (:defaults "Makefile" "module"))
   :init
   (setq xeft-directory "~/Dropbox/org/roam"
         xeft-database "~/.xeft/db")
