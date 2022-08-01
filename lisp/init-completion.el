@@ -15,8 +15,6 @@
 (eat-package corfu
   :straight (corfu :files (:defaults "extensions/*.el"))
   :hook
-  ;; TODO didn't enable corfu mode under tui
-  ((prog-mode-hook conf-mode-hook eshell-mode-hook) . corfu-mode)
   :init
   (setq
    corfu-preview-current nil
@@ -25,6 +23,7 @@
    corfu-quit-no-match t
    corfu-quit-at-boundary t
    corfu-auto t)
+  (global-corfu-mode 1)
   :config
   (defun eat/corfu-complete ()
     (interactive)
@@ -40,6 +39,22 @@
   (define-key corfu-map (kbd "<tab>") 'eat/corfu-complete)
   (define-key corfu-map (kbd "TAB") 'eat/corfu-complete)
   (define-key corfu-map (kbd "RET") nil))
+
+;; also chekc https://github.com/astoff/isearch-mb/wiki
+(eat-package isearch-mb
+  :straight t
+  :hook (after-init-hook . isearch-mb-mode)
+  :config
+  (define-advice isearch-mb--update-prompt (:around (fn &rest _) show-case-fold-info)
+    "Show case fold info in the prompt."
+    (cl-letf* ((isearch--describe-regexp-mode-orig
+                (symbol-function 'isearch--describe-regexp-mode))
+               ((symbol-function 'isearch--describe-regexp-mode)
+                (lambda (regexp-function &optional space-before)
+                  (concat (if isearch-case-fold-search "[Case Fold] " "")
+                          (funcall isearch--describe-regexp-mode-orig
+                                   regexp-function space-before)))))
+      (funcall fn _))))
 
 ;; `corfu-terminal' need this
 (eat-package popon
@@ -115,7 +130,7 @@
   :init
   (eat-package consult-yasnippet :straight t)
   ;; In buffer action
-  (global-set-key (kbd "C-s") 'consult-line)
+  (global-set-key (kbd "C-c C-s") 'consult-line)
   (global-set-key [remap imenu] 'consult-imenu)
   (global-set-key [remap goto-line] 'consult-goto-line)
   (global-set-key [remap yank-pop] 'consult-yank-pop)

@@ -133,23 +133,30 @@
              :type git
              :host github
              :repo "manateelazycat/lsp-bridge"
-             :files (:defaults "*.py" "core/*" "langserver/*" "acm/*")
-             ;; do not generate autoload file
-             ;; it has an annoying hook to `post-command-hook'
-             ;; and emacs have to load this package or
-             ;; it will cause an error on startup
-             :build (:not autoloads))
-  :commands lsp-bridge-mode
-  :hook (lsp-bridge-mode (lambda () (setq-local corfu-mode nil)))
+             :files ("*"))
+  :commands lsp-bridge-mode global-lsp-bridge-mode
+  :init
+  (setq acm-enable-doc nil)
   :config
+  (ignore-errors
+    (global-corfu-mode -1))
   (define-key lsp-bridge-mode-map (kbd "M-.") #'lsp-bridge-find-def)
+  (define-key lsp-bridge-mode-map (kbd "C-x 4 .") #'lsp-bridge-find-def-other-window)
   (define-key lsp-bridge-mode-map (kbd "M-,") #'lsp-bridge-return-from-def)
   (define-key lsp-bridge-mode-map (kbd "M-?") #'lsp-bridge-find-references)
   (define-key lsp-bridge-mode-map (kbd "M-'") #'lsp-bridge-find-impl)
-  (define-key lsp-bridge-mode-map (kbd "C-x 4 .") #'lsp-bridge-find-def-other-window)
   (define-key lsp-bridge-mode-map (kbd "C-c r") #'lsp-bridge-rename)
   (define-key lsp-bridge-mode-map (kbd "C-c <") #'lsp-bridge-jump-to-prev-diagnostic)
-  (define-key lsp-bridge-mode-map (kbd "C-c >") #'lsp-bridge-jump-to-next-diagnostic))
+  (define-key lsp-bridge-mode-map (kbd "C-c >") #'lsp-bridge-jump-to-next-diagnostic)
+  ;; ref
+  (define-key lsp-bridge-ref-mode-map (kbd "j") nil)
+  (define-key lsp-bridge-ref-mode-map (kbd "k") nil)
+  (define-key lsp-bridge-ref-mode-map (kbd "h") nil)
+  (define-key lsp-bridge-ref-mode-map (kbd "l") nil)
+  (define-key lsp-bridge-ref-mode-map (kbd "p") 'lsp-bridge-ref-jump-prev-file)
+  (define-key lsp-bridge-ref-mode-map (kbd "h") 'lsp-bridge-ref-jump-prev-keyword)
+  (define-key lsp-bridge-ref-mode-map (kbd "t") 'lsp-bridge-ref-jump-next-keyword)
+  (define-key lsp-bridge-ref-mode-map (kbd "n") 'lsp-bridge-ref-jump-next-file))
 
 (require 'init-go)
 (require 'init-clojure)

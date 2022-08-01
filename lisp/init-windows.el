@@ -17,6 +17,9 @@
    eyebrowse-new-workspace t
    eyebrowse-mode-line-style 'current)
   :config
+  (with-eval-after-load 'meow
+    (meow-leader-define-key
+     (cons "t" eyebrowse-keymap-prefix)))
   (defun eat/eyebrowse-switch-project ()
     "Switch to project in a new window config, project name will be used as config name.
 

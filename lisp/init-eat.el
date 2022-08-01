@@ -13,8 +13,14 @@
 
 (defvar eat/user-mail-address "liubolovelife@gmail.com")
 
-(defvar eat/complete-delay 0.5
+(defvar eat/complete-delay 0.2
   "Delay time before complete.")
+
+(defvar eat/enable-icon t
+  "Whether to enable `all-the-icons'.")
+
+(defvar eat/enable-benchmark nil
+  "Enable `benchmark-init', run `benchmark-init/show-durations-tree' to see result.")
 
 ;; FIXME not work
 (defvar eat/minibuffer-completion-function 'icomplete-vertical-mode
@@ -634,10 +640,13 @@ ARGS.
     (setq x-gtk-use-system-tooltips nil)))
 
 
-;;; Dvorak
+;;; HACK Dvorak
 ;; Make “C-t” act like “C-x”, so it's easier to type on Dvorak layout
 (keyboard-translate ?\C-t ?\C-x)
 (keyboard-translate ?\C-x ?\C-t)
+;; use C-u to forward, the origin C-u map to C-c C-u
+(global-set-key (kbd "C-u") #'forward-char)
+(global-set-key (kbd "C-x C-u") #'universal-argument)
 
 
 ;;; Keybindings

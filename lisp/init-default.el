@@ -19,12 +19,6 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-(defvar eat/enable-benchmark nil
-  "Enable `benchmark-init', run `benchmark-init/show-durations-tree' to see result.")
-
-(defvar eat/enable-icon t
-  "Whether to enable `all-the-icons'.")
-
 
 ;;; GC
 (eat-package gcmh
