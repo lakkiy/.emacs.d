@@ -158,6 +158,13 @@
   (define-key lsp-bridge-ref-mode-map (kbd "t") 'lsp-bridge-ref-jump-next-keyword)
   (define-key lsp-bridge-ref-mode-map (kbd "n") 'lsp-bridge-ref-jump-next-file))
 
+(defun eat/lsp-reconnect ()
+  (interactive)
+  (if (bound-and-true-p lsp-bridge-mode)
+      (lsp-bridge-restart-process)
+    (eglot-reconnect)))
+(global-set-key [f10] #'eat/lsp-reconnect)
+
 (require 'init-go)
 (require 'init-clojure)
 
