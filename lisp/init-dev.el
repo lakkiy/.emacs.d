@@ -1,5 +1,13 @@
 ;;; -*- lexical-binding: t -*-
 
+(eat-package beardbolt
+  :straight (beardbolt
+             :type git
+             :host github
+             :repo "joaotavora/beardbolt"
+             :files ("*")
+             :pre-build ("make")))
+
 (eat-package aggressive-indent
   :straight t
   :commands aggressive-indent-mode
@@ -127,7 +135,7 @@
   (add-to-list 'eglot-server-programs
 			   '(rust-mode "rust-analyzer")))
 
-;; this need pip install epc
+;; this need pip install epc, orjson
 (eat-package lsp-bridge
   :straight (lsp-bridge
              :type git
