@@ -1078,6 +1078,7 @@ No tab will created if the command is cancelled."
 (eat-package paren
   :init
   (setq show-paren-when-point-in-periphery t
+        show-paren-context-when-offscreen 'overlay
         show-paren-when-point-inside-paren t)
   (when eat/emacs29p
     (setq show-paren-context-when-offscreen t)))
