@@ -56,12 +56,10 @@
                                    regexp-function space-before)))))
       (funcall fn _))))
 
-;; `corfu-terminal' need this
-(eat-package popon
-  :straight (popon :type git :repo "https://codeberg.org/akib/emacs-popon.git"))
-
+(eat-package popon :straight (popon :type git :repo "https://codeberg.org/akib/emacs-popon.git"))
 (eat-package corfu-terminal
   :straight (corfu-terminal :type git :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
+  :init
   :hook
   (corfu-mode-hook . (lambda ()
                        (unless (display-graphic-p)
@@ -69,7 +67,9 @@
 
 (eat-package corfu-doc
   :straight t
-  :hook (corfu-mode-hook . corfu-doc-mode)
+  :hook (corfu-mode-hook . (lambda ()
+                             (when (display-graphic-p)
+                               (corfu-doc-mode))))
   :config
   (setq corfu-echo-documentation nil)
   (define-key corfu-map (kbd "M-p") #'corfu-doc-scroll-down)
