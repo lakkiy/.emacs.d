@@ -72,46 +72,6 @@
     (setenv "GTAGSCONF" (concat (getenv "HOME") "/.globalrc"))
     (setenv "GTAGSLABEL" "native-pygments")))
 
-(eat-package flycheck
-  :straight t
-  :init
-  (setq
-   flycheck-check-syntax-automatically '(save mode-enabled)
-   flycheck-indication-mode (if (display-graphic-p)
-                                'right-fringe
-                              'right-margin)
-   flycheck-emacs-lisp-load-path 'inherit
-   flycheck-temp-prefix ".flycheck"
-   flycheck-disabled-checkers '(emacs-lisp
-                                emacs-lisp-checkdoc
-                                emacs-lisp-package
-                                go-gofmt
-                                go-golint
-                                go-vet
-                                go-build
-                                go-test
-                                go-errcheck
-                                go-unconvert))
-
-  (defun eat/flycheck-mode ()
-    (interactive)
-    (add-hook 'prog-mode-hook #'flycheck-mode))
-  :config
-  (define-fringe-bitmap 'flycheck-fringe-bitmap-arrow
-    [16 48 112 240 112 48 16] nil nil 'center)
-  (flycheck-redefine-standard-error-levels "⏴" 'flycheck-fringe-bitmap-arrow)
-  (define-key flycheck-mode-map [remap flymake-goto-prev-error] #'flycheck-previous-error)
-  (define-key flycheck-mode-map [remap flymake-goto-next-error] #'flycheck-next-error))
-
-(eat-package flymake-flycheck
-  :straight t
-  :init
-  (defun eat/flymake-flycheck-enable ()
-    (interactive)
-    (setq-local flymake-diagnostic-functions
-                (append flymake-diagnostic-functions
-                        (flymake-flycheck-all-chained-diagnostic-functions)))))
-
 (eat-package eglot
   :straight t
   :commands eglot-ensure
