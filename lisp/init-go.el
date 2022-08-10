@@ -76,4 +76,14 @@
 (eat-package go-impl :straight t)
 (eat-package go-dlv :straight t)
 
+(eat-package flymake-go-staticcheck
+  :straight t
+  :init
+  (defun eat/flymake-go-staticcheck-enable ()
+    (interactive)
+    (add-hook 'go-mode-hook #'flymake-go-staticcheck-enable))
+  (defun eat/flymake-go-staticcheck-disable ()
+    (interactive)
+    (remove-hook 'go-mode-hook #'flymake-go-staticcheck-disable)))
+
 (provide 'init-go)
