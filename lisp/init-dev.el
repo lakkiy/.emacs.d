@@ -147,7 +147,10 @@
   (setq acm-enable-doc nil)
   :config
   (ignore-errors
-    (global-corfu-mode -1))
+    (corfu-mode -1))
+  (add-hook 'lsp-bridge-mode-hook (lambda ()
+                                    (ignore-errors
+                                      (corfu-mode -1))))
   (define-key lsp-bridge-mode-map (kbd "M-.") #'lsp-bridge-find-def)
   (define-key lsp-bridge-mode-map (kbd "C-x 4 .") #'lsp-bridge-find-def-other-window)
   (define-key lsp-bridge-mode-map (kbd "M-,") #'lsp-bridge-return-from-def)
