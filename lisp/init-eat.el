@@ -1181,8 +1181,13 @@ No tab will created if the command is cancelled."
         smptmail-stream-type 'ssl))
 
 (eat-package flymake
+  :hook
+  (prog-mode-hook . flymake-mode)
+  (emacs-lisp-mode-hook . (lambda ()
+                            (flymake-mode -1)))
   :init
-  (setq-default flymake-diagnostic-functions nil)
+  (setq-default flymake-diagnostic-functions nil
+                flymake-no-changes-timeout 0.2)
   (defun sekiro-flymake-mode-line-format ()
     (let* ((counter (string-to-number
                      (nth 1
@@ -1193,10 +1198,7 @@ No tab will created if the command is cancelled."
       (propertize
        "危"
        'face
-       sekiro-flymake)))
-  (defun eat/flymake-mode ()
-    (interactive)
-    (add-hook 'prog-mode-hook #'flymake-mode)))
+       sekiro-flymake))))
 
 (eat-package which-func
   :commands
