@@ -77,8 +77,8 @@
 
 (eat-package vertico
   :straight (vertico :files (:defaults "extensions/*"))
-  :init
-  (setq eat/minibuffer-completion-function 'vertico-mode)
+  :hook
+  (after-init-hook . vertico-mode)
   :config
   (define-key vertico-map (kbd "C-j") #'(lambda () (interactive)
                                           (if minibuffer--require-match

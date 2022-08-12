@@ -22,11 +22,6 @@
 (defvar eat/enable-benchmark nil
   "Enable `benchmark-init', run `benchmark-init/show-durations-tree' to see result.")
 
-;; FIXME not work
-(defvar eat/minibuffer-completion-function 'icomplete-vertical-mode
-  "Minibuffer completion function, run after Emacs init.")
-(add-hook 'after-init-hook (lambda () (funcall eat/minibuffer-completion-function)))
-
 ;;;; Consts
 (defconst eat/macp
   (eq system-type 'darwin)
