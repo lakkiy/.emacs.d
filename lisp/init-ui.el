@@ -3,17 +3,10 @@
 (straight-use-package 'color-theme-sanityinc-tomorrow)
 (straight-use-package 'spacemacs-theme)
 (straight-use-package 'kaolin-themes)
-(straight-use-package 'stimmung-themes)
 (straight-use-package '(notink-theme :type git :host github :repo "MetroWind/notink-theme"))
 
 
 ;;; Theme
-;; `doom-themes'
-(with-eval-after-load 'doom-themes
-  (setq doom-themes-treemacs-theme "doom-atom")
-  (doom-themes-treemacs-config)
-  (doom-themes-org-config))
-
 ;; `spacemacs-theme'
 (setq
  spacemacs-theme-comment-italic t
