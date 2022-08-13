@@ -46,6 +46,8 @@
 (eat-package citre
   :straight (citre :type git :host github :repo "universal-ctags/citre")
   :init
+  (global-set-key (kbd "C-x c j") 'citre-jump)
+  (global-set-key (kbd "C-x c J") 'citre-jump-back)
   (global-set-key (kbd "C-x c u") 'citre-update-this-tags-file)
   (global-set-key (kbd "C-x c p") 'citre-peek)
   (setq citre-default-create-tags-file-location 'global-cache
