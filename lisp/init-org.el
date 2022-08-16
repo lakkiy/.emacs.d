@@ -168,7 +168,6 @@
 
 (defun eat/org-hook ()
   "Configuration for Org Mode."
-  (eat/prose-mode)
   (electric-pair-local-mode -1)
   (electric-quote-local-mode)
   (electric-indent-local-mode -1))

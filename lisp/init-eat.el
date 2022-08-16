@@ -722,27 +722,6 @@ ARGS.
   :init
   (setq display-line-numbers-width 3))
 
-(eat-package hippie-exp
-  :init
-  (global-set-key [remap dabbrev-expand] #'hippie-expand)
-  (global-set-key (kbd "M-/") 'hippie-expand)
-  (setq hippie-expand-try-functions-list
-        '(try-expand-dabbrev
-          try-expand-dabbrev-all-buffers
-          try-expand-dabbrev-from-kill
-          try-complete-file-name-partially
-          try-complete-file-name
-          try-expand-all-abbrevs
-          try-expand-list
-          try-expand-line
-          try-complete-lisp-symbol-partially
-          try-complete-lisp-symbol)))
-
-(eat-package windmove
-  :init
-  ;; TODO change keybindings
-  (windmove-default-keybindings))
-
 (eat-package subword
   :hook (prog-mode-hook . subword-mode))
 
@@ -1144,9 +1123,6 @@ No tab will created if the command is cancelled."
   :init
   (setq outline-minor-mode-cycle t
         outline-minor-mode-highlight t))
-
-;; use C-q C-l to add page break symbol
-(eat-package page)
 
 (eat-package newcomment
   :init
