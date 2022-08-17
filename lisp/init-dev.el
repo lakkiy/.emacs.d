@@ -74,6 +74,10 @@
     (setenv "GTAGSCONF" (concat (getenv "HOME") "/.globalrc"))
     (setenv "GTAGSLABEL" "native-pygments")))
 
+(eat-package eldoc-box
+  :straight t
+  :hook (eglot-managed-mode-hook . eldoc-box-hover-mode))
+
 (eat-package eglot
   :straight t
   :commands eglot-ensure
