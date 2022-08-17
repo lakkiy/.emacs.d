@@ -95,7 +95,15 @@
   (add-to-list 'eglot-server-programs
                '(python-mode . ("pyright-langserver" "--stdio")))
   (add-to-list 'eglot-server-programs
-			   '(rust-mode "rust-analyzer")))
+			   '(rust-mode "rust-analyzer"))
+  ;; NOTE deno
+  (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
+  (defclass eglot-deno (eglot-lsp-server) ()
+    :documentation "A custom class for deno lsp.")
+  (cl-defmethod eglot-initialization-options ((server eglot-deno))
+    "Passes through required deno initialization options"
+    (list :enable t
+          :lint t)))
 
 ;; this need pip install epc, orjson
 (eat-package lsp-bridge
