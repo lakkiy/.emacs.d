@@ -23,51 +23,6 @@
   :init
   (setq winner-dont-bind-my-keys t))
 
-(eat-package desktop
-  :hook (desktop-after-read-hook . eat/desktop-load-theme)
-  :init
-  (setq desktop-path (list user-emacs-directory)
-        desktop-auto-save-timeout 600)
-  (desktop-save-mode 1)
-
-  ;; Reload theme after `desktop-read'.
-  ;; But it doesn't prevent the desktop-save-mode from saving the theme
-  ;; in the .desktop file, instead it restores the theme after loading
-  ;; the desktop.
-  (defun eat/desktop-load-theme ()
-    "load custom theme"
-    (interactive)
-    (eat/load-theme (car custom-enabled-themes)))
-
-  ;; save a bunch of variables to the desktop file
-  ;; for lists specify the len of the maximal saved data also
-  (setq desktop-globals-to-save
-        '((comint-input-ring        . 50)
-          (compile-history          . 30)
-          desktop-missing-file-warning
-          custom-enabled-themes
-          (dired-regexp-history     . 20)
-          (extended-command-history . 30)
-          (face-name-history        . 20)
-          (file-name-history        . 100)
-          (grep-find-history        . 30)
-          (grep-history             . 30)
-          (magit-revision-history   . 50)
-          (minibuffer-history       . 50)
-          (org-clock-history        . 50)
-          (org-refile-history       . 50)
-          (org-tags-history         . 50)
-          (query-replace-history    . 60)
-          (read-expression-history  . 60)
-          (regexp-history           . 60)
-          (regexp-search-ring       . 20)
-          register-alist
-          (search-ring              . 20)
-          (shell-command-history    . 50)
-          tags-file-name
-          tags-table-list)))
-
-
 (eat-package savehist
   :hook (after-init-hook . savehist-mode)
   :init
