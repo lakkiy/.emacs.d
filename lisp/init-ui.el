@@ -1,6 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(straight-use-package 'color-theme-sanityinc-tomorrow)
 (straight-use-package 'spacemacs-theme)
 (straight-use-package 'kaolin-themes)
 (straight-use-package '(notink-theme :type git :host github :repo "MetroWind/notink-theme"))
