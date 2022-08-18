@@ -10,7 +10,19 @@
   (eat-package yasnippet-snippets :straight t)
   :config
   (let ((inhibit-message t))
-    (yas-reload-all)))
+    (yas-reload-all))
+
+  (defun eat/yas-next-field-or-maybe-expand ()
+    "Try complete current cond or `yas-next-field-or-maybe-expand'.
+
+Sometime lsp client return a snippet and complete didn't work(TAB will jump to next field),
+so try complete filst, if there nothing to complete then try to jump to next field or expand."
+    (interactive)
+    (or (corfu-insert) ;; NOTE this works
+        ;; (acm-insert-common) ;; TODO this will break yas status and still try to complete even there's no cond
+        (yas-next-field-or-maybe-expand)))
+  (define-key yas-keymap (kbd "<tab>") 'eat/yas-next-field-or-maybe-expand)
+  (define-key yas-keymap (kbd "TAB") 'eat/yas-next-field-or-maybe-expand))
 
 (eat-package corfu
   :straight (corfu :files (:defaults "extensions/*.el"))
@@ -18,7 +30,7 @@
   :init
   (setq
    corfu-preview-current nil
-   corfu-auto-delay eat/complete-delay
+   corfu-auto-delay 0.2
    corfu-auto-prefix 2
    corfu-quit-no-match t
    corfu-quit-at-boundary t

@@ -13,9 +13,6 @@
 
 (defvar eat/user-mail-address "liubolovelife@gmail.com")
 
-(defvar eat/complete-delay 0.2
-  "Delay time before complete.")
-
 (defvar eat/enable-icon t
   "Whether to enable `all-the-icons'.")
 

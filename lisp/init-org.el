@@ -1,15 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(eat-package org-modern
-  :straight (org-modern :type git :host github :repo "minad/org-modern")
-  :hook
-  (org-mode-hook . org-modern-mode)
-  (org-agenda-finalize-hook . org-modern-agenda)
-  :config
-  (setq org-modern-star ["›"]
-        ;; Use valign instead
-        org-modern-table nil))
-
 (eat-package org
   :straight (org :type built-in)
   :hook (org-mode-hook . eat/org-hook)
@@ -169,6 +159,7 @@
 
 (defun eat/org-hook ()
   "Configuration for Org Mode."
+  (org-indent-mode)
   (electric-pair-local-mode -1)
   (electric-quote-local-mode)
   (electric-indent-local-mode -1))
