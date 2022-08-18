@@ -22,6 +22,7 @@
                                (shell . t)))
   :config
   (setq org-edit-src-content-indentation 0
+        org-src-fontify-natively nil
         org-confirm-babel-evaluate nil
         org-image-actual-width '(300)
         ;; Faster loading
