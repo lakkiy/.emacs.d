@@ -103,7 +103,7 @@ No window config will created if the command is cancelled."
   (with-eval-after-load 'project
     (setq popper-group-function 'popper-group-by-project))
   :config
-  (global-set-key (kbd "M-`") #'popper-toggle-type)
+  (global-set-key (kbd "C-M-`") #'popper-toggle-type)
   (defun my-popper-fit-window-height (win)
     "Determine the height of popup window WIN by fitting it to the buffer's content."
     (fit-window-to-buffer

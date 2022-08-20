@@ -169,12 +169,21 @@ Used in the default value of `notmuch-tag-formats'."
 (eat-package vterm
   :straight t
   :init
-  (setq vterm-always-compile-module t))
+  (setq vterm-always-compile-module t)
 
-(eat-package vterm-toggle
-  :straight t
-  :init
-  (global-set-key (kbd "C-`") #'vterm-toggle))
+  (eat-package vterm-toggle
+    :straight t
+    :init
+    (global-set-key (kbd "C-`") #'vterm-toggle))
+
+  (eat-package multi-vterm
+    :straight t
+    :init
+    ;; (global-set-key (kbd "C-x t t") #'multi-vterm)
+    :config
+    ;; (define-key vterm-mode-map (kbd "M-[") #'multi-vterm-prev)
+    ;; (define-key vterm-mode-map (kbd "M-]") #'multi-vterm-next)
+    ))
 
 ;;; init-app.el ends here
 (provide 'init-app)
