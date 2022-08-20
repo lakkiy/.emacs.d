@@ -19,13 +19,6 @@ Replace =github.com= to =github.com.cnpmjs.org= in =straight.el=
   (advice-add 'straight-vc-git--encode-url :around #'+set-github-mirror)
 #+end_src
 
-Enable snippets completion on gopls(require =yasnippet=).
-#+begin_src emacs-lisp
-  (setq-default eglot-workspace-configuration
-                '((gopls
-                   (usePlaceholders . t))))
-#+end_src
-
 To set up elfeed, add this to =custom.el=
 #+begin_src emacs-lisp
   (setq

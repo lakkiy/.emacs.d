@@ -179,11 +179,10 @@ Used in the default value of `notmuch-tag-formats'."
   (eat-package multi-vterm
     :straight t
     :init
-    ;; (global-set-key (kbd "C-x t t") #'multi-vterm)
+    (global-set-key (kbd "C-~") #'multi-vterm)
     :config
-    ;; (define-key vterm-mode-map (kbd "M-[") #'multi-vterm-prev)
-    ;; (define-key vterm-mode-map (kbd "M-]") #'multi-vterm-next)
-    ))
+    (define-key vterm-mode-map (kbd "C-(") #'multi-vterm-prev)
+    (define-key vterm-mode-map (kbd "C-)") #'multi-vterm-next)))
 
 ;;; init-app.el ends here
 (provide 'init-app)

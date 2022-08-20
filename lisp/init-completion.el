@@ -10,19 +10,7 @@
   (eat-package yasnippet-snippets :straight t)
   :config
   (let ((inhibit-message t))
-    (yas-reload-all))
-
-  (defun eat/yas-next-field-or-maybe-expand ()
-    "Try complete current cond or `yas-next-field-or-maybe-expand'.
-
-Sometime lsp client return a snippet and complete didn't work(TAB will jump to next field),
-so try complete filst, if there nothing to complete then try to jump to next field or expand."
-    (interactive)
-    (or (corfu-insert) ;; NOTE this works
-        ;; (acm-insert-common) ;; TODO this will break yas status and still try to complete even there's no cond
-        (yas-next-field-or-maybe-expand)))
-  (define-key yas-keymap (kbd "<tab>") 'eat/yas-next-field-or-maybe-expand)
-  (define-key yas-keymap (kbd "TAB") 'eat/yas-next-field-or-maybe-expand))
+    (yas-reload-all)))
 
 (eat-package corfu
   :straight (corfu :files (:defaults "extensions/*.el"))
@@ -37,20 +25,36 @@ so try complete filst, if there nothing to complete then try to jump to next fie
    corfu-auto t)
   (global-corfu-mode 1)
   :config
-  (defun eat/corfu-complete ()
-    (interactive)
-    (or (yas-expand)
-        ;; NOTE `corfu-complete' sometimes didn't quit corfu after complete
-        (corfu-insert)))
-  ;; quit corfu completion and back to meow normal mode when it enable
+  ;; quit corfu completion and back to meow normal mode
   (define-key corfu-map (kbd "<escape>") #'(lambda ()
                                              (interactive)
                                              (corfu-quit)
                                              (when (meow-insert-mode-p)
                                                (meow-insert-exit))))
+
+  ;; tab in corfu-map
+  (defun eat/corfu-complete ()
+    (interactive)
+    (or (yas-expand)
+        ;; NOTE `corfu-complete' sometimes didn't quit corfu after complete
+        (corfu-insert)))
   (define-key corfu-map (kbd "<tab>") 'eat/corfu-complete)
   (define-key corfu-map (kbd "TAB") 'eat/corfu-complete)
-  (define-key corfu-map (kbd "RET") nil))
+  (define-key corfu-map (kbd "RET") nil)
+
+  ;; tab in yas-keymap
+  (defun eat/corfu-insert-or-maybe-expand ()
+    "Try complete current cond or `yas-next-field-or-maybe-expand'.
+
+Sometime lsp client return a snippet and complete didn't work(TAB will jump to next field),
+so try complete filst, if there nothing to complete then try to jump to next field or expand."
+    (interactive)
+    (or (corfu-insert)
+        (yas-next-field-or-maybe-expand)))
+  (with-eval-after-load 'yasnippet
+    (define-key yas-keymap (kbd "<tab>") 'eat/corfu-insert-or-maybe-expand)
+    ;; under TUI
+    (define-key yas-keymap (kbd "TAB") 'eat/corfu-insert-or-maybe-expand)))
 
 ;; also chekc https://github.com/astoff/isearch-mb/wiki
 (eat-package isearch-mb

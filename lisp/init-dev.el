@@ -88,6 +88,9 @@
    eglot-stay-out-of '(company) ;; I will manage these myself
    eglot-extend-to-xref t       ;; make eglot manage file out of project by `xref-find-definitions'
    eglot-ignored-server-capabilites '(:documentHighlightProvider))
+  (setq-default eglot-workspace-configuration
+                '((gopls
+                   (usePlaceholders . t))))
   :config
   ;; keybindings
   (define-key eglot-mode-map (kbd "M-RET") 'eglot-code-actions)
