@@ -1,13 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(eat-package beardbolt
-  :straight (beardbolt
-             :type git
-             :host github
-             :repo "joaotavora/beardbolt"
-             :files ("*")
-             :pre-build ("make")))
-
 (eat-package aggressive-indent
   :straight t
   :commands aggressive-indent-mode
@@ -25,8 +17,6 @@
   :config
   (setf (alist-get 'gofmt apheleia-formatters)
         '("goimports")))
-
-(eat-package xscheme)
 
 (eat-package dumb-jump
   :straight t
@@ -133,9 +123,6 @@ When expand snippet, try complete if there's acm cond, or run `yas-next-field-or
       (define-key yas-keymap (kbd "<tab>") 'acm-complete-or-expand-yas-snippet)
       (define-key yas-keymap (kbd "TAB") 'acm-complete-or-expand-yas-snippet)))
   :config
-  ;; HACK lsp still try to complete after run `acm-complete-or-expand-yas-snippet'
-  ;; it should stop so can hit tab to jump to next field
-  (add-to-list 'lsp-bridge-completion-stop-commands "acm-complete-or-expand-yas-snippet")
   (add-hook 'lsp-bridge-mode-hook #'eat/lsp-bridge-mode-setup)
   ;; keybindings
   (define-key lsp-bridge-mode-map (kbd "M-.") #'lsp-bridge-find-def)
