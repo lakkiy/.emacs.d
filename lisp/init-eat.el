@@ -245,6 +245,9 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 (defvar eat/theme 'leuven
   "Default theme.")
 
+(defvar eat/theme-tui nil
+  "Default theme used in tui.")
+
 (defvar eat/theme-system-light 'leuven
   "Default light theme after system appearance changed.")
 
@@ -286,7 +289,9 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 
 (add-hook 'eat/after-make-console-frame-hooks (lambda ()
                                                 (when (fboundp 'menu-bar-mode)
-                                                  (menu-bar-mode -1))))
+                                                  (menu-bar-mode -1))
+                                                (when eat/theme-tui
+                                                  (eat/load-theme eat/theme-tui))))
 
 (add-hook 'eat/after-make-window-system-frame-hooks (lambda ()
                                                       (eat/load-theme eat/theme)))
