@@ -16,13 +16,12 @@
   :straight (corfu :files (:defaults "extensions/*.el"))
   :hook
   :init
-  (setq
-   corfu-preview-current nil
-   corfu-auto-delay 0.2
-   corfu-auto-prefix 2
-   corfu-quit-no-match t
-   corfu-quit-at-boundary t
-   corfu-auto t)
+  (setq corfu-preview-current nil
+        corfu-auto-delay 0.2
+        corfu-auto-prefix 2
+        corfu-quit-no-match t
+        corfu-quit-at-boundary t
+        corfu-auto t)
   (global-corfu-mode 1)
   :config
   ;; quit corfu completion and back to meow normal mode
@@ -56,7 +55,7 @@ so try complete filst, if there nothing to complete then try to jump to next fie
     ;; under TUI
     (define-key yas-keymap (kbd "TAB") 'eat/corfu-insert-or-maybe-expand)))
 
-;; also chekc https://github.com/astoff/isearch-mb/wiki
+;; also check https://github.com/astoff/isearch-mb/wiki
 (eat-package isearch-mb
   :straight t
   :hook (after-init-hook . isearch-mb-mode)

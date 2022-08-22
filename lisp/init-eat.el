@@ -1,11 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-;;; Load custom-file
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(when (and (file-exists-p custom-file)
-           (file-readable-p custom-file))
-  (load custom-file :no-error :no-message))
-
 ;;; Basic
 ;;;; Variables
 
@@ -44,11 +38,12 @@
   (interactive)
   (delete-region (point-min) (point-max)))
 
-(defvar eat/proxy "127.0.0.1:7890")
+;;;; Network Proxy
+(defvar eat/proxy "127.0.0.1:7890"
+  "Network proxy address.")
 
-;; Network Proxy
 (defun eat/proxy-show ()
-  "Show HTTP/HTTPS proxy."
+  "Show proxy."
   (interactive)
   (if (or url-proxy-services (bound-and-true-p socks-noproxy))
       (message "Current proxy is `%s'" eat/proxy)
@@ -72,7 +67,7 @@
   (eat/proxy-show))
 
 (defun eat/proxy-disable ()
-  "Disable HTTP/HTTPS proxy."
+  "Disable proxy."
   (interactive)
   (setq url-proxy-services nil)
   (setq url-gateway-method 'native
@@ -82,11 +77,48 @@
   (eat/proxy-show))
 
 (defun eat/proxy-toggle ()
-  "Toggle HTTP/HTTPS proxy."
+  "Toggle proxy."
   (interactive)
   (if (or (bound-and-true-p url-proxy-services) (bound-and-true-p socks-noproxy))
       (eat/proxy-disable)
     (eat/proxy-enable)))
+
+;;;; Some useful functions
+(defun eat/delete-this-file ()
+  "Delete the current file, and kill the buffer."
+  (interactive)
+  (unless (buffer-file-name)
+    (error "No file is currently being edited"))
+  (when (yes-or-no-p (format "Really delete '%s'?"
+                             (file-name-nondirectory buffer-file-name)))
+    (delete-file (buffer-file-name))
+    (kill-this-buffer)))
+
+(defun eat/rename-this-file-and-buffer (new-name)
+  "Renames both current buffer and file it's visiting to NEW-NAME."
+  (interactive "sNew name: ")
+  (let ((name (buffer-name))
+        (filename (buffer-file-name)))
+    (unless filename
+      (error "Buffer '%s' is not visiting a file!" name))
+    (progn
+      (when (file-exists-p filename)
+        (rename-file filename new-name 1))
+      (set-visited-file-name new-name)
+      (rename-buffer new-name))))
+
+(defun get-string-from-file (filePath)
+  "Return file content as string."
+  (with-temp-buffer
+    (insert-file-contents filePath)
+    (buffer-string)))
+
+
+;;; Load custom-file
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(when (and (file-exists-p custom-file)
+           (file-readable-p custom-file))
+  (load custom-file :no-error :no-message))
 
 
 ;;; Frame
@@ -168,13 +200,9 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
         (throw 'value font)))))
 
 (defconst eat/font-default (eat/font-installed eat/fonts-default))
-
 (defconst eat/font-unicode (eat/font-installed eat/fonts-unicode))
-
 (defconst eat/font-cn (eat/font-installed eat/fonts-cn))
-
 (defconst eat/font-variable-pitch (eat/font-installed eat/fonts-variable-pitch))
-
 (defconst eat/font-mono (eat/font-installed eat/fonts-mono))
 
 (defun eat/buffer-face-mono ()
@@ -612,19 +640,17 @@ ARGS.
   (global-set-key [(super s)] #'save-buffer)
   (global-set-key [(super l)] #'goto-line)
   (global-set-key [(super w)] #'delete-frame)
-  (global-set-key [(super q)] #'save-buffers-kill-terminal) ;; `save-buffers-kill-emacs' will shutdown emacs daemon
-  (global-set-key [(super z)] #'undo))
+  (global-set-key [(super z)] #'undo)
+  ;; `save-buffers-kill-emacs' will shutdown emacs daemon
+  (global-set-key [(super q)] #'save-buffers-kill-terminal))
 
 
 ;;; Linux specific configuration
 (when eat/linuxp
-  ;; NOTE use C-M-8 to set manually
-  ;; (push '(alpha-background . 80) default-frame-alist)
-  ;; Linux specific
   (setq x-underline-at-descent-line t)
-
   (setq-default
-   pgtk-use-im-context-on-new-connection nil          ; Don't use Fcitx5 in Emacs in PGTK build
+   ;; Don't use Fcitx5 in Emacs in PGTK build
+   pgtk-use-im-context-on-new-connection nil
    x-gtk-resize-child-frames nil)
 
   ;; Don't use GTK+ tooltip
@@ -650,9 +676,6 @@ ARGS.
 
 
 ;;; Built-in packages
-;; TODO enable `icomplete-vertical-mode' if just load one file
-(eat-package icomplete)
-
 (eat-package pulse
   :hook
   ((imenu-after-jump-hook isearch-update-post-hook)
@@ -702,6 +725,7 @@ ARGS.
         repeat-exit-key (kbd "RET")))
 
 (when eat/emacs29p
+  ;; TODO use with hideshow
   (eat-package mouse
     :hook (after-init-hook . context-menu-mode)))
 
@@ -953,17 +977,6 @@ ARGS.
      (directory-file-name
       (project-root
        (project-current)))))
-
-  (defun eat/project-info ()
-    (interactive)
-    (message "%s" (project-current t)))
-
-  (defun eat/add-dot-project ()
-    (interactive)
-    (let* ((root-dir (read-directory-name "Root: "))
-           (f (expand-file-name ".project" root-dir)))
-      (message "Create %s..." f)
-      (make-empty-file f)))
 
   ;; do not remember tramp project
   (defun eat/project-remember-advice (fn pr &optional no-write)

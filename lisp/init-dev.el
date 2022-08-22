@@ -82,12 +82,10 @@
   :straight t
   :commands eglot-ensure
   :init
-  (setq
-   eglot-events-buffer-size 0
-   eglot-sync-connect nil       ;; don't block of LSP connection attempts
-   eglot-stay-out-of '(company) ;; I will manage these myself
-   eglot-extend-to-xref t       ;; make eglot manage file out of project by `xref-find-definitions'
-   eglot-ignored-server-capabilites '(:documentHighlightProvider))
+  (setq eglot-events-buffer-size 0
+        eglot-sync-connect nil       ;; don't block of LSP connection attempts
+        eglot-extend-to-xref t       ;; make eglot manage file out of project by `xref-find-definitions'
+        eglot-ignored-server-capabilites '(:documentHighlightProvider))
   (setq-default eglot-workspace-configuration
                 '((gopls
                    (usePlaceholders . t))))
@@ -96,21 +94,21 @@
   (define-key eglot-mode-map (kbd "M-RET") 'eglot-code-actions)
   (define-key eglot-mode-map (kbd "C-c r") 'eglot-rename)
   (define-key eglot-mode-map (kbd "M-'") 'eglot-find-implementation)
-  ;; TODO code actions
-  (add-to-list 'eglot-server-programs
-               '(sql-mode . ("sqls" "-config" "~/.config/sqls/config.yaml")))
   (add-to-list 'eglot-server-programs
                '(python-mode . ("pyright-langserver" "--stdio")))
   (add-to-list 'eglot-server-programs
 			   '(rust-mode "rust-analyzer"))
   ;; NOTE deno
-  (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
   (defclass eglot-deno (eglot-lsp-server) ()
     :documentation "A custom class for deno lsp.")
   (cl-defmethod eglot-initialization-options ((server eglot-deno))
     "Passes through required deno initialization options"
     (list :enable t
-          :lint t)))
+          :lint t))
+  (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
+  ;; TODO code actions
+  (add-to-list 'eglot-server-programs
+               '(sql-mode . ("sqls" "-config" "~/.config/sqls/config.yaml"))))
 
 ;; this need pip install epc, orjson
 (eat-package lsp-bridge
@@ -122,12 +120,24 @@
   :commands lsp-bridge-mode global-lsp-bridge-mode
   :init
   (setq acm-enable-doc nil)
+
+  (defun eat/lsp-bridge-mode-setup ()
+    "My setup for lsp-bridge.
+
+Disable `corfu-mode'.
+When expand snippet, try complete if there's acm cond, or run `yas-next-field-or-maybe-expand'."
+    (interactive)
+    (ignore-errors
+      (corfu-mode -1))
+    (with-eval-after-load 'yasnippet
+      (define-key yas-keymap (kbd "<tab>") 'acm-complete-or-expand-yas-snippet)
+      (define-key yas-keymap (kbd "TAB") 'acm-complete-or-expand-yas-snippet)))
   :config
-  (ignore-errors
-    (corfu-mode -1))
-  (add-hook 'lsp-bridge-mode-hook (lambda ()
-                                    (ignore-errors
-                                      (corfu-mode -1))))
+  ;; HACK lsp still try to complete after run `acm-complete-or-expand-yas-snippet'
+  ;; it should stop so can hit tab to jump to next field
+  (add-to-list 'lsp-bridge-completion-stop-commands "acm-complete-or-expand-yas-snippet")
+  (add-hook 'lsp-bridge-mode-hook #'eat/lsp-bridge-mode-setup)
+  ;; keybindings
   (define-key lsp-bridge-mode-map (kbd "M-.") #'lsp-bridge-find-def)
   (define-key lsp-bridge-mode-map (kbd "C-x 4 .") #'lsp-bridge-find-def-other-window)
   (define-key lsp-bridge-mode-map (kbd "M-,") #'lsp-bridge-return-from-def)
@@ -136,7 +146,6 @@
   (define-key lsp-bridge-mode-map (kbd "C-c r") #'lsp-bridge-rename)
   (define-key lsp-bridge-mode-map (kbd "C-c <") #'lsp-bridge-jump-to-prev-diagnostic)
   (define-key lsp-bridge-mode-map (kbd "C-c >") #'lsp-bridge-jump-to-next-diagnostic)
-  ;; ref
   (define-key lsp-bridge-ref-mode-map (kbd "j") nil)
   (define-key lsp-bridge-ref-mode-map (kbd "k") nil)
   (define-key lsp-bridge-ref-mode-map (kbd "h") nil)

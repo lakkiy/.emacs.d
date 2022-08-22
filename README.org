@@ -1,4 +1,11 @@
 
+** Enable network proxy before start
+Add this to custom.el
+#+begin_src emacs-lisp
+(setq eat/proxy "127.0.0.1:7890")
+(eat/proxy-enable)
+#+end_src
+
 ** Mac specification
 When PATH is changed, run the following command
   #+begin_src sh

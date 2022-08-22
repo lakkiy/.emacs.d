@@ -5,8 +5,7 @@
 ;;; others
 (let ((file-name-handler-alist nil))
   (require 'init-eat)
-  (require 'init-default)
-  (require 'init-utils)
+  (require 'init-bootstrap)
   (require 'init-builtin)
   (require 'init-ui)
   (require 'init-dog)
@@ -19,6 +18,5 @@
   (require 'init-app)
   (require 'init-mode)
   (require 'init-org)
-  (require 'init-lib)
   (require 'init-mole)
   (require 'init-xterm))
