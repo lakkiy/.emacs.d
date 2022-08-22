@@ -6,7 +6,6 @@
 (let ((file-name-handler-alist nil))
   (require 'init-eat)
   (require 'init-bootstrap)
-  (require 'init-builtin)
   (require 'init-ui)
   (require 'init-dog)
   (require 'init-edit)
