@@ -4,6 +4,7 @@
 (straight-use-package 'kaolin-themes)
 (straight-use-package '(notink-theme :type git :host github :repo "MetroWind/notink-theme"))
 (straight-use-package '(ef-themes :type git :host github :repo "protesilaos/ef-themes"))
+(straight-use-package '(matrix-emacs-theme :type git :host github :repo "monkeyjunglejuice/matrix-emacs-theme"))
 
 
 ;;; Theme
