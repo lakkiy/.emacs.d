@@ -32,7 +32,9 @@
 (eat-package markdown-mode
   :straight t
   :mode ("\\.md\\'" . gfm-mode)
-  :hook (markdown-mode-hook . gfm-view-mode)
+  :hook
+  (markdown-mode-hook . gfm-view-mode)
+  (markdown-mode-hook . valign-mode)
   :init
   (setq markdown-enable-wiki-links t
         markdown-italic-underscore t
