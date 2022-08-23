@@ -17,5 +17,4 @@
   (require 'init-app)
   (require 'init-mode)
   (require 'init-org)
-  (require 'init-mole)
-  (require 'init-xterm))
+  (require 'init-mole))
