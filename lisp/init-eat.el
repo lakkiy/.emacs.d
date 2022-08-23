@@ -965,13 +965,25 @@ ARGS.
   (add-hook 'ediff-before-setup-hook #'eat/ediff-save-window-conf)
   (add-hook 'ediff-quit-hook #'eat/ediff-restore-window-conf))
 
+(eat-package ispell
+  :init
+  (when eat/macp
+    (setenv "DICTIONARY" "en_US"))
+  ;; no spell checking for org special blocks
+  (add-to-list 'ispell-skip-region-alist '(":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:"))
+  (add-to-list 'ispell-skip-region-alist '("#\\+begin_src" . "#\\+end_src"))
+  (add-to-list 'ispell-skip-region-alist '("#\\+begin_example" . "#\\+end_example"))
+  (setq ispell-really-hunspell t
+        ispell-program-name "hunspell"
+        ispell-dictionary "en_US"
+        ispell-following-word t
+        ispell-personal-dictionary (locate-user-emacs-file "hunspell_dict.txt")))
+
 (eat-package flyspell
   :init
   ;; `flyspell' -- only enable in magit commit
   (setq flyspell-issue-welcome-flag nil
-        flyspell-issue-message-flag nil
-        ispell-program-name "aspell"
-        ispell-extra-args '("--sug-mode=ultra" "--lang=en_US" "--run-together"))
+        flyspell-issue-message-flag nil)
   :config
   (setq flyspell-mode-map nil))
 
