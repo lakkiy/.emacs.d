@@ -68,6 +68,7 @@
     (add-to-list 'meow-mode-state-list `(,mode . normal)))
   ;; motion mode list
   (dolist (mode '(xeft-mode
+                  lsp-bridge-ref-mode
                   Info-mode
                   ghelp-page-mode
                   notmuch-hello-mode

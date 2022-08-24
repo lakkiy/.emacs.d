@@ -12,8 +12,6 @@
   (require 'init-completion)
   (require 'init-dev)
   (require 'init-windows)
-  (when (and eat/enable-icon (display-graphic-p))
-    (require 'init-icons))
   (require 'init-app)
   (require 'init-mode)
   (require 'init-org)

@@ -1,12 +1,12 @@
 ;; -*- lexical-binding: t; -*-
 
-;;  TODO csv crontab
-;; TODO terraform
+(eat-package yuck-mode)
 (eat-package toml-mode :straight t :hook (toml-mode-hook . goto-address-prog-mode))
 (eat-package yaml-mode :straight t :hook (yaml-mode-hook . goto-address-prog-mode))
 (eat-package docker-compose-mode :straight t)
 (eat-package dockerfile-mode :straight t)
 (eat-package k8s-mode :straight t)
+(eat-package lua-mode :straight t)
 
 (eat-package git-modes
   :straight t

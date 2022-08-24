@@ -58,7 +58,11 @@
     ;; Notice that GTAGSOBJDIRPREFIX must exist for gtags to use it. So you need to run:
     ;; $ mkdir -p ~/.cache/gtags/
     (global-set-key (kbd "C-x c U") 'citre-global-update-database)
-    (global-set-key (kbd "C-x c P") 'citre-peek-references)
+    (global-set-key (kbd "C-x c r") 'citre-jump-to-reference)
+    (global-set-key (kbd "C-x c P") 'citre-ace-peek-references)
+    (with-eval-after-load 'citre-peek
+      (define-key citre-peek-keymap (kbd "M-l r")
+                  'citre-peek-through-references))
     :config
     (setenv "GTAGSOBJDIRPREFIX" (concat (getenv "HOME") "/.cache/gtags"))
     (setenv "GTAGSCONF" (concat (getenv "HOME") "/.globalrc"))
@@ -133,6 +137,7 @@ When expand snippet, try complete if there's acm cond, or run `yas-next-field-or
   (define-key lsp-bridge-mode-map (kbd "C-c r") #'lsp-bridge-rename)
   (define-key lsp-bridge-mode-map (kbd "C-c <") #'lsp-bridge-jump-to-prev-diagnostic)
   (define-key lsp-bridge-mode-map (kbd "C-c >") #'lsp-bridge-jump-to-next-diagnostic)
+  ;; FIXME p will say search failed " ", it should act like n, reach last file
   (define-key lsp-bridge-ref-mode-map (kbd "j") nil)
   (define-key lsp-bridge-ref-mode-map (kbd "k") nil)
   (define-key lsp-bridge-ref-mode-map (kbd "h") nil)

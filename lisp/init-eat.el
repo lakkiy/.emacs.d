@@ -382,8 +382,8 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 (setq redisplay-skip-fontification-on-input t)
 
 ;; Pixelwise resize
-(setq window-resize-pixelwise t
-      frame-resize-pixelwise t)
+(setq ;; window-resize-pixelwise nil ;; NOTE this cause lsp-bridge-ref buffer didn't show
+ frame-resize-pixelwise t)
 
 ;; Shut up!
 (defun display-startup-echo-area-message()
@@ -609,8 +609,6 @@ ARGS.
 ;; $ sh -c 'printf "%s" "$PATH"' > ~/.path
 (defun eat/getenv-path()
   (interactive)
-  (unless (file-exists-p "~/.path")
-    (async-shell-command "sh -c 'printf \"%s\" \"$PATH\"' > ~/.path" nil nil))
   (condition-case err
       (let ((path (with-temp-buffer
                     (insert-file-contents-literally "~/.path")
@@ -1198,12 +1196,6 @@ No tab will created if the command is cancelled."
        'face
        sekiro-flymake))))
 
-(eat-package which-func
-  :commands
-  which-func-mode
-  which-function-mode
-  :hook (after-init-hook . which-function-mode))
-
 (eat-package so-long
   :hook (after-init-hook . global-so-long-mode))
 
@@ -1328,6 +1320,10 @@ If popup is focused, kill it."
   (defun revert-tab-width-to-default ()
     "Revert `tab-width' to default value."
     (setq-local tab-width 8)))
+
+;; Quick editing in `describe-variable'
+(with-eval-after-load 'help-fns
+  (put 'help-fns-edit-variable 'disabled nil))
 
 
 ;;; init-eat.el ends here

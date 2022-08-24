@@ -5,6 +5,7 @@
 (straight-use-package '(notink-theme :type git :host github :repo "MetroWind/notink-theme"))
 (straight-use-package '(ef-themes :type git :host github :repo "protesilaos/ef-themes"))
 (straight-use-package '(matrix-emacs-theme :type git :host github :repo "monkeyjunglejuice/matrix-emacs-theme"))
+(straight-use-package 'catppuccin-theme)
 
 
 ;;; Theme
@@ -41,6 +42,34 @@
 (eat-package minions
   :straight t
   :hook (after-init-hook . minions-mode))
+
+;;; icon
+(when (and eat/enable-icon (display-graphic-p))
+  (with-eval-after-load 'treemacs
+    (setq treemacs-no-png-images nil)
+    (require 'treemacs-all-the-icons)
+    (treemacs-load-theme "all-the-icons"))
+
+  (eat-package all-the-icons-ibuffer
+    :after ibuffer
+    :straight t
+    :hook (ibuffer-mode-hook . all-the-icons-ibuffer-mode))
+
+  (eat-package all-the-icons-dired
+    :straight t
+    :hook (dired-mode-hook . all-the-icons-dired-mode))
+
+  (eat-package all-the-icons-completion
+    :straight (all-the-icons-completion
+               :type git
+               :host github
+               :repo "iyefrat/all-the-icons-completion")
+    :hook (after-init-hook . (lambda ()
+                               (all-the-icons-completion-mode)))
+    :config
+    (with-eval-after-load 'marginalia
+      ;; FIXME hook is nil
+      (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup))))
 
 ;;; init-ui.el ends here
 (provide 'init-ui)
