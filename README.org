@@ -1,3 +1,4 @@
+NOTE: All keybindings is config for Dvorak keyboard layout.
 
 ** Enable network proxy before start
 Add this to custom.el

@@ -7,7 +7,7 @@
 
 (defvar eat/user-mail-address "liubolovelife@gmail.com")
 
-(defvar eat/enable-icon t
+(defvar eat/enable-icon nil
   "Whether to enable `all-the-icons'.")
 
 (defvar eat/enable-benchmark nil
@@ -152,91 +152,179 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 
 
 ;;; Font
-(defvar eat/fonts-default
-  '("Roboto Mono"
-    "Cascadia Code"
-    "Monego"
-    "Latin Modern Mono"
-    "Iosevka"
-    "Menlo"
-    "Source Code Pro"
-    "MonoLisa Nasy")
-  "First installed font will be set to default font.")
+(defvar luna-font-settings nil
+  "A list of (FACE . FONT-NAME).
+FONT-NAMEs are keys in ‘luna-font-alist’.")
 
-(defvar eat/fonts-unicode
-  '("Apple Color Emoji"
-    "Noto Color Emoji")
-  "First installed font will be set to unicode font.")
+(defvar luna-cjk-rescale-alist
+  '(("Source Han Serif SC" . 1.3)
+    ;; ("Source Han Sans SC" . 1.3)
+    ("FZFW ZhuZi MinchoS" . 1.3))
+  "A list of font names that should be rescaled.")
 
-(defvar eat/fonts-cn
-  '("LXGW WenKai"
-    "PingFang SC")
-  "First installed font will be set to Chinese font.")
+(defvar luna-font-alist
+  `(("SF Mono" . ("SF Mono" "Source Han Serif SC" 1.3))
+    ("IBM Plex Mono" . ("IBM Plex Mono" "Source Han Serif SC" 1.2))
+    ("SF Pro Text" . ("SF Pro Text" "Source Han Serif SC" 1.1))
+    ("IBM Plex Sans" . ("IBM Plex Sans" "Source Han Serif SC" 1.1))
+    ("Dossier" . ("Dossier" "Source Han Serif SC" 1.3))
+    ("Academica" . ("Academica Book" "Source Han Serif SC" 1.3))
 
-(defvar eat/fonts-variable-pitch
-  '("Cardo"
-    "Bookerly"
-    "Helvetica"
-    "Noto Sans")
-  "First installed font will be set to variable font.")
+    ;; TODO
+    ("Bookerly" . ("Bookerly" "Source Han Serif SC" 1.3))
+    ("Cascadia Code" . ("Cascadia Code" "Source Han Serif SC" 1.3))
+    ("Monego" . ("Monego" "Source Han Serif SC" 1.3))
+    ("Latin Modern Mono" . ("Latin Modern Mono" "Source Han Serif SC" 1.3))
+    ("Menlo" . ("Menlo" "Source Han Serif SC" 1.3))
+    ("MonoLisa Nasy" . ("MonoLisa Nasy" "Source Han Serif SC" 1.3))
 
-(defvar eat/fonts-mono
-  '("Sarasa Gothic SC")
-  "Fonts have same width for Chinese and English.")
+    ("方正fW筑紫明朝" . (nil "FZFW ZhuZi MinchoS" 1))
+    ("Source Han Serif" . (nil "Source Han Serif SC" 1))
+    ("Source Han Sans" . (nil "Source Han Sans SC" 1))
+    ("LXGW WenKai" . (nil "LXGW WenKai" 1))
 
-;; FIXME not work, even in emacs -q -l
-(defvar eat/font-size 12
-  "Default font size.")
+    ("Charter 13" . ("Charter" nil 1 :size 13))
+    ("GNU Unifont 15" . ("Unifont" nil 1 :size 15))
+    ("SF Mono Light 13" . ("SF Mono" nil 1 :size 13 :weight light))
+    ("PragmataPro 13" . ("PragmataPro Mono" nil 1 :size 13))
+    ("Iosevka 13" . ("Iosevka" nil :size 14))
+    ("JetBrains Mono 12" . ("JetBrains Mono" nil 1 :size 12))
+    ("Roboto Mono 12" . ("Roboto Mono" nil 1 :size 12 :weight light)))
+  "An alist of all the fonts you can switch between by `luna-load-font'.
+Each element is like
 
-(defun eat/font-installed-p (font-name)
-  "Check if font with FONT-NAME is available."
-  (find-font (font-spec :name font-name)))
+    (FONT-NAME . (ASCII-NAME CJK-NAME CJK-SCALE))
 
-(defun eat/font-installed (list)
-  "Return first installed font from LIST."
-  (catch 'value
-    (dolist (font list)
-      (when (eat/font-installed-p font)
-        (throw 'value font)))))
+FONT-NAME is the display name, ASCII-NAME is the ASCII font
+family name, CJK-NAME is the CJK font family name, CJK-SCALE is
+the CJK font rescale ratio.")
 
-(defconst eat/font-default (eat/font-installed eat/fonts-default))
-(defconst eat/font-unicode (eat/font-installed eat/fonts-unicode))
-(defconst eat/font-cn (eat/font-installed eat/fonts-cn))
-(defconst eat/font-variable-pitch (eat/font-installed eat/fonts-variable-pitch))
-(defconst eat/font-mono (eat/font-installed eat/fonts-mono))
+(defun luna-create-fontset (ascii-spec cjk-spec)
+  "Create a fontset NAME with ASCII-SPEC and CJK-SPEC font."
+  (let* ((fontset-name
+          (concat "fontset-" (downcase (plist-get ascii-spec :family))))
+         ;; ASCII font.
+         (fontset
+          (create-fontset-from-fontset-spec
+           (font-xlfd-name
+            (apply #'font-spec :registry fontset-name ascii-spec)))))
+    ;; CJK font.
+    (dolist (charset '(kana han cjk-misc))
+      (set-fontset-font fontset charset (apply #'font-spec cjk-spec)))
+    fontset))
 
-(defun eat/buffer-face-mono ()
+(defun luna-font-name-to-spec (font-name size &rest attrs)
+  "Translate FONT-NAME, SIZE and ATTRS to (ASCII-SPEC CJK-SPEC)."
+  (let* ((font-spec (if (null font-name)
+                        (cdar luna-font-alist)
+                      (alist-get font-name luna-font-alist
+                                 nil nil #'equal)))
+         (ascii-family (nth 0 font-spec))
+         (cjk-family (nth 1 font-spec))
+         (cjk-scale (nth 2 font-spec))
+         (rest-spec (append (nthcdr 3 font-spec) attrs))
+         ;; (rest-spec (setf (plist-get rest-spec :size) size))
+         (ascii-rest-spec (append `(:size ,size) rest-spec))
+         (cjk-rest-spec (append `(:size ,(* cjk-scale size))
+                                rest-spec))
+         (ascii-spec (and ascii-family
+                          `(:family ,ascii-family ,@ascii-rest-spec)))
+         (cjk-spec (and cjk-family
+                        `(:family ,cjk-family ,@cjk-rest-spec))))
+    (list ascii-spec cjk-spec)))
+
+(defun luna-load-default-font (font-name size &rest attrs)
+  "Set font for default face to FONT-NAME with SIZE and ATTRS.
+See ‘luna-load-font’."
+  ;; We use a separate function for default font because Emacs has a
+  ;; bug that prevents us from setting a fontset for the default face
+  ;; (although ‘set-frame-parameter’ works). So we just set default
+  ;; face with ASCII font and use default fontset for Unicode font.
+  (interactive
+   (list (completing-read
+          "Font: " (mapcar #'car luna-font-alist))
+         (string-to-number (completing-read
+                            "Size: " nil nil nil nil nil "13"))))
+  (let* ((specs (apply #'luna-font-name-to-spec font-name size attrs))
+         (ascii (apply #'font-spec (car specs)))
+         (cjk (apply #'font-spec (cadr specs))))
+    (set-face-attribute 'default nil :font ascii)
+    (set-fontset-font t 'kana cjk)
+    (set-fontset-font t 'han cjk)
+    (set-fontset-font t 'cjk-misc cjk)
+    (set-fontset-font t 'symbol cjk nil 'append)))
+
+(defun luna-load-font (face font-name size &rest attrs)
+  "Set font for FACE to FONT-NAME.
+If FONT-NAME is nil, use the first font in ‘luna-font-alist’.
+SIZE is the font size in pt. Add additional face attributes in
+ATTRS.
+
+Use ‘luna-save-font-settings’ to save font settings and use
+‘luna-load-saved-font’ to load them next time."
+  (interactive
+   (list (intern (completing-read
+                  "Face: " (face-list)))
+         (completing-read
+          "Font: " (mapcar #'car luna-font-alist))
+         (string-to-number (completing-read
+                            "Size: " nil nil nil nil nil "13"))))
+  (if (and (eq face 'default))
+      (apply #'luna-load-default-font font-name size attrs)
+    (let* ((fontset
+            (apply #'luna-create-fontset
+                   (apply #'luna-font-name-to-spec font-name size attrs))))
+      (apply #'set-face-attribute face nil
+             :font fontset
+             :fontset fontset
+             attrs)))
+  ;; Save the settings.
+  (setf (alist-get face luna-font-settings) `(,font-name ,size ,@attrs))
+  (custom-set-variables
+   `(luna-font-settings
+	 ',luna-font-settings
+	 nil nil "Automatically saved by ‘luna-load-font’")))
+
+(defun luna-save-font-settings ()
+  "Save font-settings set by ‘luna-load-font’."
   (interactive)
-  (setq buffer-face-mode-face `(:family ,eat/font-mono))
-  (buffer-face-mode +1))
+  (custom-save-all))
 
-(defun eat/load-base-font ()
-  (let ((font-spec (format "%s-%d" eat/font-default eat/font-size)))
-    (set-frame-font font-spec)
-    (set-face-attribute 'default nil :font font-spec)
-    (add-to-list 'default-frame-alist `(font . ,font-spec)))
-  (set-fontset-font t '(#x4e00 . #x9fff) eat/font-cn))
+(defun luna-load-saved-font ()
+  "Load font settings saved in ‘luna-font-settings’."
+  (dolist (setting luna-font-settings)
+	(apply #'luna-load-font setting)))
 
-(defun eat/load-face-font ()
-  (set-face-attribute 'variable-pitch nil :font eat/font-variable-pitch :height 1.3)
-  (set-face-attribute 'fixed-pitch nil :font eat/font-default)
-  (set-face-attribute 'fixed-pitch-serif nil :font eat/font-default))
+(define-minor-mode luna-scale-cjk-mode
+  "Scale CJK font to align CJK font and ASCII font."
+  :lighter ""
+  :global t
+  :group 'luna
+  (dolist (setting luna-cjk-rescale-alist)
+	(setf (alist-get (car setting)
+                     face-font-rescale-alist nil nil #'equal)
+		  (if luna-scale-cjk-mode (cdr setting) nil))))
 
-(defun eat/load-ext-font ()
-  (let ((font (frame-parameter nil 'font))
-        (font-spec (font-spec :family eat/font-unicode)))
-    (dolist (charset '(kana han hangul cjk-misc bopomofo symbol))
-      (set-fontset-font font charset font-spec)))
-  (set-fontset-font t 'emoji (font-spec :family eat/font-unicode) nil 'prepend)
-  (setf (alist-get eat/font-unicode face-font-rescale-alist 0.7 nil 'string=) 0.7))
+(defun luna-enable-apple-emoji ()
+  "Enable Apple emoji display."
+  (set-fontset-font t 'emoji (font-spec :family "Apple Color Emoji")
+                    nil 'prepend))
 
-(defun eat/load-font ()
-  (eat/load-base-font)
-  (eat/load-face-font)
-  (eat/load-ext-font))
+(defvar eat/font-default '("IBM Plex Mono" 13))
+(defvar eat/font-variable-pitch '("Bookerly" 16))
+(defvar eat/font-mode-line '("SF Pro Text" 13))
+(defvar eat/font-emoji "Noto Color Emoji")
 
-(add-hook 'eat/after-make-window-system-frame-hooks (lambda ()
-                                                      (eat/load-font)))
+(add-hook 'eat/after-make-window-system-frame-hooks
+          (lambda ()
+            (set-fontset-font t 'emoji (font-spec :family eat/font-emoji) nil 'prepend)
+            (luna-load-font 'default (car eat/font-default) (cadr eat/font-default) :weight 'medium)
+            (luna-load-font 'fixed-pitch (car eat/font-default) (cadr eat/font-default) :weight 'medium)
+            ;; (luna-load-font 'variable-pitch "Academica" 16)
+            (luna-load-font 'variable-pitch (car eat/font-variable-pitch) (cadr eat/font-variable-pitch))
+            (luna-load-font 'mode-line (car eat/font-mode-line) (cadr eat/font-mode-line) :weight 'light)
+            ;; TODO reset mode line font after change theme
+            ))
 
 
 ;;; Theme
@@ -1042,9 +1130,6 @@ ARGS.
         tab-bar-tab-name-format-function 'eat/tab-bar-tab-format-function
         tab-bar-separator ""
         tab-bar-tab-name-truncated-max 10)
-
-  (custom-set-faces
-   `(tab-bar ((t (:family ,eat/font-variable-pitch)))))
 
   (defun eat/tab-bar-switch-project ()
     "Switch to project in a new tab, project name will be used as tab name.

@@ -28,8 +28,6 @@ Delete the frame after that command has exited"
   :straight t
   :commands telega
   :hook
-  ;; font setup
-  ((telega-root-mode-hook telega-chat-mode-hook) . eat/buffer-face-mono)
   (telega-load-hook . (telega-notifications-mode telega-appindicator-mode))
   :config
   ;; ignore blocked user
