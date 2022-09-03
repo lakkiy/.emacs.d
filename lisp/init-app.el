@@ -91,7 +91,13 @@ Delete the frame after that command has exited"
       (add-to-list 'desktop-minor-mode-table
                    '(diff-hl-margin-mode nil)))))
 
-(eat-package dirvish :straight t)
+(eat-package dirvish
+  :straight '(dirvish :files (:defaults "extensions"))
+  :hook (after-init-hook . dirvish-override-dired-mode)
+  :init
+  (setq dired-listing-switches
+        "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group"))
+
 (eat-package fd-dired :straight t)
 
 (defface eat/notmuch-tag-emacs
