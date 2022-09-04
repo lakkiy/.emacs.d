@@ -92,11 +92,14 @@ Delete the frame after that command has exited"
                    '(diff-hl-margin-mode nil)))))
 
 (eat-package dirvish
-  :straight '(dirvish :files (:defaults "extensions"))
+  :straight '(dirvish :files (:defaults "extensions/*"))
   :hook (after-init-hook . dirvish-override-dired-mode)
   :init
   (setq dired-listing-switches
-        "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group"))
+        "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
+  :config
+  (define-key dirvish-mode-map (kbd "TAB") #'dirvish-subtree-toggle)
+  (define-key dirvish-mode-map (kbd "<tab>") #'dirvish-subtree-toggle))
 
 (eat-package fd-dired :straight t)
 

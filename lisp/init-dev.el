@@ -113,7 +113,9 @@
              :files ("*"))
   :commands lsp-bridge-mode global-lsp-bridge-mode
   :init
-  (setq acm-enable-doc nil)
+  (setq acm-enable-doc nil
+        acm-enable-tabnine-helper t
+        lsp-bridge-enable-search-words nil)
 
   (defun eat/lsp-bridge-mode-setup ()
     "My setup for lsp-bridge.

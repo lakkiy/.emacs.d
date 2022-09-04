@@ -7,7 +7,7 @@
 
 (defvar eat/user-mail-address "liubolovelife@gmail.com")
 
-(defvar eat/enable-icon nil
+(defvar eat/enable-icon t
   "Whether to enable `all-the-icons'.")
 
 (defvar eat/enable-benchmark nil
