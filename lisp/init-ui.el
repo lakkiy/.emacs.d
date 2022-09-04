@@ -55,10 +55,6 @@
     :straight t
     :hook (ibuffer-mode-hook . all-the-icons-ibuffer-mode))
 
-  (eat-package all-the-icons-dired
-    :straight t
-    :hook (dired-mode-hook . all-the-icons-dired-mode))
-
   (eat-package all-the-icons-completion
     :straight (all-the-icons-completion
                :type git

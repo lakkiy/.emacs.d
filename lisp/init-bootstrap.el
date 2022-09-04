@@ -69,6 +69,10 @@
   ((emacs-lisp-mode-hook text-mode-hook special-mode-hook)
    . form-feed-mode))
 
+(eat-package dired-toggle-sudo
+  :commands
+  dired-toggle-sudo)
+
 
 
 (eat-package gcmh

@@ -115,6 +115,7 @@
   :init
   (setq acm-enable-doc nil
         acm-enable-tabnine-helper t
+        acm-enable-search-words nil
         lsp-bridge-enable-search-words nil)
 
   (defun eat/lsp-bridge-mode-setup ()

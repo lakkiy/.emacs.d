@@ -95,13 +95,34 @@ Delete the frame after that command has exited"
   :straight '(dirvish :files (:defaults "extensions/*"))
   :hook (after-init-hook . dirvish-override-dired-mode)
   :init
+  (setq dirvish-attributes '(vc-state subtree-state all-the-icons))
   (setq dired-listing-switches
         "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
+  (global-set-key (kbd "<f1>") #'dirvish-side)
+  (global-set-key (kbd "C-c f") #'dirvish-fd)
   :config
   (define-key dirvish-mode-map (kbd "TAB") #'dirvish-subtree-toggle)
-  (define-key dirvish-mode-map (kbd "<tab>") #'dirvish-subtree-toggle))
-
-(eat-package fd-dired :straight t)
+  (define-key dirvish-mode-map (kbd "<tab>") #'dirvish-subtree-toggle)
+  (define-key dirvish-mode-map (kbd "a") #'dirvish-quick-access)
+  (define-key dirvish-mode-map (kbd "f") #'dirvish-file-info-menu)
+  (define-key dirvish-mode-map (kbd "y") #'dirvish-yank-menu)
+  (define-key dirvish-mode-map (kbd "N") #'dirvish-narrow)
+  (define-key dirvish-mode-map (kbd "H") #'dirvish-history-jump) ; remapped `describe-mode'
+  (define-key dirvish-mode-map (kbd "s") #'dirvish-quicksort) ; remapped `dired-sort-toggle-or-edit'
+  (define-key dirvish-mode-map (kbd "v") #'dirvish-vc-menu)  ; remapped `dired-view-file'
+  (define-key dirvish-mode-map (kbd "M-f") #'dirvish-history-go-forward)
+  (define-key dirvish-mode-map (kbd "M-b") #'dirvish-history-go-backward)
+  (define-key dirvish-mode-map (kbd "M-l") #'dirvish-ls-switches-menu)
+  (define-key dirvish-mode-map (kbd "M-m") #'dirvish-mark-menu)
+  (define-key dirvish-mode-map (kbd "M-t") #'dirvish-layout-toggle)
+  (define-key dirvish-mode-map (kbd "M-s") #'dirvish-setup-menu)
+  (define-key dirvish-mode-map (kbd "M-e") #'dirvish-emerge-menu)
+  (define-key dirvish-mode-map (kbd "M-j") #'dirvish-fd-jump)
+  ;; mouse
+  ;; (setq mouse-1-click-follows-link nil)
+  (define-key dirvish-mode-map (kbd "<mouse-1>") #'dirvish-subtree-toggle-or-open)
+  (define-key dirvish-mode-map (kbd "<mouse-2>") #'dired-mouse-find-file-other-window)
+  (define-key dirvish-mode-map (kbd "<mouse-3>") #'dired-mouse-find-file))
 
 (defface eat/notmuch-tag-emacs
   '((t :foreground "systemPurpleColor"))

@@ -330,16 +330,16 @@ Use ‘luna-save-font-settings’ to save font settings and use
 ;;; Theme
 ;;;; Variables
 
-(defvar eat/theme 'leuven
+(defvar eat/theme 'modus-operandi
   "Default theme.")
 
 (defvar eat/theme-tui nil
   "Default theme used in tui.")
 
-(defvar eat/theme-system-light 'leuven
+(defvar eat/theme-system-light 'modus-operandi
   "Default light theme after system appearance changed.")
 
-(defvar eat/theme-system-dark 'leuven-dark
+(defvar eat/theme-system-dark 'modus-vivendi
   "Default dark theme after system appearance changed.")
 
 (defvar eat/theme-hooks nil
@@ -987,9 +987,9 @@ ARGS.
   (setq
    dired-dwim-target t
    dired-kill-when-opening-new-dired-buffer t
-   dired-listing-switches "-AGhlv"
-   delete-by-moving-to-trash t)
+   dired-listing-switches "-AGhlv")
   :config
+  (define-key dired-mode-map (kbd "h") #'dired-up-directory) ; remapped `describe-mode'
   (setq dired-recursive-deletes 'top)
   ;; Prefer g-prefixed coreutils version of standard utilities when available
   (let ((gls (executable-find "gls")))

@@ -25,30 +25,6 @@
   (define-key puni-mode-map (kbd "C-{") 'puni-barf-backward)
   (define-key puni-mode-map (kbd "C-}") 'puni-barf-forward))
 
-(eat-package treemacs
-  :straight ( treemacs
-              :files (:defaults "icons"
-                                "src/elisp/treemacs*.el"
-                                "src/scripts/treemacs*.py"
-                                "src/extra/*")
-              :includes (treemacs-all-the-icons
-                         treemacs-icons-dired
-                         treemacs-magit))
-  :hook (treemacs-mode-hook . treemacs-toggle-fixed-width)
-  :init
-  (defun +treemacs-scale-font-size ()
-    (face-remap-add-relative 'default :height 0.8))
-
-  (setq treemacs-no-png-images t
-        treemacs-width 30
-        treemacs-user-mode-line-format 'none)
-
-  (advice-add 'treemacs-select-window :after #'eat/pulse-momentary-line)
-  (global-set-key (kbd "<f1>") 'treemacs-select-window)
-  :config
-  (define-key treemacs-mode-map (kbd "<f1>") 'treemacs)
-  (add-hook 'treemacs-mode-hook #'+treemacs-scale-font-size))
-
 ;; Better scroll on picture in GUI
 (eat-package iscroll :straight t)
 
