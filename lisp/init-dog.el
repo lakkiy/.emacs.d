@@ -48,14 +48,6 @@
   (setq meow-esc-delay 0.001
         meow-keypad-describe-delay 1.0)
 
-  ;; custom indicator
-  (setq meow-replace-state-name-list
-        '((normal . "🅝")
-          (beacon . "🅑")
-          (insert . "🅘")
-          (motion . "🅜")
-          (keypad . "🅚")))
-
   ;; specific font so that line won't break
   (advice-add 'meow-cheatsheet :after (lambda ()
                                         (interactive)
