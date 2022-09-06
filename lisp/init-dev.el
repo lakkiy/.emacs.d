@@ -114,7 +114,6 @@
   :commands lsp-bridge-mode global-lsp-bridge-mode
   :init
   (setq acm-enable-doc nil
-        acm-enable-tabnine-helper t
         acm-enable-search-words nil
         lsp-bridge-enable-search-words nil)
 

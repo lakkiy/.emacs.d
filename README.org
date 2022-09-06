@@ -1,5 +1,6 @@
 NOTE: All keybindings is config for Dvorak keyboard layout.
-
+** Deps
+- gls
 ** Enable network proxy before start
 Add this to custom.el
 #+begin_src emacs-lisp

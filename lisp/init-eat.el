@@ -151,7 +151,63 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
                        (eat/run-after-make-frame-hooks eat/initial-frame))))
 
 
+;;; Theme
+;;;; Variables
+
+(defvar eat/theme 'modus-operandi
+  "Default theme.")
+
+(defvar eat/theme-tui nil
+  "Default theme used in tui.")
+
+(defvar eat/theme-system-light 'modus-operandi
+  "Default light theme after system appearance changed.")
+
+(defvar eat/theme-system-dark 'modus-vivendi
+  "Default dark theme after system appearance changed.")
+
+(defvar luna-load-theme-hook nil)
+
+;;;; Functions
+
+(defun eat/load-theme (theme)
+  (interactive
+   (list
+    (intern (completing-read "Theme: "
+                             (mapcar #'symbol-name
+				                     (custom-available-themes))))))
+  (mapc #'disable-theme custom-enabled-themes)
+  (if (featurep (intern (format "%s-theme" theme)))
+      ;; We can save a lot of time by only enabling the theme.
+      (enable-theme theme)
+    (load-theme theme t))
+  (run-hooks 'luna-load-theme-hook))
+(global-set-key [remap load-theme] #'eat/load-theme)
+
+(defun eat/adjust-opacity (frame incr)
+  "Adjust the background opacity of FRAME by increment INCR."
+  (unless (display-graphic-p frame)
+    (error "Cannot adjust opacity of this frame"))
+  (let* ((oldalpha (or (frame-parameter frame 'alpha-background) 100))
+         (oldalpha (if (listp oldalpha) (car oldalpha) oldalpha))
+         (newalpha (+ incr oldalpha)))
+    (when (and (<= frame-alpha-lower-limit newalpha) (>= 100 newalpha))
+      (modify-frame-parameters frame (list (cons 'alpha-background newalpha))))))
+(global-set-key (kbd "M-C-8") (lambda () (interactive) (eat/adjust-opacity nil -2)))
+(global-set-key (kbd "M-C-9") (lambda () (interactive) (eat/adjust-opacity nil 2)))
+(global-set-key (kbd "M-C-7") (lambda () (interactive) (modify-frame-parameters nil `((alpha-background . 100)))))
+
+(add-hook 'eat/after-make-console-frame-hooks (lambda ()
+                                                (when (fboundp 'menu-bar-mode)
+                                                  (menu-bar-mode -1))
+                                                (when eat/theme-tui
+                                                  (eat/load-theme eat/theme-tui))))
+
+(add-hook 'eat/after-make-window-system-frame-hooks (lambda ()
+                                                      (eat/load-theme eat/theme)))
+
 ;;; Font
+
 (defvar luna-font-settings nil
   "A list of (FACE . FONT-NAME).
 FONT-NAMEs are keys in ‘luna-font-alist’.")
@@ -323,68 +379,14 @@ Use ‘luna-save-font-settings’ to save font settings and use
             ;; (luna-load-font 'variable-pitch "Academica" 16)
             (luna-load-font 'variable-pitch (car eat/font-variable-pitch) (cadr eat/font-variable-pitch))
             (luna-load-font 'mode-line (car eat/font-mode-line) (cadr eat/font-mode-line) :weight 'light)
-            ;; TODO reset mode line font after change theme
+            (add-hook 'luna-load-theme-hook
+                      (lambda ()
+                        (luna-load-font
+                         'mode-line "SF Pro Text" 13 :weight 'light)))
             ))
 
 
-;;; Theme
-;;;; Variables
 
-(defvar eat/theme 'modus-operandi
-  "Default theme.")
-
-(defvar eat/theme-tui nil
-  "Default theme used in tui.")
-
-(defvar eat/theme-system-light 'modus-operandi
-  "Default light theme after system appearance changed.")
-
-(defvar eat/theme-system-dark 'modus-vivendi
-  "Default dark theme after system appearance changed.")
-
-(defvar eat/theme-hooks nil
-  "((theme-id . function) ...).")
-
-;;;; Functions
-
-(defun eat/load-theme (theme)
-  "Load THEME without confirm."
-  (load-theme theme t))
-
-(defun eat/load-theme-advice (f theme-id &optional no-confirm no-enable &rest args)
-  "Enhance `load-theme' by disabling other enabled themes & calling hooks."
-  (unless no-enable ;
-    (mapc #'disable-theme custom-enabled-themes))
-  (prog1
-      (apply f theme-id t no-enable args)
-    (unless no-enable ;
-      (pcase (assq theme-id eat/theme-hooks)
-        (`(,_ . ,f) (funcall f))))))
-(advice-add 'load-theme :around #'eat/load-theme-advice)
-
-(defun eat/adjust-opacity (frame incr)
-  "Adjust the background opacity of FRAME by increment INCR."
-  (unless (display-graphic-p frame)
-    (error "Cannot adjust opacity of this frame"))
-  (let* ((oldalpha (or (frame-parameter frame 'alpha-background) 100))
-         (oldalpha (if (listp oldalpha) (car oldalpha) oldalpha))
-         (newalpha (+ incr oldalpha)))
-    (when (and (<= frame-alpha-lower-limit newalpha) (>= 100 newalpha))
-      (modify-frame-parameters frame (list (cons 'alpha-background newalpha))))))
-(global-set-key (kbd "M-C-8") (lambda () (interactive) (eat/adjust-opacity nil -2)))
-(global-set-key (kbd "M-C-9") (lambda () (interactive) (eat/adjust-opacity nil 2)))
-(global-set-key (kbd "M-C-7") (lambda () (interactive) (modify-frame-parameters nil `((alpha-background . 100)))))
-
-(add-hook 'eat/after-make-console-frame-hooks (lambda ()
-                                                (when (fboundp 'menu-bar-mode)
-                                                  (menu-bar-mode -1))
-                                                (when eat/theme-tui
-                                                  (eat/load-theme eat/theme-tui))))
-
-(add-hook 'eat/after-make-window-system-frame-hooks (lambda ()
-                                                      (eat/load-theme eat/theme)))
-
-
 ;;; Optimization
 (setq package-enable-at-startup nil
       frame-inhibit-implied-resize t
@@ -984,16 +986,16 @@ ARGS.
 (eat-package dired
   :hook (dired-mode-hook . dired-hide-details-mode)
   :init
+  (when eat/macp
+    setq insert-directory-program "gls")
   (setq
    dired-dwim-target t
    dired-kill-when-opening-new-dired-buffer t
-   dired-listing-switches "-AGhlv")
+   dired-listing-switches
+   "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
   :config
   (define-key dired-mode-map (kbd "h") #'dired-up-directory) ; remapped `describe-mode'
   (setq dired-recursive-deletes 'top)
-  ;; Prefer g-prefixed coreutils version of standard utilities when available
-  (let ((gls (executable-find "gls")))
-    (when gls (setq insert-directory-program gls)))
   (define-key dired-mode-map [mouse-2] 'dired-find-file)
   (define-key dired-mode-map (kbd "C-c C-p") #'wdired-change-to-wdired-mode))
 

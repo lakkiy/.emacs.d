@@ -96,8 +96,6 @@ Delete the frame after that command has exited"
   :hook (after-init-hook . dirvish-override-dired-mode)
   :init
   (setq dirvish-attributes '(vc-state subtree-state all-the-icons))
-  (setq dired-listing-switches
-        "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
   (global-set-key (kbd "<f1>") #'dirvish-side)
   (global-set-key (kbd "C-c f") #'dirvish-fd)
   :config
