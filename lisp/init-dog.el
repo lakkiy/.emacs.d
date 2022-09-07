@@ -32,6 +32,7 @@
   (when eat/macp
     (setq rime-librime-root (expand-file-name "librime/dist" user-emacs-directory)))
   :config
+  (setq-default mode-line-format (append '((:eval (rime-lighter))) mode-line-format))
   (set-face-attribute 'rime-indicator-face nil :height 0.9)
   (set-face-attribute 'rime-indicator-dim-face nil :height 0.9)
   (define-key rime-active-mode-map [tab] 'rime-inline-ascii)

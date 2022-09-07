@@ -157,7 +157,7 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 (defvar eat/theme 'modus-operandi
   "Default theme.")
 
-(defvar eat/theme-tui nil
+(defvar eat/theme-tui 'default
   "Default theme used in tui.")
 
 (defvar eat/theme-system-light 'modus-operandi
@@ -928,9 +928,9 @@ point reaches the beginning or end of the buffer, stop there."
 (eat-package hl-line
   :init
   (setq-default hl-line-sticky-flag nil)
-  (when (display-graphic-p)
-    (add-hook 'prog-mode-hook #'hl-line-mode)
-    (add-hook 'conf-mode-hook #'hl-line-mode))
+  ;; (when (display-graphic-p)
+  ;;   (add-hook 'prog-mode-hook #'hl-line-mode)
+  ;;   (add-hook 'conf-mode-hook #'hl-line-mode))
   :config
   (add-hook 'post-command-hook #'(lambda ()
                                    "When `hl-line-mode' is enable, unhighlight if region is active."
@@ -1065,7 +1065,7 @@ point reaches the beginning or end of the buffer, stop there."
   :hook (dired-mode-hook . dired-hide-details-mode)
   :init
   (when eat/macp
-    setq insert-directory-program "gls")
+    (setq insert-directory-program "gls"))
   (setq
    dired-dwim-target t
    dired-kill-when-opening-new-dired-buffer t
@@ -1206,6 +1206,7 @@ point reaches the beginning or end of the buffer, stop there."
         tab-bar-close-button nil
         tab-bar-back-button nil
         tab-bar-new-button nil
+        tab-bar-show nil
         tab-bar-format '(tab-bar-format-tabs)
         tab-bar-tab-name-format-function 'eat/tab-bar-tab-format-function
         tab-bar-separator ""
