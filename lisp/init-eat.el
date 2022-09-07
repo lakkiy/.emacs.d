@@ -1236,8 +1236,9 @@ No tab will created if the command is cancelled."
                   'face
                   (funcall tab-bar-tab-face-function tab))))
   :config
-  (global-set-key (kbd "C-x t .") #'tab-bar-rename-tab)
-  (global-set-key (kbd "C-x t l") #'eat/tab-bar-switch-project))
+  (define-key tab-prefix-map (kbd ".") #'tab-bar-switch-to-recent-tab)
+  (define-key tab-prefix-map (kbd ",") #'tab-bar-rename-tab)
+  (define-key tab-prefix-map (kbd "l") #'eat/tab-bar-switch-project))
 
 (eat-package paren
   :init

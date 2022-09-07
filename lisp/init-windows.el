@@ -4,65 +4,6 @@
 ;; concept: these are the panels within an Emacs frame which contain
 ;; buffers.
 
-;; replace `tab-bar'
-(eat-package eyebrowse
-  :straight t
-  :hook (after-init-hook . (lambda ()
-                             (eyebrowse-mode t)))
-  :init
-  (setq
-   ;; since this used in meow config, must set here
-   ;; if enable eyebrowse in on-init-ui-hook
-   eyebrowse-keymap-prefix (kbd "C-c C-w")
-   eyebrowse-new-workspace t
-   eyebrowse-mode-line-style 'current)
-  :config
-  (with-eval-after-load 'meow
-    (meow-leader-define-key
-     (cons "t" eyebrowse-keymap-prefix)))
-  (defun eat/eyebrowse-switch-project ()
-    "Switch to project in a new window config, project name will be used as config name.
-
-No window config will created if the command is cancelled."
-    (interactive)
-    (let (succ)
-      (unwind-protect
-          (progn
-            (eyebrowse-create-window-config)
-            (call-interactively #'project-switch-project)
-            (when-let ((proj (project-root (project-current))))
-              (eyebrowse-rename-window-config
-               (eyebrowse--get 'current-slot)
-               (format "%s" (file-name-nondirectory (directory-file-name proj))))
-              (setq succ t)))
-        (unless succ
-          (eyebrowse-close-window-config)))))
-  ;; NOTE should update if `eyebrowse-keymap-prefix' changed
-  (define-key eyebrowse-mode-map (kbd "C-c C-w l") #'eat/eyebrowse-switch-project)
-  (define-key eyebrowse-mode-map (kbd "C-c C-w n") #'eyebrowse-create-named-window-config)
-
-
-  (defun eat/eyebrowse-switch-named-window-config (name)
-    "Switch to a window config with `NAME', or create it if not exist."
-    (let* ((window-configs (eyebrowse--get 'window-configs))
-           (current-slot (eyebrowse--get 'current-slot))
-           (name-window-slot nil))
-      (while window-configs
-        (let* ((window-config (car window-configs))
-               (window-name (nth 2 window-config)))
-          (if (string= name window-name)
-              (setq window-configs nil
-                    name-window-slot (car window-config))
-            (setq window-configs (cdr window-configs)))))
-      (if name-window-slot
-          (when (not (= current-slot name-window-slot))
-            (eyebrowse-switch-to-window-config name-window-slot))
-        (eyebrowse-create-window-config)
-        (eyebrowse-rename-window-config
-         (eyebrowse--get 'current-slot)
-         name))))
-  (advice-add 'xwidget-webkit-browse-url :before #'(lambda (url &optional new-session)
-                                                     (eat/eyebrowse-switch-named-window-config "xwidget"))))
 (eat-package ace-window
   :straight t
   :commands

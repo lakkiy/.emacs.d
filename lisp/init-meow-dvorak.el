@@ -55,11 +55,8 @@
    ;; smerge
    ;; (cons "=" smerge-basic-map)
 
-   ;; tab NOTE use eyebrowse instead
-   ;; '("t t" . tab-bar-select-tab-by-name)
-   ;; '("t n" . tab-bar-new-tab)
-   ;; '("t r" . tab-bar-rename-tab)
-   ;; '("t k" . tab-bar-close-tab)
+   ;; tab-bar
+   (cons "t" tab-prefix-map)
 
    ;; app
    '("d" . dired)
