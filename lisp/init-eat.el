@@ -885,6 +885,7 @@ point reaches the beginning or end of the buffer, stop there."
 
   (dolist (cmd '(pop-to-mark-command
                  pop-global-mark
+                 compile-goto-error
                  goto-last-change))
     (advice-add cmd :after #'eat/recenter-and-pulse)))
 
