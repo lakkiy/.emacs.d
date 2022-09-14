@@ -79,7 +79,7 @@
   (setq eglot-events-buffer-size 0
         eglot-sync-connect nil       ;; don't block of LSP connection attempts
         eglot-extend-to-xref t       ;; make eglot manage file out of project by `xref-find-definitions'
-        eglot-ignored-server-capabilites '(:documentHighlightProvider))
+        eglot-ignored-server-capabilites '(:documentHighlightProvider :documentFormattingProvider :documentRangeFormattingProvider))
   (setq-default eglot-workspace-configuration
                 '((gopls
                    (usePlaceholders . t))))

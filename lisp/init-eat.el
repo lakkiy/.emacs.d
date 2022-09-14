@@ -1211,6 +1211,7 @@ point reaches the beginning or end of the buffer, stop there."
         tab-bar-format '(tab-bar-format-tabs)
         tab-bar-tab-name-format-function 'eat/tab-bar-tab-format-function
         tab-bar-separator ""
+        tab-bar-new-tab-choice "*scratch*"
         tab-bar-tab-name-truncated-max 10)
 
   (defun eat/tab-bar-switch-project ()
