@@ -149,6 +149,13 @@ When expand snippet, try complete if there's acm cond, or run `yas-next-field-or
   (define-key lsp-bridge-ref-mode-map (kbd "t") 'lsp-bridge-ref-jump-next-keyword)
   (define-key lsp-bridge-ref-mode-map (kbd "n") 'lsp-bridge-ref-jump-next-file))
 
+(eat-package acm-terminal
+  :after lsp-bridge
+  :config
+  (unless (display-graphic-p)
+    (with-eval-after-load 'acm
+      (require 'acm-terminal))))
+
 (defun eat/lsp-reconnect ()
   (interactive)
   (if (bound-and-true-p lsp-bridge-mode)
