@@ -86,7 +86,7 @@
              ;; restore whitespace between English words and Chinese words
              (text (replace-regexp-in-string "\\(\\cc\\)\\(\\(?:<[^>]+>\\)?[a-z0-9A-Z-]+\\(?:<[^>]+>\\)?\\)\\(\\cc\\)"
                                              "\\1 \\2 \\3" text))
-             (text (replace-regexp-in-string "\\(\\cc\\) ?\\(\\\\[^{(]*?\\)\\(\\cc\\)"
+             (text (replace-regexp-in-string "\\(\\cc\\) ?\\(\\\\[^{}()]*?\\)\\(\\cc\\)"
                                              "\\1 \\2 \\3" text)))
         text))
     (add-to-list 'org-export-filter-paragraph-functions #'eli-strip-ws-maybe))

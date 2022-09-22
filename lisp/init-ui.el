@@ -45,11 +45,6 @@
 
 ;;; icon
 (when (and eat/enable-icon (display-graphic-p))
-  (with-eval-after-load 'treemacs
-    (setq treemacs-no-png-images nil)
-    (require 'treemacs-all-the-icons)
-    (treemacs-load-theme "all-the-icons"))
-
   (eat-package all-the-icons-ibuffer
     :after ibuffer
     :straight t

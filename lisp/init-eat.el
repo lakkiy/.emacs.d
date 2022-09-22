@@ -1501,6 +1501,17 @@ If popup is focused, kill it."
 ;; Quick editing in `describe-variable'
 (with-eval-after-load 'help-fns
   (put 'help-fns-edit-variable 'disabled nil))
+(eat-package recentf
+  :hook (after-init-hook . recentf-mode)
+  :init
+  (setq
+   recentf-max-saved-items 1000
+   recentf-exclude `(,tramp-file-name-regexp
+                     "COMMIT_EDITMSG"))
+  (global-set-key (kbd "C-x C-r") #'recentf-open-files))
+
+(eat-package goto-addr
+  :hook (after-init-hook . global-goto-address-mode))
 
 
 ;;; init-eat.el ends here

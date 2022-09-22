@@ -48,21 +48,6 @@
   (_
    (defalias 'notify-send 'ignore)))
 
-
-;;; built-in packages
-(eat-package recentf
-  :hook (after-init-hook . recentf-mode)
-  :init
-  (setq
-   recentf-max-saved-items 1000
-   recentf-exclude `(,tramp-file-name-regexp
-                     "COMMIT_EDITMSG"))
-  (global-set-key (kbd "C-x C-r") #'recentf-open-files))
-
-(eat-package goto-addr
-  :hook (after-init-hook . global-goto-address-mode))
-
-
 ;;; site-lisp
 (eat-package form-feed
   :hook
