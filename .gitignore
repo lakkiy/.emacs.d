@@ -1,3 +1,7 @@
+init.el
+site-lisp
+themes
+early-init.el
 .session
 dirvish
 ltex*
