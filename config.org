@@ -4328,8 +4328,8 @@ When expand snippet, try complete if there's acm cond, or run `yas-next-field-or
   (define-key lsp-bridge-mode-map (kbd "M-?") #'lsp-bridge-find-references)
   (define-key lsp-bridge-mode-map (kbd "M-'") #'lsp-bridge-find-impl)
   (define-key lsp-bridge-mode-map (kbd "C-c r") #'lsp-bridge-rename)
-  (define-key lsp-bridge-mode-map (kbd "C-c <") #'lsp-bridge-jump-to-prev-diagnostic)
-  (define-key lsp-bridge-mode-map (kbd "C-c >") #'lsp-bridge-jump-to-next-diagnostic)
+  (define-key lsp-bridge-mode-map (kbd "C-c <") #'lsp-bridge-diagnostic-jump-prev)
+  (define-key lsp-bridge-mode-map (kbd "C-c >") #'lsp-bridge-diagnostic-jump-next)
   ;; FIXME p will say search failed " ", it should act like n, reach last file
   (define-key lsp-bridge-ref-mode-map (kbd "j") nil)
   (define-key lsp-bridge-ref-mode-map (kbd "k") nil)
