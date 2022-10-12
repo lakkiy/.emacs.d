@@ -584,48 +584,6 @@ point reaches the beginning or end of the buffer, stop there."
 
 ** Built-in packages
 #+begin_src elisp
-(eat-package pulse
-  :hook
-  ((imenu-after-jump-hook isearch-update-post-hook)
-   . eat/recenter-and-pulse)
-  ((bookmark-after-jump  next-error)
-   . eat/recenter-and-pulse-line)
-  :init
-  (custom-set-faces
-   '(pulse-highlight-start-face ((t (:inherit region))))
-   '(pulse-highlight-face ((t (:inherit region)))))
-
-  (defun eat/pulse-momentary-line (&rest _)
-    "Pulse the current line."
-    (pulse-momentary-highlight-one-line (point)))
-
-  (defun eat/pulse-momentary (&rest _)
-    "Pulse the region or the current line."
-    (if (fboundp 'xref-pulse-momentarily)
-        (xref-pulse-momentarily)
-      (eat/pulse-momentary-line)))
-
-  (defun eat/recenter-and-pulse(&rest _)
-    "Recenter and pulse the region or the current line."
-    (recenter)
-    (eat/pulse-momentary))
-
-  (defun eat/recenter-and-pulse-line (&rest _)
-    "Recenter and pulse the current line."
-    (recenter)
-    (eat/pulse-momentary-line))
-
-  (dolist (cmd '(recenter-top-bottom
-                 other-window windmove-do-window-select
-                 pager-page-down pager-page-up))
-    (advice-add cmd :after #'eat/pulse-momentary-line))
-
-  (dolist (cmd '(pop-to-mark-command
-                 pop-global-mark
-                 compile-goto-error
-                 goto-last-change))
-    (advice-add cmd :after #'eat/recenter-and-pulse)))
-
 (eat-package repeat
   :init
   (setq repeat-mode t
@@ -662,19 +620,6 @@ point reaches the beginning or end of the buffer, stop there."
         ;; List only applicable commands.
         read-extended-command-predicate #'command-completion-default-include-p
         fill-column 72))
-
-(eat-package hl-line
-  :init
-  (setq-default hl-line-sticky-flag nil)
-  ;; (when (display-graphic-p)
-  ;;   (add-hook 'prog-mode-hook #'hl-line-mode)
-  ;;   (add-hook 'conf-mode-hook #'hl-line-mode))
-  :config
-  (add-hook 'post-command-hook #'(lambda ()
-                                   "When `hl-line-mode' is enable, unhighlight if region is active."
-                                   (when (and (bound-and-true-p hl-line-mode)
-                                              (region-active-p))
-                                     (hl-line-unhighlight)))))
 
 (eat-package tramp
   :init
@@ -1067,49 +1012,6 @@ No tab will created if the command is cancelled."
 (eat-package newcomment
   :init
   (setq comment-auto-fill-only-comments t))
-
-(eat-package message
-  :hook (message-mode-hook . (lambda ()
-                               (setq-local fill-column 72)
-                               (auto-fill-mode)))
-  :init
-  (setq user-full-name eat/user-full-name
-        user-mail-address eat/user-mail-address
-        message-kill-buffer-on-exit t
-        message-mail-alias-type 'ecomplete
-        message-send-mail-function #'message-use-send-mail-function
-        message-signature user-full-name))
-
-(eat-package sendmail
-  :init
-  (setq send-mail-function #'smtpmail-send-it))
-
-(eat-package smtpmail
-  :init
-  (setq smtpmail-smtp-server "smtp.gmail.com"
-        smtpmail-smtp-user user-mail-address
-        smtpmail-smtp-service 587
-        smptmail-stream-type 'ssl))
-
-(eat-package flymake
-  :hook
-  (prog-mode-hook . flymake-mode)
-  (emacs-lisp-mode-hook . (lambda ()
-                            (flymake-mode -1)))
-  :init
-  (setq-default flymake-diagnostic-functions nil
-                flymake-no-changes-timeout 0.2)
-  (defun sekiro-flymake-mode-line-format ()
-    (let* ((counter (string-to-number
-                     (nth 1
-                          (cadr
-                           (flymake--mode-line-counter :error t)))))
-           (sekiro-flymake (when (> counter 0)
-                             'compilation-error)))
-      (propertize
-       "危"
-       'face
-       sekiro-flymake))))
 
 (eat-package so-long
   :hook (after-init-hook . global-so-long-mode))
@@ -3254,11 +3156,11 @@ FONT-NAMEs are keys in ‘luna-font-alist’.")
 
 (defvar luna-font-alist
   `(("SF Mono" . ("SF Mono" "Source Han Serif SC" 1.3))
-    ("IBM Plex Mono" . ("IBM Plex Mono" "Source Han Serif SC" 1.2))
+    ("IBM Plex Mono" . ("IBM Plex Mono" "LXGW WenKai" 1.0))
     ("SF Pro Text" . ("SF Pro Text" "Source Han Serif SC" 1.1))
     ("IBM Plex Sans" . ("IBM Plex Sans" "Source Han Serif SC" 1.1))
     ("Dossier" . ("Dossier" "Source Han Serif SC" 1.3))
-    ("Academica" . ("Academica Book" "Source Han Serif SC" 1.3))
+    ("Academica" . ("Academica Book" "Source Han Serif SC" 1.0))
 
     ;; TODO
     ("Bookerly" . ("Bookerly" "Source Han Serif SC" 1.3))
@@ -3419,7 +3321,6 @@ Use ‘luna-save-font-settings’ to save font settings and use
                         (luna-load-font 'mode-line-inactive "SF Pro Text" 13 :weight 'light)))))
 #+end_src
 ** Modeline
-
 *** GUI
 #+begin_src elisp
 (eat-package awesome-tray
@@ -3454,7 +3355,7 @@ Use ‘luna-save-font-settings’ to save font settings and use
 
   ;; `popper', disable
   (with-eval-after-load 'popper
-    (setq popper-mode-line " "))
+    (setq popper-mode-line nil))
 
   ;; `meow'
   (with-eval-after-load 'meow
@@ -3531,7 +3432,6 @@ The padding pushes TEXT to the right edge of the mode-line."
 (add-hook 'eat/after-make-console-frame-hooks #'eat/setup-modeline)
 #+end_src
 
-
 ** Notifications
 Actually, `notify-send' is not defined in notifications package, but the
 autoload cookie will make Emacs load `notifications' first, then our
@@ -3590,6 +3490,63 @@ autoload cookie will make Emacs load `notifications' first, then our
     (with-eval-after-load 'marginalia
       ;; FIXME hook is nil
       (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup))))
+#+end_src
+** Highlight and center after jump
+#+begin_src elisp
+(eat-package hl-line
+  :init
+  (setq-default hl-line-sticky-flag nil)
+  ;; (when (display-graphic-p)
+  ;;   (add-hook 'prog-mode-hook #'hl-line-mode)
+  ;;   (add-hook 'conf-mode-hook #'hl-line-mode))
+  :config
+  (add-hook 'post-command-hook #'(lambda ()
+                                   "When `hl-line-mode' is enable, unhighlight if region is active."
+                                   (when (and (bound-and-true-p hl-line-mode)
+                                              (region-active-p))
+                                     (hl-line-unhighlight)))))
+
+(eat-package pulse
+  :hook
+  ((imenu-after-jump-hook isearch-update-post-hook)
+   . eat/recenter-and-pulse)
+  ((bookmark-after-jump  next-error)
+   . eat/recenter-and-pulse-line)
+  :init
+  (custom-set-faces
+   '(pulse-highlight-start-face ((t (:inherit region))))
+   '(pulse-highlight-face ((t (:inherit region)))))
+
+  (defun eat/pulse-momentary-line (&rest _)
+    "Pulse the current line."
+    (pulse-momentary-highlight-one-line (point)))
+
+  (defun eat/pulse-momentary (&rest _)
+    "Pulse the region or the current line."
+    (if (fboundp 'xref-pulse-momentarily)
+        (xref-pulse-momentarily)
+      (eat/pulse-momentary-line)))
+
+  (defun eat/recenter-and-pulse(&rest _)
+    "Recenter and pulse the region or the current line."
+    (recenter)
+    (eat/pulse-momentary))
+
+  (defun eat/recenter-and-pulse-line (&rest _)
+    "Recenter and pulse the current line."
+    (recenter)
+    (eat/pulse-momentary-line))
+
+  (dolist (cmd '(recenter-top-bottom
+                 other-window windmove-do-window-select
+                 pager-page-down pager-page-up))
+    (advice-add cmd :after #'eat/pulse-momentary-line))
+
+  (dolist (cmd '(pop-to-mark-command
+                 pop-global-mark
+                 compile-goto-error
+                 goto-last-change))
+    (advice-add cmd :after #'eat/recenter-and-pulse)))
 #+end_src
 * Chinese Input
 #+begin_src elisp
@@ -3661,6 +3618,7 @@ autoload cookie will make Emacs load `notifications' first, then our
    '("a" . execute-extended-command)
    '("e" . "C-x C-e")
    '(";" . comment-dwim)
+   '("-" . negative-argument)
 
    ;; file
    '("f" . find-file)
@@ -3815,12 +3773,6 @@ autoload cookie will make Emacs load `notifications' first, then our
    '("(" . insert-pair)
    '("]" . delete-pair) ;; NOTE maybe custom `delete-pair-blink-delay'
 
-   ;; hide-show
-   '("-" . hs-hide-block)
-   '("=" . hs-show-block)
-   '("_" . hs-hide-all)
-   '("+" . hs-show-all)
-
    ;; flymake
    '("Q" . flymake-goto-prev-error)
    '("J" . flymake-goto-next-error)
@@ -3857,14 +3809,15 @@ autoload cookie will make Emacs load `notifications' first, then our
                   diff-mode))
     (add-to-list 'meow-mode-state-list `(,mode . normal)))
   ;; motion mode list
-  (dolist (mode '(xeft-mode
-                  lsp-bridge-ref-mode
+  (dolist (mode '(lsp-bridge-ref-mode
                   Info-mode
                   ghelp-page-mode
                   notmuch-hello-mode
                   notmuch-search-mode
                   notmuch-tree-mode))
     (add-to-list 'meow-mode-state-list `(,mode . motion)))
+  (dolist (mode '(xeft-mode))
+    (add-to-list 'meow-mode-state-list `(,mode . insert)))
 
   (meow-setup-indicator)
   (meow-setup-dvorak))
@@ -4190,163 +4143,6 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 (eat-package fullframe :straight t)
 #+end_src
 * Programming
-#+begin_src elisp
-(eat-package aggressive-indent
-  :straight t
-  :commands aggressive-indent-mode
-  :hook ((emacs-lisp-mode-hook
-          lisp-interaction-mode-hook
-          scheme-mode-hook
-          lisp-mode-hook)
-         . aggressive-indent-mode))
-
-(eat-package apheleia
-  :straight t
-  :hook (go-mode-hook . apheleia-mode)
-  :init
-  (setq apheleia-remote-algorithm 'local)
-  :config
-  (setf (alist-get 'gofmt apheleia-formatters)
-        '("goimports")))
-
-(eat-package dumb-jump
-  :straight t
-  ;; NOTE use `dumb-jump' as default xref backend
-  ;; you can run `eglot' or `eat/citre-enable' to reset this
-  :hook (xref-backend-functions . #'dumb-jump-xref-activate)
-  :init
-  (setq
-   dumb-jump-force-searcher'rg
-   dumb-jump-quiet t
-   dumb-jump-aggressive t
-   dumb-jump-selector 'completing-read))
-
-(eat-package clue
-  :straight (clue :type git :host github :repo "AmaiKinono/clue"))
-
-(eat-package citre
-  :straight (citre :type git :host github :repo "universal-ctags/citre")
-  :init
-  (global-set-key (kbd "C-x c j") 'citre-jump)
-  (global-set-key (kbd "C-x c J") 'citre-jump-back)
-  (global-set-key (kbd "C-x c u") 'citre-update-this-tags-file)
-  (global-set-key (kbd "C-x c p") 'citre-peek)
-  (setq citre-default-create-tags-file-location 'global-cache
-        citre-use-project-root-when-creating-tags t
-        citre-prompt-language-for-ctags-command t
-        citre-auto-enable-citre-mode-modes '(prog-mode))
-  (defun eat/citre-enable ()
-    (interactive)
-    (citre-mode 1)
-    (require 'citre-config))
-  (defun eat/citre-disable ()
-    (interactive)
-    (citre-mode 0)
-    (remove-hook 'find-file-hook #'citre-auto-enable-citre-mode))
-  (eat-package citre-global
-    :init
-    ;; NOTE
-    ;; Notice that GTAGSOBJDIRPREFIX must exist for gtags to use it. So you need to run:
-    ;; $ mkdir -p ~/.cache/gtags/
-    (global-set-key (kbd "C-x c U") 'citre-global-update-database)
-    (global-set-key (kbd "C-x c r") 'citre-jump-to-reference)
-    (global-set-key (kbd "C-x c P") 'citre-ace-peek-references)
-    (with-eval-after-load 'citre-peek
-      (define-key citre-peek-keymap (kbd "M-l r")
-                  'citre-peek-through-references))
-    :config
-    (setenv "GTAGSOBJDIRPREFIX" (concat (getenv "HOME") "/.cache/gtags"))
-    (setenv "GTAGSCONF" (concat (getenv "HOME") "/.globalrc"))
-    (setenv "GTAGSLABEL" "native-pygments")))
-
-(eat-package eldoc-box
-  :straight t
-  :hook (eglot-managed-mode-hook . eldoc-box-hover-mode))
-
-(eat-package eglot
-  :straight t
-  :commands eglot-ensure
-  :init
-  (setq eglot-events-buffer-size 0
-        eglot-sync-connect nil       ;; don't block of LSP connection attempts
-        eglot-extend-to-xref t       ;; make eglot manage file out of project by `xref-find-definitions'
-        eglot-ignored-server-capabilites '(:documentHighlightProvider :documentFormattingProvider :documentRangeFormattingProvider))
-  (setq-default eglot-workspace-configuration
-                '((gopls
-                   (usePlaceholders . t))))
-  :config
-  ;; keybindings
-  (define-key eglot-mode-map (kbd "M-RET") 'eglot-code-actions)
-  (define-key eglot-mode-map (kbd "C-c r") 'eglot-rename)
-  (define-key eglot-mode-map (kbd "M-'") 'eglot-find-implementation)
-  (add-to-list 'eglot-server-programs
-               '(python-mode . ("pyright-langserver" "--stdio")))
-  (add-to-list 'eglot-server-programs
-			   '(rust-mode "rust-analyzer"))
-  ;; NOTE deno
-  (defclass eglot-deno (eglot-lsp-server) ()
-    :documentation "A custom class for deno lsp.")
-  (cl-defmethod eglot-initialization-options ((server eglot-deno))
-    "Passes through required deno initialization options"
-    (list :enable t
-          :lint t))
-  (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
-  ;; TODO code actions
-  (add-to-list 'eglot-server-programs
-               '(sql-mode . ("sqls" "-config" "~/.config/sqls/config.yaml"))))
-
-;; this need pip install epc, orjson
-(eat-package lsp-bridge
-  :straight (lsp-bridge
-             :type git
-             :host github
-             :repo "manateelazycat/lsp-bridge"
-             :files ("*"))
-  :commands lsp-bridge-mode global-lsp-bridge-mode
-  :init
-  (setq acm-enable-doc nil
-        acm-enable-search-words nil
-        lsp-bridge-enable-search-words nil)
-
-  (defun eat/lsp-bridge-mode-setup ()
-    "My setup for lsp-bridge.
-
-Disable `corfu-mode'.
-When expand snippet, try complete if there's acm cond, or run `yas-next-field-or-maybe-expand'."
-    (interactive)
-    (ignore-errors
-      (corfu-mode -1))
-    (with-eval-after-load 'yasnippet
-      (define-key yas-keymap (kbd "<tab>") 'acm-complete-or-expand-yas-snippet)
-      (define-key yas-keymap (kbd "TAB") 'acm-complete-or-expand-yas-snippet)))
-  :config
-  (add-hook 'lsp-bridge-mode-hook #'eat/lsp-bridge-mode-setup)
-  ;; keybindings
-  (define-key lsp-bridge-mode-map (kbd "M-.") #'lsp-bridge-find-def)
-  (define-key lsp-bridge-mode-map (kbd "C-x 4 .") #'lsp-bridge-find-def-other-window)
-  (define-key lsp-bridge-mode-map (kbd "M-,") #'lsp-bridge-return-from-def)
-  (define-key lsp-bridge-mode-map (kbd "M-?") #'lsp-bridge-find-references)
-  (define-key lsp-bridge-mode-map (kbd "M-'") #'lsp-bridge-find-impl)
-  (define-key lsp-bridge-mode-map (kbd "C-c r") #'lsp-bridge-rename)
-  (define-key lsp-bridge-mode-map (kbd "C-c <") #'lsp-bridge-diagnostic-jump-prev)
-  (define-key lsp-bridge-mode-map (kbd "C-c >") #'lsp-bridge-diagnostic-jump-next)
-  ;; FIXME p will say search failed " ", it should act like n, reach last file
-  (define-key lsp-bridge-ref-mode-map (kbd "j") nil)
-  (define-key lsp-bridge-ref-mode-map (kbd "k") nil)
-  (define-key lsp-bridge-ref-mode-map (kbd "h") nil)
-  (define-key lsp-bridge-ref-mode-map (kbd "l") nil)
-  (define-key lsp-bridge-ref-mode-map (kbd "p") 'lsp-bridge-ref-jump-prev-file)
-  (define-key lsp-bridge-ref-mode-map (kbd "h") 'lsp-bridge-ref-jump-prev-keyword)
-  (define-key lsp-bridge-ref-mode-map (kbd "t") 'lsp-bridge-ref-jump-next-keyword)
-  (define-key lsp-bridge-ref-mode-map (kbd "n") 'lsp-bridge-ref-jump-next-file))
-
-(defun eat/lsp-reconnect ()
-  (interactive)
-  (if (bound-and-true-p lsp-bridge-mode)
-      (lsp-bridge-restart-process)
-    (eglot-reconnect)))
-(global-set-key [f10] #'eat/lsp-reconnect)
-#+end_src
 ** Golang
 #+begin_src elisp
 ;; Install or update tools
@@ -4433,6 +4229,217 @@ When expand snippet, try complete if there's acm cond, or run `yas-next-field-or
 
 (eat-package cider
   :straight t)
+#+end_src
+** lua
+#+begin_src elisp
+(eat-package lua-mode :straight t)
+#+end_src
+** rust
+#+begin_src elisp
+(eat-package rust-mode
+  :straight t)
+#+end_src
+** typescript
+#+begin_src elisp
+(eat-package typescript-mode
+  :straight t
+  :init
+  (setq typescript-indent-level 2))
+#+end_src
+** Lisp
+#+begin_src elisp
+(eat-package aggressive-indent
+  :straight t
+  :commands aggressive-indent-mode
+  :hook ((emacs-lisp-mode-hook
+          lisp-interaction-mode-hook
+          scheme-mode-hook
+          lisp-mode-hook)
+         . aggressive-indent-mode))
+#+end_src
+** Lsp
+*** eglot
+#+begin_src elisp
+(eat-package eldoc-box
+  :straight t
+  :hook (eglot-managed-mode-hook . eldoc-box-hover-mode))
+
+(eat-package eglot
+  :straight t
+  :commands eglot-ensure
+  :init
+  (setq eglot-events-buffer-size 0
+        eglot-sync-connect nil       ;; don't block of LSP connection attempts
+        eglot-extend-to-xref t       ;; make eglot manage file out of project by `xref-find-definitions'
+        eglot-ignored-server-capabilites '(:documentHighlightProvider :documentFormattingProvider :documentRangeFormattingProvider))
+  (setq-default eglot-workspace-configuration
+                '((gopls
+                   (usePlaceholders . t))))
+  :config
+  ;; keybindings
+  (define-key eglot-mode-map (kbd "M-RET") 'eglot-code-actions)
+  (define-key eglot-mode-map (kbd "C-c r") 'eglot-rename)
+  (define-key eglot-mode-map (kbd "M-'") 'eglot-find-implementation)
+  (add-to-list 'eglot-server-programs
+               '(python-mode . ("pyright-langserver" "--stdio")))
+  (add-to-list 'eglot-server-programs
+			   '(rust-mode "rust-analyzer"))
+  ;; NOTE deno
+  (defclass eglot-deno (eglot-lsp-server) ()
+    :documentation "A custom class for deno lsp.")
+  (cl-defmethod eglot-initialization-options ((server eglot-deno))
+    "Passes through required deno initialization options"
+    (list :enable t
+          :lint t))
+  (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
+  ;; TODO code actions
+  (add-to-list 'eglot-server-programs
+               '(sql-mode . ("sqls" "-config" "~/.config/sqls/config.yaml"))))
+#+end_src
+*** lsp-bridge
+#+begin_src elisp
+;; this need pip install epc, orjson
+(eat-package lsp-bridge
+  :straight (lsp-bridge
+             :type git
+             :host github
+             :repo "manateelazycat/lsp-bridge"
+             :files ("*"))
+  :commands lsp-bridge-mode global-lsp-bridge-mode
+  :init
+  (setq acm-enable-doc nil
+        acm-enable-search-words nil
+        lsp-bridge-enable-search-words nil)
+
+  (defun eat/lsp-bridge-mode-setup ()
+    "My setup for lsp-bridge.
+
+Disable `corfu-mode'.
+When expand snippet, try complete if there's acm cond, or run `yas-next-field-or-maybe-expand'."
+    (interactive)
+    (ignore-errors
+      (corfu-mode -1))
+    (with-eval-after-load 'yasnippet
+      (define-key yas-keymap (kbd "<tab>") 'acm-complete-or-expand-yas-snippet)
+      (define-key yas-keymap (kbd "TAB") 'acm-complete-or-expand-yas-snippet)))
+  :config
+  (add-hook 'lsp-bridge-mode-hook #'eat/lsp-bridge-mode-setup)
+  ;; keybindings
+  (define-key lsp-bridge-mode-map (kbd "M-.") #'lsp-bridge-find-def)
+  (define-key lsp-bridge-mode-map (kbd "C-x 4 .") #'lsp-bridge-find-def-other-window)
+  (define-key lsp-bridge-mode-map (kbd "M-,") #'lsp-bridge-return-from-def)
+  (define-key lsp-bridge-mode-map (kbd "M-?") #'lsp-bridge-find-references)
+  (define-key lsp-bridge-mode-map (kbd "M-'") #'lsp-bridge-find-impl)
+  (define-key lsp-bridge-mode-map (kbd "C-c r") #'lsp-bridge-rename)
+  (define-key lsp-bridge-mode-map (kbd "C-c <") #'lsp-bridge-diagnostic-jump-prev)
+  (define-key lsp-bridge-mode-map (kbd "C-c >") #'lsp-bridge-diagnostic-jump-next)
+  ;; FIXME p will say search failed " ", it should act like n, reach last file
+  (define-key lsp-bridge-ref-mode-map (kbd "j") nil)
+  (define-key lsp-bridge-ref-mode-map (kbd "k") nil)
+  (define-key lsp-bridge-ref-mode-map (kbd "h") nil)
+  (define-key lsp-bridge-ref-mode-map (kbd "l") nil)
+  (define-key lsp-bridge-ref-mode-map (kbd "p") 'lsp-bridge-ref-jump-prev-file)
+  (define-key lsp-bridge-ref-mode-map (kbd "h") 'lsp-bridge-ref-jump-prev-keyword)
+  (define-key lsp-bridge-ref-mode-map (kbd "t") 'lsp-bridge-ref-jump-next-keyword)
+  (define-key lsp-bridge-ref-mode-map (kbd "n") 'lsp-bridge-ref-jump-next-file))
+#+end_src
+*** restart lsp client
+#+begin_src elisp
+(defun eat/lsp-reconnect ()
+  (interactive)
+  (if (bound-and-true-p lsp-bridge-mode)
+      (lsp-bridge-restart-process)
+    (eglot-reconnect)))
+(global-set-key [f10] #'eat/lsp-reconnect)
+#+end_src
+** Lint
+*** flymake
+#+begin_src elisp
+(eat-package flymake
+  :hook
+  (prog-mode-hook . flymake-mode)
+  (emacs-lisp-mode-hook . (lambda ()
+                            (flymake-mode -1)))
+  :init
+  (setq-default flymake-diagnostic-functions nil
+                flymake-no-changes-timeout 0.2)
+  (defun sekiro-flymake-mode-line-format ()
+    (let* ((counter (string-to-number
+                     (nth 1
+                          (cadr
+                           (flymake--mode-line-counter :error t)))))
+           (sekiro-flymake (when (> counter 0)
+                             'compilation-error)))
+      (propertize
+       "危"
+       'face
+       sekiro-flymake))))
+#+end_src
+
+** Citre
+#+begin_src elisp
+(eat-package clue
+  :straight (clue :type git :host github :repo "AmaiKinono/clue"))
+
+(eat-package citre
+  :straight (citre :type git :host github :repo "universal-ctags/citre")
+  :init
+  (global-set-key (kbd "C-x c j") 'citre-jump)
+  (global-set-key (kbd "C-x c J") 'citre-jump-back)
+  (global-set-key (kbd "C-x c u") 'citre-update-this-tags-file)
+  (global-set-key (kbd "C-x c p") 'citre-peek)
+  (setq citre-default-create-tags-file-location 'global-cache
+        citre-use-project-root-when-creating-tags t
+        citre-prompt-language-for-ctags-command t
+        citre-auto-enable-citre-mode-modes '(prog-mode))
+  (defun eat/citre-enable ()
+    (interactive)
+    (citre-mode 1)
+    (require 'citre-config))
+  (defun eat/citre-disable ()
+    (interactive)
+    (citre-mode 0)
+    (remove-hook 'find-file-hook #'citre-auto-enable-citre-mode))
+  (eat-package citre-global
+    :init
+    ;; NOTE
+    ;; Notice that GTAGSOBJDIRPREFIX must exist for gtags to use it. So you need to run:
+    ;; $ mkdir -p ~/.cache/gtags/
+    (global-set-key (kbd "C-x c U") 'citre-global-update-database)
+    (global-set-key (kbd "C-x c r") 'citre-jump-to-reference)
+    (global-set-key (kbd "C-x c P") 'citre-ace-peek-references)
+    (with-eval-after-load 'citre-peek
+      (define-key citre-peek-keymap (kbd "M-l r")
+                  'citre-peek-through-references))
+    :config
+    (setenv "GTAGSOBJDIRPREFIX" (concat (getenv "HOME") "/.cache/gtags"))
+    (setenv "GTAGSCONF" (concat (getenv "HOME") "/.globalrc"))
+    (setenv "GTAGSLABEL" "native-pygments")))
+#+end_src
+** Code Format
+#+begin_src elisp
+(eat-package apheleia
+  :straight t
+  :hook (go-mode-hook . apheleia-mode)
+  :init
+  (setq apheleia-remote-algorithm 'local)
+  :config
+  (setf (alist-get 'gofmt apheleia-formatters)
+        '("goimports")))
+#+end_src
+** Other jump function
+#+begin_src elisp
+(eat-package dumb-jump
+  :straight t
+  ;; NOTE use `dumb-jump' as default xref backend
+  ;; you can run `eglot' or `eat/citre-enable' to reset this
+  :hook (xref-backend-functions . #'dumb-jump-xref-activate)
+  :init
+  (setq
+   dumb-jump-force-searcher'rg
+   dumb-jump-quiet t
+   dumb-jump-aggressive t
+   dumb-jump-selector 'completing-read))
 #+end_src
 * Window Management
 #+begin_src elisp
@@ -4607,7 +4614,7 @@ Delete the frame after that command has exited"
   (add-hook 'telega-msg-ignore-predicates
             (telega-match-gen-predicate "msg-" '(sender blocked)))
 
-  (setq telega-chat-input-prompt "> "
+  (setq telega-chat-input-format "›"
         telega-animation-play-inline nil
         telega-video-play-inline nil
         ;; make sticker larger to read
@@ -4666,7 +4673,7 @@ Delete the frame after that command has exited"
       (add-to-list 'desktop-minor-mode-table
                    '(diff-hl-margin-mode nil)))))
 #+end_src
-** Dirvish
+** File Manager (dirvish)
 #+begin_src elisp
 (eat-package dirvish
   :straight '(dirvish :files (:defaults "extensions/*"))
@@ -4700,8 +4707,31 @@ Delete the frame after that command has exited"
   (define-key dirvish-mode-map (kbd "<mouse-2>") #'dired-mouse-find-file-other-window)
   (define-key dirvish-mode-map (kbd "<mouse-3>") #'dired-mouse-find-file))
 #+end_src
-** Notmuch
+** Mail (notmuch)
 #+begin_src elisp
+(eat-package message
+  :hook (message-mode-hook . (lambda ()
+                               (setq-local fill-column 72)
+                               (auto-fill-mode)))
+  :init
+  (setq user-full-name eat/user-full-name
+        user-mail-address eat/user-mail-address
+        message-kill-buffer-on-exit t
+        message-mail-alias-type 'ecomplete
+        message-send-mail-function #'message-use-send-mail-function
+        message-signature user-full-name))
+
+(eat-package sendmail
+  :init
+  (setq send-mail-function #'smtpmail-send-it))
+
+(eat-package smtpmail
+  :init
+  (setq smtpmail-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-user user-mail-address
+        smtpmail-smtp-service 587
+        smtpmail-stream-type 'ssl))
+
 (defface eat/notmuch-tag-emacs
   '((t :foreground "systemPurpleColor"))
   "Default face used for the Emacs tag.
@@ -4826,36 +4856,82 @@ Used in the default value of `notmuch-tag-formats'."
     (unless (eq ibuffer-sorting-mode 'filename/process)
       (ibuffer-do-sort-by-filename/process))))
 #+end_src
+** Note Taking (xeft)
+#+begin_src elisp
+(eat-package xeft
+  :straight (xeft :type git
+                  :host github
+                  :repo "casouri/xeft"
+                  :files (:defaults "Makefile" "module"))
+  :init
+  (setq xeft-directory "~/Dropbox/org/roam"
+        xeft-database "~/.xeft/db")
+  :config
+  (require 'flique)
+  (defun xeft-setup ()
+    (flique-append-to-index (buffer-file-name))
+    (local-set-key (kbd "M-]") #'flique-forward)
+    (local-set-key (kbd "M-[") #'flique-backward)
+    (flique-show-navigation))
+  (add-hook 'xeft-find-file-hook #'xeft-setup)
+  (add-hook 'xeft-find-file-hook #'bklink-minor-mode))
+#+end_src
+** Blog (org-static-blog)
+#+begin_src elisp
+(eat-package org-static-blog
+  :straight t
+  :init
+  (setq org-static-blog-publish-title "404cn's blog")
+  (setq org-static-blog-publish-url "https://404cn.github.io/")
+  (setq org-static-blog-publish-directory "~/p/blog/")
+  (setq org-static-blog-posts-directory "~/p/blog/posts/")
+  (setq org-static-blog-drafts-directory "~/p/blog/drafts/")
+  (setq org-static-blog-enable-tags t)
+  (setq org-static-blog-use-preview t)
+  (setq org-static-blog-preview-ellipsis "")
+  (setq org-export-with-toc nil)
+  (setq org-export-with-section-numbers nil)
+  :config
+  (setq org-static-blog-page-header (get-string-from-file "~/p/blog/static/header.html"))
+  (setq org-static-blog-page-preamble (get-string-from-file "~/p/blog/static/preamble.html"))
+  (setq org-static-blog-page-postamble (get-string-from-file "~/p/blog/static/postamble.html")))
+#+end_src
 * Modes
+** toml
 #+begin_src elisp
 (eat-package toml-mode :straight t :hook (toml-mode-hook . goto-address-prog-mode))
+#+end_src
+** yaml
+#+begin_src elisp
 (eat-package yaml-mode :straight t :hook (yaml-mode-hook . goto-address-prog-mode))
+#+end_src
+** docker
+#+begin_src elisp
 (eat-package docker-compose-mode :straight t)
 (eat-package dockerfile-mode :straight t)
+#+end_src
+** k8s
+#+begin_src elisp
 (eat-package k8s-mode :straight t)
-(eat-package lua-mode :straight t)
-
+(eat-package kubedoc
+  :straight
+  (kubedoc :type git :host github :repo "r0bobo/kubedoc.el"))
+#+end_src
+** gitignore
+#+begin_src elisp
 (eat-package git-modes
   :straight t
   :init
   (add-to-list 'auto-mode-alist
                (cons "/.dockerignore\\'" 'gitignore-mode)))
-
-(eat-package rust-mode
-  :straight t)
-
-(eat-package typescript-mode
-  :straight t
-  :init
-  (setq typescript-indent-level 2))
-
+#+end_src
+** terraform
+#+begin_src elisp
 (eat-package terraform-mode
   :straight t)
-
-(eat-package kubedoc
-  :straight
-  (kubedoc :type git :host github :repo "r0bobo/kubedoc.el"))
-
+#+end_src
+** markdown
+#+begin_src elisp
 (eat-package markdown-mode
   :straight t
   :mode ("\\.md\\'" . gfm-mode)
@@ -4877,6 +4953,7 @@ Used in the default value of `notmuch-tag-formats'."
   :config
   (define-key markdown-mode-command-map (kbd "r") #'markdown-toc-generate-or-refresh-toc))
 #+end_src
+
 * Org
 #+begin_src elisp
 ;;; -*- lexical-binding: t -*-
@@ -4933,11 +5010,14 @@ Used in the default value of `notmuch-tag-formats'."
                                (shell . t)))
   :config
   (setq org-edit-src-content-indentation 0
+        org-special-ctrl-a/e t
+        org-special-ctrl-k t
         org-src-fontify-natively nil ;; see it in `org-edit-special'
         org-src-window-setup 'current-window
         org-return-follows-link t
         org-confirm-babel-evaluate nil
         org-image-actual-width '(300)
+        org-ellipsis " ▾ "
         ;; Faster loading
         org-modules nil
         org-log-done t)
@@ -4980,13 +5060,62 @@ Used in the default value of `notmuch-tag-formats'."
   (org-set-emph-re 'org-emphasis-regexp-components org-emphasis-regexp-components)
   (org-element-update-syntax))
 
-;;  toggle emphasis markers interactively
-(eat-package org-appear
-  :straight t
-  :hook (org-mode-hook . org-appear-mode)
-  :init
-  (setq org-hide-emphasis-markers t))
 
+
+(eat-package valign
+  :straight t
+  :init
+  (setq valign-fancy-bar t)
+  (when (display-graphic-p)
+    (add-hook 'org-mode-hook #'valign-mode)))
+
+(eat-package toc-org
+  :straight t
+  :commands toc-org-enable toc-org-insert-toc)
+#+end_src
+** ox
+
+*** gfm
+#+begin_src elisp
+(eat-package ox-gfm
+  :straight t
+  :config
+  (add-to-list 'org-export-backends 'md))
+#+end_src
+
+** ob
+
+*** restclient
+#+begin_src elisp
+(eat-package ob-restclient
+  :straight t
+  :init
+  (eat-package restclient
+    :straight t
+    :mode ("\\.rest\\'" . restclient-mode)
+    :init
+    (defun eat/restclient ()
+      "Work with `rest' in the *restclient* buffer."
+      (interactive)
+      (with-current-buffer (get-buffer-create "*restclient*")
+        (restclient-mode)
+        (pop-to-buffer (current-buffer)))))
+  (cl-pushnew '(restclient . t) load-language-list)
+  :config
+  (add-to-list 'org-structure-template-alist '("rc" . "src restclient")))
+#+end_src
+
+*** go
+#+begin_src elisp
+(eat-package ob-go
+  :straight t
+  :init (cl-pushnew '(go .t) load-language-list)
+  :config
+  (add-to-list 'org-structure-template-alist '("go" . "src go")))
+#+end_src
+
+** copture
+#+begin_src elisp
 (eat-package org-capture
   :init
   (global-set-key (kbd "C-c c") 'org-capture)
@@ -5005,7 +5134,10 @@ Used in the default value of `notmuch-tag-formats'."
       "* %^{Title}\n:PROPERITIES:\n:Created: %T\n:END:" :tree-type week)
      ("n" "Note" entry (file "~/Dropbox/org/Notes.org")
       "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t))))
+#+end_src
 
+** agenda
+#+begin_src elisp
 (eat-package org-agenda
   :init
   (setq org-agenda-files (list org-directory)
@@ -5019,87 +5151,17 @@ Used in the default value of `notmuch-tag-formats'."
   :config
   (setq org-agenda-current-time-string
         "⭠ now ─────────────────────────────────────────────────"))
-
-(eat-package valign
-  :straight t
-  :init
-  (setq valign-fancy-bar t)
-  (when (display-graphic-p)
-    (add-hook 'org-mode-hook #'valign-mode)))
-
-(eat-package toc-org
-  :straight t
-  :commands toc-org-enable toc-org-insert-toc)
-(eat-package xeft
-  :straight (xeft :type git
-                  :host github
-                  :repo "casouri/xeft"
-                  :files (:defaults "Makefile" "module"))
-  :init
-  (setq xeft-directory "~/Dropbox/org/roam"
-        xeft-database "~/.xeft/db")
-  :config
-  (require 'flique)
-  (defun xeft-setup ()
-    (flique-append-to-index (buffer-file-name))
-    (local-set-key (kbd "M-]") #'flique-forward)
-    (local-set-key (kbd "M-[") #'flique-backward)
-    (flique-show-navigation))
-  (add-hook 'xeft-find-file-hook #'xeft-setup)
-  (add-hook 'xeft-find-file-hook #'bklink-minor-mode))
-
-;;; blog
-
-(eat-package org-static-blog
-  :straight t
-  :init
-  (setq org-static-blog-publish-title "404cn's blog")
-  (setq org-static-blog-publish-url "https://404cn.github.io/")
-  (setq org-static-blog-publish-directory "~/p/blog/")
-  (setq org-static-blog-posts-directory "~/p/blog/posts/")
-  (setq org-static-blog-drafts-directory "~/p/blog/drafts/")
-  (setq org-static-blog-enable-tags t)
-  (setq org-static-blog-use-preview t)
-  (setq org-static-blog-preview-ellipsis "")
-  (setq org-export-with-toc nil)
-  (setq org-export-with-section-numbers nil)
-  :config
-  (setq org-static-blog-page-header (get-string-from-file "~/p/blog/static/header.html"))
-  (setq org-static-blog-page-preamble (get-string-from-file "~/p/blog/static/preamble.html"))
-  (setq org-static-blog-page-postamble (get-string-from-file "~/p/blog/static/postamble.html")))
-
-;;; ox
-
-(eat-package ox-gfm
-  :straight t
-  :config
-  (add-to-list 'org-export-backends 'md))
-
-;;; ob
-
-(eat-package ob-restclient
-  :straight t
-  :init
-  (eat-package restclient
-    :straight t
-    :mode ("\\.rest\\'" . restclient-mode)
-    :init
-    (defun eat/restclient ()
-      "Work with `rest' in the *restclient* buffer."
-      (interactive)
-      (with-current-buffer (get-buffer-create "*restclient*")
-        (restclient-mode)
-        (pop-to-buffer (current-buffer)))))
-  (cl-pushnew '(restclient . t) load-language-list)
-  :config
-  (add-to-list 'org-structure-template-alist '("rc" . "src restclient")))
-
-(eat-package ob-go
-  :straight t
-  :init (cl-pushnew '(go .t) load-language-list)
-  :config
-  (add-to-list 'org-structure-template-alist '("go" . "src go")))
 #+end_src
+
+** org-appear
+#+begin_src elisp
+(eat-package org-appear
+  :straight t
+  :hook (org-mode-hook . org-appear-mode)
+  :init
+  (setq org-hide-emphasis-markers t))
+#+end_src
+
 * Site Lisp
 ** Load Path
 #+begin_src elisp
