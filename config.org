@@ -4683,6 +4683,7 @@ Delete the frame after that command has exited"
   (global-set-key (kbd "<f1>") #'dirvish-side)
   (global-set-key (kbd "C-c f") #'dirvish-fd)
   :config
+  (dirvish-side-follow-mode)
   (add-to-list 'dirvish-open-with-programs '(("pdf") "sioyek" "%f"))
   (define-key dirvish-mode-map (kbd "TAB") #'dirvish-subtree-toggle)
   (define-key dirvish-mode-map (kbd "<tab>") #'dirvish-subtree-toggle)
