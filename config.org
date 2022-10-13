@@ -3816,7 +3816,8 @@ autoload cookie will make Emacs load `notifications' first, then our
                   notmuch-search-mode
                   notmuch-tree-mode))
     (add-to-list 'meow-mode-state-list `(,mode . motion)))
-  (dolist (mode '(xeft-mode))
+  (dolist (mode '(xeft-mode
+                  gud-mode))
     (add-to-list 'meow-mode-state-list `(,mode . insert)))
 
   (meow-setup-indicator)
