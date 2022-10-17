@@ -3186,6 +3186,7 @@ autoload cookie will make Emacs load `notifications' first, then our
   ace-swap-window
   ace-window
   :init
+  (global-set-key (kbd "M-o") 'ace-window)
   (setq aw-keys '(?a ?o ?e ?u ?i)
         aw-scope 'frame)
   (dolist (cmd '(ace-window
