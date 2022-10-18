@@ -4453,6 +4453,17 @@ Install =telegram-tdli-gitb= from aur.
   :commands telega
   :hook
   (telega-load-hook . (telega-notifications-mode telega-appindicator-mode))
+  :init
+  ;; highlight current line in root buffer
+  (defun lg-telega-root-mode ()
+    (hl-line-mode 1))
+
+  (defun lg-telega-chat-update (chat)
+    (with-telega-root-buffer
+     (hl-line-highlight)))
+
+  (add-hook 'telega-chat-update-hook 'lg-telega-chat-update)
+  (add-hook 'telega-root-mode-hook 'lg-telega-root-mode)
   :config
   ;; ignore blocked user
   (add-hook 'telega-msg-ignore-predicates
