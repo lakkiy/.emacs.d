@@ -3582,11 +3582,12 @@ autoload cookie will make Emacs load `notifications' first, then our
   :hook
   ((prog-mode-hook conf-mode-hook) . undo-hl-mode))
 #+end_src
-** remote editing
+** Remote Editing
 #+begin_src elisp
 (eat-package tramp
   :init
   (setq
+   remote-file-name-inhibit-locks t
    tramp-verbose 1 ;; only show error message
    tramp-completion-reread-directory-timeout nil ;;  speed up complete
    tramp-auto-save-directory temporary-file-directory
@@ -3602,6 +3603,12 @@ autoload cookie will make Emacs load `notifications' first, then our
     (interactive)
     (find-alternate-file (format "/sudo::%s" (buffer-file-name))))
   (global-set-key (kbd "C-x C-z") #'eat/reopen-file-with-sudo)
+
+  ;; https://www.reddit.com/r/emacs/comments/y92y4b/tramp_users_slowness_got_you_down_check/
+  (defun my-vc-off-if-remote ()
+    (if (file-remote-p (buffer-file-name))
+        (setq-local vc-handled-backends '(Git))))
+  (add-hook 'find-file-hook 'my-vc-off-if-remote)
   :config
   ;; use `magit' with yadm, (magit-status "/yadm::")
   (add-to-list 'tramp-methods
