@@ -2897,7 +2897,7 @@ Use ‘luna-save-font-settings’ to save font settings and use
                  '("meow" . (awesome-tray-module-meow-info awesome-tray-module-evil-face)))
     (add-to-list 'awesome-tray-active-modules "meow")))
 
-(add-hook 'eat/after-make-window-system-frame-hooks #'awesome-tray-mode)
+;; (add-hook 'eat/after-make-window-system-frame-hooks #'awesome-tray-mode)
 #+end_src
 
 *** TUI
@@ -2908,7 +2908,8 @@ Use ‘luna-save-font-settings’ to save font settings and use
   (interactive)
   (minions-mode))
 
-(add-hook 'eat/after-make-console-frame-hooks #'eat/setup-modeline)
+(add-hook 'eat/after-make-window-system-frame-hooks #'eat/setup-modeline)
+;; (add-hook 'eat/after-make-console-frame-hooks #'eat/setup-modeline)
 #+end_src
 ** Notifications
 Actually, `notify-send' is not defined in notifications package, but the
