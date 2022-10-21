@@ -44,10 +44,6 @@ TODO shoult put with their packages
 (defconst eat/linuxp
   (eq system-type 'gnu/linux)
   "Are we running on a GNU/Linux system?")
-
-(defconst eat/emacs29p
-  (>= emacs-major-version 29)
-  "Emacs is 29 or above.")
 #+end_src
 ** Functions
 #+begin_src elisp
@@ -215,12 +211,11 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 ;; The nano style for truncated long lines.
 (setq auto-hscroll-mode 'current-line)
 
-(when eat/emacs29p
   ;; for mouse scroll
-  (setq dired-mouse-drag-files t
-        mouse-drag-and-drop-region t
-        mouse-drag-and-drop-region-cross-program t)
-  (add-hook 'after-init-hook (lambda () (pixel-scroll-precision-mode))))
+(setq dired-mouse-drag-files t
+      mouse-drag-and-drop-region t
+      mouse-drag-and-drop-region-cross-program t)
+(add-hook 'after-init-hook (lambda () (pixel-scroll-precision-mode)))
 
 ;; scroll nand hscroll
 (setq-default
@@ -594,10 +589,8 @@ point reaches the beginning or end of the buffer, stop there."
         repeat-exit-timeout 3
         repeat-exit-key (kbd "RET")))
 
-(when eat/emacs29p
-  ;; TODO use with hideshow
-  (eat-package mouse
-    :hook (after-init-hook . context-menu-mode)))
+(eat-package mouse
+    :hook (after-init-hook . context-menu-mode))
 
 (eat-package simple
   :hook (before-save-hook . delete-trailing-whitespace)
@@ -4096,9 +4089,8 @@ Some function need emacs29(didn’t check emacs version).
   :init
   (setq show-paren-when-point-in-periphery t
         show-paren-context-when-offscreen 'overlay
-        show-paren-when-point-inside-paren t)
-  (when eat/emacs29p
-    (setq show-paren-context-when-offscreen t)))
+        show-paren-when-point-inside-paren t
+        show-paren-context-when-offscreen t))
 #+end_src
 *** Reslove git conflicts with smerge
 #+begin_src elisp
@@ -4150,7 +4142,6 @@ Some function need emacs29(didn’t check emacs version).
   :hook (eglot-managed-mode-hook . eldoc-box-hover-mode))
 
 (eat-package eglot
-  :elpaca t
   :commands eglot-ensure
   :init
   (setq eglot-events-buffer-size 0
