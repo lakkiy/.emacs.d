@@ -4489,7 +4489,7 @@ Delete the frame after that command has exited"
           (delete-frame))))))
 #+end_src
 ** Telega
-Install =telegram-tdli-gitb= from aur.
+Run =docker pull zevlg/telega-server:latest=
 #+begin_src elisp
 (eat-package telega
   :elpaca t
@@ -4497,6 +4497,7 @@ Install =telegram-tdli-gitb= from aur.
   :hook
   (telega-load-hook . (telega-notifications-mode telega-appindicator-mode))
   :init
+  (setq telega-use-docker t)
   ;; highlight current line in root buffer
   (defun lg-telega-root-mode ()
     (hl-line-mode 1))
