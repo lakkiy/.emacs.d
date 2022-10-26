@@ -2902,7 +2902,7 @@ Use ‘luna-save-font-settings’ to save font settings and use
 
 *** TUI
 #+begin_src elisp
-(eat-package minions :elpaca t)
+(eat-package minions :straight t)
 
 (defun eat/setup-modeline ()
   (interactive)
@@ -5188,6 +5188,12 @@ If popup is focused, kill it."
 (eat-package toc-org
   :elpaca t
   :commands toc-org-enable toc-org-insert-toc)
+#+end_src
+** Syntax highlight when export to html
+#+begin_src elisp
+(eat-package htmlize
+  :straight t
+  :after org)
 #+end_src
 * Site Lisp
 ** Load Path
