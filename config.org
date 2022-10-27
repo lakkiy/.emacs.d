@@ -17,6 +17,9 @@
                             (vertical-scroll-bars . nil)
                             (menu-bar-lines . 0)
                             (tool-bar-lines . 0)))
+
+
+(setq load-prefer-newer noninteractive)
 #+end_src
 ** Lexical Binding
 #+begin_src elisp
@@ -2907,37 +2910,9 @@ autoload cookie will make Emacs load `notifications' first, then our
    completion-cycle-threshold t
    minibuffer-depth-indicate-mode t
    minibuffer-eldef-shorten-default t
-   minibuffer-electric-default-mode t))
-#+end_src
-** completion
-#+begin_src elisp
-(eat-package vertico
-  :straight (vertico :files (:defaults "extensions/*"))
-  :hook
-  (after-init-hook . vertico-mode)
-  :config
-  (define-key vertico-map (kbd "C-j") #'(lambda () (interactive)
-                                          (if minibuffer--require-match
-                                              (minibuffer-complete-and-exit)
-                                            (exit-minibuffer))))
-  (eat-package vertico-directory
-    :hook (rfn-eshadow-update-overlay-hook . vertico-directory-tidy)
-    :init
-    (define-key vertico-map (kbd "DEL") #'vertico-directory-delete-char)
-    (define-key vertico-map (kbd "M-DEL") #'vertico-directory-delete-word)
-    (define-key vertico-map (kbd "RET") #'vertico-directory-enter)))
-
-(eat-package orderless
-  :straight t
-  :after vertico
-  :hook (minibuffer-setup-hook . sanityinc/use-orderless-in-minibuffer)
-  :init
-  (defun sanityinc/use-orderless-in-minibuffer ()
-    (setq-local completion-styles '(substring orderless)))
-  :config
-  (defun completion--regex-pinyin (str)
-    (orderless-regexp (pinyinlib-build-regexp-string str)))
-  (add-to-list 'orderless-matching-styles 'completion--regex-pinyin))
+   minibuffer-electric-default-mode t)
+  ;; Quit that fucking minibuffer!
+  (define-key minibuffer-local-map (kbd "C-g") #'keyboard-quit))
 #+end_src
 ** history
 #+begin_src elisp
@@ -3693,6 +3668,115 @@ autoload cookie will make Emacs load `notifications' first, then our
                                    regexp-function space-before)))))
       (funcall fn _))))
 #+end_src
+** vertico
+#+begin_src elisp
+(eat-package vertico
+  :straight (vertico :files (:defaults "extensions/*"))
+  :hook
+  (after-init-hook . vertico-mode)
+  :config
+  (setq vertico-resize nil
+        vertico-count 17)
+  ;; Use minibuffer completion as the UI for `completion-at-point'.
+  (setq-default completion-in-region-function
+                (lambda (&rest args)
+                  (apply (if vertico-mode
+                             #'consult-completion-in-region
+                           #'completion--in-region)
+                         args)))
+  (eat-package vertico-directory
+    :hook (rfn-eshadow-update-overlay-hook . vertico-directory-tidy)
+    :init
+    (define-key vertico-map (kbd "DEL")   #'vertico-directory-delete-char)
+    (define-key vertico-map (kbd "M-DEL") #'vertico-directory-delete-word)
+    (define-key vertico-map (kbd "RET")   #'vertico-directory-enter)))
+#+end_src
+
+*** TODO vertico-posframe
+TODO Check if enable this.
+#+begin_src emacs-lisp
+(eat-package vertico-posframe
+  :straight (vertico-posframe :type git :host github :repo "tumashu/vertico-posframe")
+  :hook (vertico-mode-hook . vertico-posframe-mode))
+#+end_src
+
+** orderless
+#+begin_src emacs-lisp
+(eat-package orderless
+  :straight t
+  :after vertico
+  :hook (minibuffer-setup-hook . sanityinc/use-orderless-in-minibuffer)
+  :init
+  (defun sanityinc/use-orderless-in-minibuffer ()
+    (setq-local completion-styles '(substring orderless)))
+  :config
+  (defun completion--regex-pinyin (str)
+    (orderless-regexp (pinyinlib-build-regexp-string str)))
+  (add-to-list 'orderless-matching-styles 'completion--regex-pinyin))
+#+end_src
+
+** consult
+
+*** config
+#+begin_src emacs-lisp
+(eat-package consult
+  :elpaca t
+  :init
+  (global-set-key [remap apropos]                       #'consult-apropos)
+  (global-set-key [remap bookmark-jump]                 #'consult-bookmark)
+  (global-set-key [remap goto-line]                     #'consult-goto-line)
+  (global-set-key [remap imenu]                         #'consult-imenu)
+  (global-set-key [remap locate]                        #'consult-locate)
+  ;; (global-set-key [remap load-theme]                    #'consult-theme)
+  (global-set-key [remap man]                           #'consult-man)
+  (global-set-key [remap recentf-open-files]            #'consult-recent-file)
+  (global-set-key [remap switch-to-buffer]              #'consult-buffer)
+  (global-set-key [remap switch-to-buffer-other-window] #'consult-buffer-other-window)
+  (global-set-key [remap switch-to-buffer-other-frame]  #'consult-buffer-other-frame)
+  (global-set-key [remap yank-pop]                      #'consult-yank-pop)
+  (global-set-key [remap project-find-regexp]           #'consult-ripgrep)
+  (advice-add #'multi-occur :override #'consult-multi-occur)
+  (setq consult-project-root-function (lambda ()
+                                        (when-let (project (project-current))
+                                          (car (project-roots project))))
+        consult-narrow-key "<"
+        consult-line-numbers-widen t
+        consult-async-min-input 2
+        consult-async-refresh-delay  0.15
+        consult-async-input-throttle 0.2
+        consult-async-input-debounce 0.1)
+  :config
+  (consult-customize
+   consult-ripgrep consult-git-grep consult-grep
+   consult-bookmark consult-recent-file
+   :preview-key (kbd "C-SPC"))
+  (consult-customize
+   consult-theme
+   :preview-key (list (kbd "C-SPC") :debounce 0.5 'any)))
+#+end_src
+
+*** consult-yasnippet
+#+begin_src emacs-lisp
+(eat-package consult-yasnippet :elpaca t)
+#+end_src
+
+*** consult-dir
+#+begin_src emacs-lisp
+(eat-package consult-dir
+  :elpaca t
+  :init
+  (global-set-key [remap list-directory] #'consult-dir)
+  (with-eval-after-load 'vertico
+    (define-key vertico-map (kbd "C-x C-d") #'consult-dir)
+    (define-key vertico-map (kbd "C-x C-j") #'consult-dir-jump-file)))
+#+end_src
+
+*** consult-eglot
+#+begin_src emacs-lisp
+(eat-package consult-eglot
+  :elpaca t)
+#+end_src
+
 ** corfu
 #+begin_src elisp
 (eat-package corfu
@@ -3776,6 +3860,13 @@ so try complete filst, if there nothing to complete then try to jump to next fie
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                  nil
                  (window-parameters (mode-line-format . none)))))
+#+end_src
+*** embark-consult
+#+begin_src emacs-lisp
+;; Consult users will also want the embark-consult package.
+(eat-package embark-consult
+  :after embark consult
+  :hook (embark-collect-mode-hook . embark-consult-preview-minor-mode))
 #+end_src
 ** rg
 #+begin_src elisp
@@ -4374,23 +4465,14 @@ Run =docker pull zevlg/telega-server:latest=
   ;; (setq telega-server-libs-prefix "/usr")
 
   (defun eat/telega-root-setup ()
-    ;; (eat/fixed-pitch-setup) ;; FIXME
+    (eat/fixed-pitch-setup)
     (hl-line-mode 1))
   (add-hook 'telega-root-mode-hook 'eat/telega-root-setup)
 
-  ;; use capf to complete in chat buffer
-  (eat-package company :straight t)
-  (defun my-telega-chat-mode ()
-    (require 'company)
-    (add-hook 'completion-at-point-functions
-              #'telega-chatbuf-complete-at-point nil 'local))
-
   (defun eat/telega-chat-setup ()
-    (my-telega-chat-mode)
-    ;; (make-variable-buffer-local 'face-font-rescale-alist)
-    ;; (add-to-list 'face-font-rescale-alist `(,eat/font-chinese . 0.9))
-    ;; (add-to-list 'face-font-rescale-alist `(,eat/font-emoji . 0.8))
-    (require 'yasnippet)
+    (make-variable-buffer-local 'face-font-rescale-alist)
+    (add-to-list 'face-font-rescale-alist `(,eat/font-chinese . 0.9))
+    (add-to-list 'face-font-rescale-alist `(,eat/font-emoji . 0.8))
     (yas-minor-mode-on)
     (visual-line-mode)
     (hl-line-mode))
