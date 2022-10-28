@@ -444,9 +444,9 @@ ARGS.
                  (:straight `((if (listp ',@arg-list)
                                   (straight-use-package ',@arg-list)
                                 (straight-use-package ',package))))
-                 (:elpaca `((if (listp ',@arg-list)
-                                (elpaca ,@arg-list)
-                              (elpaca ,package))))
+                 ;; (:elpaca `((if (listp ',@arg-list)
+                 ;;                (elpaca ,@arg-list)
+                 ;;              (elpaca ,package))))
                  (:init arg-list)
                  (:config `((with-eval-after-load ',package
                               ,@arg-list)))
@@ -661,35 +661,6 @@ point reaches the beginning or end of the buffer, stop there."
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
-
-
-(declare-function elpaca-generate-autoloads "elpaca")
-(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
-(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-(when-let ((elpaca-repo (expand-file-name "repos/elpaca/" elpaca-directory))
-           (elpaca-build (expand-file-name "elpaca/" elpaca-builds-directory))
-           (elpaca-target (if (file-exists-p elpaca-build) elpaca-build elpaca-repo))
-           (elpaca-url  "https://www.github.com/progfolio/elpaca.git")
-           ((add-to-list 'load-path elpaca-target))
-           ((not (file-exists-p elpaca-repo)))
-           (buffer (get-buffer-create "*elpaca-bootstrap*")))
-  (condition-case-unless-debug err
-      (progn
-        (unless (zerop (call-process "git" nil buffer t "clone" elpaca-url elpaca-repo))
-          (error "%s" (list (with-current-buffer buffer (buffer-string)))))
-        (byte-recompile-directory elpaca-repo 0 'force)
-        (require 'elpaca)
-        (elpaca-generate-autoloads "elpaca" elpaca-repo)
-        (kill-buffer buffer))
-    ((error)
-     (delete-directory elpaca-directory 'recursive)
-     (with-current-buffer buffer
-       (goto-char (point-max))
-       (insert (format "\n%S" err))
-       (display-buffer buffer)))))
-(require 'elpaca-autoloads)
-(add-hook 'after-init-hook #'elpaca-process-queues)
-(elpaca (elpaca :host github :repo "progfolio/elpaca"))
 #+end_src
 ** Performance
 *** benchmark start up
@@ -713,17 +684,17 @@ point reaches the beginning or end of the buffer, stop there."
 #+end_src
 ** Lib
 #+begin_src elisp
-(eat-package all-the-icons :elpaca t)
-(eat-package async :elpaca t)
+(eat-package all-the-icons :straight t)
+(eat-package async :straight t)
 
 ;; 拼音搜索
 (eat-package pinyinlib
-  :elpaca t
+  :straight t
   :commands
   pinyinlib-build-regexp-char
   pinyinlib-build-regexp-string)
 
-(eat-package fullframe :elpaca t)
+(eat-package fullframe :straight t)
 #+end_src
 * UI
 ** Theme
@@ -790,12 +761,12 @@ point reaches the beginning or end of the buffer, stop there."
 
 *** installed
 #+begin_src elisp
-(elpaca spacemacs-theme)
-(elpaca kaolin-themes)
-(elpaca (notink-theme :host github :repo "MetroWind/notink-theme"))
-(elpaca (ef-themes :host github :repo "protesilaos/ef-themes"))
-(elpaca (matrix-emacs-theme :host github :repo "monkeyjunglejuice/matrix-emacs-theme"))
-(elpaca catppuccin-theme)
+(straight-use-package 'spacemacs-theme)
+(straight-use-package 'kaolin-themes)
+(straight-use-package '(notink-theme :type git :host github :repo "MetroWind/notink-theme"))
+(straight-use-package '(ef-themes :type git :host github :repo "protesilaos/ef-themes"))
+(straight-use-package '(matrix-emacs-theme :type git :host github :repo "monkeyjunglejuice/matrix-emacs-theme"))
+(straight-use-package 'catppuccin-theme)
 
 (setq
  spacemacs-theme-comment-italic t
@@ -1778,7 +1749,7 @@ autoload cookie will make Emacs load `notifications' first, then our
 ** Text Scale
 #+begin_src elisp
 (eat-package default-text-scale
-  :elpaca t
+  :straight t
   :init
   (global-set-key (kbd "C-x C-=") #'default-text-scale-increase)
   (global-set-key (kbd "C-x C--") #'default-text-scale-decrease))
@@ -1789,7 +1760,7 @@ autoload cookie will make Emacs load `notifications' first, then our
 (when (and eat/enable-icon (display-graphic-p))
   (eat-package all-the-icons-ibuffer
     :after ibuffer
-    :elpaca t
+    :straight t
     :hook (ibuffer-mode-hook . all-the-icons-ibuffer-mode))
 
   (eat-package all-the-icons-completion
@@ -2026,7 +1997,7 @@ autoload cookie will make Emacs load `notifications' first, then our
 ** ace-window
 #+begin_src elisp
 (eat-package ace-window
-  :elpaca t
+  :straight t
   :commands
   ace-swap-window
   ace-window
@@ -2313,7 +2284,7 @@ autoload cookie will make Emacs load `notifications' first, then our
 ** query replace
 #+begin_src elisp
 (eat-package anzu
-  :elpaca t
+  :straight t
   :init
   (global-set-key [remap query-replace] 'anzu-query-replace)
   (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp))
@@ -2321,14 +2292,14 @@ autoload cookie will make Emacs load `notifications' first, then our
 ** TODO Misc
 #+begin_src elisp
 (eat-package separedit
-  :elpaca t
+  :straight t
   :hook (separedit-mode-hook . (lambda () (auto-fill-mode 1)))
   :init
   ;; use C-u C-c ' to select major mode
   (global-set-key (kbd "C-c '") #'separedit))
 
 (eat-package puni
-  :elpaca (puni :host github :repo "AmaiKinono/puni")
+  :straight (puni :host github :repo "AmaiKinono/puni")
   :hook
   ((emacs-lisp-mode-hook scheme-mode-hook clojure-mode-hook)
    . puni-mode)
@@ -2343,13 +2314,13 @@ autoload cookie will make Emacs load `notifications' first, then our
 (eat-package iscroll :straight t)
 
 (eat-package visual-fill-column
-  :elpaca t
+  :straight t
   :hook (visual-fill-column-mode-hook . visual-line-mode)
   :init
   (setq-default visual-fill-column-center-text t))
 
 (eat-package ligature
-  :elpaca (ligature :host github :repo "mickeynp/ligature.el")
+  :straight (ligature :host github :repo "mickeynp/ligature.el")
   :commands global-ligature-mode
   :hook (prog-mode-hook . (lambda () (ligature-mode t)))
   :config
@@ -2361,12 +2332,12 @@ autoload cookie will make Emacs load `notifications' first, then our
                             "<->" "<--" "</" "+=" "++" "??" "/>" "__" "WWW")))
 
 (eat-package hl-todo
-  :elpaca t
+  :straight t
   :hook
   ((dired-mode-hook prog-mode-hook conf-mode-hook) . hl-todo-mode))
 
 (eat-package imenu-list
-  :elpaca t
+  :straight t
   :hook
   (imenu-list-major-mode-hook . (lambda ()
                                   (setq-local header-line-format nil)))
@@ -2381,11 +2352,11 @@ autoload cookie will make Emacs load `notifications' first, then our
 ** undo
 #+begin_src elisp
 (eat-package vundo
-  :elpaca (vundo :host github :repo "casouri/vundo")
+  :straight (vundo :host github :repo "casouri/vundo")
   :commands vundo)
 
 (eat-package undo-hl
-  :elpaca (undo-hl :host github :repo "casouri/undo-hl")
+  :straight (undo-hl :host github :repo "casouri/undo-hl")
   :hook
   ((prog-mode-hook conf-mode-hook) . undo-hl-mode))
 #+end_src
@@ -2484,7 +2455,7 @@ autoload cookie will make Emacs load `notifications' first, then our
 ;; unzip rime-1.7.2-osx.zip -d ~/.config/emacs/librime
 ;; rm -rf rime-1.7.2-osx.zip
 (eat-package rime
-  :elpaca t
+  :straight t
   :commands toggle-input-method
   :init
   (defun +rime-predicate-org-syntax-punc-p ()
@@ -2525,14 +2496,14 @@ autoload cookie will make Emacs load `notifications' first, then our
 ** Translate
 #+begin_src elisp
 (eat-package fanyi
-  :elpaca (fanyi :host github :repo "condy0919/fanyi.el")
+  :straight (fanyi :host github :repo "condy0919/fanyi.el")
   :hook (fanyi-mode-hook . visual-line-mode)
   :init
   (setq fanyi-verbose nil)
   (global-set-key (kbd "C-c Y") 'fanyi-dwim))
 
 (eat-package go-translate
-  :elpaca t
+  :straight t
   :init
   (setq gts-translate-list '(("en" "zh")))
   (global-set-key (kbd "C-c y") #'gts-do-translate)
@@ -2546,7 +2517,7 @@ autoload cookie will make Emacs load `notifications' first, then our
 ** Help
 #+begin_src elisp
 (eat-package ghelp
-  :elpaca (ghelp :host github :repo "casouri/ghelp")
+  :straight (ghelp :host github :repo "casouri/ghelp")
   :commands
   ghelp-describe
   ghelp-describe-function
@@ -2565,7 +2536,7 @@ autoload cookie will make Emacs load `notifications' first, then our
 ** Avy
 #+begin_src elisp
 (eat-package avy
-  :elpaca t
+  :straight t
   :init
   (global-set-key (kbd "C-'") #'avy-goto-char-timer)
   :config
@@ -2679,7 +2650,7 @@ TODO Check if enable this.
 *** config
 #+begin_src emacs-lisp
 (eat-package consult
-  :elpaca t
+  :straight t
   :init
   (global-set-key [remap apropos]                       #'consult-apropos)
   (global-set-key [remap bookmark-jump]                 #'consult-bookmark)
@@ -2716,13 +2687,13 @@ TODO Check if enable this.
 
 *** consult-yasnippet
 #+begin_src emacs-lisp
-(eat-package consult-yasnippet :elpaca t)
+(eat-package consult-yasnippet :straight t)
 #+end_src
 
 *** consult-dir
 #+begin_src emacs-lisp
 (eat-package consult-dir
-  :elpaca t
+  :straight t
   :init
   (global-set-key [remap list-directory] #'consult-dir)
   (with-eval-after-load 'vertico
@@ -2733,7 +2704,7 @@ TODO Check if enable this.
 *** consult-eglot
 #+begin_src emacs-lisp
 (eat-package consult-eglot
-  :elpaca t)
+  :straight t)
 #+end_src
 
 *** consult-notmuch
@@ -2836,12 +2807,12 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 #+end_src
 ** rg
 #+begin_src elisp
-(eat-package rg :elpaca t)
+(eat-package rg :straight t)
 #+end_src
 ** yasnippet
 #+begin_src elisp
 (eat-package yasnippet
-  :elpaca t
+  :straight t
   :commands yas-minor-mode
   :hook ((prog-mode-hook conf-mode-hook) . yas-minor-mode)
   :init
@@ -3075,7 +3046,7 @@ Some function need emacs29(didn’t check emacs version).
 *** eglot
 #+begin_src elisp
 (eat-package eldoc-box
-  :elpaca t
+  :straight t
   :hook (eglot-managed-mode-hook . eldoc-box-hover-mode))
 
 (eat-package eglot
@@ -3192,10 +3163,10 @@ When expand snippet, try complete if there's acm cond, or run `yas-next-field-or
 ** Citre
 #+begin_src elisp
 (eat-package clue
-  :elpaca (clue :host github :repo "AmaiKinono/clue"))
+  :straight (clue :host github :repo "AmaiKinono/clue"))
 
 (eat-package citre
-  :elpaca (citre :host github :repo "universal-ctags/citre")
+  :straight (citre :host github :repo "universal-ctags/citre")
   :init
   (global-set-key (kbd "C-x c j") 'citre-jump)
   (global-set-key (kbd "C-x c J") 'citre-jump-back)
@@ -3232,7 +3203,7 @@ When expand snippet, try complete if there's acm cond, or run `yas-next-field-or
 ** Code Format
 #+begin_src elisp
 (eat-package apheleia
-  :elpaca t
+  :straight t
   :hook (go-mode-hook . apheleia-mode)
   :init
   (setq apheleia-remote-algorithm 'local)
@@ -3243,7 +3214,7 @@ When expand snippet, try complete if there's acm cond, or run `yas-next-field-or
 ** dumb-jump
 #+begin_src elisp
 (eat-package dumb-jump
-  :elpaca t
+  :straight t
   ;; NOTE use `dumb-jump' as default xref backend
   ;; you can run `eglot' or `eat/citre-enable' to reset this
   :hook (xref-backend-functions . #'dumb-jump-xref-activate)
@@ -3288,7 +3259,7 @@ When expand snippet, try complete if there's acm cond, or run `yas-next-field-or
            (message "Failed to install %s: %d" pkg status)))))))
 
 (eat-package go-mode
-  :elpaca t
+  :straight t
   :init
   (setq gofmt-command "goimports"
         gofmt-show-errors nil)
@@ -3298,7 +3269,7 @@ When expand snippet, try complete if there's acm cond, or run `yas-next-field-or
   (go-test-mode-hook . visual-line-mode))
 
 (eat-package gotest
-  :elpaca t
+  :straight t
   :after go-mode
   :init
   (setq go-test-verbose t
@@ -3313,13 +3284,13 @@ When expand snippet, try complete if there's acm cond, or run `yas-next-field-or
   (define-key go-mode-map (kbd "C-c t x") #'go-run))
 
 (eat-package go-gen-test
-  :elpaca t
+  :straight t
   :after go-mode
   :config
   (define-key go-mode-map (kbd "C-c t g") #'go-gen-test-dwim))
 
 (eat-package go-tag
-  :elpaca t
+  :straight t
   :after go-mode
   :init
   (setq go-tag-args (list "-transform" "camelcase"))
@@ -3327,41 +3298,41 @@ When expand snippet, try complete if there's acm cond, or run `yas-next-field-or
   (define-key go-mode-map (kbd "C-c t a") #'go-tag-add)
   (define-key go-mode-map (kbd "C-c t r") #'go-tag-remove))
 
-(eat-package go-fill-struct :elpaca t)
-(eat-package go-guru :elpaca t)
-(eat-package go-rename :elpaca t)
-(eat-package go-impl :elpaca t)
-(eat-package go-dlv :elpaca t)
-(eat-package flymake-go-staticcheck :elpaca t)
+(eat-package go-fill-struct :straight t)
+(eat-package go-guru :straight t)
+(eat-package go-rename :straight t)
+(eat-package go-impl :straight t)
+(eat-package go-dlv :straight t)
+(eat-package flymake-go-staticcheck :straight t)
 #+end_src
 *** Clojure
 #+begin_src elisp
 (eat-package clojure-mode
-  :elpaca t)
+  :straight t)
 
 (eat-package cider
-  :elpaca t)
+  :straight t)
 #+end_src
 *** lua
 #+begin_src elisp
-(eat-package lua-mode :elpaca t)
+(eat-package lua-mode :straight t)
 #+end_src
 *** rust
 #+begin_src elisp
 (eat-package rust-mode
-  :elpaca t)
+  :straight t)
 #+end_src
 *** typescript
 #+begin_src elisp
 (eat-package typescript-mode
-  :elpaca t
+  :straight t
   :init
   (setq typescript-indent-level 2))
 #+end_src
 *** Lisp
 #+begin_src elisp
 (eat-package aggressive-indent
-  :elpaca t
+  :straight t
   :commands aggressive-indent-mode
   :hook ((emacs-lisp-mode-hook
           lisp-interaction-mode-hook
@@ -3395,7 +3366,7 @@ When expand snippet, try complete if there's acm cond, or run `yas-next-field-or
 ** App Launcher
 #+begin_src elisp
 (eat-package app-launcher
-  :elpaca (app-launcher :host github :repo "SebastienWae/app-launcher")
+  :straight (app-launcher :host github :repo "SebastienWae/app-launcher")
   :init
   (defun eat/emacs-app-launcher ()
     "Create and select a frame called emacs-app-launcher which consists only of a minibuffer and has specific dimensions.
@@ -3421,7 +3392,7 @@ Delete the frame after that command has exited"
 Run =docker pull zevlg/telega-server:latest=
 #+begin_src elisp
 (eat-package telega
-  :elpaca t
+  :straight t
   :commands telega
   :hook
   (telega-load-hook . (telega-notifications-mode telega-appindicator-mode))
@@ -3479,7 +3450,7 @@ Run =docker pull zevlg/telega-server:latest=
 ** Magit
 #+begin_src elisp
 (eat-package magit
-  :elpaca t
+  :straight t
   :hook
   (git-commit-setup-hook . git-commit-turn-on-flyspell)
   (magit-diff-visit-file . my-recenter-and-pulse-line)
@@ -3496,11 +3467,11 @@ Run =docker pull zevlg/telega-server:latest=
 
 (when (executable-find "delta")
   (eat-package magit-delta
-    :elpaca t
+    :straight t
     :hook (magit-mode-hook . magit-delta-mode)))
 
 (eat-package diff-hl
-  :elpaca t
+  :straight t
   :commands diff-hl-mode
   :hook
   ((prog-mode-hook conf-mode-hook) . diff-hl-mode)
@@ -3625,7 +3596,7 @@ variable accordingly.")
   (notmuch-tree-next-message))
 
 (eat-package notmuch
-  :elpaca t
+  :straight t
   :commands notmuch
   :init
   (setq notmuch-search-oldest-first nil
@@ -3678,7 +3649,7 @@ variable accordingly.")
 ** Docker
 #+begin_src elisp
 (eat-package docker
-  :elpaca t
+  :straight t
   :commands docker
   :config
   (fullframe docker-images tablist-quit)
@@ -3690,7 +3661,7 @@ variable accordingly.")
 ** K8S
 #+begin_src elisp
 (eat-package kubernetes
-  :elpaca t
+  :straight t
   :commands
   kubernetes-overview
   :config
@@ -3812,17 +3783,17 @@ If popup is focused, kill it."
 *** vterm
 #+begin_src elisp
 (eat-package vterm
-  :elpaca t
+  :straight t
   :init
   (setq vterm-always-compile-module t)
 
   (eat-package vterm-toggle
-    :elpaca t
+    :straight t
     :init
     (global-set-key (kbd "C-`") #'vterm-toggle))
 
   (eat-package multi-vterm
-    :elpaca t
+    :straight t
     :init
     (global-set-key (kbd "C-~") #'multi-vterm)
     :config
@@ -3832,7 +3803,7 @@ If popup is focused, kill it."
 ** Elfeed
 #+begin_src elisp
 (eat-package elfeed
-  :elpaca t
+  :straight t
   :commands elfeed
   :init
   (setq elfeed-search-filter "+unread "
@@ -3843,7 +3814,7 @@ If popup is focused, kill it."
   (elfeed-set-timeout 36000))
 
 (eat-package elfeed-protocol
-  :elpaca t
+  :straight t
   :after elfeed
   :config
   (elfeed-protocol-enable))
@@ -3851,7 +3822,7 @@ If popup is focused, kill it."
 ** LeetCode
 #+begin_src elisp
 (eat-package leetcode
-  :elpaca (leetcode :host github :repo "ginqi7/leetcode-emacs")
+  :straight (leetcode :host github :repo "ginqi7/leetcode-emacs")
   :commands leetcode-list-all
   :init
   (eat-package ctable :straight t)
@@ -3859,10 +3830,10 @@ If popup is focused, kill it."
 #+end_src
 ** Misc
 #+begin_src elisp
-(eat-package devdocs :elpaca t)
+(eat-package devdocs :straight t)
 
 (eat-package ibuffer-vc
-  :elpaca t
+  :straight t
   :hook (ibuffer-hook . ibuffer-set-up-preferred-filters)
   :init
   (defun ibuffer-set-up-preferred-filters ()
@@ -3893,7 +3864,7 @@ If popup is focused, kill it."
 ** Blog (org-static-blog)
 #+begin_src elisp
 (eat-package org-static-blog
-  :elpaca t
+  :straight t
   :init
   (setq org-static-blog-publish-title "404cn's blog")
   (setq org-static-blog-publish-url "https://404cn.github.io/")
@@ -3913,28 +3884,27 @@ If popup is focused, kill it."
 * Modes
 ** toml
 #+begin_src elisp
-(eat-package toml-mode :elpaca t :hook (toml-mode-hook . goto-address-prog-mode))
+(eat-package toml-mode :straight t :hook (toml-mode-hook . goto-address-prog-mode))
 #+end_src
 ** yaml
 #+begin_src elisp
-(eat-package yaml-mode :elpaca t :hook (yaml-mode-hook . goto-address-prog-mode))
+(eat-package yaml-mode :straight t :hook (yaml-mode-hook . goto-address-prog-mode))
 #+end_src
 ** docker
 #+begin_src elisp
-(eat-package docker-compose-mode :elpaca t)
-(eat-package dockerfile-mode :elpaca t)
+(eat-package docker-compose-mode :straight t)
+(eat-package dockerfile-mode :straight t)
 #+end_src
 ** k8s
 #+begin_src elisp
 (eat-package k8s-mode :straight t)
 (eat-package kubedoc
-  :elpaca
-  (kubedoc :host github :repo "r0bobo/kubedoc.el"))
+  :straight (kubedoc :type git :host github :repo "r0bobo/kubedoc.el"))
 #+end_src
 ** gitignore
 #+begin_src elisp
 (eat-package git-modes
-  :elpaca t
+  :straight t
   :init
   (add-to-list 'auto-mode-alist
                (cons "/.dockerignore\\'" 'gitignore-mode)))
@@ -3942,12 +3912,12 @@ If popup is focused, kill it."
 ** terraform
 #+begin_src elisp
 (eat-package terraform-mode
-  :elpaca t)
+  :straight t)
 #+end_src
 ** markdown
 #+begin_src elisp
 (eat-package markdown-mode
-  :elpaca t
+  :straight t
   :mode ("\\.md\\'" . gfm-mode)
   :hook
   (markdown-mode-hook . gfm-view-mode)
@@ -3963,7 +3933,7 @@ If popup is focused, kill it."
   (define-key markdown-mode-map (kbd "C-c v") #'gfm-view-mode))
 
 (eat-package markdown-toc
-  :elpaca t
+  :straight t
   :config
   (define-key markdown-mode-command-map (kbd "r") #'markdown-toc-generate-or-refresh-toc))
 #+end_src
@@ -4048,7 +4018,7 @@ If popup is focused, kill it."
 *** gfm
 #+begin_src elisp
 (eat-package ox-gfm
-  :elpaca t
+  :straight t
   :config
   (add-to-list 'org-export-backends 'md))
 #+end_src
@@ -4058,7 +4028,7 @@ If popup is focused, kill it."
 *** restclient
 #+begin_src elisp
 (eat-package ob-restclient
-  :elpaca t
+  :straight t
   :init
   (eat-package restclient
     :straight t
@@ -4078,7 +4048,7 @@ If popup is focused, kill it."
 *** go
 #+begin_src elisp
 (eat-package ob-go
-  :elpaca t
+  :straight t
   :init (cl-pushnew '(go .t) load-language-list)
   :config
   (add-to-list 'org-structure-template-alist '("go" . "src go")))
@@ -4126,7 +4096,7 @@ If popup is focused, kill it."
 ** org-appear
 #+begin_src elisp
 (eat-package org-appear
-  :elpaca t
+  :straight t
   :hook (org-mode-hook . org-appear-mode)
   :init
   (setq org-hide-emphasis-markers t))
@@ -4135,7 +4105,7 @@ If popup is focused, kill it."
 ** valign
 #+begin_src elisp
 (eat-package valign
-  :elpaca t
+  :straight t
   :init
   (setq valign-fancy-bar t)
   (when (display-graphic-p)
@@ -4172,7 +4142,7 @@ If popup is focused, kill it."
 ** toc
 #+begin_src elisp
 (eat-package toc-org
-  :elpaca t
+  :straight t
   :commands toc-org-enable toc-org-insert-toc)
 #+end_src
 ** Syntax highlight when export to html
