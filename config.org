@@ -4111,6 +4111,23 @@ If popup is focused, kill it."
   (when (display-graphic-p)
     (add-hook 'org-mode-hook #'valign-mode)))
 #+end_src
+** toc
+#+begin_src elisp
+(eat-package toc-org
+  :straight t
+  :commands toc-org-enable toc-org-insert-toc)
+#+end_src
+** Syntax highlight when export to html
+#+begin_src elisp
+(eat-package htmlize
+  :straight t
+  :after org)
+#+end_src
+** org-variable-pitch
+#+begin_src emacs-lisp
+(eat-package org-variable-pitch
+  :straight t)
+#+end_src
 ** prose-mode for writting
 #+begin_src elisp
 (defvar eat/prose-mode-map
@@ -4126,30 +4143,18 @@ If popup is focused, kill it."
   :keymap eat/prose-mode-map
   (if eat/prose-mode
       (progn
-        (variable-pitch-mode 1)
+        (org-variable-pitch-minor-mode 1)
         (visual-fill-column-mode 1)
         (setq-local cursor-type 'bar)
         (setq-local line-spacing 0.15)
         (corfu-mode -1)
         (setq-local whitespace-style '(tab-mark))
         (whitespace-mode))
-    (visual-fill-column-mode -1)
+    (org-variable-pitch-minor-mode -1)
     (whitespace-mode -1)
     (variable-pitch-mode -1)
     (kill-local-variable 'line-spacing)
     (kill-local-variable 'cursor-type)))
-#+end_src
-** toc
-#+begin_src elisp
-(eat-package toc-org
-  :straight t
-  :commands toc-org-enable toc-org-insert-toc)
-#+end_src
-** Syntax highlight when export to html
-#+begin_src elisp
-(eat-package htmlize
-  :straight t
-  :after org)
 #+end_src
 * Site Lisp
 ** Load Path
