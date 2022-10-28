@@ -763,9 +763,7 @@ point reaches the beginning or end of the buffer, stop there."
 #+begin_src elisp
 (straight-use-package 'spacemacs-theme)
 (straight-use-package 'kaolin-themes)
-(straight-use-package '(notink-theme :type git :host github :repo "MetroWind/notink-theme"))
 (straight-use-package '(ef-themes :type git :host github :repo "protesilaos/ef-themes"))
-(straight-use-package '(matrix-emacs-theme :type git :host github :repo "monkeyjunglejuice/matrix-emacs-theme"))
 (straight-use-package 'catppuccin-theme)
 
 (setq
@@ -1829,6 +1827,37 @@ autoload cookie will make Emacs load `notifications' first, then our
                  goto-last-change))
     (advice-add cmd :after #'eat/recenter-and-pulse)))
 #+end_src
+** hl-todo
+#+begin_src emacs-lisp
+(eat-package hl-todo
+  :straight t
+  :hook
+  ((dired-mode-hook prog-mode-hook conf-mode-hook) . hl-todo-mode))
+#+end_src
+** ligature
+#+begin_src emacs-lisp
+(eat-package ligature
+  :straight (ligature :host github :repo "mickeynp/ligature.el")
+  :commands global-ligature-mode
+  :hook (prog-mode-hook . (lambda () (ligature-mode t)))
+  :config
+  ;; https://htmlpreview.github.io/?https://github.com/kiliman/operator-mono-lig/blob/master/images/preview/normal/index.html
+  (ligature-set-ligatures 'prog-mode
+                          '("&&" "||" "|>" ":=" "==" "===" "==>" "=>"
+                            "=<<" "!=" "!==" ">=" ">=>" ">>=" "->" "--"
+                            "-->" "<|" "<=" "<==" "<=>" "<=<" "<!--" "<-"
+                            "<->" "<--" "</" "+=" "++" "??" "/>" "__" "WWW")))
+#+end_src
+** visual-fill-column
+Center current window.
+#+begin_src emacs-lisp
+(eat-package visual-fill-column
+  :straight t
+  :hook (visual-fill-column-mode-hook . visual-line-mode)
+  :init
+  (setq-default visual-fill-column-center-text t))
+#+end_src
+
 * Minibuffer
 #+begin_src elisp
 (eat-package minibuffer
@@ -2289,66 +2318,21 @@ autoload cookie will make Emacs load `notifications' first, then our
   (global-set-key [remap query-replace] 'anzu-query-replace)
   (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp))
 #+end_src
-** TODO Misc
-#+begin_src elisp
+** separedit
+#+begin_src emacs-lisp
 (eat-package separedit
   :straight t
   :hook (separedit-mode-hook . (lambda () (auto-fill-mode 1)))
   :init
   ;; use C-u C-c ' to select major mode
   (global-set-key (kbd "C-c '") #'separedit))
-
-(eat-package puni
-  :straight (puni :host github :repo "AmaiKinono/puni")
-  :hook
-  ((emacs-lisp-mode-hook scheme-mode-hook clojure-mode-hook)
-   . puni-mode)
-  :config
-  (define-key puni-mode-map (kbd "M-r") 'puni-splice)
-  (define-key puni-mode-map (kbd "C-(") 'puni-slurp-backward)
-  (define-key puni-mode-map (kbd "C-)") 'puni-slurp-forward)
-  (define-key puni-mode-map (kbd "C-{") 'puni-barf-backward)
-  (define-key puni-mode-map (kbd "C-}") 'puni-barf-forward))
-
-;; Better scroll on picture in GUI
-(eat-package iscroll :straight t)
-
-(eat-package visual-fill-column
-  :straight t
-  :hook (visual-fill-column-mode-hook . visual-line-mode)
-  :init
-  (setq-default visual-fill-column-center-text t))
-
-(eat-package ligature
-  :straight (ligature :host github :repo "mickeynp/ligature.el")
-  :commands global-ligature-mode
-  :hook (prog-mode-hook . (lambda () (ligature-mode t)))
-  :config
-  ;; https://htmlpreview.github.io/?https://github.com/kiliman/operator-mono-lig/blob/master/images/preview/normal/index.html
-  (ligature-set-ligatures 'prog-mode
-                          '("&&" "||" "|>" ":=" "==" "===" "==>" "=>"
-                            "=<<" "!=" "!==" ">=" ">=>" ">>=" "->" "--"
-                            "-->" "<|" "<=" "<==" "<=>" "<=<" "<!--" "<-"
-                            "<->" "<--" "</" "+=" "++" "??" "/>" "__" "WWW")))
-
-(eat-package hl-todo
-  :straight t
-  :hook
-  ((dired-mode-hook prog-mode-hook conf-mode-hook) . hl-todo-mode))
-
-(eat-package imenu-list
-  :straight t
-  :hook
-  (imenu-list-major-mode-hook . (lambda ()
-                                  (setq-local header-line-format nil)))
-  :init
-  (defun +imenu-scale-font-size ()
-    (face-remap-add-relative 'default :height 0.8))
-  (add-hook 'imenu-list-major-mode-hook #'+imenu-scale-font-size)
-  (setq imenu-list-auto-resize t
-        imenu-list-mode-line-format nil))
-
 #+end_src
+** iscroll
+Better scroll on picture in GUI
+#+begin_src emacs-lisp
+(eat-package iscroll :straight t)
+#+end_src
+
 ** undo
 #+begin_src elisp
 (eat-package vundo
@@ -3362,6 +3346,34 @@ When expand snippet, try complete if there's acm cond, or run `yas-next-field-or
   :init
   (setq sql-mysql-login-params '(user password server database port)))
 #+end_src
+** puni
+#+begin_src emacs-lisp
+(eat-package puni
+  :straight (puni :host github :repo "AmaiKinono/puni")
+  :hook
+  ((emacs-lisp-mode-hook scheme-mode-hook clojure-mode-hook)
+   . puni-mode)
+  :config
+  (define-key puni-mode-map (kbd "M-r") 'puni-splice)
+  (define-key puni-mode-map (kbd "C-(") 'puni-slurp-backward)
+  (define-key puni-mode-map (kbd "C-)") 'puni-slurp-forward)
+  (define-key puni-mode-map (kbd "C-{") 'puni-barf-backward)
+  (define-key puni-mode-map (kbd "C-}") 'puni-barf-forward))
+#+end_src
+** imenu-list
+#+begin_src emacs-lisp
+(eat-package imenu-list
+  :straight t
+  :hook
+  (imenu-list-major-mode-hook . (lambda ()
+                                  (setq-local header-line-format nil)))
+  :init
+  (defun +imenu-scale-font-size ()
+    (face-remap-add-relative 'default :height 0.8))
+  (add-hook 'imenu-list-major-mode-hook #'+imenu-scale-font-size)
+  (setq imenu-list-auto-resize t
+        imenu-list-mode-line-format nil))
+#+end_src
 * Application
 ** App Launcher
 #+begin_src elisp
@@ -3448,7 +3460,8 @@ Run =docker pull zevlg/telega-server:latest=
   (global-telega-mnz-mode 1))
 #+end_src
 ** Magit
-#+begin_src elisp
+*** config
+#+begin_src emacs-lisp
 (eat-package magit
   :straight t
   :hook
@@ -3464,12 +3477,18 @@ Run =docker pull zevlg/telega-server:latest=
   (setq-default magit-diff-refine-hunk t)
   (global-set-key (kbd "C-x g") 'magit-status)
   (global-set-key (kbd "C-x M-g") 'magit-dispatch))
+#+end_src
 
+*** magit-delta
+#+begin_src emacs-lisp
 (when (executable-find "delta")
   (eat-package magit-delta
     :straight t
     :hook (magit-mode-hook . magit-delta-mode)))
+#+end_src
 
+*** diff-hl
+#+begin_src emacs-lisp
 (eat-package diff-hl
   :straight t
   :commands diff-hl-mode
@@ -3545,20 +3564,6 @@ Run =docker pull zevlg/telega-server:latest=
 #+end_src
 ** Mail (notmuch)
 #+begin_src elisp
-(defface eat/notmuch-tag-emacs
-  '((t :foreground "systemPurpleColor"))
-  "Default face used for the Emacs tag.
-
-Used in the default value of `notmuch-tag-formats'."
-  :group 'notmuch-faces)
-
-(defface eat/notmuch-tag-golang
-  '((t :foreground "systemBlueColor"))
-  "Default face used for the golang tag.
-
-Used in the default value of `notmuch-tag-formats'."
-  :group 'notmuch-faces)
-
 (defvar +notmuch-delete-tags '("+trash" "-inbox" "-unread")
   "Tags applied to mark email for deletion.
 
@@ -3619,8 +3624,7 @@ variable accordingly.")
        (notify-send :title "Emacs" :body result :urgency 'critical))))
   :config
   (add-hook 'notmuch-search-mode-hook #'eat/fixed-pitch-setup)
-  (add-to-list 'notmuch-tag-formats '("emacs" (propertize tag 'face 'eat/notmuch-tag-emacs)))
-  (add-to-list 'notmuch-tag-formats '("golang" (propertize tag 'face 'eat/notmuch-tag-golang)))
+  (add-hook 'notmuch-show-mode-hook #'variable-pitch-mode)
   (global-set-key [remap notmuch-poll-and-refresh-this-buffer] #'eat/async-notmuch-poll))
 
 (eat-package message
@@ -3939,9 +3943,11 @@ If popup is focused, kill it."
 #+end_src
 
 * Org
+** config
 #+begin_src elisp
 (defun eat/org-hook ()
   "Configuration for Org Mode."
+  (eat/prose-mode)
   (org-indent-mode)
   (electric-pair-local-mode -1)
   (electric-quote-local-mode)
@@ -4155,6 +4161,11 @@ If popup is focused, kill it."
     (variable-pitch-mode -1)
     (kill-local-variable 'line-spacing)
     (kill-local-variable 'cursor-type)))
+#+end_src
+** org-download
+#+begin_src emacs-lisp
+(eat-package org-download
+  :straight t)
 #+end_src
 * Site Lisp
 ** Load Path
@@ -4981,10 +4992,13 @@ Key bindings:
 #+end_src
 
 ** iimg
+*** config
 #+begin_src elisp
 (eat-package iimg
   :commands iimg-enable
-  :hook ((text-mode-hook org-mode-hook) . iimg-enable))
+  :hook (text-mode-hook . iimg-enable)
+  :config
+  (setq iimg-prune-slices-p nil))
 #+end_src
 
 *** Source
@@ -5102,6 +5116,9 @@ IMAGE-DATA is the image binary data.")
 
 (defvar iimg-multi-line t
   "Render image in multiple lines.")
+
+(defvar iimg-prune-slices-p t
+  "If non-nil, iims prunes image slices when save.")
 
 (defvar iimg--data-regexp (rx (seq "({iimg-data "
                                    (group (+? anything))
@@ -5516,7 +5533,8 @@ Also refresh the image at point."
   (setq-local dnd-protocol-alist
               (cons '("^file:" . iimg-dnd-open-file)
                     dnd-protocol-alist))
-  (add-hook 'write-file-functions #'iimg--prune-slices 90 t)
+  (when iimg-prune-slices-p
+    (add-hook 'write-file-functions #'iimg--prune-slices 90 t))
   (iimg--replenish-slices))
 
 ;;; Drag and drop
@@ -5536,14 +5554,15 @@ Also refresh the image at point."
 
 ;;; iimg.el ends here
 #+end_src
-
 ** bklink
 #+begin_src elisp
 (eat-package bklink
   :commands bklink-minor-mode
   :config
   (define-key bklink-minor-mode-map (kbd "C-c l") #'bklink-show-back-link)
-  (define-key bklink-minor-mode-map (kbd "C-c i") #'bklink-insert))
+  (define-key bklink-minor-mode-map (kbd "C-c i") #'bklink-insert)
+  (setq bklink-summary-read-only-p nil
+        bklink-prune-summary-p nil))
 #+end_src
 
 *** Source
@@ -5636,6 +5655,12 @@ title but isn't a link.
 
 For example, for Emacs.txt, we match not only [{Emacs.txt}],
 but also Emacs.")
+
+(defvar bklink-summary-read-only-p t
+  "If non-nil, bklink marks the summary read-only.")
+
+(defvar bklink-prune-summary-p t
+  "If non-nil, bklink prunes summary when save.")
 
 ;;; Backstage
 
@@ -5742,8 +5767,9 @@ If the file doesn't exist, create a buffer."
       (progn (jit-lock-register #'bklink-fontify)
              (unless (derived-mode-p 'org-mode 'markdown-mode)
                (jit-lock-register #'bklink-fontify-url))
-             (add-hook 'write-file-functions
-                       #'bklink--write-file-function 90 t)
+             (when bklink-prune-summary-p
+               (add-hook 'write-file-functions
+                         #'bklink--write-file-function 90 t))
              ;; (add-hook 'fill-nobreak-predicate #'bklink--nobreak-p 90 t)
              (if (and bklink-show-back-link-on-start
                       (not bklink-show-back-link))
@@ -5876,7 +5902,8 @@ THIS-FILE is the filename we are inserting summary into."
              (indent-rigidly beg (point) 2))
            (insert "\n"))
          (insert (if bklink-use-form-feed "\x0C" (make-string 70 ?-)))
-         (put-text-property summary-start (point) 'read-only t)
+         (put-text-property summary-start (point)
+                            'read-only bklink-summary-read-only-p)
          ;; Add an non-read-only newline so the user and other
          ;; commands can append text at the end of the file.
          (insert "\n")
@@ -6043,7 +6070,10 @@ The files to replace are in PATH-FILE"
 #+end_src
 
 ** flique
-
+*** config
+#+begin_src emacs-lisp
+(eat-package flique)
+#+end_src
 *** Source
 #+begin_src elisp :tangle site-lisp/flique.el
 ;;; flique.el --- File cliques  -*- lexical-binding: t; -*-
