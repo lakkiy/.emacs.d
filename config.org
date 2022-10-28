@@ -1638,15 +1638,15 @@ point reaches the beginning or end of the buffer, stop there."
             (set-face-attribute 'fixed-pitch nil :font (car eat/font-default) :weight 'medium)
             (set-face-attribute 'mode-line nil :font (car eat/font-default) :weight 'light)
             (set-face-attribute 'mode-line-inactive nil :font (car eat/font-default) :weight 'light)
-            ;; Chinese font
-            (set-fontset-font t 'kana eat/font-chinese)
-            (set-fontset-font t 'han eat/font-chinese)
-            (set-fontset-font t 'cjk-misc eat/font-chinese)
             ;; variable-pitch
             (set-face-font 'variable-pitch eat/font-variable-pitch)
             ;;  emoji
             (set-fontset-font t 'unicode eat/font-emoji)
             (set-fontset-font t 'emoji eat/font-emoji)
+            ;; Chinese font, NOTE must set after unicode all it will fallback to some font
+            (set-fontset-font t 'kana eat/font-chinese)
+            (set-fontset-font t 'han eat/font-chinese)
+            (set-fontset-font t 'cjk-misc eat/font-chinese)
             ;; rescale
             (eat/rescale-font)
             ;; TODO check fnot installed,different font set for different screen resloution
