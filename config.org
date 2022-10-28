@@ -3415,9 +3415,9 @@ Run =docker pull zevlg/telega-server:latest=
 
   (defun eat/telega-chat-setup ()
     (my-telega-chat-mode)
-    ;; (make-variable-buffer-local 'face-font-rescale-alist)
-    ;; (add-to-list 'face-font-rescale-alist `(,eat/font-chinese . 0.9))
-    ;; (add-to-list 'face-font-rescale-alist `(,eat/font-emoji . 0.8))
+    (make-variable-buffer-local 'face-font-rescale-alist)
+    (add-to-list 'face-font-rescale-alist `(,eat/font-chinese . 0.9))
+    (add-to-list 'face-font-rescale-alist `(,eat/font-emoji . 0.8))
     (require 'yasnippet)
     (yas-minor-mode-on)
     (visual-line-mode)
