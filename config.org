@@ -2736,6 +2736,13 @@ TODO Check if enable this.
   :elpaca t)
 #+end_src
 
+*** consult-notmuch
+#+begin_src emacs-lisp
+(eat-package consult-notmuch
+  :straight t
+  :commands consult-notmuch)
+#+end_src
+
 ** corfu
 #+begin_src elisp
 (eat-package corfu
@@ -3567,6 +3574,84 @@ Run =docker pull zevlg/telega-server:latest=
 #+end_src
 ** Mail (notmuch)
 #+begin_src elisp
+(defface eat/notmuch-tag-emacs
+  '((t :foreground "systemPurpleColor"))
+  "Default face used for the Emacs tag.
+
+Used in the default value of `notmuch-tag-formats'."
+  :group 'notmuch-faces)
+
+(defface eat/notmuch-tag-golang
+  '((t :foreground "systemBlueColor"))
+  "Default face used for the golang tag.
+
+Used in the default value of `notmuch-tag-formats'."
+  :group 'notmuch-faces)
+
+(defvar +notmuch-delete-tags '("+trash" "-inbox" "-unread")
+  "Tags applied to mark email for deletion.
+
+When replacing the +trash tag by a different tag such as
++deleted, you will need to update the notmuch-saved-searches
+variable accordingly.")
+
+(defvar +notmuch-spam-tags '("+spam" "-inbox" "-unread")
+  "Tags applied to mark email as spam.")
+
+(defun +notmuch/search-delete ()
+  (interactive)
+  (notmuch-search-add-tag +notmuch-delete-tags)
+  (notmuch-tree-next-message))
+
+(defun +notmuch/tree-delete ()
+  (interactive)
+  (notmuch-tree-add-tag +notmuch-delete-tags)
+  (notmuch-tree-next-message))
+
+(defun +notmuch/show-delete ()
+  "Mark email for deletion in notmuch-show"
+  (interactive)
+  (notmuch-show-add-tag +notmuch-delete-tags)
+  (notmuch-show-next-thread-show))
+
+(defun +notmuch/search-spam ()
+  (interactive)
+  (notmuch-search-add-tag +notmuch-spam-tags)
+  (notmuch-search-next-thread))
+
+(defun +notmuch/tree-spam ()
+  (interactive)
+  (notmuch-tree-add-tag +notmuch-spam-tags)
+  (notmuch-tree-next-message))
+
+(eat-package notmuch
+  :elpaca t
+  :commands notmuch
+  :init
+  (setq notmuch-search-oldest-first nil
+        notmuch-fcc-dirs nil
+        notmuch-search-result-format '(("date" . "%12s ")
+                                       ("count" . "%-7s ")
+                                       ("authors" . "%-30s ")
+                                       ("subject" . "%-72s ")
+                                       ("tags" . "(%s)")))
+  (defun eat/async-notmuch-poll ()
+    (interactive)
+    (message "Start polling email...")
+    (async-start
+     `(lambda ()
+        ,(async-inject-variables "\\`load-path\\'")
+        (require 'notmuch)
+        (notmuch-poll))
+     (lambda (result)
+       (message "eat/async-notmuch-poll: %s" result)
+       (notify-send :title "Emacs" :body result :urgency 'critical))))
+  :config
+  (add-hook 'notmuch-search-mode-hook #'eat/fixed-pitch-setup)
+  (add-to-list 'notmuch-tag-formats '("emacs" (propertize tag 'face 'eat/notmuch-tag-emacs)))
+  (add-to-list 'notmuch-tag-formats '("golang" (propertize tag 'face 'eat/notmuch-tag-golang)))
+  (global-set-key [remap notmuch-poll-and-refresh-this-buffer] #'eat/async-notmuch-poll))
+
 (eat-package message
   :hook (message-mode-hook . (lambda ()
                                (setq-local fill-column 72)
@@ -3589,48 +3674,6 @@ Run =docker pull zevlg/telega-server:latest=
         smtpmail-smtp-user user-mail-address
         smtpmail-smtp-service 587
         smtpmail-stream-type 'ssl))
-
-(defface eat/notmuch-tag-emacs
-  '((t :foreground "systemPurpleColor"))
-  "Default face used for the Emacs tag.
-
-Used in the default value of `notmuch-tag-formats'."
-  :group 'notmuch-faces)
-
-(defface eat/notmuch-tag-golang
-  '((t :foreground "systemBlueColor"))
-  "Default face used for the golang tag.
-
-Used in the default value of `notmuch-tag-formats'."
-  :group 'notmuch-faces)
-
-(eat-package notmuch
-  :elpaca t
-  :commands notmuch
-  :init
-  (setq notmuch-search-oldest-first nil
-        notmuch-search-result-format '(("date" . "%12s ")
-                                       ("count" . "%-11s ")
-                                       ("authors" . "%-20s ")
-                                       ("subject" . "%-80s ")
-                                       ("tags" . "(%s)"))
-        notmuch-show-empty-searches t)
-  (defun eat/async-notmuch-poll ()
-    (interactive)
-    (message "Start polling email...")
-    (async-start
-     `(lambda ()
-        ,(async-inject-variables "\\`load-path\\'")
-        (require 'notmuch)
-        (notmuch-poll))
-     (lambda (result)
-       (message "eat/async-notmuch-poll: %s" result)
-       (notify-send :title "Emacs" :body result :urgency 'critical))))
-  :config
-  (add-hook 'notmuch-search-mode-hook #'eat/fixed-pitch-setup)
-  (add-to-list 'notmuch-tag-formats '("emacs" (propertize tag 'face 'eat/notmuch-tag-emacs)))
-  (add-to-list 'notmuch-tag-formats '("golang" (propertize tag 'face 'eat/notmuch-tag-golang)))
-  (global-set-key [remap notmuch-poll-and-refresh-this-buffer] #'eat/async-notmuch-poll))
 #+end_src
 ** Docker
 #+begin_src elisp
