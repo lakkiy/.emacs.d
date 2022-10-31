@@ -3985,7 +3985,8 @@ If popup is focused, kill it."
   (setq org-edit-src-content-indentation 0
         org-special-ctrl-a/e t
         org-special-ctrl-k t
-        org-src-fontify-natively nil ;; see it in `org-edit-special'
+        ;; comment after emacs merge noverly branch
+        ;; org-src-fontify-natively nil ;; see it in `org-edit-special'
         org-src-window-setup 'current-window
         org-return-follows-link t
         org-confirm-babel-evaluate nil
@@ -4179,7 +4180,30 @@ If popup is focused, kill it."
 ** org-download
 #+begin_src emacs-lisp
 (eat-package org-download
-  :straight t)
+  :straight t
+  :commands
+  org-download-dnd
+  org-download-yank
+  org-download-screenshot
+  org-download-clipboard
+  org-download-dnd-base64
+  :init
+  ;; NOTE from doomemacs
+  (defmacro pushnew! (place &rest values)
+    "Push VALUES sequentially into PLACE, if they aren't already present.
+This is a variadic `cl-pushnew'."
+    (let ((var (make-symbol "result")))
+      `(dolist (,var (list ,@values) (with-no-warnings ,place))
+         (cl-pushnew ,var ,place :test #'equal))))
+
+  ;; HACK We add these manually so that org-download is truly lazy-loaded
+  (pushnew! dnd-protocol-alist
+            '("^\\(?:https?\\|ftp\\|file\\|nfs\\):" . org-download-dnd)
+            '("^data:" . org-download-dnd-base64))
+  (advice-add #'org-download-enable :override #'ignore)
+
+  (setq org-download-image-dir "img"
+        org-download-image-org-width 800))
 #+end_src
 * Site Lisp
 ** Load Path
@@ -5010,7 +5034,6 @@ Key bindings:
 #+begin_src elisp
 (eat-package iimg
   :commands iimg-enable
-  :hook (text-mode-hook . iimg-enable)
   :config
   (setq iimg-prune-slices-p nil))
 #+end_src
