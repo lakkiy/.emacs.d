@@ -3218,7 +3218,7 @@ When expand snippet, try complete if there's acm cond, or run `yas-next-field-or
    dumb-jump-aggressive t
    dumb-jump-selector 'completing-read))
 #+end_src
-** Languages
+** Lang
 *** Golang
 #+begin_src elisp
 ;; Install or update tools
