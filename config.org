@@ -703,9 +703,6 @@ point reaches the beginning or end of the buffer, stop there."
 (defvar eat/theme 'modus-operandi
   "Default theme.")
 
-(defvar eat/theme-tui 'default
-  "Default theme used in tui.")
-
 (defvar eat/theme-system-light 'modus-operandi
   "Default light theme after system appearance changed.")
 
@@ -751,9 +748,7 @@ point reaches the beginning or end of the buffer, stop there."
 
 (add-hook 'eat/after-make-console-frame-hooks (lambda ()
                                                 (when (fboundp 'menu-bar-mode)
-                                                  (menu-bar-mode -1))
-                                                (when eat/theme-tui
-                                                  (load-theme eat/theme-tui))))
+                                                  (menu-bar-mode -1))))
 
 (add-hook 'eat/after-make-window-system-frame-hooks (lambda ()
                                                       (load-theme eat/theme)))
@@ -1656,7 +1651,18 @@ point reaches the beginning or end of the buffer, stop there."
             (set-face-attribute 'mode-line-inactive nil :font (car eat/font-default) :weight 'light)))
 #+end_src
 ** Modeline
-*** GUI
+*** Defalut
+#+begin_src elisp
+(eat-package minions :straight t)
+
+(defun eat/setup-modeline ()
+  (interactive)
+  (minions-mode))
+
+(add-hook 'after-init-hook #'eat/setup-modeline)
+#+end_src
+
+*** awesome-tray
 #+begin_src elisp
 (eat-package awesome-tray
   :straight (awesome-tray :type git :host github :repo "manateelazycat/awesome-tray")
@@ -1703,17 +1709,6 @@ point reaches the beginning or end of the buffer, stop there."
 ;; (add-hook 'eat/after-make-window-system-frame-hooks #'awesome-tray-mode)
 #+end_src
 
-*** TUI
-#+begin_src elisp
-(eat-package minions :straight t)
-
-(defun eat/setup-modeline ()
-  (interactive)
-  (minions-mode))
-
-(add-hook 'eat/after-make-window-system-frame-hooks #'eat/setup-modeline)
-;; (add-hook 'eat/after-make-console-frame-hooks #'eat/setup-modeline)
-#+end_src
 ** Notifications
 Actually, `notify-send' is not defined in notifications package, but the
 autoload cookie will make Emacs load `notifications' first, then our
