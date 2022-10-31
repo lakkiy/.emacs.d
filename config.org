@@ -2033,7 +2033,21 @@ Center current window.
   :init
   (global-set-key (kbd "M-o") 'ace-window)
   (setq aw-keys '(?a ?o ?e ?u ?i)
-        aw-scope 'frame)
+        aw-scope 'frame
+        aw-dispatch-alist
+        '((?d aw-delete-window "Ace - Delete Window")
+          (?s aw-swap-window "Ace - Swap Window")
+          (?p aw-flip-window)
+          (?v aw-split-window-vert "Ace - Split Vert Window")
+          (?h aw-split-window-horz "Ace - Split Horz Window")
+          (?m delete-other-windows "Ace - Maximize Window")
+          (?g delete-other-windows)
+          (?b balance-windows)
+          (?u (lambda ()
+                (progn
+                  (winner-undo)
+                  (setq this-command 'winner-undo))))
+          (?r winner-redo)))
   (dolist (cmd '(ace-window
                  aw--select-window))
     (advice-add cmd :after #'eat/pulse-momentary-line)))
