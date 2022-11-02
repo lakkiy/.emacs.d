@@ -595,7 +595,7 @@ point reaches the beginning or end of the buffer, stop there."
 (eat-package simple
   :hook (before-save-hook . delete-trailing-whitespace)
   :init
-  (setq visual-line-fringe-indicators '(nil right-curly-arrow)
+  (setq visual-line-fringe-indicators '(nil nil)
         ;; List only applicable commands.
         read-extended-command-predicate #'command-completion-default-include-p
         fill-column 72))
@@ -776,11 +776,6 @@ point reaches the beginning or end of the buffer, stop there."
  kaolin-themes-underline-wave nil
  kaolin-themes-modeline-border nil
  kaolin-themes-modeline-padded 4)
-
-(with-eval-after-load 'kaolin-themes
-  (with-eval-after-load 'treemacs
-    (with-eval-after-load 'all-the-icons
-      (kaolin-treemacs-theme))))
 #+end_src
 
 *** local
@@ -1598,6 +1593,11 @@ point reaches the beginning or end of the buffer, stop there."
 
 ;;; grayscale-theme.el ends here
 #+end_src
+
+*** modus-themes
+#+begin_src emacs-lisp
+(setq modus-themes-fringes nil)
+#+end_src
 ** Font
 #+begin_src elisp
 (defvar eat/font-default '("IBM Plex Mono" 13))
@@ -1851,6 +1851,12 @@ Center current window.
   :hook (visual-fill-column-mode-hook . visual-line-mode)
   :init
   (setq-default visual-fill-column-center-text t))
+#+end_src
+** hide-mode-line
+#+begin_src emacs-lisp
+(eat-package hide-mode-line
+  :straight t
+  :commands hide-mode-line-mode)
 #+end_src
 
 * Minibuffer
@@ -4167,6 +4173,7 @@ If popup is focused, kill it."
         (setq-local whitespace-style '(tab-mark))
         (whitespace-mode))
     (org-variable-pitch-minor-mode -1)
+    (visual-fill-column-mode -1)
     (whitespace-mode -1)
     (variable-pitch-mode -1)
     (kill-local-variable 'line-spacing)
@@ -4199,6 +4206,60 @@ This is a variadic `cl-pushnew'."
 
   (setq org-download-image-dir "img"
         org-download-image-org-width 800))
+#+end_src
+** org-present
+#+begin_src emacs-lisp
+(eat-package org-present
+  :straight t
+  :hook
+  (org-present-mode-hook
+   . (lambda ()
+       (eat/prose-mode -1)
+       ;; full frame
+       (toggle-frame-fullscreen)
+       ;; from org-present
+       (org-present-read-only)
+       (org-display-inline-images)
+       ;; display header line so that we can use face-remapping
+       ;; to create big enought blank space at the top
+       (setq-local header-line-format " ")
+       ;; incraease font size
+       (setq-local
+        face-remapping-alist
+        '((default (:height 1.5) variable-pitch)
+          (header-line (:height 4.0) variable-pitch)
+          (org-document-title (:height 1.75) org-document-title)
+          (org-code (:height 1.55) org-code)
+          (org-verbatim (:height 0.7) org-verbatim)
+          (org-block (:height 1.25) org-block)
+          (org-block-begin-line (:height 0.7) org-block)))
+       ;; center the screen
+       (visual-fill-column-mode 1)
+       (setq-local visual-fill-column-center-text t)
+       (setq-local visual-fill-column-width 90)
+       ;; hide mode line
+       (hide-mode-line-mode 1)
+       ;;
+       (org-variable-pitch-minor-mode 1)))
+  (org-present-mode-quit-hook
+   . (lambda ()
+       (toggle-frame-fullscreen)
+       (hide-mode-line-mode -1)
+       (kill-local-variable 'face-remapping-alist)
+       (kill-local-variable 'header-line-format)
+       (eat/prose-mode 1)
+       ;; from org-present
+       (org-remove-inline-images)
+       (org-present-read-write)))
+  :init
+  (defun my/org-present-prepare-slide (buffer-name heading)
+    ;; Show only top-level hedlines.
+    (org-overview)
+    ;; Unfold the current entry.
+    (org-fold-show-entry)
+    ;; Show only direct subheadings of the slide but don't expand them.
+    (org-fold-show-children))
+  (add-hook 'org-present-after-navigate-functions #'my/org-present-prepare-slide))
 #+end_src
 * Site Lisp
 ** Load Path
