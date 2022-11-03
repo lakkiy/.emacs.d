@@ -1858,6 +1858,16 @@ Center current window.
   :straight t
   :commands hide-mode-line-mode)
 #+end_src
+** info-variable-pitch
+#+begin_src emacs-lisp
+(eat-package info-variable-pitch
+  :straight (info-variable-pitch
+             :type git
+             :host github
+             :repo "kisaragi-hiu/info-variable-pitch")
+  :init
+  (add-hook 'Info-mode-hook #'info-variable-pitch-mode))
+#+end_src
 
 * Minibuffer
 #+begin_src elisp
