@@ -4227,9 +4227,6 @@ This is a variadic `cl-pushnew'."
        (eat/prose-mode -1)
        ;; full frame
        (toggle-frame-fullscreen)
-       ;; from org-present
-       (org-present-read-only)
-       (org-display-inline-images)
        ;; display header line so that we can use face-remapping
        ;; to create big enought blank space at the top
        (setq-local header-line-format " ")
@@ -4243,6 +4240,10 @@ This is a variadic `cl-pushnew'."
           (org-verbatim (:height 0.7) org-verbatim)
           (org-block (:height 1.25) org-block)
           (org-block-begin-line (:height 0.7) org-block)))
+       ;; from org-present, after font rescale
+       (org-present-read-only)
+       (org-present-hide-cursor)
+       (org-display-inline-images)
        ;; center the screen
        (visual-fill-column-mode 1)
        (setq-local visual-fill-column-center-text t)
@@ -4259,6 +4260,7 @@ This is a variadic `cl-pushnew'."
        (kill-local-variable 'header-line-format)
        (eat/prose-mode 1)
        ;; from org-present
+       (org-present-show-cursor)
        (org-remove-inline-images)
        (org-present-read-write)))
   :init
