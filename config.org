@@ -4149,12 +4149,27 @@ If popup is focused, kill it."
   :straight t
   :commands toc-org-enable toc-org-insert-toc)
 #+end_src
-** Syntax highlight when export to html
-#+begin_src elisp
+** Export to html
+*** TODO Inline image
+For now use ~pandoc --embed-resources --standalone~.
+
+#+begin_src emacs-lisp
+(defun eat/org-export-to-html ()
+  "Convert current org buffer to html with image embed.
+Need pandoc installed."
+  (interactive)
+  (let* ((from (buffer-file-name))
+         (to (concat (file-name-sans-extension from) ".html")))
+    (shell-command (format "pandoc --embed-resources --standalone %s -o %s" from to))
+    (find-file to)))
+#+end_src
+*** Syntax highlighting
+#+begin_src emacs-lisp
 (eat-package htmlize
   :straight t
   :after org)
 #+end_src
+
 ** org-variable-pitch
 #+begin_src emacs-lisp
 (eat-package org-variable-pitch
