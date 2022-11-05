@@ -1603,7 +1603,7 @@ point reaches the beginning or end of the buffer, stop there."
 (defvar eat/font-default '("IBM Plex Mono" 13))
 (defvar eat/font-variable-pitch "Bookerly")
 (defvar eat/font-chinese "LXGW WenKai")
-(defvar eat/font-emoji "Apple Color Emoji")
+(defvar eat/font-emoji "Noto Color Emoji")
 
 (defvar eat/font-rescale-alist
   '(("Bookerly" . 1.3))
@@ -3436,7 +3436,7 @@ Run =docker pull zevlg/telega-server:latest=
   :init
   (setq telega-use-docker t
         telega-chat-fill-column 75)
-  ;; (setq telega-server-libs-prefix "/usr")
+  (setq telega-server-libs-prefix "/usr")
 
   (defun eat/telega-root-setup ()
     ;; (eat/fixed-pitch-setup) ;; FIXME
@@ -3463,7 +3463,7 @@ Run =docker pull zevlg/telega-server:latest=
 
   (defun lg-telega-chat-update (chat)
     (with-telega-root-buffer
-     (hl-line-highlight)))
+      (hl-line-highlight)))
   (add-hook 'telega-chat-update-hook 'lg-telega-chat-update)
   :config
   ;; ignore blocked user
