@@ -37,6 +37,10 @@ TODO shoult put with their packages
 
 (defvar eat/enable-benchmark nil
   "Enable `benchmark-init', run `benchmark-init/show-durations-tree' to see result.")
+
+(defconst emacs29p
+  (>= emacs-major-version 29)
+  "Emacs is 28 or above.")
 #+end_src
 ** Consts
 #+begin_src elisp
@@ -218,7 +222,9 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 (setq dired-mouse-drag-files t
       mouse-drag-and-drop-region t
       mouse-drag-and-drop-region-cross-program t)
-(add-hook 'after-init-hook (lambda () (pixel-scroll-precision-mode)))
+(when emacs29p
+  (add-hook 'after-init-hook (lambda () (pixel-scroll-precision-mode))))
+
 
 ;; scroll nand hscroll
 (setq-default
@@ -589,8 +595,10 @@ point reaches the beginning or end of the buffer, stop there."
         repeat-exit-timeout 3
         repeat-exit-key (kbd "RET")))
 
-(eat-package mouse
-    :hook (after-init-hook . context-menu-mode))
+(when emacs29p
+  (eat-package mouse
+    :hook (after-init-hook . context-menu-mode)))
+
 
 (eat-package simple
   :hook (before-save-hook . delete-trailing-whitespace)
