@@ -1629,34 +1629,35 @@ point reaches the beginning or end of the buffer, stop there."
   (setq buffer-face-mode-face '(:family "等距更纱黑体 SC"))
   (buffer-face-mode +1))
 
-(add-hook 'eat/after-make-window-system-frame-hooks
-          (lambda ()
-            ;; default font
-            (set-face-attribute 'default nil :font (font-spec
-                                                    :family (car eat/font-default)
-                                                    :size (cadr eat/font-default)
-                                                    :weight 'medium))
-            (set-face-attribute 'fixed-pitch nil :font (car eat/font-default) :weight 'medium)
-            (set-face-attribute 'mode-line nil :font (car eat/font-default) :weight 'light)
-            (set-face-attribute 'mode-line-inactive nil :font (car eat/font-default) :weight 'light)
-            ;; variable-pitch
-            (set-face-font 'variable-pitch eat/font-variable-pitch)
-            ;;  emoji
-            (set-fontset-font t 'unicode eat/font-emoji)
-            (set-fontset-font t 'emoji eat/font-emoji)
-            ;; Chinese font, NOTE must set after unicode all it will fallback to some font
-            (set-fontset-font t 'kana eat/font-chinese)
-            (set-fontset-font t 'han eat/font-chinese)
-            (set-fontset-font t 'cjk-misc eat/font-chinese)
-            ;; rescale
-            (eat/rescale-font)
-            ;; TODO check fnot installed,different font set for different screen resloution
-            ))
+(defun eat/setup-modeline-font ()
+  (set-face-attribute 'mode-line nil :inherit 'default)
+  (set-face-attribute 'mode-line-inactive nil :inherit 'default))
 
-(add-hook 'load-theme-hook
-          (lambda ()
-            (set-face-attribute 'mode-line nil :font (car eat/font-default) :weight 'light)
-            (set-face-attribute 'mode-line-inactive nil :font (car eat/font-default) :weight 'light)))
+(defun eat/setup-font ()
+  ;; default font
+  (set-face-attribute 'default nil :font (font-spec
+                                          :family (car eat/font-default)
+                                          :size (cadr eat/font-default)
+                                          :weight 'medium))
+  (set-face-attribute 'fixed-pitch nil :font (car eat/font-default) :weight 'medium)
+  (eat/setup-modeline-font)
+  ;; variable-pitch
+  (set-face-font 'variable-pitch eat/font-variable-pitch)
+  ;;  emoji
+  (set-fontset-font t 'unicode eat/font-emoji)
+  (set-fontset-font t 'emoji eat/font-emoji)
+  ;; Chinese font, NOTE must set after unicode all it will fallback to some font
+  (set-fontset-font t 'kana eat/font-chinese)
+  (set-fontset-font t 'han eat/font-chinese)
+  (set-fontset-font t 'cjk-misc eat/font-chinese)
+  ;; rescale
+  (eat/rescale-font)
+  ;; TODO check fnot installed,different font set for different screen resloution
+  )
+
+(add-hook 'eat/after-make-window-system-frame-hooks #'eat/setup-font)
+
+(add-hook 'load-theme-hook #'eat/setup-modeline-font)
 #+end_src
 ** Modeline
 *** Defalut
