@@ -1607,13 +1607,31 @@ point reaches the beginning or end of the buffer, stop there."
 #+end_src
 ** Font
 #+begin_src elisp
-(defvar eat/font-default '("IBM Plex Mono" 13))
-(defvar eat/font-variable-pitch "Bookerly")
-(defvar eat/font-chinese "LXGW WenKai")
-(defvar eat/font-emoji "Noto Color Emoji")
+(defun font-installed-p (font-list)
+  (let ((font-installed nil))
+    (catch 'foo
+      (dolist (font font-list)
+        (when (find-font (font-spec :name font))
+          (setq font-installed font)
+          (throw 'foo t))))
+    font-installed))
+
+(defvar eat/fonts-default        '("IBM Plex Mono" "Cascadia Code" "Jetbrains Mono"
+                                   "Menlo" "Monaco" "DejaVu Sans Mono" "Latin Modern Mono"))
+(defvar eat/fonts-variable-pitch '("Bookerly" "Cardo"))
+(defvar eat/fonts-cjk            '("LXGW WenKai" "WenQuanYi Micro Hei" "Microsoft Yahei"))
+(defvar eat/fonts-emoji          '("Noto Color Emoji" "Segoe UI Symbol" "Apple Color Emoji"))
+
+(defvar eat/font-size-default   13)
+(defvar eat/font-default        (font-installed-p eat/fonts-default))
+(defvar eat/font-variable-pitch (font-installed-p eat/fonts-variable-pitch))
+(defvar eat/font-cjk            (font-installed-p eat/fonts-cjk))
+(defvar eat/font-emoji          (font-installed-p eat/fonts-emoji))
 
 (defvar eat/font-rescale-alist
-  '(("Bookerly" . 1.3))
+  `((,eat/font-variable-pitch . 1.3)
+    (,eat/font-cjk            . 0.95)
+    (,eat/font-emoji          . 0.85))
   "A list of font names that should be rescaled.")
 
 (defun eat/rescale-font ()
@@ -1623,40 +1641,35 @@ point reaches the beginning or end of the buffer, stop there."
                      face-font-rescale-alist nil nil #'equal)
 		  (cdr setting))))
 
+;; TODO
 (defun eat/fixed-pitch-setup ()
   (interactive)
   (setq buffer-face-mode-face '(:family "等距更纱黑体 SC"))
   (buffer-face-mode +1))
 
 (defun eat/setup-modeline-font ()
-  (set-face-attribute 'mode-line nil :inherit 'default)
-  (set-face-attribute 'mode-line-inactive nil :inherit 'default))
+  (set-face-attribute 'mode-line nil :font eat/font-default)
+  (set-face-attribute 'mode-line-inactive nil :font eat/font-default))
 
 (defun eat/setup-font ()
-  ;; default font
-  (set-face-attribute 'default nil :font (font-spec
-                                          :family (car eat/font-default)
-                                          :size (cadr eat/font-default)
-                                          :weight 'medium))
-  (set-face-attribute 'fixed-pitch nil :font (car eat/font-default) :weight 'medium)
+  (interactive)
+  ;; default font ;; TODO emoji wrong display when use "Cascadia Code"
+  (set-face-attribute 'default     nil :font (font-spec :family eat/font-default :size eat/font-size-default))
+  (set-face-attribute 'fixed-pitch nil :font eat/font-default)
   (eat/setup-modeline-font)
   ;; variable-pitch
   (set-face-font 'variable-pitch eat/font-variable-pitch)
   ;;  emoji
   (set-fontset-font t 'unicode eat/font-emoji)
-  (set-fontset-font t 'emoji eat/font-emoji)
-  ;; Chinese font, NOTE must set after unicode all it will fallback to some font
-  (set-fontset-font t 'kana eat/font-chinese)
-  (set-fontset-font t 'han eat/font-chinese)
-  (set-fontset-font t 'cjk-misc eat/font-chinese)
-  ;; rescale
-  (eat/rescale-font)
-  ;; TODO check fnot installed,different font set for different screen resloution
-  )
+  (set-fontset-font t 'emoji   eat/font-emoji)
+  ;; Chinese font, NOTE must set after unicode
+  (set-fontset-font t 'kana     eat/font-cjk)
+  (set-fontset-font t 'han      eat/font-cjk)
+  (set-fontset-font t 'cjk-misc eat/font-cjk))
 
 (add-hook 'eat/after-make-window-system-frame-hooks #'eat/setup-font)
-
-(add-hook 'load-theme-hook #'eat/setup-modeline-font)
+(add-hook 'eat/after-make-window-system-frame-hooks #'eat/rescale-font)
+(add-hook 'load-theme-hook                          #'eat/setup-modeline-font)
 #+end_src
 ** Modeline
 *** Defalut
@@ -3462,9 +3475,9 @@ Run =docker pull zevlg/telega-server:latest=
 
   (defun eat/telega-chat-setup ()
     (my-telega-chat-mode)
-    (make-variable-buffer-local 'face-font-rescale-alist)
-    (add-to-list 'face-font-rescale-alist `(,eat/font-chinese . 0.9))
-    (add-to-list 'face-font-rescale-alist `(,eat/font-emoji . 0.8))
+    ;; (make-variable-buffer-local 'face-font-rescale-alist)
+    ;; (add-to-list 'face-font-rescale-alist `(,eat/font-chinese . 0.9))
+    ;; (add-to-list 'face-font-rescale-alist `(,eat/font-emoji . 0.8))
     (require 'yasnippet)
     (yas-minor-mode-on)
     (visual-line-mode)
