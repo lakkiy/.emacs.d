@@ -691,16 +691,16 @@ point reaches the beginning or end of the buffer, stop there."
   (load bootstrap-file nil 'nomessage))
 #+end_src
 ** Performance
-*** TODO benchmark start up
+*** benchmark-init
 #+begin_src elisp
 (eat-package benchmark-init
-  :staright t
+  :straight t
   :init
   (when eat/enable-benchmark
     (benchmark-init/activate))
   :config
   (add-hook 'after-init-hook 'benchmark-init/deactivate))
-#+end_src
+ #+end_src
 *** gc
 #+begin_src elisp
 (eat-package gcmh
@@ -1039,7 +1039,6 @@ autoload cookie will make Emacs load `notifications' first, then our
                                (all-the-icons-completion-mode)))
     :config
     (with-eval-after-load 'marginalia
-      ;; FIXME hook is nil
       (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup))))
 #+end_src
 ** visual-fill-column
@@ -2346,6 +2345,7 @@ When expand snippet, try complete if there's acm cond, or run `yas-next-field-or
     (ignore-errors
       (corfu-mode -1))
     (with-eval-after-load 'yasnippet
+      ;; FIXME
       (define-key yas-keymap (kbd "<tab>") 'acm-complete-or-expand-yas-snippet)
       (define-key yas-keymap (kbd "TAB") 'acm-complete-or-expand-yas-snippet)))
   :config
@@ -2510,6 +2510,11 @@ Need =goimports=.
   (setq imenu-list-auto-resize t
         imenu-list-mode-line-format nil))
 #+end_src
+** devdocs
+#+begin_src elisp
+(eat-package devdocs :straight t)
+#+end_src
+
 ** Lang
 *** Go
 **** Install deps
@@ -2681,6 +2686,48 @@ it enable on all go buffer."
   (setq sql-mysql-login-params '(user password server database port)))
 #+end_src
 * Application
+** Note Taking (xeft)                                                 :deps:
+Need =xapian-core=.
+
+#+begin_src elisp
+(eat-package xeft
+  :straight (xeft :type git
+                  :host github
+                  :repo "casouri/xeft"
+                  :files (:defaults "Makefile" "module"))
+  :init
+  (setq xeft-directory "~/Dropbox/org/roam"
+        xeft-database "~/.xeft/db")
+  :config
+  (require 'flique)
+  (defun xeft-setup ()
+    (flique-append-to-index (buffer-file-name))
+    (local-set-key (kbd "M-]") #'flique-forward)
+    (local-set-key (kbd "M-[") #'flique-backward)
+    (flique-show-navigation))
+  (add-hook 'xeft-find-file-hook #'xeft-setup)
+  (add-hook 'xeft-find-file-hook #'bklink-minor-mode))
+#+end_src
+** Blog (org-static-blog)
+#+begin_src elisp
+(eat-package org-static-blog
+  :straight t
+  :init
+  (setq org-static-blog-publish-title "404cn's blog")
+  (setq org-static-blog-publish-url "https://404cn.github.io/")
+  (setq org-static-blog-publish-directory "~/p/blog/")
+  (setq org-static-blog-posts-directory "~/p/blog/posts/")
+  (setq org-static-blog-drafts-directory "~/p/blog/drafts/")
+  (setq org-static-blog-enable-tags t)
+  (setq org-static-blog-use-preview t)
+  (setq org-static-blog-preview-ellipsis "")
+  (setq org-export-with-toc nil)
+  (setq org-export-with-section-numbers nil)
+  :config
+  (setq org-static-blog-page-header (get-string-from-file "~/p/blog/static/header.html"))
+  (setq org-static-blog-page-preamble (get-string-from-file "~/p/blog/static/preamble.html"))
+  (setq org-static-blog-page-postamble (get-string-from-file "~/p/blog/static/postamble.html")))
+#+end_src
 ** Telega                                                             :deps:
 Need =telegram-tdlib=.
 Run =docker pull zevlg/telega-server:latest=
@@ -2759,9 +2806,7 @@ Maybe need =delta=.
     (magit-status "/yadm::"))
   :config
   (fullframe magit-status magit-mode-quit-window)
-  (setq-default magit-diff-refine-hunk t)
-  (global-set-key (kbd "C-x g") 'magit-status)
-  (global-set-key (kbd "C-x M-g") 'magit-dispatch))
+  (setq-default magit-diff-refine-hunk t))
 #+end_src
 
 *** magit-delta
@@ -2959,7 +3004,7 @@ variable accordingly.")
   (setq kubernetes-poll-frequency 3600
         kubernetes-redraw-frequency 3600))
 #+end_src
-** Terminal
+** TODO Terminal
 *** TODO built-in
 #+begin_src elisp
 (defun term-mode-common-init ()
@@ -3098,25 +3143,6 @@ Need =make=.
     (define-key vterm-mode-map (kbd "C-(") #'multi-vterm-prev)
     (define-key vterm-mode-map (kbd "C-)") #'multi-vterm-next)))
 #+end_src
-** Elfeed
-#+begin_src elisp
-(eat-package elfeed
-  :straight t
-  :commands elfeed
-  :init
-  (setq elfeed-search-filter "+unread "
-        ;; browse-url-browser-function 'eww-browse-url
-        elfeed-curl-extra-arguments '("--insecure"))
-
-  :config
-  (elfeed-set-timeout 36000))
-
-(eat-package elfeed-protocol
-  :straight t
-  :after elfeed
-  :config
-  (elfeed-protocol-enable))
-#+end_src
 ** LeetCode                                                           :deps:
 #+begin_src elisp
 (eat-package leetcode
@@ -3125,52 +3151,6 @@ Need =make=.
   :init
   (eat-package ctable :straight t)
   (setq leetcode-language "go"))
-#+end_src
-** Misc
-#+begin_src elisp
-(eat-package devdocs :straight t)
-#+end_src
-** Note Taking (xeft)                                                 :deps:
-Need =xapian-core=.
-
-#+begin_src elisp
-(eat-package xeft
-  :straight (xeft :type git
-                  :host github
-                  :repo "casouri/xeft"
-                  :files (:defaults "Makefile" "module"))
-  :init
-  (setq xeft-directory "~/Dropbox/org/roam"
-        xeft-database "~/.xeft/db")
-  :config
-  (require 'flique)
-  (defun xeft-setup ()
-    (flique-append-to-index (buffer-file-name))
-    (local-set-key (kbd "M-]") #'flique-forward)
-    (local-set-key (kbd "M-[") #'flique-backward)
-    (flique-show-navigation))
-  (add-hook 'xeft-find-file-hook #'xeft-setup)
-  (add-hook 'xeft-find-file-hook #'bklink-minor-mode))
-#+end_src
-** Blog (org-static-blog)
-#+begin_src elisp
-(eat-package org-static-blog
-  :straight t
-  :init
-  (setq org-static-blog-publish-title "404cn's blog")
-  (setq org-static-blog-publish-url "https://404cn.github.io/")
-  (setq org-static-blog-publish-directory "~/p/blog/")
-  (setq org-static-blog-posts-directory "~/p/blog/posts/")
-  (setq org-static-blog-drafts-directory "~/p/blog/drafts/")
-  (setq org-static-blog-enable-tags t)
-  (setq org-static-blog-use-preview t)
-  (setq org-static-blog-preview-ellipsis "")
-  (setq org-export-with-toc nil)
-  (setq org-export-with-section-numbers nil)
-  :config
-  (setq org-static-blog-page-header (get-string-from-file "~/p/blog/static/header.html"))
-  (setq org-static-blog-page-preamble (get-string-from-file "~/p/blog/static/preamble.html"))
-  (setq org-static-blog-page-postamble (get-string-from-file "~/p/blog/static/postamble.html")))
 #+end_src
 * Modes
 ** toml
@@ -6358,11 +6338,19 @@ windows to numbers."
 #+begin_src elisp :tangle themes/default-theme.el
 (deftheme default "Emacs default theme, better version.")
 
+(defvar my-bg-light "#F5F5F5"
+  "Light background color, from minder-theme.")
+
+;; TODO
+(defvar my-bg-dark "#282c34"
+  "Dark background color, from atom-one-dark.
+See https://github.com/atom/atom/blob/master/packages/one-dark-syntax/styles/colors.less.")
+
 (custom-theme-set-faces
  `default
  ;; basic
  `(default                    ((((type tty)))
-                               (((type graphic)) :background "#F5F5F5")))
+                               (((type graphic)) :background ,my-bg-light)))
  `(fringe ((t (:inherit default))))
  `(cursor ((t (:background "black"))))
  `(highlight ((t (:background "#CFD8DC"))))
