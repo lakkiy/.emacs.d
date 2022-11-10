@@ -691,7 +691,7 @@ point reaches the beginning or end of the buffer, stop there."
   (load bootstrap-file nil 'nomessage))
 #+end_src
 ** Performance
-*** benchmark start up
+*** TODO benchmark start up
 #+begin_src elisp
 (eat-package benchmark-init
   :staright t
@@ -1105,7 +1105,7 @@ Center current window.
 (eat-package autorevert
   :hook (after-init-hook . global-auto-revert-mode))
 #+end_src
-** TODO auto-save: change to super-save
+** auto-save
 #+begin_src elisp
 (eat-package auto-save
   :straight (auto-save
@@ -2126,12 +2126,15 @@ so try complete filst, if there nothing to complete then try to jump to next fie
                  nil
                  (window-parameters (mode-line-format . none)))))
 #+end_src
-*** embark-consult
+*** TODO embark-consult
 #+begin_src emacs-lisp
 ;; Consult users will also want the embark-consult package.
 (eat-package embark-consult
-  :after embark consult
-  :hook (embark-collect-mode-hook . embark-consult-preview-minor-mode))
+  :init
+  (with-eval-after-load 'embark
+    (with-eval-after-load 'consult
+      (require 'embark-consult)
+      (add-hook 'embark-collect-mode-hook #'embark-consult-preview-minor-mode))))
 #+end_src
 ** rg                                                                 :deps:
 Need =ripgrep=.
@@ -2415,6 +2418,10 @@ Need =universal-ctags= and =global=.
 
 (eat-package citre
   :straight (citre :host github :repo "universal-ctags/citre")
+  :config
+  (with-eval-after-load 'cc-mode (require 'citre-lang-c))
+  (with-eval-after-load 'dired (require 'citre-lang-fileref))
+  (with-eval-after-load 'verilog-mode (require 'citre-lang-verilog))
   :init
   (global-set-key (kbd "C-x c j") 'citre-jump)
   (global-set-key (kbd "C-x c J") 'citre-jump-back)
@@ -2427,7 +2434,7 @@ Need =universal-ctags= and =global=.
   (defun eat/citre-enable ()
     (interactive)
     (citre-mode 1)
-    (require 'citre-config))
+    (add-hook 'find-file-hook #'citre-auto-enable-citre-mode))
   (defun eat/citre-disable ()
     (interactive)
     (citre-mode 0)
@@ -2563,8 +2570,12 @@ Need =goimports=.
 Call `flymake-go-staticcheck-enable' interactive will only
 enable this in current buffer, add to `go-mode-hook' to make
 it enable on all go buffer."
+    (interactive)
+    (flymake-go-staticcheck-enable)
     (add-hook 'go-mode-hook #'flymake-go-staticcheck-enable))
   (defun eat/flymake-go-staticcheck-disable ()
+    (interactive)
+    (flymake-go-staticcheck-disable)
     (add-hook 'go-mode-hook #'flymake-go-staticcheck-disable)))
 #+end_src
 **** go-gen-test
