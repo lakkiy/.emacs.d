@@ -726,9 +726,103 @@ Run ~all-the-icons-install-fonts~, if on windows you must install this fonts man
 
 (eat-package fullframe :straight t)
 #+end_src
+** project.el
+#+begin_src elisp
+(eat-package project
+  :init
+  (defun eat/project-name ()
+    (file-name-nondirectory
+     (directory-file-name
+      (project-root
+       (project-current)))))
+
+  ;; do not remember tramp project
+  (defun eat/project-remember-advice (fn pr &optional no-write)
+    (let* ((remote? (file-remote-p (project-root pr)))
+           (no-write (if remote? t no-write)))
+      (funcall fn pr no-write)))
+  (advice-add 'project-remember-project :around
+              'eat/project-remember-advice)
+
+  :config
+  (defun eat/project-files-in-directory (dir)
+    "Use `fd' to list files in DIR."
+    (let* ((default-directory dir)
+           (localdir (file-local-name (expand-file-name dir)))
+           (command (format "fd -c never -H -t f -0 . %s" localdir)))
+      (project--remote-file-names
+       (sort (split-string (shell-command-to-string command) "\0" t)
+             #'string<))))
+
+  ;; use fd in `project-find-file'
+  (when (executable-find "fd")
+    (cl-defmethod project-files ((project (head local)) &optional dirs)
+      "Override `project-files' to use `fd' in local projects."
+      (mapcan #'eat/project-files-in-directory
+              (or dirs (list (project-root project))))))
+
+  (defun eat/project-try-local (dir)
+    "Determine if DIR is a non-Git project."
+    (catch 'ret
+      (let ((pr-flags '((".project")
+                        ("go.mod" "Cargo.toml" "project.clj" "pom.xml" "package.json") ;; higher priority
+                        ("Makefile" "README.org" "README.md"))))
+        (dolist (current-level pr-flags)
+          (dolist (f current-level)
+            (when-let ((root (locate-dominating-file dir f)))
+              (throw 'ret (cons 'local root))))))))
+  (cl-defmethod project-root ((project (head local)))
+    (cdr project))
+  (add-to-list 'project-find-functions #'eat/project-try-local t))
+#+end_src
+** tab-bar
+#+begin_src elisp
+(eat-package tab-bar
+  :init
+  (setq tab-bar-border nil
+        tab-bar-close-button nil
+        tab-bar-back-button nil
+        tab-bar-new-button nil
+        tab-bar-show t
+        tab-bar-format '(tab-bar-format-tabs)
+        tab-bar-tab-name-format-function 'eat/tab-bar-tab-format-function
+        tab-bar-separator ""
+        tab-bar-new-tab-choice "*scratch*"
+        tab-bar-tab-name-truncated-max 10)
+
+  (defun eat/tab-bar-switch-project ()
+    "Switch to project in a new tab, project name will be used as tab name.
+
+No tab will created if the command is cancelled."
+    (interactive)
+    (let (succ)
+      (unwind-protect
+          (progn
+            (tab-bar-new-tab)
+            (call-interactively #'project-switch-project)
+            (when-let ((proj (project-root (project-current))))
+              (tab-bar-rename-tab (format "%s" (file-name-nondirectory (directory-file-name proj))))
+              (setq succ t)))
+        (unless succ
+          (tab-bar-close-tab)))))
+
+  (defun eat/tab-bar-tab-format-function (tab i)
+    (let ((current-p (eq (car tab) 'current-tab)))
+      (propertize (concat
+                   "   "
+                   (alist-get 'name tab)
+                   "   ")
+                  'face
+                  (funcall tab-bar-tab-face-function tab))))
+  :config
+  (define-key tab-prefix-map (kbd ".") #'tab-bar-switch-to-recent-tab)
+  (define-key tab-prefix-map (kbd ",") #'tab-bar-rename-tab)
+  (define-key tab-prefix-map (kbd "l") #'eat/tab-bar-switch-project))
+#+end_src
+
 * UI
 ** Theme
-*** better default
+*** Better default
 #+begin_src elisp
 (defvar eat/theme 'modus-operandi
   "Default theme.")
@@ -742,8 +836,6 @@ Run ~all-the-icons-install-fonts~, if on windows you must install this fonts man
 (defvar load-theme-hook nil
   "Hooks that run after `load-theme'.")
 
-;;;; Functions
-
 ;; TODO use `enable-theme' instead
 (defun gh/load-theme-advice (f theme-id &optional no-confirm no-enable &rest args)
   (dolist (theme custom-enabled-themes)
@@ -755,6 +847,60 @@ Run ~all-the-icons-install-fonts~, if on windows you must install this fonts man
             :around
             #'gh/load-theme-advice)
 
+(defun eat/tui-load-theme ()
+  (when (fboundp 'menu-bar-mode)
+    (menu-bar-mode -1)))
+
+(defun eat/gui-load-theme ()
+  (load-theme eat/theme)
+  ;; For MacOS, load theme after system appearance changed.
+  (when (boundp 'ns-system-appearance)
+    (add-to-list 'ns-system-appearance-change-functions
+                 (lambda (l?d)
+                   (if (eq l?d 'light)
+                       (load-theme eat/theme-system-light)
+                     (load-theme eat/theme-system-dark))))))
+
+(add-hook 'eat/after-make-console-frame-hooks       #'eat/tui-load-theme)
+(add-hook 'eat/after-make-window-system-frame-hooks #'eat/gui-load-theme)
+#+end_src
+
+*** modus-themes
+#+begin_src emacs-lisp
+(setq modus-themes-fringes nil)
+#+end_src
+
+*** spacemacs-theme
+#+begin_src emacs-lisp
+(straight-use-package 'spacemacs-theme)
+
+(setq
+ spacemacs-theme-comment-italic t
+ spacemacs-theme-keyword-italic t
+ spacemacs-theme-org-agenda-height t
+ spacemacs-theme-org-bold t
+ spacemacs-theme-org-height t
+ spacemacs-theme-org-highlight t
+ spacemacs-theme-org-priority-bold t
+ spacemacs-theme-org-bold t
+ spacemacs-theme-underline-parens t)
+#+end_src
+*** kaolin-themes
+#+begin_src emacs-lisp
+(straight-use-package 'kaolin-themes)
+
+(setq
+ kaolin-themes-underline-wave nil
+ kaolin-themes-modeline-border nil
+ kaolin-themes-modeline-padded 4)
+#+end_src
+*** Misc
+#+begin_src emacs-lisp
+(straight-use-package '(ef-themes :type git :host github :repo "protesilaos/ef-themes"))
+(straight-use-package 'catppuccin-theme)
+#+end_src
+** Adjust opacity                                                    :linux:
+#+begin_src emacs-lisp
 (defun eat/adjust-opacity (frame incr)
   "Adjust the background opacity of FRAME by increment INCR."
   (unless (display-graphic-p frame)
@@ -767,884 +913,8 @@ Run ~all-the-icons-install-fonts~, if on windows you must install this fonts man
 (global-set-key (kbd "M-C-8") (lambda () (interactive) (eat/adjust-opacity nil -2)))
 (global-set-key (kbd "M-C-9") (lambda () (interactive) (eat/adjust-opacity nil 2)))
 (global-set-key (kbd "M-C-7") (lambda () (interactive) (modify-frame-parameters nil `((alpha-background . 100)))))
-
-;; for macos, load theme after system appearance changed
-(when (boundp 'ns-system-appearance)
-  (add-to-list 'ns-system-appearance-change-functions
-               (lambda (l?d)
-                 (if (eq l?d 'light)
-                     (load-theme eat/theme-system-light)
-                   (load-theme eat/theme-system-dark)))))
-
-(add-hook 'eat/after-make-console-frame-hooks (lambda ()
-                                                (when (fboundp 'menu-bar-mode)
-                                                  (menu-bar-mode -1))))
-
-(add-hook 'eat/after-make-window-system-frame-hooks (lambda ()
-                                                      (load-theme eat/theme)))
 #+end_src
 
-*** installed
-#+begin_src elisp
-(straight-use-package 'spacemacs-theme)
-(straight-use-package 'kaolin-themes)
-(straight-use-package '(ef-themes :type git :host github :repo "protesilaos/ef-themes"))
-(straight-use-package 'catppuccin-theme)
-
-(setq
- spacemacs-theme-comment-italic t
- spacemacs-theme-keyword-italic t
- spacemacs-theme-org-agenda-height t
- spacemacs-theme-org-bold t
- spacemacs-theme-org-height t
- spacemacs-theme-org-highlight t
- spacemacs-theme-org-priority-bold t
- spacemacs-theme-org-bold t
- spacemacs-theme-underline-parens t)
-
-(setq
- kaolin-themes-underline-wave nil
- kaolin-themes-modeline-border nil
- kaolin-themes-modeline-padded 4)
-#+end_src
-
-*** local
-**** Load Path
-#+begin_src elisp
-(add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))
-#+end_src
-**** nano
-#+begin_src elisp :tangle themes/nano-theme.el
-;;; nano-theme.el --- A theme split from nano-emacs  -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2021-2022 LiuBo
-
-;; Author: LiuBo <https://github.com/404cn>
-;; Created: May 30, 2021
-;; Version: 1.0.0
-;; Keywords: theme
-;; Homepage: https://github.com/404cn/nano-theme.el
-;; Package-Requires: ((emacs "28.0.50"))
-
-;;
-;; This file is not part of GNU Emacs.
-
-;; This program is free software; you can redistribute it and/or
-;; modify it under the terms of the GNU General Public License
-;; as published by the Free Software Foundation; either version 3
-;; of the License, or (at your option) any later version.
-
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-
-;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-;; Boston, MA 02110-1301, USA.
-
-
-;;; Commentary:
-
-;;; A theme split from nano-emacs.
-
-;;; Code:
-
-(deftheme nano "Theme split from nano-emacs")
-
-(defgroup nano-theme nil
-  "Options of nano theme."
-  :group 'faces)
-
-(defcustom nano-theme-light/dark 'light
-  "Nano theme uses light theme or dark theme?"
-  :type 'symbol
-  :group 'nano-theme)
-
-(defun nano-theme--light?dark (light dark)
-  "Determine using the LIGHT or the DARK color of nano-theme."
-  (if (eq nano-theme-light/dark 'light)
-      light
-    dark))
-(defalias '--l?d #'nano-theme--light?dark)
-
-(defun nano-theme-toggle ()
-  "Toggle between light/dark nano theme"
-  (interactive)
-  (if (eq nano-theme-light/dark 'light)
-      (setq nano-theme-light/dark 'dark)
-    (setq nano-theme-light/dark 'light))
-  (mapc #'disable-theme custom-enabled-themes)
-  (load-theme 'nano))
-
-(let ((foreground (--l?d "#37474F" "#ECEFF4"))
-      (background (--l?d "#FFFFFF" "#2E3440"))
-      (highlight  (--l?d "#FAFAFA" "#3B4252"))
-      (critical   (--l?d "#FF6F00" "#EBCB8B"))
-      (salient    (--l?d "#673AB7" "#81A1C1"))
-      (strong     (--l?d "#263238" "#FFFFFF"))
-      (popout     (--l?d "#FFAB91" "#D08770"))
-      (subtle     (--l?d "#ECEFF1" "#434C5E"))
-      (faded      (--l?d "#90A4AE" "#677691")))
-  (custom-theme-set-faces
-   `nano
-   ;; Basic
-   `(default                    ((((type tty)))
-                                 (((type graphic)) :background ,background :foreground ,foreground)))
-   `(shadow                     ((t (:foreground ,faded))))
-   `(link                       ((t (:foreground ,salient))))
-   `(link-visited               ((t (:foreground ,salient))))
-   `(highlight                  ((t (:background ,highlight))))
-   `(match                      ((t (:foreground ,popout))))
-   `(isearch                    ((t (:background ,subtle :box (:line-width (-1 . -1))))))
-   `(lazy-highlight             ((t (:background ,subtle :box (:line-width (-1 . -1))))))
-   `(warning                    ((t (:foreground ,popout))))
-   `(success                    ((t (:foreground ,faded))))
-   `(cursor                     ((t (:background ,foreground))))
-   `(fringe                     ((t (:foreground ,faded))))
-   `(show-paren-match           ((t (:box (:line-width (-1 . -1))))))
-   `(hl-line                    ((t (:background ,highlight))))
-   `(region                     ((t (:background ,subtle))))
-   `(line-number                ((t (:foreground ,faded))))
-   `(line-number-current-line   ((t (:foreground ,strong))))
-   `(minibuffer-prompt          ((t (:foreground ,strong))))
-   `(vertical-border            ((t (:foreground ,subtle))))
-   `(window-divider             ((t (:foreground ,subtle))))
-   `(window-divider-first-pixel ((t (:foreground ,subtle))))
-   `(window-divider-last-pixel  ((t (:foreground ,subtle))))
-   `(fill-column-indicator      ((t (:foreground ,strong))))
-   `(trailing-whitespace        ((t (:background ,subtle))))
-   `(completions-common-part    ((t (:foreground ,faded))))
-   `(secondary-selection        ((t (:background ,subtle))))
-   `(header-line                ((t ( :background ,subtle :foreground ,strong
-                                      :box (:line-width 2 :style released-button)))))
-
-   ;; Font Locks
-   `(font-lock-comment-face           ((t (:foreground ,faded))))
-   `(font-lock-comment-delimiter-face ((t (:foreground ,faded))))
-   `(font-lock-keyword-face           ((t (:foreground ,salient))))
-   `(font-lock-string-face            ((t (:foreground ,popout))))
-   `(font-lock-doc-face               ((t (:foreground ,faded))))
-   `(font-lock-builtin-face           ((t ())))
-   `(font-lock-type-face              ((t ())))
-   `(font-lock-variable-name-face     ((t ())))
-   `(font-lock-constant-face          ((t (:foreground ,salient))))
-   `(font-lock-function-name-face     ((t (:foreground ,strong :underline t))))
-   `(font-lock-warning-face           ((t ())))
-   `(font-lock-preprocessor-face      ((t ())))
-
-   ;; Eldoc
-   `(eldoc-highlight-function-argument ((t (:foreground ,strong :bold t))))
-
-   ;; Outline
-   `(outline-1 ((t (:foreground ,foreground :bold t :slant italic))))
-   `(outline-2 ((t (:inherit outline-1))))
-   `(outline-3 ((t (:inherit outline-1))))
-   `(outline-4 ((t (:inherit outline-1))))
-   `(outline-5 ((t (:inherit outline-1))))
-   `(outline-6 ((t (:inherit outline-1))))
-   `(outline-7 ((t (:inherit outline-1))))
-   `(outline-8 ((t (:inherit outline-1))))
-
-   ;; magit
-   `(magit-diff-hunk-heading ((t (:background ,subtle))))
-
-   ;; Agenda
-   `(org-agenda-calendar-event   ((t (:foreground ,foreground :background ,background))))
-   `(org-agenda-calendar-sexp    ((t (:foreground ,salient))))
-   `(org-agenda-clocking         ((t (:foreground ,faded))))
-   `(org-agenda-column-dateline  ((t (:foreground ,faded))))
-   `(org-agenda-current-time     ((t (:foreground ,foreground :bold t))))
-   `(org-agenda-date             ((t (:foreground ,salient))))
-   `(org-agenda-date-today       ((t (:foreground ,salient :bold t))))
-   `(org-agenda-date-weekend     ((t (:foreground ,faded))))
-   `(org-agenda-diary            ((t (:foreground ,faded))))
-   `(org-agenda-dimmed-todo-face ((t (:foreground ,faded))))
-   `(org-agenda-done             ((t (:foreground ,faded))))
-   `(org-agenda-filter-category  ((t (:foreground ,faded))))
-   `(org-agenda-filter-effort    ((t (:foreground ,faded))))
-   `(org-agenda-filter-regexp    ((t (:foreground ,faded))))
-   `(org-agenda-filter-tags      ((t (:foreground ,faded))))
-   `(org-agenda-restriction-lock ((t (:foreground ,faded))))
-   `(org-agenda-structure        ((t (:foreground ,foreground :bold t))))
-
-   ;; Notmuch
-   `(notmuch-tag-face             ((t (:foreground ,faded))))
-   `(notmuch-search-date          ((t (:foreground ,faded))))
-   `(notmuch-tag-deleted          ((t (:strike-through ,popout))))
-   `(notmuch-tag-added            ((t (:underline ,popout))))
-   `(notmuch-wash-cited-text      ((t (:foreground ,faded))))
-   `(notmuch-message-summary-face ((t (:foreground ,strong :bold t :background ,subtle))))
-
-   ;; Mode Line
-   `(mode-line          ((t ( :background ,foreground :foreground ,background))))
-   `(mode-line-inactive ((t ( :background ,faded :foreground ,background))))
-
-   ;; tab-bar
-   `(tab-bar                    ((t (:background ,background :foreground ,foreground))))
-   `(tab-bar-tab-group-current  ((t ())))
-   `(tab-bar-tab                ((t (:inverse-video t :bold t))))
-   `(tab-bar-tab-group-inactive ((t ())))
-   `(tab-bar-tab-inactive       ((t (:inherit shadow))))
-
-   ;; solaire Mode
-   `(solaire-default-face             ((t (:inherit default :background ,highlight))))
-
-   ;; Orderless
-   `(orderless-match-face-0           ((t (:foreground ,strong :bold t))))
-   `(orderless-match-face-1           ((t (:foreground ,strong :bold t))))
-   `(orderless-match-face-2           ((t (:foreground ,strong :bold t))))
-   `(orderless-match-face-3           ((t (:foreground ,strong :bold t))))
-
-   ;; Eshell
-   `(eshell-prompt                    ((t (:foreground ,popout :bold t))))
-
-   ;; telega
-   `(telega-msg-inline-reply ((t (:foreground ,faded))))
-   `(telega-msg-heading      ((t (:underline t))))
-
-   ;; which-func
-   `(which-func ((t (:foreground ,highlight))))
-
-   ;; Imenu-ist
-   `(imenu-list-entry-subalist-face-0 ((t (:foreground ,strong :weight bold :underline t))))
-   `(imenu-list-entry-subalist-face-1 ((t (:foreground ,salient :weight bold :underline t))))
-   `(imenu-list-entry-subalist-face-2 ((t (:foreground ,popout :weight bold :underline t))))
-   `(imenu-list-entry-subalist-face-3 ((t (:foreground ,critical :weight bold :underline t))))
-   `(imenu-list-entry-face-0          ((t (:foreground ,strong))))
-   `(imenu-list-entry-face-1          ((t (:foreground ,salient))))
-   `(imenu-list-entry-face-2          ((t (:foreground ,popout))))
-   `(imenu-list-entry-face-3          ((t (:foreground ,critical))))))
-
-;;;###autoload
-(and load-file-name
-     (boundp 'custom-theme-load-path)
-     (add-to-list 'custom-theme-load-path
-                  (file-name-as-directory
-                   (file-name-directory load-file-name))))
-
-(provide-theme 'nano)
-
-;;; nano-theme.el ends here
-#+end_src
-**** carbon
-#+begin_src elisp :tangle themes/carbon-theme.el
-;;; carbon-theme.el --- A minimal dark theme  -*- lexical-binding: t; -*-
-
-;; Author: Shi Tianshu
-;; Keywords: theme
-;; Package-Requires: ((emacs "28.0.50"))
-;; Version: 1.0.2
-
-;;
-;; This file is not part of GNU Emacs.
-
-;; This program is free software; you can redistribute it and/or
-;; modify it under the terms of the GNU General Public License
-;; as published by the Free Software Foundation; either version 3
-;; of the License, or (at your option) any later version.
-
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-
-;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-;; Boston, MA 02110-1301, USA.
-
-
-;;; Commentary:
-
-;;; This is a minimal light theme.
-
-;;; Code:
-
-(deftheme carbon "A minimal light theme.")
-
-(defvar carbon-theme-header-scales '(1.0 1.0 1.0 1.0 1.0 1.0 1.0)
-  "Scales for headers.")
-
-(let ((bg "#202020")
-      (fg "#A0A0A0")
-      (cm "#707070")
-      (rg "#024347")
-      (hl "#2A2A2A")
-      (lh "#0DA59B")
-      (ss "#353535")
-      (kw "#EEEEEE")
-      (fn "#bfaa6b")
-      (st "#4b9e6b")
-      (str "#4a95b5")
-      (num "#9466a5")
-      (doc "#cc725b")
-      (cur "#EFEFEF")
-      (pop "#272727")
-      (tb "#000000"))
-  (custom-theme-set-faces
-   `carbon
-   ;; We don't specify default foreground/background in TTY.
-   `(default                        ((((type tty)))
-                                     (((type graphic)) :background ,bg :foreground ,fg)))
-   ;; Basics
-   `(cursor                         ((t (:background ,cur))))
-   `(region                         ((t (:background ,rg :extend nil))))
-   `(hl-line                        ((t (:background ,hl))))
-   `(fringe                         ((t (:background ,bg))))
-   `(show-paren-match               ((t (:background ,hl :box (:line-width (-1 . -1) :style nil)))))
-   `(highlight                      ((t (:inverse-video t))))
-   `(button                         ((t (:box (:line-width (-1 . -1))))))
-   `(vertical-border                ((t ())))
-   `(window-divider                 ((t (:foreground ,cm))))
-   `(window-divider-first-pixel     ((t (:foreground ,cm))))
-   `(window-divider-last-pixel      ((t (:foreground ,cm))))
-   `(line-number                    ((t (:foreground ,cm))))
-   `(line-number-current-line       ((t (:foreground ,fn :background ,hl))))
-   `(completions-common-part        ((t ())))
-   `(minibuffer-prompt              ((t ())))
-   `(lazy-highlight                 ((t (:foreground ,lh :underline t))))
-   `(compilation-info               ((t ())))
-   `(compilation-warning            ((t ())))
-   `(warning                        ((t ())))
-   `(match                          ((t (:inverse-video t))))
-   `(secondary-selection            ((t (:background ,ss :extend nil))))
-   `(help-key-binding               ((t (:bold t))))
-   `(shadow                         ((t (:foreground ,cm))))
-
-   ;; ISearch
-   `(isearch                        ((t (:inverse-video t))))
-   `(isearch-fail                   ((t (:inverse-video t))))
-
-   ;; Font Locks
-   `(font-lock-comment-face         ((t (:foreground ,doc))))
-   `(font-lock-comment-delimiter-face  ((t (:inherit font-lock-comment-face))))
-   `(font-lock-string-face          ((t (:foreground ,str))))
-   `(font-lock-doc-face             ((t (:foreground ,doc))))
-   `(font-lock-builtin-face         ((t ())))
-   `(font-lock-type-face            ((t ())))
-   `(font-lock-variable-name-face   ((t ())))
-   `(font-lock-keyword-face         ((((type tty)) (:bold t))
-                                     (((type graphic)) (:foreground ,kw))))
-   `(font-lock-constant-face        ((t (:foreground ,st))))
-   `(font-lock-function-name-face   ((t (:foreground ,fn))))
-   `(font-lock-warning-face         ((t ())))
-   `(font-lock-preprocessor-face    ((t ())))
-   `(error                          ((t (:background "red" :foreground ,fn))))
-
-   `(highlight-numbers-number       ((t (:foreground ,num))))
-
-   ;; shell
-   `(sh-quoted-exec                 ((t ())))
-
-   ;; IMenu
-   `(imenu-list-entry-face-0          ((t ())))
-   `(imenu-list-entry-subalist-face-0 ((t (:bold t))))
-
-   ;; Mode Line
-   `(tab-line                       ((t ())))
-   `(mode-line                      ((t (:background ,fg :foreground ,bg))))
-   `(mode-line-inactive             ((t (:background ,cm :foreground ,hl))))
-   `(header-line                    ((t ())))
-   `(header-line-inactive           ((t ())))
-
-   ;; Company
-   `(company-tooltip-common         ((t ())))
-   `(company-tooltip-common-selection ((t ())))
-   `(company-tooltip                ((t (:background ,pop))))
-   `(company-tooltip-search         ((t ())))
-   `(company-tooltip-selection      ((t (:inverse-video t))))
-   `(company-tooltip-annotation     ((t ())))
-   `(company-scrollbar-bg           ((t (:background ,cm))))
-   `(company-scrollbar-fg           ((t (:background ,fg))))
-   `(company-template-field         ((t (:inherit yas-field-highlight-face))))
-
-   ;; Yasnippet
-   `(yas-field-highlight-face       ((t (:underline t))))
-
-   ;; Meow
-   `(meow-beacon-indicator          ((t (:bold t))))
-   `(meow-keypad-indicator          ((t (:bold t))))
-   `(meow-insert-indicator          ((t (:bold t))))
-   `(meow-normal-indicator          ((t (:bold t))))
-   `(meow-motion-indicator          ((t (:bold t))))
-   `(meow-keypad-cursor             ((t (:background ,cur))))
-   `(meow-insert-cursor             ((t (:background ,cur))))
-   `(meow-normal-cursor             ((t (:background ,cur))))
-   `(meow-motion-cursor             ((t (:background ,cur))))
-   `(meow-unknown-cursor            ((t (:background ,cur))))
-   `(meow-beacon-cursor             ((t (:background ,cur))))
-
-   ;; colorful paren
-   `(colorful-round           ((t ())))
-   `(colorful-square          ((t (:foreground ,str))))
-   `(colorful-curly           ((t (:foreground ,st))))
-   `(colorful-semicolon       ((t (:foreground ,fn))))
-
-   ;; Cider
-   `(cider-result-overlay-face      ((t (:inverse-video t))))
-   `(cider-repl-stderr-face         ((t ())))
-   `(cider-repl-stdout-face         ((t (:foreground "gray60"))))
-   `(cider-test-error-face          ((t (:foreground "yellow" :inverse-video t))))
-
-   ;; Clojure
-   `(clojure-character-face         ((t ())))
-
-   ;; Magit
-   `(magit-branch-local                ((t (:foreground ,st))))
-   `(magit-branch-remote               ((t (:foreground ,fn))))
-   `(magit-header-line                 ((t ())))
-   `(magit-head                        ((t ())))
-   `(magit-section-highlight           ((t (:background ,hl))))
-   `(magit-section-heading             ((t ())))
-   `(magit-section-selection           ((t ())))
-   `(magit-diff-removed                ((t (:background "#311"))))
-   `(magit-diff-removed-highlight      ((t (:background "#311"))))
-   `(magit-diff-added                  ((t (:background "#131"))))
-   `(magit-diff-added-highlight        ((t (:background "#131"))))
-   `(magit-diff-context-highlight      ((t (:background ,hl :foreground ,fg))))
-
-   ;; ;; SMerge
-   ;; `(smerge-refined-added           ((t (:background "#253325"))))
-   ;; `(smerge-lower                   ((t (:background "#173017"))))
-   ;;
-   ;; Diff-hl
-   `(diff-hl-insert                 ((t (:foreground ,cm :background ,cm))))
-   `(diff-hl-change                 ((t (:foreground ,hl :background ,hl))))
-   `(diff-hl-delete                 ((t (:foreground ,fg :background ,fg))))
-
-   `(eshell-prompt                  ((t (:bold t))))
-   ;;
-   ;; ;; Term
-   ;; `(term-color-blue                ((t (:foreground ,blue :background ,blue))))
-   ;; `(term-color-green               ((t (:foreground ,green :background ,green))))
-   ;; `(term-color-red                 ((t (:foreground ,red :background ,red))))
-   ;;
-   ;; ;; Popup
-   ;; `(popup-tip-face                 ((t (:background ,bg+4 :foreground ,fg))))
-   ;; `(popup-isearch-match            ((t (:background "#CFA300" :foreground "black"))))
-   ;;
-   ;; `(tooltip                        ((t ())))
-   ;; `(dired-directory                ((t (:foreground ,light-purple))))
-   ;; `(web-mode-html-attr-name-face   ((t ())))
-   ;; `(web-mode-html-tag-face         ((t ())))
-   ;;
-   ;; Emacs Rime
-   `(rime-preedit-face              ((t (:underline t))))
-   `(rime-cursor-face               ((t (:inherit font-lock-constant-face))))
-   `(rime-indicator-face            ((t ())))
-   `(rime-indicator-dim-face        ((t ())))
-   `(rime-candidate-num-face        ((t ())))
-   `(rime-comment-face              ((t ())))
-   `(rime-code-face                 ((t (:bold t))))
-   `(rime-default-face              ((t ())))
-   `(rime-highlight-candidate-face  ((t ())))
-
-   ;;
-   ;; ;; Web Mode
-   `(web-mode-function-call-face    ((t ())))
-   `(web-mode-function-name-face    ((t ())))
-   `(web-mode-html-tag-bracket-face ((t (:inherit parenthesis))))
-   `(web-mode-symbol-face           ((t ())))
-   `(css-selector                   ((t ())))
-   ;;
-   ;; Markdown
-   `(markdown-header-face-1         ((t (:underline t :height ,(nth 0 carbon-theme-header-scales)))))
-   `(markdown-header-face-2         ((t (:underline t :height ,(nth 1 carbon-theme-header-scales)))))
-   `(markdown-header-face-3         ((t (:underline t :height ,(nth 2 carbon-theme-header-scales)))))
-   `(markdown-header-face-4         ((t (:underline t :height ,(nth 3 carbon-theme-header-scales)))))
-   `(markdown-header-face-5         ((t (:underline t :height ,(nth 4 carbon-theme-header-scales)))))
-   `(markdown-header-face-6         ((t (:underline t :height ,(nth 5 carbon-theme-header-scales)))))
-   `(markdown-header-face-7         ((t (:underline t :height ,(nth 6 carbon-theme-header-scales)))))
-   ;;
-   ;; ;; Telega
-   `(telega-entity-type-code        ((t ())))
-   `(telega-msg-heading             ((t ())))
-   `(telega-msg-self-title          ((t (:foreground ,fn))))
-   `(telega-unmuted-count           ((t ())))
-   ;;
-   ;; ;; Org-mode
-   `(org-document-title             ((t (:bold t :height ,(nth 0 carbon-theme-header-scales)))))
-   `(org-link                       ((t (:underline t))))
-   `(org-document-title             ((t ())))
-   `(org-code                       ((t (:inherit font-lock-constant-face))))
-   `(org-level-1                    ((t (:inherit font-lock-string-face :height ,(nth 0 carbon-theme-header-scales)))))
-   `(org-level-2                    ((t (:inherit font-lock-function-name-face :height ,(nth 1 carbon-theme-header-scales)))))
-   `(org-level-3                    ((t (:inherit font-lock-keyword-face :height ,(nth 2 carbon-theme-header-scales)))))
-   `(org-level-4                    ((t (:height ,(nth 3 carbon-theme-header-scales)))))
-   `(org-level-5                    ((t (:height ,(nth 4 carbon-theme-header-scales)))))
-   `(org-level-6                    ((t (:height ,(nth 5 carbon-theme-header-scales)))))
-   `(org-level-7                    ((t (:height ,(nth 6 carbon-theme-header-scales)))))
-   ;;
-   ;; ;; Treemacs
-   ;; `(treemacs-root-face             ((t (:inherit font-lock-function-name-face :height 1.4 :underline t))))
-   `(fill-column-indicator          ((t (:foreground ,cm))))
-   `(scroll-bar                     ((t (:foreground ,fg))))
-   `(parenthesis                    ((t (:foreground ,cm))))
-   `(eldoc-box-body                 ((t (:background ,pop :inherit variable-pitch))))
-
-   `(flycheck-warning               ((t (:underline (:style wave :color ,cm)))))
-   `(flycheck-error                 ((t (:underline (:style wave :color ,st)))))
-   `(flymake-warning                ((t (:underline (:style wave :color ,st)))))
-   `(flymake-error                  ((t (:underline (:style wave :color ,st)))))
-   `(flymake-note                   ((t (:underline (:style wave :color ,cm)))))
-
-   `(wgrep-face                     ((t (:underline ,st))))
-
-   `(anzu-mode-line                 ((t (:foreground ,bg :background ,fg))))
-   `(erc-nick-default-face          ((t (:inherit font-lock-keyword-face))))
-   `(erc-input-face                 ((t (:inherit font-lock-function-name-face))))
-   `(erc-timestamp-face             ((t (:inherit font-lock-constant-face))))
-   `(erc-notice-face                ((t (:inherit font-lock-comment-face))))
-
-   `(tab-bar                        ((t (:background ,fg :foreground ,bg))))
-   `(tab-bar-tab                    ((t (:inverse-video t :bold t))))
-   `(tab-bar-tab-inactive           ((t ())))
-
-   `(ansi-color-blue                ((t (:foreground "#169edd"))))
-   `(ansi-color-bright-blue         ((t (:foreground "#169edd"))))
-   `(yascroll:thumb-fringe          ((t (:foreground ,cm :background ,cm))))
-   `(yascroll:thumb-text-area       ((t (:foreground ,cm :background ,cm))))
-
-   `(embark-keybinding              ((t (:inherit font-lock-constant-face))))))
-
-(and load-file-name
-     (boundp 'custom-theme-load-path)
-     (add-to-list 'custom-theme-load-path
-                  (file-name-as-directory
-                   (file-name-directory load-file-name))))
-
-(provide-theme 'carbon)
-
-;;; carbon-theme.el ends here
-#+end_src
-**** default
-#+begin_src elisp :tangle themes/default-theme.el
-(deftheme default "Emacs default theme, better version.")
-
-(custom-theme-set-faces
- `default
- ;; basic
- `(default                    ((((type tty)))
-                               (((type graphic)) :background "#F5F5F5")))
- `(fringe ((t (:inherit default))))
- `(cursor ((t (:background "black"))))
- `(highlight ((t (:background "#CFD8DC"))))
- '(minibuffer-prompt ((t ())))
-
- ;; Font Locks
- `(font-lock-comment-face           ((t (:foreground "#90A4AE" :slant italic))))
- `(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
- `(font-lock-doc-face               ((t (:inherit font-lock-comment-face))))
- `(font-lock-string-face            ((t ())))
- `(font-lock-builtin-face           ((t ())))
- `(font-lock-type-face              ((t ())))
- `(font-lock-variable-name-face     ((t ())))
- `(font-lock-keyword-face           ((t ())))
- `(font-lock-constant-face          ((t ())))
- `(font-lock-function-name-face     ((t (:bolt t :underline t))))
- `(font-lock-warning-face           ((t (:inherit warning))))
- `(font-lock-preprocessor-face      ((t ())))
-
- ;; mode-line
- `(mode-line          ((t (:foreground "black" :background "grey75"))))
- `(mode-line-inactive ((t (:foreground "#535c65" :background "#e3e5e8" :weight light))))
- )
-
-(and load-file-name
-     (boundp 'custom-theme-load-path)
-     (add-to-list 'custom-theme-load-path
-                  (file-name-as-directory
-                   (file-name-directory load-file-name))))
-
-(provide-theme 'default)
-#+end_src
-**** grayscale
-#+begin_src elisp :tangle themes/grayscale-theme.el
-;;; grayscale-theme.el --- A gray light theme  -*- lexical-binding: t; -*-
-
-;; Author: Shi Tianshu
-;; Keywords: theme
-;; Package-Requires: ((emacs "28.0.50"))
-;; Version: 1.0.2
-
-;;
-;; This file is not part of GNU Emacs.
-
-;; This program is free software; you can redistribute it and/or
-;; modify it under the terms of the GNU General Public License
-;; as published by the Free Software Foundation; either version 3
-;; of the License, or (at your option) any later version.
-
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-
-;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-;; Boston, MA 02110-1301, USA.
-
-
-;;; Commentary:
-
-;;; This is a minimal gray light theme.
-
-;;; Code:
-
-(deftheme grayscale "A minimal light theme.")
-
-(defvar grayscale-theme-header-scales '(1.4 1.4 1.2 1.0 1.0 1.0 1.0)
-  "Scales for headers.")
-
-(setq awesome-tray-mode-line-active-color "#353535"
-      awesome-tray-mode-line-inactive-color "#a9bdb5")
-
-(let ((bg "#c4d3cd")
-      (fg "#353535")
-      (kw "#000000")
-      (cm "#61726b")
-      (ss "#96b0a5")
-      (hl "#a9bdb5")
-      (fn "#b6c6c0")
-      (cur "#202020"))
-  (custom-theme-set-faces
-   `grayscale
-   ;; We don't specify default foreground/background in TTY.
-   `(default                        ((((type tty)))
-                                     (((type graphic)) :background ,bg :foreground ,fg)))
-   ;; Basics
-   `(cursor                         ((t (:background ,cur))))
-   `(region                         ((t (:background ,hl))))
-   `(hl-line                        ((t)))
-   `(fringe                         ((t (:background ,bg))))
-   `(show-paren-match               ((t (:box (:line-width (-1 . -1))))))
-   `(highlight                      ((t (:inverse-video t))))
-   `(button                         ((t (:box (:line-width (-1 . -1))))))
-   `(vertical-border                ((t ())))
-   `(window-divider                 ((t (:foreground ,cm))))
-   `(window-divider-first-pixel     ((t (:foreground ,cm))))
-   `(window-divider-last-pixel      ((t (:foreground ,cm))))
-   `(line-number                    ((t (:foreground ,cm))))
-   `(line-number-current-line       ((t (:foreground ,fg))))
-   `(parenthesis                    ((t (:foreground ,fg))))
-   `(completions-common-part        ((t ())))
-   `(minibuffer-prompt              ((t ())))
-   `(lazy-highlight                 ((t (:foreground ,fg :box (:line-width (-1 . -1))))))
-   `(compilation-info               ((t ())))
-   `(compilation-warning            ((t ())))
-   `(warning                        ((t ())))
-   `(match                          ((t (:foreground ,fg :box (:line-width (-1 . -1))))))
-   `(secondary-selection            ((t (:background ,ss))))
-   `(help-key-binding               ((t ())))
-   `(shadow                         ((t (:foreground ,cm))))
-
-   ;; ISearch
-   `(isearch                        ((t (:inverse-video t))))
-   `(isearch-fail                   ((t (:inverse-video t))))
-
-   ;; Font Locks
-   `(font-lock-comment-face         ((t (:foreground ,cm :italic t))))
-   `(font-lock-comment-delimiter-face         ((t (:foreground ,cm :italic t))))
-   `(font-lock-string-face          ((t (:foreground ,cm))))
-   `(font-lock-doc-face             ((t (:foreground ,cm))))
-   `(font-lock-builtin-face         ((t ())))
-   `(font-lock-type-face            ((t ())))
-   `(font-lock-variable-name-face   ((t ())))
-   `(font-lock-keyword-face         ((t (:bold t))))
-   `(font-lock-constant-face        ((t (:italic t))))
-   `(font-lock-function-name-face   ((t (:background ,fn))))
-   `(font-lock-warning-face         ((t ())))
-   `(font-lock-preprocessor-face    ((t ())))
-
-   ;; shell
-   `(sh-quoted-exec                 ((t ())))
-
-   ;; IMenu
-   `(imenu-list-entry-face-0          ((t ())))
-   `(imenu-list-entry-subalist-face-0 ((t (:bold t))))
-
-   ;; Mode Line
-   `(tab-line                       ((t ())))
-   `(mode-line                      ((t (:inverse-video t))))
-   `(mode-line-inactive             ((t (:background ,hl))))
-   `(header-line                    ((t ())))
-   `(header-line-inactive           ((t ())))
-
-   ;; Company
-   `(company-tooltip-common         ((t ())))
-   `(company-tooltip-common-selection ((t (:bold t))))
-   `(company-tooltip                ((t (:background ,hl))))
-   `(company-tooltip-search         ((t ())))
-   `(company-tooltip-selection      ((t (:inverse-video t))))
-   `(company-tooltip-annotation     ((t ())))
-   `(company-scrollbar-bg           ((t (:background ,bg))))
-   `(company-scrollbar-fg           ((t (:background ,fg))))
-   `(company-template-field         ((t (:inherit yas-field-highlight-face))))
-
-   ;; Yasnippet
-   `(yas-field-highlight-face       ((t (:background ,hl))))
-
-   ;; Meow
-   `(meow-keypad-indicator          ((t (:bold t))))
-   `(meow-insert-indicator          ((t (:bold t))))
-   `(meow-normal-indicator          ((t (:bold t))))
-   `(meow-motion-indicator          ((t (:bold t))))
-   `(meow-beacon-indicator          ((t (:bold t))))
-   `(meow-keypad-cursor             ((t ())))
-   `(meow-insert-cursor             ((t ())))
-   `(meow-normal-cursor             ((t ())))
-   `(meow-motion-cursor             ((t ())))
-   `(meow-beacon-cursor             ((t ())))
-
-   ;; colorful paren
-   `(colorful-round           ((t (:foreground ,cm))))
-   `(colorful-square          ((t ())))
-   `(colorful-curly           ((t ())))
-
-   ;; Cider
-   `(cider-result-overlay-face      ((t (:inverse-video t))))
-   `(cider-repl-stderr-face         ((t (:bold t))))
-   `(cider-repl-stdout-face         ((t ())))
-
-   ;; Clojure
-   `(clojure-character-face         ((t ())))
-
-   ;; Magit
-   ;; `(magit-diff-file-heading-highlight ((t (:background ,bg+1))))
-   `(magit-branch-current              ((t (:box t :background ,hl))))
-   `(magit-branch-local                ((t (:background ,hl))))
-   `(magit-branch-remote               ((t (:background ,cm :foreground ,bg))))
-   `(magit-branch-remote-head          ((t (:box t :background ,cm :foreground ,bg))))
-   `(magit-header-line                 ((t (:bold t))))
-   `(magit-head                        ((t ())))
-   `(magit-section-highlight           ((t (:background ,hl))))
-   `(magit-section-heading             ((t (:bold t))))
-   `(magit-section-selection           ((t (:bold t))))
-   `(magit-diff-hunk-heading-highlight ((t (:inverse-video t))))
-   `(magit-diff-hunk-heading ((t (:foreground ,cm))))
-   `(magit-diff-removed             ((t ())))
-   `(magit-diff-added               ((t ())))
-   `(magit-diff-removed-highlight   ((t (:background ,hl))))
-   `(magit-diff-added-highlight     ((t (:background ,cm :foreground ,bg))))
-   `(magit-diff-highlight           ((t ())))
-   `(magit-diff-context-highlight   ((t ())))
-   ;;
-   ;; ;; SMerge
-   ;; `(smerge-refined-added           ((t (:background "#253325"))))
-   ;; `(smerge-lower                   ((t (:background "#173017"))))
-   ;;
-   ;; Diff-hl
-   `(diff-hl-insert                 ((t (:foreground ,cm :background ,cm))))
-   `(diff-hl-change                 ((t (:foreground ,hl :background ,hl))))
-   `(diff-hl-delete                 ((t (:foreground ,fg :background ,fg))))
-
-   `(eshell-prompt                  ((t (:bold t))))
-   ;;
-   ;; ;; Term
-   ;; `(term-color-blue                ((t (:foreground ,blue :background ,blue))))
-   ;; `(term-color-green               ((t (:foreground ,green :background ,green))))
-   ;; `(term-color-red                 ((t (:foreground ,red :background ,red))))
-   ;;
-   ;; ;; Popup
-   ;; `(popup-tip-face                 ((t (:background ,bg+4 :foreground ,fg))))
-   ;; `(popup-isearch-match            ((t (:background "#CFA300" :foreground "black"))))
-   ;;
-   `(tooltip                        ((t ())))
-   `(dired-directory                ((t (:bold t))))
-   `(web-mode-html-attr-name-face   ((t ())))
-   `(web-mode-html-tag-face         ((t ())))
-
-   ;; Emacs Rime
-   `(rime-preedit-face              ((t (:underline t))))
-   `(rime-cursor-face               ((t (:inherit font-lock-constant-face))))
-   `(rime-indicator-face            ((t ())))
-   `(rime-indicator-dim-face        ((t ())))
-   `(rime-candidate-num-face        ((t ())))
-   `(rime-comment-face              ((t (:inherit font-lock-comment))))
-   `(rime-code-face                 ((t (:bold t))))
-   `(rime-default-face              ((t ())))
-   `(rime-highlight-candidate-face  ((t ())))
-
-   ;;
-   ;; ;; Web Mode
-   `(web-mode-function-call-face    ((t ())))
-   `(web-mode-function-name-face    ((t ())))
-   `(web-mode-html-tag-bracket-face ((t (:inherit parenthesis))))
-   `(web-mode-symbol-face           ((t (:inherit font-lock-constant-face))))
-   `(web-mode-doctype-face          ((t (:inherit shadow))))
-   ;; `(css-selector                   ((t (:foreground ,purple))))
-   ;;
-   ;; ;; Markdown
-   `(markdown-header-face-1         ((t (:bold t :height ,(nth 0 grayscale-theme-header-scales)))))
-   `(markdown-header-face-2         ((t (:bold t :height ,(nth 1 grayscale-theme-header-scales)))))
-   `(markdown-header-face-3         ((t (:bold t :height ,(nth 2 grayscale-theme-header-scales)))))
-   `(markdown-header-face-4         ((t (:bold t :height ,(nth 3 grayscale-theme-header-scales)))))
-   `(markdown-header-face-5         ((t (:bold t :height ,(nth 4 grayscale-theme-header-scales)))))
-   `(markdown-header-face-6         ((t (:bold t :height ,(nth 5 grayscale-theme-header-scales)))))
-   `(markdown-header-face-7         ((t (:bold t :height ,(nth 6 grayscale-theme-header-scales)))))
-   ;;
-   ;; ;; Telega
-   `(telega-entity-type-code        ((t ())))
-   `(telega-msg-heading             ((t ())))
-   `(telega-unmuted-count           ((t ())))
-   ;;
-   ;; ;; Org-mode
-   `(org-document-title             ((t (:bold t :height ,(nth 0 grayscale-theme-header-scales)))))
-   `(org-link                       ((t (:underline t))))
-   `(org-document-title             ((t ())))
-   `(org-code                       ((t (:inherit font-lock-constant-face))))
-   `(org-level-1                    ((t (:bold t :height ,(nth 0 grayscale-theme-header-scales)))))
-   `(org-level-2                    ((t (:bold t :height ,(nth 1 grayscale-theme-header-scales)))))
-   `(org-level-3                    ((t (:bold t :height ,(nth 2 grayscale-theme-header-scales)))))
-   `(org-level-4                    ((t (:bold t :height ,(nth 3 grayscale-theme-header-scales)))))
-   `(org-level-5                    ((t (:bold t :height ,(nth 4 grayscale-theme-header-scales)))))
-   `(org-level-6                    ((t (:bold t :height ,(nth 5 grayscale-theme-header-scales)))))
-   `(org-level-7                    ((t (:bold t :height ,(nth 6 grayscale-theme-header-scales)))))
-   `(org-todo                       ((t (:bold t))))
-   `(org-done                       ((t (:bold t :inherit shadow))))
-   `(org-headline-done              ((t (:inherit shadow))))
-   `(org-drawer                     ((t (:foreground ,cm))))
-
-   ;; ;; Treemacs
-   `(fill-column-indicator          ((t (:foreground ,cm))))
-   `(scroll-bar                     ((t (:foreground ,fg))))
-   `(sp-pair-overlay-face           ((t (:background ,hl))))
-   `(sp-wrap-overlay-face           ((t (:background ,hl))))
-
-   `(flycheck-warning ((t (:underline (:style wave :color ,cm)))))
-   `(flycheck-error   ((t (:underline (:style wave :color ,fg)))))
-   `(flymake-warning  ((t (:underline (:style wave :color ,cm)))))
-   `(flymake-error    ((t (:underline (:style wave :color ,fg)))))
-   `(flymake-note     ((t (:underline (:style wave :color ,hl)))))
-
-
-   `(tab-bar                        ((t (:background ,hl))))
-   `(tab-bar-tab-group-current      ((t ())))
-   `(tab-bar-tab                    ((t (:bold t))))
-   `(tab-bar-tab-group-inactive     ((t ())))
-   `(tab-bar-tab-inactive           ((t (:bold nil :inherit shadow))))
-
-   `(yascroll:thumb-fringe          ((t (:foreground ,cm :background ,cm))))
-   `(yascroll:thumb-text-area       ((t (:foreground ,cm :background ,cm))))))
-
-(and load-file-name
-     (boundp 'custom-theme-load-path)
-     (add-to-list 'custom-theme-load-path
-                  (file-name-as-directory
-                   (file-name-directory load-file-name))))
-
-(provide-theme 'grayscale)
-
-;;; grayscale-theme.el ends here
-#+end_src
-
-*** modus-themes
-#+begin_src emacs-lisp
-(setq modus-themes-fringes nil)
-#+end_src
 ** Font                                                               :deps:
 The first installed font will be used.
 
@@ -1714,7 +984,6 @@ The first installed font will be used.
 (add-hook 'load-theme-hook                          #'eat/setup-modeline-font)
 #+end_src
 ** Modeline
-*** Defalut
 #+begin_src elisp
 (eat-package minions :straight t)
 
@@ -1724,54 +993,6 @@ The first installed font will be used.
 
 (add-hook 'after-init-hook #'eat/setup-modeline)
 #+end_src
-
-*** awesome-tray
-#+begin_src elisp
-(eat-package awesome-tray
-  :straight (awesome-tray :type git :host github :repo "manateelazycat/awesome-tray")
-  :init
-  (setq
-   awesome-tray-active-modules '("anzu" "buffer-read-only" "buffer-name" "mode-name" "location")
-   awesome-tray-update-interval 0.5
-   awesome-tray-info-padding-right 2
-   awesome-tray-minibuffer nil
-   awesome-tray-essential-modules nil)
-  :config
-  (setq-default mode-line-format " ")
-  (add-hook 'luna-load-theme-hook #'awesome-tray-enable)
-  (setq rime-show-candidate 'posframe
-        dirvish-mode-line-format " "
-        dirvish-mode-line-height 0.1
-        ;; https://emacs-china.org/t/awesome-tray-emacs-mode-line/7250/174?u=rua;
-        org-clock-clocked-in-display nil)
-
-  ;; `rime'
-  (with-eval-after-load 'rime
-    (add-to-list 'awesome-tray-module-alist
-                 '("rime" . (rime-lighter)))
-    (add-to-list 'awesome-tray-active-modules "rime"))
-
-  ;; `flymake'
-  (with-eval-after-load 'flymake
-    (add-to-list 'awesome-tray-module-alist
-                 '("flymake" . (sekiro-flymake-mode-line-format)))
-    (add-to-list 'awesome-tray-active-modules "flymake"))
-
-  ;; `popper', disable
-  (with-eval-after-load 'popper
-    (setq popper-mode-line nil))
-
-  ;; `meow'
-  (with-eval-after-load 'meow
-    (defun awesome-tray-module-meow-info ()
-      (string-trim (meow-indicator)))
-    (add-to-list 'awesome-tray-module-alist
-                 '("meow" . (awesome-tray-module-meow-info awesome-tray-module-evil-face)))
-    (add-to-list 'awesome-tray-active-modules "meow")))
-
-;; (add-hook 'eat/after-make-window-system-frame-hooks #'awesome-tray-mode)
-#+end_src
-
 ** Notifications                                                      :deps:
 Need =terminal-notifier= on MacOS.
 
@@ -1804,15 +1025,6 @@ autoload cookie will make Emacs load `notifications' first, then our
    (defalias 'notify-send 'ignore)))
 #+end_src
 
-** Text Scale
-#+begin_src elisp
-(eat-package default-text-scale
-  :straight t
-  :init
-  (global-set-key (kbd "C-x C-=") #'default-text-scale-increase)
-  (global-set-key (kbd "C-x C--") #'default-text-scale-decrease))
-#+end_src
-
 ** Icon
 #+begin_src elisp
 (when (and eat/enable-icon (display-graphic-p))
@@ -1829,84 +1041,6 @@ autoload cookie will make Emacs load `notifications' first, then our
     (with-eval-after-load 'marginalia
       ;; FIXME hook is nil
       (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup))))
-#+end_src
-** Highlight and center after jump
-#+begin_src elisp
-(eat-package hl-line
-  :init
-  (setq-default hl-line-sticky-flag nil)
-  ;; (when (display-graphic-p)
-  ;;   (add-hook 'prog-mode-hook #'hl-line-mode)
-  ;;   (add-hook 'conf-mode-hook #'hl-line-mode))
-  :config
-  (add-hook 'post-command-hook #'(lambda ()
-                                   "When `hl-line-mode' is enable, unhighlight if region is active."
-                                   (when (and (bound-and-true-p hl-line-mode)
-                                              (region-active-p))
-                                     (hl-line-unhighlight)))))
-
-(eat-package pulse
-  :hook
-  ((imenu-after-jump-hook isearch-update-post-hook)
-   . eat/recenter-and-pulse)
-  ((bookmark-after-jump  next-error)
-   . eat/recenter-and-pulse-line)
-  :init
-  (custom-set-faces
-   '(pulse-highlight-start-face ((t (:inherit region))))
-   '(pulse-highlight-face ((t (:inherit region)))))
-
-  (defun eat/pulse-momentary-line (&rest _)
-    "Pulse the current line."
-    (pulse-momentary-highlight-one-line (point)))
-
-  (defun eat/pulse-momentary (&rest _)
-    "Pulse the region or the current line."
-    (if (fboundp 'xref-pulse-momentarily)
-        (xref-pulse-momentarily)
-      (eat/pulse-momentary-line)))
-
-  (defun eat/recenter-and-pulse(&rest _)
-    "Recenter and pulse the region or the current line."
-    (recenter)
-    (eat/pulse-momentary))
-
-  (defun eat/recenter-and-pulse-line (&rest _)
-    "Recenter and pulse the current line."
-    (recenter)
-    (eat/pulse-momentary-line))
-
-  (dolist (cmd '(recenter-top-bottom
-                 other-window windmove-do-window-select
-                 pager-page-down pager-page-up))
-    (advice-add cmd :after #'eat/pulse-momentary-line))
-
-  (dolist (cmd '(pop-to-mark-command
-                 pop-global-mark
-                 compile-goto-error
-                 goto-last-change))
-    (advice-add cmd :after #'eat/recenter-and-pulse)))
-#+end_src
-** hl-todo
-#+begin_src emacs-lisp
-(eat-package hl-todo
-  :straight t
-  :hook
-  ((dired-mode-hook prog-mode-hook conf-mode-hook) . hl-todo-mode))
-#+end_src
-** ligature
-#+begin_src emacs-lisp
-(eat-package ligature
-  :straight (ligature :host github :repo "mickeynp/ligature.el")
-  :commands global-ligature-mode
-  :hook (prog-mode-hook . (lambda () (ligature-mode t)))
-  :config
-  ;; https://htmlpreview.github.io/?https://github.com/kiliman/operator-mono-lig/blob/master/images/preview/normal/index.html
-  (ligature-set-ligatures 'prog-mode
-                          '("&&" "||" "|>" ":=" "==" "===" "==>" "=>"
-                            "=<<" "!=" "!==" ">=" ">=>" ">>=" "->" "--"
-                            "-->" "<|" "<=" "<==" "<=>" "<=<" "<!--" "<-"
-                            "<->" "<--" "</" "+=" "++" "??" "/>" "__" "WWW")))
 #+end_src
 ** visual-fill-column
 Center current window.
@@ -1935,6 +1069,7 @@ Center current window.
 #+end_src
 
 * Minibuffer
+** Better default
 #+begin_src elisp
 (eat-package minibuffer
   :init
@@ -1948,7 +1083,8 @@ Center current window.
   ;; Quit that fucking minibuffer!
   (define-key minibuffer-local-map (kbd "C-g") #'keyboard-quit))
 #+end_src
-** history
+
+** savehist
 #+begin_src elisp
 (eat-package savehist
   :hook (after-init-hook . savehist-mode)
@@ -1962,13 +1098,14 @@ Center current window.
   :straight t
   :hook (after-init-hook . marginalia-mode))
 #+end_src
+
 * Buffer
-** auto revert
+** autorevert
 #+begin_src elisp
 (eat-package autorevert
   :hook (after-init-hook . global-auto-revert-mode))
 #+end_src
-** auto save
+** TODO auto-save: change to super-save
 #+begin_src elisp
 (eat-package auto-save
   :straight (auto-save
@@ -1984,12 +1121,12 @@ Center current window.
    ;; most time I will save manually
    auto-save-idle 7))
 #+end_src
-** save place
+** saveplace
 #+begin_src elisp
 (eat-package saveplace
   :hook (after-init-hook . save-place-mode))
 #+end_src
-** long line
+** so-long
 #+begin_src elisp
 (eat-package so-long
   :hook (after-init-hook . global-so-long-mode))
@@ -2030,7 +1167,9 @@ Center current window.
   (define-ibuffer-column size-h
     (:name "Size" :inline t)
     (file-size-human-readable (buffer-size))))
-
+#+end_src
+** ibuffer-vc
+#+begin_src emacs-lisp
 (eat-package ibuffer-vc
   :straight t
   :hook (ibuffer-hook . ibuffer-set-up-preferred-filters)
@@ -2041,7 +1180,7 @@ Center current window.
       (ibuffer-do-sort-by-filename/process))))
 #+end_src
 * Window Management
-** built-in
+** Built in
 *** winner
 #+begin_src elisp
 (eat-package winner
@@ -2175,7 +1314,7 @@ Center current window.
 #+end_src
 
 * Editing
-** Modal
+** meow
 *** Setup
 #+begin_src elisp
 (defun meow-setup-dvorak ()
@@ -2408,7 +1547,7 @@ Center current window.
   (meow-setup-indicator)
   (meow-setup-dvorak))
 #+end_src
-** query replace
+** anzu
 #+begin_src elisp
 (eat-package anzu
   :straight t
@@ -2431,18 +1570,23 @@ Better scroll on picture in GUI
 (eat-package iscroll :straight t)
 #+end_src
 
-** undo
-#+begin_src elisp
+** Undo
+*** vundo
+#+begin_src emacs-lisp
 (eat-package vundo
   :straight (vundo :host github :repo "casouri/vundo")
   :commands vundo)
+#+end_src
 
+*** undo-hl
+#+begin_src emacs-lisp
 (eat-package undo-hl
   :straight (undo-hl :host github :repo "casouri/undo-hl")
   :hook
   ((prog-mode-hook conf-mode-hook) . undo-hl-mode))
 #+end_src
-** Remote Editing
+
+** tramp
 #+begin_src elisp
 (eat-package tramp
   :init
@@ -2505,7 +1649,7 @@ Better scroll on picture in GUI
   (add-hook 'ediff-before-setup-hook #'eat/ediff-save-window-conf)
   (add-hook 'ediff-quit-hook #'eat/ediff-restore-window-conf))
 #+end_src
-** TODO spell check                                                   :deps:
+** TODO Spell check                                                   :deps:
 Need =aspell=.
 
 #+begin_src elisp
@@ -2576,21 +1720,116 @@ Need rime module.
   (define-key rime-mode-map (kbd "M-j") 'rime-force-enable))
 #+end_src
 ** TODO symbol-overlay
+
 #+begin_src emacs-lisp
 (eat-package symbol-overlay
   :straight t)
 #+end_src
+** hl-todo
+#+begin_src emacs-lisp
+(eat-package hl-todo
+  :straight t
+  :hook
+  ((dired-mode-hook prog-mode-hook conf-mode-hook) . hl-todo-mode))
+#+end_src
+** hl-line
+#+begin_src emacs-lisp
+(eat-package hl-line
+  :init
+  (setq-default hl-line-sticky-flag nil)
+  ;; (when (display-graphic-p)
+  ;;   (add-hook 'prog-mode-hook #'hl-line-mode)
+  ;;   (add-hook 'conf-mode-hook #'hl-line-mode))
+  :config
+  (add-hook 'post-command-hook #'(lambda ()
+                                   "When `hl-line-mode' is enable, unhighlight if region is active."
+                                   (when (and (bound-and-true-p hl-line-mode)
+                                              (region-active-p))
+                                     (hl-line-unhighlight)))))
+#+end_src
+
+** ligature
+#+begin_src emacs-lisp
+(eat-package ligature
+  :straight (ligature :host github :repo "mickeynp/ligature.el")
+  :commands global-ligature-mode
+  :hook (prog-mode-hook . (lambda () (ligature-mode t)))
+  :config
+  ;; https://htmlpreview.github.io/?https://github.com/kiliman/operator-mono-lig/blob/master/images/preview/normal/index.html
+  (ligature-set-ligatures 'prog-mode
+                          '("&&" "||" "|>" ":=" "==" "===" "==>" "=>"
+                            "=<<" "!=" "!==" ">=" ">=>" ">>=" "->" "--"
+                            "-->" "<|" "<=" "<==" "<=>" "<=<" "<!--" "<-"
+                            "<->" "<--" "</" "+=" "++" "??" "/>" "__" "WWW")))
+#+end_src
+** pulse
+#+begin_src elisp
+(eat-package pulse
+  :hook
+  ((imenu-after-jump-hook isearch-update-post-hook)
+   . eat/recenter-and-pulse)
+  ((bookmark-after-jump  next-error)
+   . eat/recenter-and-pulse-line)
+  :init
+  (custom-set-faces
+   '(pulse-highlight-start-face ((t (:inherit region))))
+   '(pulse-highlight-face ((t (:inherit region)))))
+
+  (defun eat/pulse-momentary-line (&rest _)
+    "Pulse the current line."
+    (pulse-momentary-highlight-one-line (point)))
+
+  (defun eat/pulse-momentary (&rest _)
+    "Pulse the region or the current line."
+    (if (fboundp 'xref-pulse-momentarily)
+        (xref-pulse-momentarily)
+      (eat/pulse-momentary-line)))
+
+  (defun eat/recenter-and-pulse(&rest _)
+    "Recenter and pulse the region or the current line."
+    (recenter)
+    (eat/pulse-momentary))
+
+  (defun eat/recenter-and-pulse-line (&rest _)
+    "Recenter and pulse the current line."
+    (recenter)
+    (eat/pulse-momentary-line))
+
+  (dolist (cmd '(recenter-top-bottom
+                 other-window windmove-do-window-select
+                 pager-page-down pager-page-up))
+    (advice-add cmd :after #'eat/pulse-momentary-line))
+
+  (dolist (cmd '(pop-to-mark-command
+                 pop-global-mark
+                 compile-goto-error
+                 goto-last-change))
+    (advice-add cmd :after #'eat/recenter-and-pulse)))
+#+end_src
+
+** default-text-scale
+#+begin_src elisp
+(eat-package default-text-scale
+  :straight t
+  :init
+  (global-set-key (kbd "C-x C-=") #'default-text-scale-increase)
+  (global-set-key (kbd "C-x C--") #'default-text-scale-decrease))
+#+end_src
+** avy
+#+begin_src elisp
+(eat-package avy
+  :straight t
+  :init
+  (global-set-key (kbd "C-'") #'avy-goto-char-timer)
+  :config
+  (setq avy-background t
+        avy-style 'pre))
+#+end_src
 
 * Tools
 ** Translate
+*** go-translate
 #+begin_src elisp
-(eat-package fanyi
-  :straight (fanyi :host github :repo "condy0919/fanyi.el")
-  :hook (fanyi-mode-hook . visual-line-mode)
-  :init
-  (setq fanyi-verbose nil)
-  (global-set-key (kbd "C-c Y") 'fanyi-dwim))
-
 (eat-package go-translate
   :straight t
   :init
@@ -2602,8 +1841,17 @@ Need rime module.
                                 :engines (list (gts-bing-engine) (gts-google-rpc-engine))
                                 :render (gts-buffer-render))))
 #+end_src
+*** fanyi
+#+begin_src emacs-lisp
+(eat-package fanyi
+  :straight (fanyi :host github :repo "condy0919/fanyi.el")
+  :hook (fanyi-mode-hook . visual-line-mode)
+  :init
+  (setq fanyi-verbose nil)
+  (global-set-key (kbd "C-c Y") 'fanyi-dwim))
+#+end_src
 
-** Help
+** ghelp
 #+begin_src elisp
 (eat-package ghelp
   :straight (ghelp :host github :repo "casouri/ghelp")
@@ -2621,16 +1869,6 @@ Need rime module.
   (global-set-key (kbd "C-h o") #'ghelp-describe-elisp)
   :config
   (global-set-key (kbd "C-h r") #'ghelp-resume))
-#+end_src
-** Avy
-#+begin_src elisp
-(eat-package avy
-  :straight t
-  :init
-  (global-set-key (kbd "C-'") #'avy-goto-char-timer)
-  :config
-  (setq avy-background t
-        avy-style 'pre))
 #+end_src
 * Completion
 ** isearch
@@ -2913,111 +2151,16 @@ Need =ripgrep=.
   (let ((inhibit-message t))
     (yas-reload-all)))
 #+end_src
-* Project And Session
-** project.el
-#+begin_src elisp
-(eat-package project
-  :init
-  (defun eat/project-name ()
-    (file-name-nondirectory
-     (directory-file-name
-      (project-root
-       (project-current)))))
-
-  ;; do not remember tramp project
-  (defun eat/project-remember-advice (fn pr &optional no-write)
-    (let* ((remote? (file-remote-p (project-root pr)))
-           (no-write (if remote? t no-write)))
-      (funcall fn pr no-write)))
-  (advice-add 'project-remember-project :around
-              'eat/project-remember-advice)
-
-  :config
-  (defun eat/project-files-in-directory (dir)
-    "Use `fd' to list files in DIR."
-    (let* ((default-directory dir)
-           (localdir (file-local-name (expand-file-name dir)))
-           (command (format "fd -c never -H -t f -0 . %s" localdir)))
-      (project--remote-file-names
-       (sort (split-string (shell-command-to-string command) "\0" t)
-             #'string<))))
-
-  ;; use fd in `project-find-file'
-  (when (executable-find "fd")
-    (cl-defmethod project-files ((project (head local)) &optional dirs)
-      "Override `project-files' to use `fd' in local projects."
-      (mapcan #'eat/project-files-in-directory
-              (or dirs (list (project-root project))))))
-
-  (defun eat/project-try-local (dir)
-    "Determine if DIR is a non-Git project."
-    (catch 'ret
-      (let ((pr-flags '((".project")
-                        ("go.mod" "Cargo.toml" "project.clj" "pom.xml" "package.json") ;; higher priority
-                        ("Makefile" "README.org" "README.md"))))
-        (dolist (current-level pr-flags)
-          (dolist (f current-level)
-            (when-let ((root (locate-dominating-file dir f)))
-              (throw 'ret (cons 'local root))))))))
-  (cl-defmethod project-root ((project (head local)))
-    (cdr project))
-  (add-to-list 'project-find-functions #'eat/project-try-local t))
-#+end_src
-** tab bar
-#+begin_src elisp
-(eat-package tab-bar
-  :init
-  (setq tab-bar-border nil
-        tab-bar-close-button nil
-        tab-bar-back-button nil
-        tab-bar-new-button nil
-        tab-bar-show nil
-        tab-bar-format '(tab-bar-format-tabs)
-        tab-bar-tab-name-format-function 'eat/tab-bar-tab-format-function
-        tab-bar-separator ""
-        tab-bar-new-tab-choice "*scratch*"
-        tab-bar-tab-name-truncated-max 10)
-
-  (defun eat/tab-bar-switch-project ()
-    "Switch to project in a new tab, project name will be used as tab name.
-
-No tab will created if the command is cancelled."
-    (interactive)
-    (let (succ)
-      (unwind-protect
-          (progn
-            (tab-bar-new-tab)
-            (call-interactively #'project-switch-project)
-            (when-let ((proj (project-root (project-current))))
-              (tab-bar-rename-tab (format "%s" (file-name-nondirectory (directory-file-name proj))))
-              (setq succ t)))
-        (unless succ
-          (tab-bar-close-tab)))))
-
-  (defun eat/tab-bar-tab-format-function (tab i)
-    (let ((current-p (eq (car tab) 'current-tab)))
-      (propertize (concat
-                   "   "
-                   (alist-get 'name tab)
-                   "   ")
-                  'face
-                  (funcall tab-bar-tab-face-function tab))))
-  :config
-  (define-key tab-prefix-map (kbd ".") #'tab-bar-switch-to-recent-tab)
-  (define-key tab-prefix-map (kbd ",") #'tab-bar-rename-tab)
-  (define-key tab-prefix-map (kbd "l") #'eat/tab-bar-switch-project))
-#+end_src
-
 * Programming
 ** Built-in
-*** Line number
+*** display-line-numbers
 Disable by default.
 #+begin_src elisp
 (eat-package display-line-numbers
   :init
   (setq display-line-numbers-width 3))
 #+end_src
-*** TODO Hide show
+*** TODO hideshow
 - Seems have error message.
 - And to context-menu-mode.
 #+begin_src elisp
@@ -3059,7 +2202,7 @@ Disable by default.
 
   (setq hs-set-up-overlay #'hideshow-folded-overlay-fn))
 #+end_src
-*** TODO Xref
+*** TODO xref
 Use control-left-click to jump to defintions.
 Need ripgrep installed(check external program).
 Some function need emacs29(didn’t check emacs version).
@@ -3076,14 +2219,14 @@ Some function need emacs29(didn’t check emacs version).
         xref-show-definitions-function #'xref-show-definitions-completing-read))
 #+end_src
 *** Pair
-**** Insert
+**** elec-pair
 #+begin_src elisp
 (eat-package elec-pair
   :hook (prog-mode-hook . electric-pair-local-mode)
   :init
   (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
 #+end_src
-**** Show paren
+**** paren
 #+begin_src elisp
 (eat-package paren
   :init
@@ -3092,7 +2235,7 @@ Some function need emacs29(didn’t check emacs version).
         show-paren-when-point-inside-paren t
         show-paren-context-when-offscreen t))
 #+end_src
-*** Reslove git conflicts with smerge
+*** smerge-mode
 #+begin_src elisp
 (eat-package smerge-mode
   :hook (find-file-hook . (lambda ()
@@ -3115,7 +2258,7 @@ Some function need emacs29(didn’t check emacs version).
   :init
   (setq eldoc-idle-delay 1))
 #+end_src
-*** Show whitespace
+*** whitespace
 #+begin_src elisp
 (eat-package whitespace
   :hook
@@ -3128,7 +2271,7 @@ Some function need emacs29(didn’t check emacs version).
 (eat-package subword
   :hook (prog-mode-hook . subword-mode))
 #+end_src
-*** comment
+*** newcomment
 #+begin_src elisp
 (eat-package newcomment
   :init
@@ -3174,7 +2317,7 @@ Some function need emacs29(didn’t check emacs version).
   (add-to-list 'eglot-server-programs
                '(sql-mode . ("sqls" "-config" "~/.config/sqls/config.yaml"))))
 #+end_src
-*** lsp-bridge                                                       :deps:
+*** TODO lsp-bridge                                                  :deps:
 Need a lot...
 
 #+begin_src elisp
@@ -3263,7 +2406,7 @@ When expand snippet, try complete if there's acm cond, or run `yas-next-field-or
                `(flymake-mode (" [" sekiro-flymake-mode-line-format "] "))))
 #+end_src
 
-** Citre                                                              :deps:
+** citre                                                              :deps:
 Need =universal-ctags= and =global=.
 
 #+begin_src elisp
@@ -3305,7 +2448,7 @@ Need =universal-ctags= and =global=.
     (setenv "GTAGSCONF" (concat (getenv "HOME") "/.globalrc"))
     (setenv "GTAGSLABEL" "native-pygments")))
 #+end_src
-** Code Format                                                        :deps:
+** apheleia                                                        :deps:
 Need =goimports=.
 
 #+begin_src elisp
@@ -3332,9 +2475,38 @@ Need =goimports=.
    dumb-jump-aggressive t
    dumb-jump-selector 'completing-read))
 #+end_src
+** puni
+#+begin_src emacs-lisp
+(eat-package puni
+  :straight (puni :host github :repo "AmaiKinono/puni")
+  :hook
+  ((emacs-lisp-mode-hook scheme-mode-hook clojure-mode-hook)
+   . puni-mode)
+  :config
+  (define-key puni-mode-map (kbd "M-r") 'puni-splice)
+  (define-key puni-mode-map (kbd "C-(") 'puni-slurp-backward)
+  (define-key puni-mode-map (kbd "C-)") 'puni-slurp-forward)
+  (define-key puni-mode-map (kbd "C-{") 'puni-barf-backward)
+  (define-key puni-mode-map (kbd "C-}") 'puni-barf-forward))
+#+end_src
+** imenu-list
+#+begin_src emacs-lisp
+(eat-package imenu-list
+  :straight t
+  :hook
+  (imenu-list-major-mode-hook . (lambda ()
+                                  (setq-local header-line-format nil)))
+  :init
+  (defun +imenu-scale-font-size ()
+    (face-remap-add-relative 'default :height 0.8))
+  (add-hook 'imenu-list-major-mode-hook #'+imenu-scale-font-size)
+  (setq imenu-list-auto-resize t
+        imenu-list-mode-line-format nil))
+#+end_src
 ** Lang
-*** Golang
-#+begin_src elisp
+*** Go
+**** Install deps
+#+begin_src emacs-lisp
 ;; Install or update tools
 (defvar go--tools '("golang.org/x/tools/gopls"
                     "golang.org/x/tools/cmd/goimports"
@@ -3364,38 +2536,60 @@ Need =goimports=.
          (if (= 0 status)
              (message "Installed %s" pkg)
            (message "Failed to install %s: %d" pkg status)))))))
-
+#+end_src
+**** go-mode
+#+begin_src emacs-lisp
 (eat-package go-mode
   :straight t
   :init
   (setq gofmt-command "goimports"
         gofmt-show-errors nil)
   :hook
-  ;; HACK use `apheleia' instead
+  ;; Use `apheleia' to format code.
   ;; (before-save-hook . gofmt-before-save)
   (go-test-mode-hook . visual-line-mode))
 
-(eat-package gotest
-  :straight t
-  :after go-mode
-  :init
-  (setq go-test-verbose t
-        ;; do not cache test
-        go-test-args "-count=1")
-  :config
-  (define-key go-mode-map (kbd "C-c t f") #'go-test-current-file)
-  (define-key go-mode-map (kbd "C-c t t") #'go-test-current-test)
-  (define-key go-mode-map (kbd "C-c t j") #'go-test-current-project)
-  (define-key go-mode-map (kbd "C-c t b") #'go-test-current-benchmark)
-  (define-key go-mode-map (kbd "C-c t c") #'go-test-current-coverage)
-  (define-key go-mode-map (kbd "C-c t x") #'go-run))
+(eat-package go-guru :straight t)
+(eat-package go-rename :straight t)
+#+end_src
 
+**** flymake-go-staticcheck
+#+begin_src emacs-lisp
+(eat-package flymake-go-staticcheck
+  :straight t
+  :init
+  (defun eat/flymake-go-staticcheck-enable ()
+    "Enable flymake-go-staticcheck for all go buffer.
+Call `flymake-go-staticcheck-enable' interactive will only
+enable this in current buffer, add to `go-mode-hook' to make
+it enable on all go buffer."
+    (add-hook 'go-mode-hook #'flymake-go-staticcheck-enable))
+  (defun eat/flymake-go-staticcheck-disable ()
+    (add-hook 'go-mode-hook #'flymake-go-staticcheck-disable)))
+#+end_src
+**** go-gen-test
+#+begin_src emacs-lisp
 (eat-package go-gen-test
   :straight t
   :after go-mode
   :config
   (define-key go-mode-map (kbd "C-c t g") #'go-gen-test-dwim))
+#+end_src
+**** go-test
+#+begin_src emacs-lisp
+(eat-package gotest
+  :straight t
+  :after go-mode
+  :init
+  (setq go-test-verbose t
+        ;; Do not cache test result.
+        go-test-args "-count=1")
+  :config
+  (define-key go-mode-map (kbd "C-c t t") #'go-test-current-test))
+#+end_src
 
+**** go-tag
+#+begin_src emacs-lisp
 (eat-package go-tag
   :straight t
   :after go-mode
@@ -3404,13 +2598,19 @@ Need =goimports=.
   :config
   (define-key go-mode-map (kbd "C-c t a") #'go-tag-add)
   (define-key go-mode-map (kbd "C-c t r") #'go-tag-remove))
+#+end_src
 
-(eat-package go-fill-struct :straight t)
-(eat-package go-guru :straight t)
-(eat-package go-rename :straight t)
-(eat-package go-impl :straight t)
+**** go-dlv
+#+begin_src emacs-lisp
 (eat-package go-dlv :straight t)
-(eat-package flymake-go-staticcheck :straight t)
+#+end_src
+**** go-fill-struct
+#+begin_src emacs-lisp
+(eat-package go-fill-struct :straight t)
+#+end_src
+**** go-impl
+#+begin_src emacs-lisp
+(eat-package go-impl :straight t)
 #+end_src
 *** Clojure
 #+begin_src elisp
@@ -3468,34 +2668,6 @@ Need =goimports=.
 (eat-package sql
   :init
   (setq sql-mysql-login-params '(user password server database port)))
-#+end_src
-** puni
-#+begin_src emacs-lisp
-(eat-package puni
-  :straight (puni :host github :repo "AmaiKinono/puni")
-  :hook
-  ((emacs-lisp-mode-hook scheme-mode-hook clojure-mode-hook)
-   . puni-mode)
-  :config
-  (define-key puni-mode-map (kbd "M-r") 'puni-splice)
-  (define-key puni-mode-map (kbd "C-(") 'puni-slurp-backward)
-  (define-key puni-mode-map (kbd "C-)") 'puni-slurp-forward)
-  (define-key puni-mode-map (kbd "C-{") 'puni-barf-backward)
-  (define-key puni-mode-map (kbd "C-}") 'puni-barf-forward))
-#+end_src
-** imenu-list
-#+begin_src emacs-lisp
-(eat-package imenu-list
-  :straight t
-  :hook
-  (imenu-list-major-mode-hook . (lambda ()
-                                  (setq-local header-line-format nil)))
-  :init
-  (defun +imenu-scale-font-size ()
-    (face-remap-add-relative 'default :height 0.8))
-  (add-hook 'imenu-list-major-mode-hook #'+imenu-scale-font-size)
-  (setq imenu-list-auto-resize t
-        imenu-list-mode-line-format nil))
 #+end_src
 * Application
 ** App Launcher
@@ -4397,6 +3569,7 @@ This is a variadic `cl-pushnew'."
 ** Load Path
 #+begin_src elisp
 (add-to-list 'load-path (expand-file-name "site-lisp" user-emacs-directory))
+(add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))
 #+end_src
 
 ** Form Feed
@@ -6686,4 +5859,843 @@ windows to numbers."
 (provide 'window-numbering)
 
 ;;; window-numbering.el ends here
+#+end_src
+
+** Themes
+*** nano
+#+begin_src elisp :tangle themes/nano-theme.el
+;;; nano-theme.el --- A theme split from nano-emacs  -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2021-2022 LiuBo
+
+;; Author: LiuBo <https://github.com/404cn>
+;; Created: May 30, 2021
+;; Version: 1.0.0
+;; Keywords: theme
+;; Homepage: https://github.com/404cn/nano-theme.el
+;; Package-Requires: ((emacs "28.0.50"))
+
+;;
+;; This file is not part of GNU Emacs.
+
+;; This program is free software; you can redistribute it and/or
+;; modify it under the terms of the GNU General Public License
+;; as published by the Free Software Foundation; either version 3
+;; of the License, or (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
+
+
+;;; Commentary:
+
+;;; A theme split from nano-emacs.
+
+;;; Code:
+
+(deftheme nano "Theme split from nano-emacs")
+
+(defgroup nano-theme nil
+  "Options of nano theme."
+  :group 'faces)
+
+(defcustom nano-theme-light/dark 'light
+  "Nano theme uses light theme or dark theme?"
+  :type 'symbol
+  :group 'nano-theme)
+
+(defun nano-theme--light?dark (light dark)
+  "Determine using the LIGHT or the DARK color of nano-theme."
+  (if (eq nano-theme-light/dark 'light)
+      light
+    dark))
+(defalias '--l?d #'nano-theme--light?dark)
+
+(defun nano-theme-toggle ()
+  "Toggle between light/dark nano theme"
+  (interactive)
+  (if (eq nano-theme-light/dark 'light)
+      (setq nano-theme-light/dark 'dark)
+    (setq nano-theme-light/dark 'light))
+  (mapc #'disable-theme custom-enabled-themes)
+  (load-theme 'nano))
+
+(let ((foreground (--l?d "#37474F" "#ECEFF4"))
+      (background (--l?d "#FFFFFF" "#2E3440"))
+      (highlight  (--l?d "#FAFAFA" "#3B4252"))
+      (critical   (--l?d "#FF6F00" "#EBCB8B"))
+      (salient    (--l?d "#673AB7" "#81A1C1"))
+      (strong     (--l?d "#263238" "#FFFFFF"))
+      (popout     (--l?d "#FFAB91" "#D08770"))
+      (subtle     (--l?d "#ECEFF1" "#434C5E"))
+      (faded      (--l?d "#90A4AE" "#677691")))
+  (custom-theme-set-faces
+   `nano
+   ;; Basic
+   `(default                    ((((type tty)))
+                                 (((type graphic)) :background ,background :foreground ,foreground)))
+   `(shadow                     ((t (:foreground ,faded))))
+   `(link                       ((t (:foreground ,salient))))
+   `(link-visited               ((t (:foreground ,salient))))
+   `(highlight                  ((t (:background ,highlight))))
+   `(match                      ((t (:foreground ,popout))))
+   `(isearch                    ((t (:background ,subtle :box (:line-width (-1 . -1))))))
+   `(lazy-highlight             ((t (:background ,subtle :box (:line-width (-1 . -1))))))
+   `(warning                    ((t (:foreground ,popout))))
+   `(success                    ((t (:foreground ,faded))))
+   `(cursor                     ((t (:background ,foreground))))
+   `(fringe                     ((t (:foreground ,faded))))
+   `(show-paren-match           ((t (:box (:line-width (-1 . -1))))))
+   `(hl-line                    ((t (:background ,highlight))))
+   `(region                     ((t (:background ,subtle))))
+   `(line-number                ((t (:foreground ,faded))))
+   `(line-number-current-line   ((t (:foreground ,strong))))
+   `(minibuffer-prompt          ((t (:foreground ,strong))))
+   `(vertical-border            ((t (:foreground ,subtle))))
+   `(window-divider             ((t (:foreground ,subtle))))
+   `(window-divider-first-pixel ((t (:foreground ,subtle))))
+   `(window-divider-last-pixel  ((t (:foreground ,subtle))))
+   `(fill-column-indicator      ((t (:foreground ,strong))))
+   `(trailing-whitespace        ((t (:background ,subtle))))
+   `(completions-common-part    ((t (:foreground ,faded))))
+   `(secondary-selection        ((t (:background ,subtle))))
+   `(header-line                ((t ( :background ,subtle :foreground ,strong
+                                      :box (:line-width 2 :style released-button)))))
+
+   ;; Font Locks
+   `(font-lock-comment-face           ((t (:foreground ,faded))))
+   `(font-lock-comment-delimiter-face ((t (:foreground ,faded))))
+   `(font-lock-keyword-face           ((t (:foreground ,salient))))
+   `(font-lock-string-face            ((t (:foreground ,popout))))
+   `(font-lock-doc-face               ((t (:foreground ,faded))))
+   `(font-lock-builtin-face           ((t ())))
+   `(font-lock-type-face              ((t ())))
+   `(font-lock-variable-name-face     ((t ())))
+   `(font-lock-constant-face          ((t (:foreground ,salient))))
+   `(font-lock-function-name-face     ((t (:foreground ,strong :underline t))))
+   `(font-lock-warning-face           ((t ())))
+   `(font-lock-preprocessor-face      ((t ())))
+
+   ;; Eldoc
+   `(eldoc-highlight-function-argument ((t (:foreground ,strong :bold t))))
+
+   ;; Outline
+   `(outline-1 ((t (:foreground ,foreground :bold t :slant italic))))
+   `(outline-2 ((t (:inherit outline-1))))
+   `(outline-3 ((t (:inherit outline-1))))
+   `(outline-4 ((t (:inherit outline-1))))
+   `(outline-5 ((t (:inherit outline-1))))
+   `(outline-6 ((t (:inherit outline-1))))
+   `(outline-7 ((t (:inherit outline-1))))
+   `(outline-8 ((t (:inherit outline-1))))
+
+   ;; magit
+   `(magit-diff-hunk-heading ((t (:background ,subtle))))
+
+   ;; Agenda
+   `(org-agenda-calendar-event   ((t (:foreground ,foreground :background ,background))))
+   `(org-agenda-calendar-sexp    ((t (:foreground ,salient))))
+   `(org-agenda-clocking         ((t (:foreground ,faded))))
+   `(org-agenda-column-dateline  ((t (:foreground ,faded))))
+   `(org-agenda-current-time     ((t (:foreground ,foreground :bold t))))
+   `(org-agenda-date             ((t (:foreground ,salient))))
+   `(org-agenda-date-today       ((t (:foreground ,salient :bold t))))
+   `(org-agenda-date-weekend     ((t (:foreground ,faded))))
+   `(org-agenda-diary            ((t (:foreground ,faded))))
+   `(org-agenda-dimmed-todo-face ((t (:foreground ,faded))))
+   `(org-agenda-done             ((t (:foreground ,faded))))
+   `(org-agenda-filter-category  ((t (:foreground ,faded))))
+   `(org-agenda-filter-effort    ((t (:foreground ,faded))))
+   `(org-agenda-filter-regexp    ((t (:foreground ,faded))))
+   `(org-agenda-filter-tags      ((t (:foreground ,faded))))
+   `(org-agenda-restriction-lock ((t (:foreground ,faded))))
+   `(org-agenda-structure        ((t (:foreground ,foreground :bold t))))
+
+   ;; Notmuch
+   `(notmuch-tag-face             ((t (:foreground ,faded))))
+   `(notmuch-search-date          ((t (:foreground ,faded))))
+   `(notmuch-tag-deleted          ((t (:strike-through ,popout))))
+   `(notmuch-tag-added            ((t (:underline ,popout))))
+   `(notmuch-wash-cited-text      ((t (:foreground ,faded))))
+   `(notmuch-message-summary-face ((t (:foreground ,strong :bold t :background ,subtle))))
+
+   ;; Mode Line
+   `(mode-line          ((t ( :background ,foreground :foreground ,background))))
+   `(mode-line-inactive ((t ( :background ,faded :foreground ,background))))
+
+   ;; tab-bar
+   `(tab-bar                    ((t (:background ,background :foreground ,foreground))))
+   `(tab-bar-tab-group-current  ((t ())))
+   `(tab-bar-tab                ((t (:inverse-video t :bold t))))
+   `(tab-bar-tab-group-inactive ((t ())))
+   `(tab-bar-tab-inactive       ((t (:inherit shadow))))
+
+   ;; solaire Mode
+   `(solaire-default-face             ((t (:inherit default :background ,highlight))))
+
+   ;; Orderless
+   `(orderless-match-face-0           ((t (:foreground ,strong :bold t))))
+   `(orderless-match-face-1           ((t (:foreground ,strong :bold t))))
+   `(orderless-match-face-2           ((t (:foreground ,strong :bold t))))
+   `(orderless-match-face-3           ((t (:foreground ,strong :bold t))))
+
+   ;; Eshell
+   `(eshell-prompt                    ((t (:foreground ,popout :bold t))))
+
+   ;; telega
+   `(telega-msg-inline-reply ((t (:foreground ,faded))))
+   `(telega-msg-heading      ((t (:underline t))))
+
+   ;; which-func
+   `(which-func ((t (:foreground ,highlight))))
+
+   ;; Imenu-ist
+   `(imenu-list-entry-subalist-face-0 ((t (:foreground ,strong :weight bold :underline t))))
+   `(imenu-list-entry-subalist-face-1 ((t (:foreground ,salient :weight bold :underline t))))
+   `(imenu-list-entry-subalist-face-2 ((t (:foreground ,popout :weight bold :underline t))))
+   `(imenu-list-entry-subalist-face-3 ((t (:foreground ,critical :weight bold :underline t))))
+   `(imenu-list-entry-face-0          ((t (:foreground ,strong))))
+   `(imenu-list-entry-face-1          ((t (:foreground ,salient))))
+   `(imenu-list-entry-face-2          ((t (:foreground ,popout))))
+   `(imenu-list-entry-face-3          ((t (:foreground ,critical))))))
+
+;;;###autoload
+(and load-file-name
+     (boundp 'custom-theme-load-path)
+     (add-to-list 'custom-theme-load-path
+                  (file-name-as-directory
+                   (file-name-directory load-file-name))))
+
+(provide-theme 'nano)
+
+;;; nano-theme.el ends here
+#+end_src
+*** carbon
+#+begin_src elisp :tangle themes/carbon-theme.el
+;;; carbon-theme.el --- A minimal dark theme  -*- lexical-binding: t; -*-
+
+;; Author: Shi Tianshu
+;; Keywords: theme
+;; Package-Requires: ((emacs "28.0.50"))
+;; Version: 1.0.2
+
+;;
+;; This file is not part of GNU Emacs.
+
+;; This program is free software; you can redistribute it and/or
+;; modify it under the terms of the GNU General Public License
+;; as published by the Free Software Foundation; either version 3
+;; of the License, or (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
+
+
+;;; Commentary:
+
+;;; This is a minimal light theme.
+
+;;; Code:
+
+(deftheme carbon "A minimal light theme.")
+
+(defvar carbon-theme-header-scales '(1.0 1.0 1.0 1.0 1.0 1.0 1.0)
+  "Scales for headers.")
+
+(let ((bg "#202020")
+      (fg "#A0A0A0")
+      (cm "#707070")
+      (rg "#024347")
+      (hl "#2A2A2A")
+      (lh "#0DA59B")
+      (ss "#353535")
+      (kw "#EEEEEE")
+      (fn "#bfaa6b")
+      (st "#4b9e6b")
+      (str "#4a95b5")
+      (num "#9466a5")
+      (doc "#cc725b")
+      (cur "#EFEFEF")
+      (pop "#272727")
+      (tb "#000000"))
+  (custom-theme-set-faces
+   `carbon
+   ;; We don't specify default foreground/background in TTY.
+   `(default                        ((((type tty)))
+                                     (((type graphic)) :background ,bg :foreground ,fg)))
+   ;; Basics
+   `(cursor                         ((t (:background ,cur))))
+   `(region                         ((t (:background ,rg :extend nil))))
+   `(hl-line                        ((t (:background ,hl))))
+   `(fringe                         ((t (:background ,bg))))
+   `(show-paren-match               ((t (:background ,hl :box (:line-width (-1 . -1) :style nil)))))
+   `(highlight                      ((t (:inverse-video t))))
+   `(button                         ((t (:box (:line-width (-1 . -1))))))
+   `(vertical-border                ((t ())))
+   `(window-divider                 ((t (:foreground ,cm))))
+   `(window-divider-first-pixel     ((t (:foreground ,cm))))
+   `(window-divider-last-pixel      ((t (:foreground ,cm))))
+   `(line-number                    ((t (:foreground ,cm))))
+   `(line-number-current-line       ((t (:foreground ,fn :background ,hl))))
+   `(completions-common-part        ((t ())))
+   `(minibuffer-prompt              ((t ())))
+   `(lazy-highlight                 ((t (:foreground ,lh :underline t))))
+   `(compilation-info               ((t ())))
+   `(compilation-warning            ((t ())))
+   `(warning                        ((t ())))
+   `(match                          ((t (:inverse-video t))))
+   `(secondary-selection            ((t (:background ,ss :extend nil))))
+   `(help-key-binding               ((t (:bold t))))
+   `(shadow                         ((t (:foreground ,cm))))
+
+   ;; ISearch
+   `(isearch                        ((t (:inverse-video t))))
+   `(isearch-fail                   ((t (:inverse-video t))))
+
+   ;; Font Locks
+   `(font-lock-comment-face         ((t (:foreground ,doc))))
+   `(font-lock-comment-delimiter-face  ((t (:inherit font-lock-comment-face))))
+   `(font-lock-string-face          ((t (:foreground ,str))))
+   `(font-lock-doc-face             ((t (:foreground ,doc))))
+   `(font-lock-builtin-face         ((t ())))
+   `(font-lock-type-face            ((t ())))
+   `(font-lock-variable-name-face   ((t ())))
+   `(font-lock-keyword-face         ((((type tty)) (:bold t))
+                                     (((type graphic)) (:foreground ,kw))))
+   `(font-lock-constant-face        ((t (:foreground ,st))))
+   `(font-lock-function-name-face   ((t (:foreground ,fn))))
+   `(font-lock-warning-face         ((t ())))
+   `(font-lock-preprocessor-face    ((t ())))
+   `(error                          ((t (:background "red" :foreground ,fn))))
+
+   `(highlight-numbers-number       ((t (:foreground ,num))))
+
+   ;; shell
+   `(sh-quoted-exec                 ((t ())))
+
+   ;; IMenu
+   `(imenu-list-entry-face-0          ((t ())))
+   `(imenu-list-entry-subalist-face-0 ((t (:bold t))))
+
+   ;; Mode Line
+   `(tab-line                       ((t ())))
+   `(mode-line                      ((t (:background ,fg :foreground ,bg))))
+   `(mode-line-inactive             ((t (:background ,cm :foreground ,hl))))
+   `(header-line                    ((t ())))
+   `(header-line-inactive           ((t ())))
+
+   ;; Company
+   `(company-tooltip-common         ((t ())))
+   `(company-tooltip-common-selection ((t ())))
+   `(company-tooltip                ((t (:background ,pop))))
+   `(company-tooltip-search         ((t ())))
+   `(company-tooltip-selection      ((t (:inverse-video t))))
+   `(company-tooltip-annotation     ((t ())))
+   `(company-scrollbar-bg           ((t (:background ,cm))))
+   `(company-scrollbar-fg           ((t (:background ,fg))))
+   `(company-template-field         ((t (:inherit yas-field-highlight-face))))
+
+   ;; Yasnippet
+   `(yas-field-highlight-face       ((t (:underline t))))
+
+   ;; Meow
+   `(meow-beacon-indicator          ((t (:bold t))))
+   `(meow-keypad-indicator          ((t (:bold t))))
+   `(meow-insert-indicator          ((t (:bold t))))
+   `(meow-normal-indicator          ((t (:bold t))))
+   `(meow-motion-indicator          ((t (:bold t))))
+   `(meow-keypad-cursor             ((t (:background ,cur))))
+   `(meow-insert-cursor             ((t (:background ,cur))))
+   `(meow-normal-cursor             ((t (:background ,cur))))
+   `(meow-motion-cursor             ((t (:background ,cur))))
+   `(meow-unknown-cursor            ((t (:background ,cur))))
+   `(meow-beacon-cursor             ((t (:background ,cur))))
+
+   ;; colorful paren
+   `(colorful-round           ((t ())))
+   `(colorful-square          ((t (:foreground ,str))))
+   `(colorful-curly           ((t (:foreground ,st))))
+   `(colorful-semicolon       ((t (:foreground ,fn))))
+
+   ;; Cider
+   `(cider-result-overlay-face      ((t (:inverse-video t))))
+   `(cider-repl-stderr-face         ((t ())))
+   `(cider-repl-stdout-face         ((t (:foreground "gray60"))))
+   `(cider-test-error-face          ((t (:foreground "yellow" :inverse-video t))))
+
+   ;; Clojure
+   `(clojure-character-face         ((t ())))
+
+   ;; Magit
+   `(magit-branch-local                ((t (:foreground ,st))))
+   `(magit-branch-remote               ((t (:foreground ,fn))))
+   `(magit-header-line                 ((t ())))
+   `(magit-head                        ((t ())))
+   `(magit-section-highlight           ((t (:background ,hl))))
+   `(magit-section-heading             ((t ())))
+   `(magit-section-selection           ((t ())))
+   `(magit-diff-removed                ((t (:background "#311"))))
+   `(magit-diff-removed-highlight      ((t (:background "#311"))))
+   `(magit-diff-added                  ((t (:background "#131"))))
+   `(magit-diff-added-highlight        ((t (:background "#131"))))
+   `(magit-diff-context-highlight      ((t (:background ,hl :foreground ,fg))))
+
+   ;; ;; SMerge
+   ;; `(smerge-refined-added           ((t (:background "#253325"))))
+   ;; `(smerge-lower                   ((t (:background "#173017"))))
+   ;;
+   ;; Diff-hl
+   `(diff-hl-insert                 ((t (:foreground ,cm :background ,cm))))
+   `(diff-hl-change                 ((t (:foreground ,hl :background ,hl))))
+   `(diff-hl-delete                 ((t (:foreground ,fg :background ,fg))))
+
+   `(eshell-prompt                  ((t (:bold t))))
+   ;;
+   ;; ;; Term
+   ;; `(term-color-blue                ((t (:foreground ,blue :background ,blue))))
+   ;; `(term-color-green               ((t (:foreground ,green :background ,green))))
+   ;; `(term-color-red                 ((t (:foreground ,red :background ,red))))
+   ;;
+   ;; ;; Popup
+   ;; `(popup-tip-face                 ((t (:background ,bg+4 :foreground ,fg))))
+   ;; `(popup-isearch-match            ((t (:background "#CFA300" :foreground "black"))))
+   ;;
+   ;; `(tooltip                        ((t ())))
+   ;; `(dired-directory                ((t (:foreground ,light-purple))))
+   ;; `(web-mode-html-attr-name-face   ((t ())))
+   ;; `(web-mode-html-tag-face         ((t ())))
+   ;;
+   ;; Emacs Rime
+   `(rime-preedit-face              ((t (:underline t))))
+   `(rime-cursor-face               ((t (:inherit font-lock-constant-face))))
+   `(rime-indicator-face            ((t ())))
+   `(rime-indicator-dim-face        ((t ())))
+   `(rime-candidate-num-face        ((t ())))
+   `(rime-comment-face              ((t ())))
+   `(rime-code-face                 ((t (:bold t))))
+   `(rime-default-face              ((t ())))
+   `(rime-highlight-candidate-face  ((t ())))
+
+   ;;
+   ;; ;; Web Mode
+   `(web-mode-function-call-face    ((t ())))
+   `(web-mode-function-name-face    ((t ())))
+   `(web-mode-html-tag-bracket-face ((t (:inherit parenthesis))))
+   `(web-mode-symbol-face           ((t ())))
+   `(css-selector                   ((t ())))
+   ;;
+   ;; Markdown
+   `(markdown-header-face-1         ((t (:underline t :height ,(nth 0 carbon-theme-header-scales)))))
+   `(markdown-header-face-2         ((t (:underline t :height ,(nth 1 carbon-theme-header-scales)))))
+   `(markdown-header-face-3         ((t (:underline t :height ,(nth 2 carbon-theme-header-scales)))))
+   `(markdown-header-face-4         ((t (:underline t :height ,(nth 3 carbon-theme-header-scales)))))
+   `(markdown-header-face-5         ((t (:underline t :height ,(nth 4 carbon-theme-header-scales)))))
+   `(markdown-header-face-6         ((t (:underline t :height ,(nth 5 carbon-theme-header-scales)))))
+   `(markdown-header-face-7         ((t (:underline t :height ,(nth 6 carbon-theme-header-scales)))))
+   ;;
+   ;; ;; Telega
+   `(telega-entity-type-code        ((t ())))
+   `(telega-msg-heading             ((t ())))
+   `(telega-msg-self-title          ((t (:foreground ,fn))))
+   `(telega-unmuted-count           ((t ())))
+   ;;
+   ;; ;; Org-mode
+   `(org-document-title             ((t (:bold t :height ,(nth 0 carbon-theme-header-scales)))))
+   `(org-link                       ((t (:underline t))))
+   `(org-document-title             ((t ())))
+   `(org-code                       ((t (:inherit font-lock-constant-face))))
+   `(org-level-1                    ((t (:inherit font-lock-string-face :height ,(nth 0 carbon-theme-header-scales)))))
+   `(org-level-2                    ((t (:inherit font-lock-function-name-face :height ,(nth 1 carbon-theme-header-scales)))))
+   `(org-level-3                    ((t (:inherit font-lock-keyword-face :height ,(nth 2 carbon-theme-header-scales)))))
+   `(org-level-4                    ((t (:height ,(nth 3 carbon-theme-header-scales)))))
+   `(org-level-5                    ((t (:height ,(nth 4 carbon-theme-header-scales)))))
+   `(org-level-6                    ((t (:height ,(nth 5 carbon-theme-header-scales)))))
+   `(org-level-7                    ((t (:height ,(nth 6 carbon-theme-header-scales)))))
+   ;;
+   ;; ;; Treemacs
+   ;; `(treemacs-root-face             ((t (:inherit font-lock-function-name-face :height 1.4 :underline t))))
+   `(fill-column-indicator          ((t (:foreground ,cm))))
+   `(scroll-bar                     ((t (:foreground ,fg))))
+   `(parenthesis                    ((t (:foreground ,cm))))
+   `(eldoc-box-body                 ((t (:background ,pop :inherit variable-pitch))))
+
+   `(flycheck-warning               ((t (:underline (:style wave :color ,cm)))))
+   `(flycheck-error                 ((t (:underline (:style wave :color ,st)))))
+   `(flymake-warning                ((t (:underline (:style wave :color ,st)))))
+   `(flymake-error                  ((t (:underline (:style wave :color ,st)))))
+   `(flymake-note                   ((t (:underline (:style wave :color ,cm)))))
+
+   `(wgrep-face                     ((t (:underline ,st))))
+
+   `(anzu-mode-line                 ((t (:foreground ,bg :background ,fg))))
+   `(erc-nick-default-face          ((t (:inherit font-lock-keyword-face))))
+   `(erc-input-face                 ((t (:inherit font-lock-function-name-face))))
+   `(erc-timestamp-face             ((t (:inherit font-lock-constant-face))))
+   `(erc-notice-face                ((t (:inherit font-lock-comment-face))))
+
+   `(tab-bar                        ((t (:background ,fg :foreground ,bg))))
+   `(tab-bar-tab                    ((t (:inverse-video t :bold t))))
+   `(tab-bar-tab-inactive           ((t ())))
+
+   `(ansi-color-blue                ((t (:foreground "#169edd"))))
+   `(ansi-color-bright-blue         ((t (:foreground "#169edd"))))
+   `(yascroll:thumb-fringe          ((t (:foreground ,cm :background ,cm))))
+   `(yascroll:thumb-text-area       ((t (:foreground ,cm :background ,cm))))
+
+   `(embark-keybinding              ((t (:inherit font-lock-constant-face))))))
+
+(and load-file-name
+     (boundp 'custom-theme-load-path)
+     (add-to-list 'custom-theme-load-path
+                  (file-name-as-directory
+                   (file-name-directory load-file-name))))
+
+(provide-theme 'carbon)
+
+;;; carbon-theme.el ends here
+#+end_src
+*** default
+#+begin_src elisp :tangle themes/default-theme.el
+(deftheme default "Emacs default theme, better version.")
+
+(custom-theme-set-faces
+ `default
+ ;; basic
+ `(default                    ((((type tty)))
+                               (((type graphic)) :background "#F5F5F5")))
+ `(fringe ((t (:inherit default))))
+ `(cursor ((t (:background "black"))))
+ `(highlight ((t (:background "#CFD8DC"))))
+ '(minibuffer-prompt ((t ())))
+
+ ;; Font Locks
+ `(font-lock-comment-face           ((t (:foreground "#90A4AE" :slant italic))))
+ `(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
+ `(font-lock-doc-face               ((t (:inherit font-lock-comment-face))))
+ `(font-lock-string-face            ((t ())))
+ `(font-lock-builtin-face           ((t ())))
+ `(font-lock-type-face              ((t ())))
+ `(font-lock-variable-name-face     ((t ())))
+ `(font-lock-keyword-face           ((t ())))
+ `(font-lock-constant-face          ((t ())))
+ `(font-lock-function-name-face     ((t (:bolt t :underline t))))
+ `(font-lock-warning-face           ((t (:inherit warning))))
+ `(font-lock-preprocessor-face      ((t ())))
+
+ ;; org-mode
+ `(org-level-1 ((t ())))
+ `(org-level-2 ((t (:inherit org-level-1))))
+ `(org-level-3 ((t (:inherit org-level-1))))
+ `(org-level-4 ((t (:inherit org-level-1))))
+ `(org-level-5 ((t (:inherit org-level-1))))
+ `(org-level-6 ((t (:inherit org-level-1))))
+ `(org-level-7 ((t (:inherit org-level-1))))
+ `(org-level-8 ((t (:inherit org-level-1))))
+
+ ;; mode-line
+ `(mode-line          ((t (:foreground "black" :background "grey75"))))
+ `(mode-line-inactive ((t (:foreground "#535c65" :background "#e3e5e8" :weight light))))
+ )
+
+(and load-file-name
+     (boundp 'custom-theme-load-path)
+     (add-to-list 'custom-theme-load-path
+                  (file-name-as-directory
+                   (file-name-directory load-file-name))))
+
+(provide-theme 'default)
+#+end_src
+*** grayscale
+#+begin_src elisp :tangle themes/grayscale-theme.el
+;;; grayscale-theme.el --- A gray light theme  -*- lexical-binding: t; -*-
+
+;; Author: Shi Tianshu
+;; Keywords: theme
+;; Package-Requires: ((emacs "28.0.50"))
+;; Version: 1.0.2
+
+;;
+;; This file is not part of GNU Emacs.
+
+;; This program is free software; you can redistribute it and/or
+;; modify it under the terms of the GNU General Public License
+;; as published by the Free Software Foundation; either version 3
+;; of the License, or (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
+
+
+;;; Commentary:
+
+;;; This is a minimal gray light theme.
+
+;;; Code:
+
+(deftheme grayscale "A minimal light theme.")
+
+(defvar grayscale-theme-header-scales '(1.4 1.4 1.2 1.0 1.0 1.0 1.0)
+  "Scales for headers.")
+
+(setq awesome-tray-mode-line-active-color "#353535"
+      awesome-tray-mode-line-inactive-color "#a9bdb5")
+
+(let ((bg "#c4d3cd")
+      (fg "#353535")
+      (kw "#000000")
+      (cm "#61726b")
+      (ss "#96b0a5")
+      (hl "#a9bdb5")
+      (fn "#b6c6c0")
+      (cur "#202020"))
+  (custom-theme-set-faces
+   `grayscale
+   ;; We don't specify default foreground/background in TTY.
+   `(default                        ((((type tty)))
+                                     (((type graphic)) :background ,bg :foreground ,fg)))
+   ;; Basics
+   `(cursor                         ((t (:background ,cur))))
+   `(region                         ((t (:background ,hl))))
+   `(hl-line                        ((t)))
+   `(fringe                         ((t (:background ,bg))))
+   `(show-paren-match               ((t (:box (:line-width (-1 . -1))))))
+   `(highlight                      ((t (:inverse-video t))))
+   `(button                         ((t (:box (:line-width (-1 . -1))))))
+   `(vertical-border                ((t ())))
+   `(window-divider                 ((t (:foreground ,cm))))
+   `(window-divider-first-pixel     ((t (:foreground ,cm))))
+   `(window-divider-last-pixel      ((t (:foreground ,cm))))
+   `(line-number                    ((t (:foreground ,cm))))
+   `(line-number-current-line       ((t (:foreground ,fg))))
+   `(parenthesis                    ((t (:foreground ,fg))))
+   `(completions-common-part        ((t ())))
+   `(minibuffer-prompt              ((t ())))
+   `(lazy-highlight                 ((t (:foreground ,fg :box (:line-width (-1 . -1))))))
+   `(compilation-info               ((t ())))
+   `(compilation-warning            ((t ())))
+   `(warning                        ((t ())))
+   `(match                          ((t (:foreground ,fg :box (:line-width (-1 . -1))))))
+   `(secondary-selection            ((t (:background ,ss))))
+   `(help-key-binding               ((t ())))
+   `(shadow                         ((t (:foreground ,cm))))
+
+   ;; ISearch
+   `(isearch                        ((t (:inverse-video t))))
+   `(isearch-fail                   ((t (:inverse-video t))))
+
+   ;; Font Locks
+   `(font-lock-comment-face         ((t (:foreground ,cm :italic t))))
+   `(font-lock-comment-delimiter-face         ((t (:foreground ,cm :italic t))))
+   `(font-lock-string-face          ((t (:foreground ,cm))))
+   `(font-lock-doc-face             ((t (:foreground ,cm))))
+   `(font-lock-builtin-face         ((t ())))
+   `(font-lock-type-face            ((t ())))
+   `(font-lock-variable-name-face   ((t ())))
+   `(font-lock-keyword-face         ((t (:bold t))))
+   `(font-lock-constant-face        ((t (:italic t))))
+   `(font-lock-function-name-face   ((t (:background ,fn))))
+   `(font-lock-warning-face         ((t ())))
+   `(font-lock-preprocessor-face    ((t ())))
+
+   ;; shell
+   `(sh-quoted-exec                 ((t ())))
+
+   ;; IMenu
+   `(imenu-list-entry-face-0          ((t ())))
+   `(imenu-list-entry-subalist-face-0 ((t (:bold t))))
+
+   ;; Mode Line
+   `(tab-line                       ((t ())))
+   `(mode-line                      ((t (:inverse-video t))))
+   `(mode-line-inactive             ((t (:background ,hl))))
+   `(header-line                    ((t ())))
+   `(header-line-inactive           ((t ())))
+
+   ;; Company
+   `(company-tooltip-common         ((t ())))
+   `(company-tooltip-common-selection ((t (:bold t))))
+   `(company-tooltip                ((t (:background ,hl))))
+   `(company-tooltip-search         ((t ())))
+   `(company-tooltip-selection      ((t (:inverse-video t))))
+   `(company-tooltip-annotation     ((t ())))
+   `(company-scrollbar-bg           ((t (:background ,bg))))
+   `(company-scrollbar-fg           ((t (:background ,fg))))
+   `(company-template-field         ((t (:inherit yas-field-highlight-face))))
+
+   ;; Yasnippet
+   `(yas-field-highlight-face       ((t (:background ,hl))))
+
+   ;; Meow
+   `(meow-keypad-indicator          ((t (:bold t))))
+   `(meow-insert-indicator          ((t (:bold t))))
+   `(meow-normal-indicator          ((t (:bold t))))
+   `(meow-motion-indicator          ((t (:bold t))))
+   `(meow-beacon-indicator          ((t (:bold t))))
+   `(meow-keypad-cursor             ((t ())))
+   `(meow-insert-cursor             ((t ())))
+   `(meow-normal-cursor             ((t ())))
+   `(meow-motion-cursor             ((t ())))
+   `(meow-beacon-cursor             ((t ())))
+
+   ;; colorful paren
+   `(colorful-round           ((t (:foreground ,cm))))
+   `(colorful-square          ((t ())))
+   `(colorful-curly           ((t ())))
+
+   ;; Cider
+   `(cider-result-overlay-face      ((t (:inverse-video t))))
+   `(cider-repl-stderr-face         ((t (:bold t))))
+   `(cider-repl-stdout-face         ((t ())))
+
+   ;; Clojure
+   `(clojure-character-face         ((t ())))
+
+   ;; Magit
+   ;; `(magit-diff-file-heading-highlight ((t (:background ,bg+1))))
+   `(magit-branch-current              ((t (:box t :background ,hl))))
+   `(magit-branch-local                ((t (:background ,hl))))
+   `(magit-branch-remote               ((t (:background ,cm :foreground ,bg))))
+   `(magit-branch-remote-head          ((t (:box t :background ,cm :foreground ,bg))))
+   `(magit-header-line                 ((t (:bold t))))
+   `(magit-head                        ((t ())))
+   `(magit-section-highlight           ((t (:background ,hl))))
+   `(magit-section-heading             ((t (:bold t))))
+   `(magit-section-selection           ((t (:bold t))))
+   `(magit-diff-hunk-heading-highlight ((t (:inverse-video t))))
+   `(magit-diff-hunk-heading ((t (:foreground ,cm))))
+   `(magit-diff-removed             ((t ())))
+   `(magit-diff-added               ((t ())))
+   `(magit-diff-removed-highlight   ((t (:background ,hl))))
+   `(magit-diff-added-highlight     ((t (:background ,cm :foreground ,bg))))
+   `(magit-diff-highlight           ((t ())))
+   `(magit-diff-context-highlight   ((t ())))
+   ;;
+   ;; ;; SMerge
+   ;; `(smerge-refined-added           ((t (:background "#253325"))))
+   ;; `(smerge-lower                   ((t (:background "#173017"))))
+   ;;
+   ;; Diff-hl
+   `(diff-hl-insert                 ((t (:foreground ,cm :background ,cm))))
+   `(diff-hl-change                 ((t (:foreground ,hl :background ,hl))))
+   `(diff-hl-delete                 ((t (:foreground ,fg :background ,fg))))
+
+   `(eshell-prompt                  ((t (:bold t))))
+   ;;
+   ;; ;; Term
+   ;; `(term-color-blue                ((t (:foreground ,blue :background ,blue))))
+   ;; `(term-color-green               ((t (:foreground ,green :background ,green))))
+   ;; `(term-color-red                 ((t (:foreground ,red :background ,red))))
+   ;;
+   ;; ;; Popup
+   ;; `(popup-tip-face                 ((t (:background ,bg+4 :foreground ,fg))))
+   ;; `(popup-isearch-match            ((t (:background "#CFA300" :foreground "black"))))
+   ;;
+   `(tooltip                        ((t ())))
+   `(dired-directory                ((t (:bold t))))
+   `(web-mode-html-attr-name-face   ((t ())))
+   `(web-mode-html-tag-face         ((t ())))
+
+   ;; Emacs Rime
+   `(rime-preedit-face              ((t (:underline t))))
+   `(rime-cursor-face               ((t (:inherit font-lock-constant-face))))
+   `(rime-indicator-face            ((t ())))
+   `(rime-indicator-dim-face        ((t ())))
+   `(rime-candidate-num-face        ((t ())))
+   `(rime-comment-face              ((t (:inherit font-lock-comment))))
+   `(rime-code-face                 ((t (:bold t))))
+   `(rime-default-face              ((t ())))
+   `(rime-highlight-candidate-face  ((t ())))
+
+   ;;
+   ;; ;; Web Mode
+   `(web-mode-function-call-face    ((t ())))
+   `(web-mode-function-name-face    ((t ())))
+   `(web-mode-html-tag-bracket-face ((t (:inherit parenthesis))))
+   `(web-mode-symbol-face           ((t (:inherit font-lock-constant-face))))
+   `(web-mode-doctype-face          ((t (:inherit shadow))))
+   ;; `(css-selector                   ((t (:foreground ,purple))))
+   ;;
+   ;; ;; Markdown
+   `(markdown-header-face-1         ((t (:bold t :height ,(nth 0 grayscale-theme-header-scales)))))
+   `(markdown-header-face-2         ((t (:bold t :height ,(nth 1 grayscale-theme-header-scales)))))
+   `(markdown-header-face-3         ((t (:bold t :height ,(nth 2 grayscale-theme-header-scales)))))
+   `(markdown-header-face-4         ((t (:bold t :height ,(nth 3 grayscale-theme-header-scales)))))
+   `(markdown-header-face-5         ((t (:bold t :height ,(nth 4 grayscale-theme-header-scales)))))
+   `(markdown-header-face-6         ((t (:bold t :height ,(nth 5 grayscale-theme-header-scales)))))
+   `(markdown-header-face-7         ((t (:bold t :height ,(nth 6 grayscale-theme-header-scales)))))
+   ;;
+   ;; ;; Telega
+   `(telega-entity-type-code        ((t ())))
+   `(telega-msg-heading             ((t ())))
+   `(telega-unmuted-count           ((t ())))
+   ;;
+   ;; ;; Org-mode
+   `(org-document-title             ((t (:bold t :height ,(nth 0 grayscale-theme-header-scales)))))
+   `(org-link                       ((t (:underline t))))
+   `(org-document-title             ((t ())))
+   `(org-code                       ((t (:inherit font-lock-constant-face))))
+   `(org-level-1                    ((t (:bold t :height ,(nth 0 grayscale-theme-header-scales)))))
+   `(org-level-2                    ((t (:bold t :height ,(nth 1 grayscale-theme-header-scales)))))
+   `(org-level-3                    ((t (:bold t :height ,(nth 2 grayscale-theme-header-scales)))))
+   `(org-level-4                    ((t (:bold t :height ,(nth 3 grayscale-theme-header-scales)))))
+   `(org-level-5                    ((t (:bold t :height ,(nth 4 grayscale-theme-header-scales)))))
+   `(org-level-6                    ((t (:bold t :height ,(nth 5 grayscale-theme-header-scales)))))
+   `(org-level-7                    ((t (:bold t :height ,(nth 6 grayscale-theme-header-scales)))))
+   `(org-todo                       ((t (:bold t))))
+   `(org-done                       ((t (:bold t :inherit shadow))))
+   `(org-headline-done              ((t (:inherit shadow))))
+   `(org-drawer                     ((t (:foreground ,cm))))
+
+   ;; ;; Treemacs
+   `(fill-column-indicator          ((t (:foreground ,cm))))
+   `(scroll-bar                     ((t (:foreground ,fg))))
+   `(sp-pair-overlay-face           ((t (:background ,hl))))
+   `(sp-wrap-overlay-face           ((t (:background ,hl))))
+
+   `(flycheck-warning ((t (:underline (:style wave :color ,cm)))))
+   `(flycheck-error   ((t (:underline (:style wave :color ,fg)))))
+   `(flymake-warning  ((t (:underline (:style wave :color ,cm)))))
+   `(flymake-error    ((t (:underline (:style wave :color ,fg)))))
+   `(flymake-note     ((t (:underline (:style wave :color ,hl)))))
+
+
+   `(tab-bar                        ((t (:background ,hl))))
+   `(tab-bar-tab-group-current      ((t ())))
+   `(tab-bar-tab                    ((t (:bold t))))
+   `(tab-bar-tab-group-inactive     ((t ())))
+   `(tab-bar-tab-inactive           ((t (:bold nil :inherit shadow))))
+
+   `(yascroll:thumb-fringe          ((t (:foreground ,cm :background ,cm))))
+   `(yascroll:thumb-text-area       ((t (:foreground ,cm :background ,cm))))))
+
+(and load-file-name
+     (boundp 'custom-theme-load-path)
+     (add-to-list 'custom-theme-load-path
+                  (file-name-as-directory
+                   (file-name-directory load-file-name))))
+
+(provide-theme 'grayscale)
+
+;;; grayscale-theme.el ends here
 #+end_src
