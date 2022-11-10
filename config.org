@@ -3243,6 +3243,10 @@ When expand snippet, try complete if there's acm cond, or run `yas-next-field-or
   :init
   (setq-default flymake-diagnostic-functions nil
                 flymake-no-changes-timeout 0.2)
+
+  (defvar sekiro-flymake-mode-line-format `(:eval (sekiro-flymake-mode-line-format)))
+  (put 'sekiro-flymake-mode-line-format 'risky-local-variable t)
+
   (defun sekiro-flymake-mode-line-format ()
     (let* ((counter (string-to-number
                      (nth 1
@@ -3253,7 +3257,10 @@ When expand snippet, try complete if there's acm cond, or run `yas-next-field-or
       (propertize
        "危"
        'face
-       sekiro-flymake))))
+       sekiro-flymake)))
+  :config
+  (add-to-list 'mode-line-misc-info
+               `(flymake-mode (" [" sekiro-flymake-mode-line-format "] "))))
 #+end_src
 
 ** Citre                                                              :deps:
