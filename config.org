@@ -776,6 +776,7 @@ Run ~all-the-icons-install-fonts~, if on windows you must install this fonts man
   (add-to-list 'project-find-functions #'eat/project-try-local t))
 #+end_src
 ** tab-bar
+
 #+begin_src elisp
 (eat-package tab-bar
   :init
@@ -822,6 +823,22 @@ No tab will created if the command is cancelled."
   (define-key tab-prefix-map (kbd ".") #'tab-bar-switch-to-recent-tab)
   (define-key tab-prefix-map (kbd ",") #'tab-bar-rename-tab)
   (define-key tab-prefix-map (kbd "l") #'eat/tab-bar-switch-project))
+#+end_src
+** TODO xref
+Use control-left-click to jump to defintions.
+Need ripgrep installed(check external program).
+Some function need emacs29(didn’t check emacs version).
+#+begin_src elisp
+(eat-package xref
+  :hook
+  ((xref-after-return-hook xref-after-jump-hook) . recenter)
+  :init
+  (global-unset-key (kbd "C-<down-mouse-1>"))
+  (global-set-key (kbd "C-<mouse-1>") #'xref-find-definitions-at-mouse)
+  (setq xref-prompt-for-identifier nil
+        xref-search-program 'ripgrep
+        xref-show-xrefs-function #'xref-show-definitions-completing-read
+        xref-show-definitions-function #'xref-show-definitions-completing-read))
 #+end_src
 
 * UI
@@ -900,8 +917,8 @@ No tab will created if the command is cancelled."
 #+end_src
 *** Misc
 #+begin_src emacs-lisp
-(straight-use-package '(ef-themes :type git :host github :repo "protesilaos/ef-themes"))
-(straight-use-package 'catppuccin-theme)
+(eat-package tao-theme :straight t)
+(eat-package timu-spacegrey-theme :straight t)
 #+end_src
 ** Adjust opacity                                                    :linux:
 #+begin_src emacs-lisp
@@ -2217,22 +2234,6 @@ Disable by default.
 
   (setq hs-set-up-overlay #'hideshow-folded-overlay-fn))
 #+end_src
-*** TODO xref
-Use control-left-click to jump to defintions.
-Need ripgrep installed(check external program).
-Some function need emacs29(didn’t check emacs version).
-#+begin_src elisp
-(eat-package xref
-  :hook
-  ((xref-after-return-hook xref-after-jump-hook) . recenter)
-  :init
-  (global-unset-key (kbd "C-<down-mouse-1>"))
-  (global-set-key (kbd "C-<mouse-1>") #'xref-find-definitions-at-mouse)
-  (setq xref-prompt-for-identifier nil
-        xref-search-program 'ripgrep
-        xref-show-xrefs-function #'xref-show-definitions-completing-read
-        xref-show-definitions-function #'xref-show-definitions-completing-read))
-#+end_src
 *** Pair
 **** elec-pair
 #+begin_src elisp
@@ -2338,29 +2339,29 @@ Need a lot...
 #+begin_src elisp
 ;; this need pip install epc, orjson
 (eat-package lsp-bridge
-  :straight (lsp-bridge
-             :type git
-             :host github
-             :repo "manateelazycat/lsp-bridge"
-             :files ("*"))
-  :commands lsp-bridge-mode global-lsp-bridge-mode
-  :init
-  (setq acm-enable-doc nil
-        acm-enable-search-words nil
-        lsp-bridge-enable-search-words nil)
+  ;; :straight (lsp-bridge
+  ;;            :type git
+  ;;            :host github
+  ;;            :repo "manateelazycat/lsp-bridge"
+  ;;            :files ("*"))
+  ;; :commands lsp-bridge-mode global-lsp-bridge-mode
+;;   :init
+;;   (setq acm-enable-doc nil
+;;         acm-enable-search-words nil
+;;         lsp-bridge-enable-search-words nil)
 
-  (defun eat/lsp-bridge-mode-setup ()
-    "My setup for lsp-bridge.
+;;   (defun eat/lsp-bridge-mode-setup ()
+;;     "My setup for lsp-bridge.
 
-Disable `corfu-mode'.
-When expand snippet, try complete if there's acm cond, or run `yas-next-field-or-maybe-expand'."
-    (interactive)
-    (ignore-errors
-      (corfu-mode -1))
-    (with-eval-after-load 'yasnippet
-      ;; FIXME
-      (define-key yas-keymap (kbd "<tab>") 'acm-complete-or-expand-yas-snippet)
-      (define-key yas-keymap (kbd "TAB") 'acm-complete-or-expand-yas-snippet)))
+;; Disable `corfu-mode'.
+;; When expand snippet, try complete if there's acm cond, or run `yas-next-field-or-maybe-expand'."
+;;     (interactive)
+;;     (ignore-errors
+;;       (corfu-mode -1))
+;;     (with-eval-after-load 'yasnippet
+;;       ;; FIXME
+;;       (define-key yas-keymap (kbd "<tab>") 'acm-complete-or-expand-yas-snippet)
+;;       (define-key yas-keymap (kbd "TAB") 'acm-complete-or-expand-yas-snippet)))
   :config
   (add-hook 'lsp-bridge-mode-hook #'eat/lsp-bridge-mode-setup)
   ;; keybindings
@@ -6362,11 +6363,11 @@ See https://github.com/atom/atom/blob/master/packages/one-dark-syntax/styles/col
 (custom-theme-set-faces
  `default
  ;; basic
- `(default                    ((((type tty)))
-                               (((type graphic)) :background ,my-bg-light)))
- `(fringe ((t (:inherit default))))
- `(cursor ((t (:background "black"))))
- `(highlight ((t (:background "#CFD8DC"))))
+ `(default           ((((type tty)))
+                      (((type graphic)) :background ,my-bg-light)))
+ `(fringe            ((t (:inherit default))))
+ `(cursor            ((t (:background "black"))))
+ `(highlight         ((t (:background "#CFD8DC"))))
  '(minibuffer-prompt ((t ())))
 
  ;; Font Locks
