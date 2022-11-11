@@ -790,6 +790,10 @@ Run ~all-the-icons-install-fonts~, if on windows you must install this fonts man
         tab-bar-new-tab-choice "*scratch*"
         tab-bar-tab-name-truncated-max 10)
 
+  (defun eat/setup-tab-bar-font ()
+    (set-face-attribute 'tab-bar nil :font eat/font-default))
+  (add-hook 'load-theme-hook #'eat/setup-tab-bar-font)
+
   (defun eat/tab-bar-switch-project ()
     "Switch to project in a new tab, project name will be used as tab name.
 
@@ -809,9 +813,9 @@ No tab will created if the command is cancelled."
   (defun eat/tab-bar-tab-format-function (tab i)
     (let ((current-p (eq (car tab) 'current-tab)))
       (propertize (concat
-                   "   "
+                   " "
                    (alist-get 'name tab)
-                   "   ")
+                   " ")
                   'face
                   (funcall tab-bar-tab-face-function tab))))
   :config
@@ -1542,6 +1546,13 @@ Center current window.
   (dolist (mode '(xeft-mode
                   gud-mode))
     (add-to-list 'meow-mode-state-list `(,mode . insert)))
+
+  (setq meow-replace-state-name-list
+        '((normal . "N")
+          (motion . "M")
+          (keypad . "K")
+          (insert . "I")
+          (beacon . "B")))
 
   (meow-setup-indicator)
   (meow-setup-dvorak))
