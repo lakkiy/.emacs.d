@@ -2062,15 +2062,6 @@ TODO Check if enable this.
   :straight t)
 #+end_src
 
-*** consult-notmuch                                                  :deps:
-Need =notmuch=.
-
-#+begin_src emacs-lisp
-(eat-package consult-notmuch
-  :straight t
-  :commands consult-notmuch)
-#+end_src
-
 ** corfu
 #+begin_src elisp
 (eat-package corfu

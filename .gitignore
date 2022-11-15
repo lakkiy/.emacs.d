@@ -1,4 +1,5 @@
 server
+.lsp-session-v1
 elpaca
 init.el
 site-lisp
