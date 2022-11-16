@@ -1975,15 +1975,6 @@ Need rime module.
     (define-key vertico-map (kbd "RET")   #'vertico-directory-enter)))
 #+end_src
 
-*** TODO vertico-posframe
-TODO Check if enable this.
-#+begin_src emacs-lisp
-(eat-package vertico-posframe
-  :straight (vertico-posframe :type git :host github :repo "tumashu/vertico-posframe")
-  ;; :hook (vertico-mode-hook . vertico-posframe-mode)
-  )
-#+end_src
-
 ** orderless
 #+begin_src emacs-lisp
 (eat-package orderless
@@ -2961,7 +2952,6 @@ variable accordingly.")
        (notify-send :title "Emacs" :body result :urgency 'critical))))
   :config
   (add-hook 'notmuch-search-mode-hook #'eat/fixed-pitch-setup)
-  (add-hook 'notmuch-show-mode-hook #'variable-pitch-mode)
   (global-set-key [remap notmuch-poll-and-refresh-this-buffer] #'eat/async-notmuch-poll))
 
 (eat-package message
@@ -2986,28 +2976,6 @@ variable accordingly.")
         smtpmail-smtp-user user-mail-address
         smtpmail-smtp-service 587
         smtpmail-stream-type 'ssl))
-#+end_src
-** Docker
-#+begin_src elisp
-(eat-package docker
-  :straight t
-  :commands docker
-  :config
-  (fullframe docker-images tablist-quit)
-  (fullframe docker-machines tablist-quit)
-  (fullframe docker-volumes tablist-quit)
-  (fullframe docker-networks tablist-quit)
-  (fullframe docker-containers tablist-quit))
-#+end_src
-** K8S
-#+begin_src elisp
-(eat-package kubernetes
-  :straight t
-  :commands
-  kubernetes-overview
-  :config
-  (setq kubernetes-poll-frequency 3600
-        kubernetes-redraw-frequency 3600))
 #+end_src
 ** TODO Terminal
 *** TODO built-in
@@ -3148,14 +3116,14 @@ Need =make=.
     (define-key vterm-mode-map (kbd "C-(") #'multi-vterm-prev)
     (define-key vterm-mode-map (kbd "C-)") #'multi-vterm-next)))
 #+end_src
-** LeetCode                                                           :deps:
-#+begin_src elisp
-(eat-package leetcode
-  :straight (leetcode :host github :repo "ginqi7/leetcode-emacs")
-  :commands leetcode-list-all
-  :init
-  (eat-package ctable :straight t)
-  (setq leetcode-language "go"))
+** Kubernetes
+#+begin_src emacs-lisp
+(eat-package kubernetes
+  :straight t
+  :commands kubernetes-overview
+  :config
+  (setq kubernetes-poll-frequency 3600
+        kubernetes-redraw-frequency 3600))
 #+end_src
 * Modes
 ** toml
@@ -3174,8 +3142,6 @@ Need =make=.
 ** k8s
 #+begin_src elisp
 (eat-package k8s-mode :straight t)
-(eat-package kubedoc
-  :straight (kubedoc :type git :host github :repo "r0bobo/kubedoc.el"))
 #+end_src
 ** gitignore
 #+begin_src elisp
