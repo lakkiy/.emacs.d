@@ -3231,7 +3231,7 @@ Need =make=.
 (global-set-key (kbd "C-x 8 0") #'eat/insert-zero-width-space)
 
 (eat-package org
-  :straight builtin
+  :straight (org :type built-in)
   :hook (org-mode-hook . eat/org-hook)
   :init
   (setq org-directory (expand-file-name "~/Dropbox/org"))
