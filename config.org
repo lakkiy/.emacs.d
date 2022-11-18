@@ -2109,18 +2109,6 @@ so try complete filst, if there nothing to complete then try to jump to next fie
                        (unless (display-graphic-p)
                          (corfu-terminal-mode +1)))))
 #+end_src
-*** doc
-#+begin_src elisp
-(eat-package corfu-doc
-  :straight t
-  :hook (corfu-mode-hook . (lambda ()
-                             (when (display-graphic-p)
-                               (corfu-doc-mode))))
-  :config
-  (setq corfu-echo-documentation nil)
-  (define-key corfu-map (kbd "M-p") #'corfu-doc-scroll-down)
-  (define-key corfu-map (kbd "M-n") #'corfu-doc-scroll-up))
-#+end_src
 ** embark
 #+begin_src elisp
 (eat-package embark
