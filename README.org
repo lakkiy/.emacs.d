@@ -1,1 +1,11 @@
-Support emacs version 28+.
+
+Tangle config.org:
+
+#+begin_src bash
+emacs --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "~/.config/emacs/config.org")'
+#+end_src
+
+Test emacs startup time:
+#+begin_src bash
+time emacs -kill
+#+end_src
