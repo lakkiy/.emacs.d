@@ -1545,6 +1545,9 @@ point reaches the beginning or end of the buffer, stop there."
 
    ;; misc
    '("'" . repeat)
+   '("-" . avy-goto-char-timer)
+   '("f" . project-find-file)
+   '("K" . kill-this-buffer)
    ))
 #+end_src
 *** Config
@@ -1681,8 +1684,6 @@ Need rime module.
 ** Avy
 #+begin_src elisp
 (setup (:package avy)
-  (:global
-   "C-'" avy-goto-char-timer)
   (with-eval-after-load 'avy
     (:option
      avy-background t
