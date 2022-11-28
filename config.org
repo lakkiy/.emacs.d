@@ -110,7 +110,6 @@
     ;; +blog
     ;; +telega
     ;; +mail
-    ;; +vterm
     ;; +benchmark
     ;; +kubernetes
     ;; +note-taking
@@ -2789,17 +2788,6 @@ This is a variadic `cl-pushnew'."
   (with-eval-after-load 'all-the-icons-completion
     (with-eval-after-load 'marginalia
       (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup))))
-#+end_src
-** Vterm
-#+begin_src elisp
-(setup (:and (:needs "cmake") (:only-if (eat/modulep '+vterm)))
-  (:package vterm vterm-toggle multi-vterm)
-  (setq vterm-always-compile-module t)
-  (global-set-key (kbd "C-`") #'vterm-toggle)
-  (global-set-key (kbd "C-~") #'multi-vterm)
-  (with-eval-after-load 'multi-vterm
-    (define-key vterm-mode-map (kbd "C-(") #'multi-vterm-prev)
-    (define-key vterm-mode-map (kbd "C-)") #'multi-vterm-next)))
 #+end_src
 ** Telega
 Need =telegram-tdlib=.
