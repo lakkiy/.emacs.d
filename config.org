@@ -33,9 +33,10 @@
 ** Package
 #+begin_src emacs-lisp
 (require 'package)
-(setq package-archives '(("melpa"  . "https://melpa.org/packages/")
-	                     ("gnu"    . "https://elpa.gnu.org/packages/")
-	                     ("nongnu" . "https://elpa.nongnu.org/nongnu/"))
+(setq package-archives '(("melpa"      . "https://melpa.org/packages/")
+	                     ("gnu"        . "https://elpa.gnu.org/packages/")
+	                     ("nongnu"     . "https://elpa.nongnu.org/nongnu/")
+                         ("nongnu-dev" . "https://elpa.nongnu.org/nongnu-devel/"))
       package-quickstart t)
 
 (unless (package-installed-p 'setup)
@@ -1111,7 +1112,7 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 
 *** Misc
 #+begin_src emacs-lisp
-(setup (:package tao-theme timu-spacegrey-theme kaolin-themes spacemacs-theme)
+(setup (:package tao-theme timu-spacegrey-theme kaolin-themes spacemacs-theme eziam-themes)
   (:option  kaolin-themes-underline-wave nil
             kaolin-themes-modeline-border nil
             kaolin-themes-modeline-padded 4
@@ -1122,7 +1123,6 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
             spacemacs-theme-org-height t
             spacemacs-theme-org-highlight t
             spacemacs-theme-org-priority-bold t
-            spacemacs-theme-org-bold t
             spacemacs-theme-underline-parens t))
 #+end_src
 ** Mode line
@@ -1858,14 +1858,15 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 *** Puni
 #+begin_src emacs-lisp
 (setup (:package puni)
-  (:with-hook (emacs-lisp-mode-hook scheme-mode-hook clojure-mode-hook)
-    (:hook puni-mode))
-  (:bind
-   "M-r" 'puni-splice
-   "C-(" 'puni-slurp-backward
-   "C-)" 'puni-slurp-forward
-   "C-{" 'puni-barf-backward
-   "C-}" 'puni-barf-forward))
+  ;; (:with-hook (emacs-lisp-mode-hook scheme-mode-hook clojure-mode-hook)
+  ;;   (:hook puni-mode))
+  ;; (:bind
+  ;;  "M-r" 'puni-splice
+  ;;  "C-(" 'puni-slurp-backward
+  ;;  "C-)" 'puni-slurp-forward
+  ;;  "C-{" 'puni-barf-backward
+  ;;  "C-}" 'puni-barf-forward)
+  )
 #+end_src
 *** Dumb Jump
 #+begin_src elisp
@@ -2054,12 +2055,13 @@ Need a lot...
 ** Lang
 *** Lisp
 #+begin_src elisp
-(setup (:package aggressive-indent)
+(setup (:package aggressive-indent paredit)
   (:with-hook (emacs-lisp-mode-hook
                lisp-interaction-mode-hook
                scheme-mode-hook
                lisp-mode-hook)
-    (:hook aggressive-indent-mode)))
+    (:hook aggressive-indent-mode)
+    (:hook paredit-mode)))
 #+end_src
 *** Go
 #+begin_src emacs-lisp
@@ -2595,12 +2597,12 @@ This is a variadic `cl-pushnew'."
     (:hook diff-hl-mode))
   (:with-hook dired-mode-hook
     (:hook diff-hl-dired-mode))
-  (:with-hook magit-pre-refresh-hook
-    (:hook diff-hl-magit-pre-refresh))
-  (:with-hook magit-post-refresh-hook
-    (:hook diff-hl-magit-post-refresh))
   (:option diff-hl-draw-borders nil)
   (with-eval-after-load 'diff-hl
+    (:with-hook magit-pre-refresh-hook
+      (:hook diff-hl-magit-pre-refresh))
+    (:with-hook magit-post-refresh-hook
+      (:hook diff-hl-magit-post-refresh))
     ;; Highlight on-the-fly
     (diff-hl-flydiff-mode 1)
     (unless (display-graphic-p)
@@ -2659,113 +2661,13 @@ This is a variadic `cl-pushnew'."
      "<mouse-3>" dired-mouse-find-file)))
 #+end_src
 ** TODO Terminal
-*** TODO built-in
 #+begin_src elisp
-;; (setup term
-;;   (defun term-mode-common-init ()
-;;     "The common initialization procedure for term/shell."
-;;     (setq-local scroll-margin 0)
-;;     (setq-local truncate-lines t)
-;;     (setq-local global-hl-line-mode nil))
-;;   (defun term-mode-prompt-regexp-setup ()
-;;     "Setup `term-prompt-regexp' for term-mode."
-;;     (setq-local term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
-;;   (:with-hook term-mode-hook
-;;     (:hook (term-mode-prompt-regexp-setup term-mode-common-init)))
-
-;;   (:with-hook eshell-mode-hook
-;;     (:hook (lambda ()
-;;              (term-mode-common-init)
-;;              ;; Eshell is not fully functional
-;;              (setenv "PAGER" "cat"))))
-;;   (with-eval-after-load 'eshell
-;;     ;; Prevent accident typing
-;;     (defalias 'eshell/vi 'find-file)
-;;     (defalias 'eshell/vim 'find-file)
-
-;;     (defun eshell/bat (file)
-;;       "cat FILE with syntax highlight."
-;;       (with-temp-buffer
-;;         (insert-file-contents file)
-;;         (let ((buffer-file-name file))
-;;           (delay-mode-hooks
-;;             (set-auto-mode)
-;;             (font-lock-ensure)))
-;;         (buffer-string)))
-
-;;     (defun eshell/f (filename &optional dir)
-;;       "Search for files matching FILENAME in either DIR or the
-;; current directory."
-;;       (let ((cmd (concat
-;;                   (executable-find "find")
-;;                   " " (or dir ".")
-;;                   "      -not -path '*/.git*'"
-;;                   " -and -not -path 'build'"    ;; the cmake build directory
-;;                   " -and"
-;;                   " -type f"
-;;                   " -and"
-;;                   " -iname '*" filename "*'")))
-;;         (eshell-command-result cmd)))
-
-;;     (defun eshell/z ()
-;;       "cd to directory with completion."
-;;       (let ((dir (completing-read "Directory: " (ring-elements eshell-last-dir-ring) nil t)))
-;;         (eshell/cd dir)))
-;;     (defun eshell-prompt ()
-;;       "Prompt for eshell."
-;;       (concat
-;;        (propertize user-login-name 'face 'font-lock-keyword-face)
-;;        "@"
-;;        "Noobmaster "
-;;        (if (equal (eshell/pwd) "~")
-;;            "~"
-;;          (abbreviate-file-name (eshell/pwd)))
-;;        " "
-;;        (if-let* ((vc (ignore-errors (vc-responsible-backend default-directory)))
-;;                  (br (car (vc-git-branches))))
-;;            (concat (propertize "(" 'face 'success)
-;;                    (format "%s" vc)
-;;                    (propertize ")" 'face 'success)
-;;                    (propertize "-" 'face 'font-lock-string-face)
-;;                    (propertize "[" 'face 'success)
-;;                    (propertize br 'face 'font-lock-constant-face)
-;;                    (propertize "]" 'face 'success)
-;;                    " ")
-;;          "")
-;;        "% ")))
-
-;;   ;; shell
-;;   ;; The interactive shell.
-;;   ;;
-;;   ;; It can be used as a `sh-mode' REPL.
-;;   ;;
-;;   ;; `shell' is recommended to use over `tramp'.
-;;   (:with-hook shell-mode-hook
-;;     (:hook (term-mode-common-init revert-tab-width-to-default)))
-;;   (:with-hook shell-mode-hook
-;;     (:hook (term-mode-common-init revert-tab-width-to-default)))
-;;   (defun shell-toggle ()
-;;     "Toggle a persistent shell popup window.
-;; If popup is visible but unselected, select it.
-;; If popup is focused, kill it."
-;;     (interactive)
-;;     (if-let ((win (get-buffer-window "*shell-popup*")))
-;;         (when (eq (selected-window) win)
-;;           ;; If users attempt to delete the sole ordinary window, silence it.
-;;           (ignore-errors (delete-window win)))
-;;       (let ((display-comint-buffer-action '(display-buffer-at-bottom
-;;                                             (inhibit-same-window . nil))))
-
-;;         (shell "*shell-popup*"))))
-;;   ;; Correct indentation for `ls'
-;;   (defun revert-tab-width-to-default ()
-;;     "Revert `tab-width' to default value."
-;;     (setq-local tab-width 8))
-;;   )
+(setup eshell
+  (:global "C-`" eshell))
 
 ;; Quick editing in `describe-variable'
-;; (with-eval-after-load 'help-fns
-;;   (put 'help-fns-edit-variable 'disabled nil))
+(with-eval-after-load 'help-fns
+  (put 'help-fns-edit-variable 'disabled nil))
 #+end_src
 * Module
 ** Benchmark
@@ -3010,7 +2912,10 @@ Need =xapian-core=.
 #+begin_src emacs-lisp
 (straight-use-package '(aweshell :type git :host github :repo "manateelazycat/aweshell"))
 #+end_src
-
+** emacs-eat
+#+begin_src emacs-lisp
+(setup (:package eat))
+#+end_src
 * Site Lisp
 ** Load Path
 #+begin_src elisp
