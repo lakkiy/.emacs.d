@@ -3,22 +3,19 @@
 
 * Early init
 #+begin_src elisp :tangle early-init.el
-(setq ;;package-enable-at-startup nil
-      ;; Resizing the Emacs frame can be a terribly expensive part of changing the
-      ;; font. By inhibiting this, we easily halve startup times with fonts that are
-      ;; larger than the system default.
-      frame-inhibit-implied-resize t
-      ;; After startup `gcmh' will reset this.
-      gc-cons-threshold most-positive-fixnum
-      gc-cons-percentage 0.6
-      ;; Faster to disable these here (before they've been initialized)
-      default-frame-alist '((scroll-bar-mode . 0)
-                            (vertical-scroll-bars . nil)
-                            (menu-bar-lines . 0)
-                            (tool-bar-lines . 0)))
-
-
-(setq load-prefer-newer noninteractive)
+(setq
+ ;; Resizing the Emacs frame can be a terribly expensive part of changing the
+ ;; font. By inhibiting this, we easily halve startup times with fonts that are
+ ;; larger than the system default.
+ frame-inhibit-implied-resize t
+ ;; After startup `gcmh' will reset this.
+ gc-cons-threshold most-positive-fixnum
+ gc-cons-percentage 0.6
+ ;; Faster to disable these here (before they've been initialized)
+ default-frame-alist '((scroll-bar-mode . 0)
+                       (vertical-scroll-bars . nil)
+                       (menu-bar-lines . 0)
+                       (tool-bar-lines . 0)))
 #+end_src
 
 * Basic
@@ -26,17 +23,14 @@
 #+begin_src elisp
 ;;; -*- lexical-binding: t -*-
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(when (and (file-exists-p custom-file)
-           (file-readable-p custom-file))
+(when (and (file-exists-p custom-file) (file-readable-p custom-file))
   (load custom-file :no-error :no-message))
 #+end_src
 ** Package
 #+begin_src emacs-lisp
-(require 'package)
-(setq package-archives '(("melpa"      . "https://melpa.org/packages/")
-	                     ("gnu"        . "https://elpa.gnu.org/packages/")
-	                     ("nongnu"     . "https://elpa.nongnu.org/nongnu/")
-                         ("nongnu-dev" . "https://elpa.nongnu.org/nongnu-devel/"))
+(setq package-archives '(("gnu"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+			             ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
+                         ("melpa" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/"))
       package-quickstart t)
 
 (unless (package-installed-p 'setup)
@@ -63,23 +57,8 @@
   :repeatable t
   :signature '(FUNC ...))
 
-;;; Bootstrap straight.el
-;; https://www.reddit.com/r/emacs/comments/mtb05k/emacs_init_time_decreased_65_after_i_realized_the/
-(setq straight-check-for-modifications '(check-on-save find-when-checking))
-(setq straight-vc-git-default-clone-depth 1)
-
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
+(setup (:package elpa-mirror)
+  (:option elpamr-default-output-directory "~/.myelpa"))
 #+end_src
 ** Variables
 #+begin_src elisp
@@ -87,20 +66,13 @@
 
 (defvar eat/user-mail-address "liubolovelife@gmail.com")
 
-(defconst emacs29p
-  (>= emacs-major-version 29)
-  "Emacs is 28 or above.")
-
-(defconst eat/macp
-  (eq system-type 'darwin)
+(defconst eat/macp (eq system-type 'darwin)
   "Are we running on a Mac system?")
 
-(defconst eat/linuxp
-  (eq system-type 'gnu/linux)
+(defconst eat/linuxp (eq system-type 'gnu/linux)
   "Are we running on a GNU/Linux system?")
 
-(defconst eat/winp
-  (eq system-type 'windows-nt)
+(defconst eat/winp (eq system-type 'windows-nt)
   "Are we running on a Windows system?")
 #+end_src
 ** Module
@@ -126,69 +98,12 @@
 (defun eat/modulep (module)
   (gethash module eat/module--hash-table))
 #+end_src
-** Proxy
-#+begin_src elisp
-(defvar eat/proxy "127.0.0.1:7890"
-  "Network proxy address.")
-
-(defun eat/proxy-show ()
-  "Show proxy."
-  (interactive)
-  (if (or url-proxy-services (bound-and-true-p socks-noproxy))
-      (message "Current proxy is `%s'" eat/proxy)
-    (message "No proxy")))
-
-(defun eat/proxy-enable ()
-  "Enable proxy."
-  (interactive)
-  (setq url-proxy-services
-        `(("http" . ,eat/proxy)
-          ("https" . ,eat/proxy)
-          ("no_proxy" . "^\\(localhost\\|192.168.*\\|10.*\\)")))
-  (require 'socks)
-  (setq url-gateway-method 'socks
-        socks-noproxy '("localhost"))
-  (let* ((proxy (split-string eat/proxy ":"))
-         (host (car proxy))
-         (port (string-to-number (cadr proxy))))
-    (setq socks-server `("Default server" ,host ,port 5)))
-  (setenv "all_proxy" (concat "socks5://" eat/proxy))
-  (eat/proxy-show))
-
-(defun eat/proxy-disable ()
-  "Disable proxy."
-  (interactive)
-  (setq url-proxy-services nil)
-  (setq url-gateway-method 'native
-        socks-noproxy nil
-        socks-server nil)
-  (setenv "all_proxy" "")
-  (eat/proxy-show))
-
-(defun eat/proxy-toggle ()
-  "Toggle proxy."
-  (interactive)
-  (if (or (bound-and-true-p url-proxy-services) (bound-and-true-p socks-noproxy))
-      (eat/proxy-disable)
-    (eat/proxy-enable)))
-#+end_src
 ** Optimization
 #+begin_src elisp
 ;; bind `describe-keymap', added in emacs 28
 (global-set-key (kbd "C-h C-k") #'describe-keymap)
-
 ;; this will stuck emacs
 (global-unset-key (kbd "C-h h"))
-
-
-(setq package-enable-at-startup nil
-      frame-inhibit-implied-resize t
-      gc-cons-threshold most-positive-fixnum
-      gc-cons-percentage 0.6
-      default-frame-alist '((scroll-bar-mode . 0)
-                            (vertical-scroll-bars . nil)
-                            (menu-bar-lines . 0)
-                            (tool-bar-lines . 0)))
 
 (defun eat/show-startup-time ()
   "Print startup time."
@@ -399,25 +314,16 @@
 (setup webjump
   (global-set-key (kbd "C-x C-/") #'webjump)
   (setq webjump-sites
-        '(("Emacs Wiki" .
-           [simple-query "www.emacswiki.org" "www.emacswiki.org/cgi-bin/wiki/" #1=""])
+        '(("Emacs Wiki" . [simple-query "www.emacswiki.org" "www.emacswiki.org/cgi-bin/wiki/" #1=""])
           ("Emacs China" . "emacs-china.org")
           ("Emacs Reddit" . "www.reddit.com/r/emacs/")
           ("Emacs News" . "sachachua.com/blog/category/emacs-news/")
-          ("Github" .
-           [simple-query "github.com" "github.com/search?q=" #1#])
-          ("DuckDuckGo" .
-           [simple-query "duckduckgo.com" "duckduckgo.com/?q=" #1#])
-          ("Google" .
-           [simple-query "google.com" "google.com/search?q=" #1#])
-          ("Youtube" .
-           [simple-query "youtube.com" "youtube.com/results?search_query=" #1#])
-          ("Google Groups" .
-           [simple-query "groups.google.com" "groups.google.com/groups?q=" #1#])
-          ("stackoverflow" .
-           [simple-query "stackoverflow.com" "stackoverflow.com/search?q=" #1#])
-          ("Wikipedia" .
-           [simple-query "wikipedia.org" "wikipedia.org/wiki/" #1#]))))
+          ("Github" . [simple-query "github.com" "github.com/search?q=" #1#])
+          ("Google" . [simple-query "google.com" "google.com/search?q=" #1#])
+          ("Youtube" . [simple-query "youtube.com" "youtube.com/results?search_query=" #1#])
+          ("Google Groups" . [simple-query "groups.google.com" "groups.google.com/groups?q=" #1#])
+          ("stackoverflow" . [simple-query "stackoverflow.com" "stackoverflow.com/search?q=" #1#])
+          ("Wikipedia" . [simple-query "wikipedia.org" "wikipedia.org/wiki/" #1#]))))
 #+end_src
 
 *** repeat
@@ -432,7 +338,6 @@
 *** context-menu
 #+begin_src emacs-lisp
 (setup mouse
-  (:only-if emacs29p)
   (:with-hook after-init-hook
     (:hook context-menu-mode)))
 #+end_src
@@ -492,16 +397,12 @@
         tab-bar-close-button nil
         tab-bar-back-button nil
         tab-bar-new-button nil
-        tab-bar-show t
+        tab-bar-show nil
         tab-bar-format '(tab-bar-format-tabs)
         tab-bar-tab-name-format-function 'eat/tab-bar-tab-format-function
         tab-bar-separator ""
         tab-bar-new-tab-choice "*scratch*"
         tab-bar-tab-name-truncated-max 10)
-
-  (defun eat/setup-tab-bar-font ()
-    (set-face-attribute 'tab-bar nil :font eat/font-default))
-  (add-hook 'load-theme-hook #'eat/setup-tab-bar-font)
 
   (defun eat/tab-bar-switch-project ()
     "Switch to project in a new tab, project name will be used as tab name.
@@ -537,7 +438,6 @@ No tab will created if the command is cancelled."
 Must set before consult.
 Use control-left-click to jump to defintions.
 Need ripgrep installed(check external program).
-Some function need emacs29(didn’t check emacs version).
 
 #+begin_src elisp
 (setup xref
@@ -647,7 +547,6 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 (global-set-key (kbd "C-x |") 'split-window-horizontally-instead)
 (global-set-key (kbd "C-x _") 'split-window-vertically-instead)
 #+end_src
-
 ** Ace-window
 #+begin_src elisp
 (setup (:package ace-window)
@@ -752,7 +651,6 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
     (buffer-string)))
 #+end_src
 ** Ibuffer
-
 #+begin_src elisp
 (setup ibuffer
   (:package ibuffer-vc)
@@ -797,22 +695,9 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 #+end_src
 ** Auto-save
 #+begin_src elisp
-(straight-use-package '(auto-save
-                        :type git
-                        :host github
-                        :repo "manateelazycat/auto-save"))
-(setup auto-save
-  (:autoload auto-save-enable)
-  (:with-hook after-init-hook
-    (:hook (lambda ()
-             (auto-save-enable))))
-  (setq
-   auto-save-silent t
-   ;; most time I will save manually
-   auto-save-idle 7))
+(add-hook 'after-init-hook #'auto-save-visited-mode)
 #+end_src
 ** Isearch
-
 #+begin_src elisp
 (setup isearch
   (:package isearch-mb)
@@ -1072,6 +957,9 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 (defvar eat/theme 'modus-operandi
   "Default theme.")
 
+(defvar eat/theme-tui 'modus-operandi
+  "Default TUI theme.")
+
 (defvar eat/theme-system-light 'modus-operandi
   "Default light theme after system appearance changed.")
 
@@ -1094,7 +982,8 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 
 (defun eat/tui-load-theme ()
   (when (fboundp 'menu-bar-mode)
-    (menu-bar-mode -1)))
+    (menu-bar-mode -1))
+  (load-theme eat/theme-tui))
 
 (defun eat/gui-load-theme ()
   (load-theme eat/theme)
@@ -1617,7 +1506,8 @@ Better scroll on picture in GUI
 
 *** undo-hl
 #+begin_src emacs-lisp
-(straight-use-package '(undo-hl :host github :repo "casouri/undo-hl"))
+(unless (package-installed-p 'undo-hl)
+  (package-vc-install "https://github.com/casouri/undo-hl.git"))
 (setup undo-hl
   (:with-hook (prog-mode-hook conf-mode-hook)
     (:hook undo-hl-mode)))
@@ -1641,8 +1531,7 @@ Need rime module.
                              meow-keypad-mode-p
                              meow-beacon-mode-p)
    rime-inline-predicates '(rime-predicate-space-after-cc-p
-                            rime-predicate-current-uppercase-letter-p
-                            +rime-predicate-md-syntax-punc-p)
+                            rime-predicate-current-uppercase-letter-p)
    rime-translate-keybindings '("C-f" "C-b" "C-n" "C-p" "C-g" "C-v" "M-v")
    rime-inline-ascii-holder ?a
    default-input-method "rime"
@@ -1891,7 +1780,9 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 #+end_src
 *** Clue
 #+begin_src emacs-lisp
-(straight-use-package '(clue :host github :repo "AmaiKinono/clue"))
+(unless (package-installed-p 'clue)
+  (package-vc-install "https://github.com/AmaiKinono/clue"))
+
 #+end_src
 *** Flymake
 #+begin_src elisp
@@ -1951,56 +1842,82 @@ so try complete filst, if there nothing to complete then try to jump to next fie
   (:with-hook eglot-managed-mode-hook
     (:hook eldoc-box-hover-mode)))
 #+end_src
-*** TODO lsp-bridge                                                  :deps:
+*** lsp-bridge                                                       :deps:
 Need a lot...
 
 #+begin_src elisp
+(defun add-subdirs-to-load-path (search-dir)
+  (interactive)
+  (let* ((dir (file-name-as-directory search-dir)))
+    (dolist (subdir
+             ;; 过滤出不必要的目录，提升 Emacs 启动速度
+             (cl-remove-if
+              #'(lambda (subdir)
+                  (or
+                   ;; 不是目录的文件都移除
+                   (not (file-directory-p (concat dir subdir)))
+                   ;; 父目录、 语言相关和版本控制目录都移除
+                   (member subdir '("." ".."
+                                    "dist" "node_modules" "__pycache__"
+                                    "RCS" "CVS" "rcs" "cvs" ".git" ".github"))))
+              (directory-files dir)))
+      (let ((subdir-path (concat dir (file-name-as-directory subdir))))
+        ;; 目录下有 .el .so .dll 文件的路径才添加到 `load-path' 中，提升 Emacs 启动速度
+        (when (cl-some #'(lambda (subdir-file)
+                           (and (file-regular-p (concat subdir-path subdir-file))
+                                ;; .so .dll 文件指非 Elisp 语言编写的 Emacs 动态库
+                                (member (file-name-extension subdir-file) '("el" "so" "dll"))))
+                       (directory-files subdir-path))
+
+          ;; 注意：`add-to-list' 函数的第三个参数必须为 t ，表示加到列表末尾
+          ;; 这样 Emacs 会从父目录到子目录的顺序搜索 Elisp 插件，顺序反过来会导致 Emacs 无法正常启动
+          (add-to-list 'load-path subdir-path t))
+
+        ;; 继续递归搜索子目录
+        (add-subdirs-to-load-path subdir-path)))))
+
 ;; this need pip install epc, orjson
-;; (eat-package lsp-bridge
-;;   :straight (lsp-bridge
-;;              :type git
-;;              :host github
-;;              :repo "manateelazycat/lsp-bridge"
-;;              ;; I don't need dict, and can't compress it(need dzip, wtf)
-;;              :files (:defaults "*.py" "acm/*" "core/*" "langserver/*" "multiserver/*"))
-;;   :commands lsp-bridge-mode global-lsp-bridge-mode
-;;   :init
-;;   (setq acm-enable-doc nil
-;;         acm-enable-search-words nil
-;;         lsp-bridge-enable-search-words nil)
-
-;;   (defun eat/lsp-bridge-mode-setup ()
-;;     "My setup for lsp-bridge.
-
-;; Disable `corfu-mode'.
-;; When expand snippet, try complete if there's acm cond, or run `yas-next-field-or-maybe-expand'."
-;;     (interactive)
-;;     (ignore-errors
-;;       (corfu-mode -1))
-;;     (with-eval-after-load 'yasnippet
-;;       ;; FIXME
-;;       (define-key yas-keymap (kbd "<tab>") 'acm-complete-or-expand-yas-snippet)
-;;       (define-key yas-keymap (kbd "TAB") 'acm-complete-or-expand-yas-snippet)))
-;;   :config
-;;   (add-hook 'lsp-bridge-mode-hook #'eat/lsp-bridge-mode-setup)
-;;   ;; keybindings
-;;   (define-key lsp-bridge-mode-map (kbd "M-.") #'lsp-bridge-find-def)
-;;   (define-key lsp-bridge-mode-map (kbd "C-x 4 .") #'lsp-bridge-find-def-other-window)
-;;   (define-key lsp-bridge-mode-map (kbd "M-,") #'lsp-bridge-return-from-def)
-;;   (define-key lsp-bridge-mode-map (kbd "M-?") #'lsp-bridge-find-references)
-;;   (define-key lsp-bridge-mode-map (kbd "M-'") #'lsp-bridge-find-impl)
-;;   (define-key lsp-bridge-mode-map (kbd "C-c r") #'lsp-bridge-rename)
-;;   (define-key lsp-bridge-mode-map (kbd "C-c <") #'lsp-bridge-diagnostic-jump-prev)
-;;   (define-key lsp-bridge-mode-map (kbd "C-c >") #'lsp-bridge-diagnostic-jump-next)
-;;   ;; FIXME p will say search failed " ", it should act like n, reach last file
-;;   (define-key lsp-bridge-ref-mode-map (kbd "j") nil)
-;;   (define-key lsp-bridge-ref-mode-map (kbd "k") nil)
-;;   (define-key lsp-bridge-ref-mode-map (kbd "h") nil)
-;;   (define-key lsp-bridge-ref-mode-map (kbd "l") nil)
-;;   (define-key lsp-bridge-ref-mode-map (kbd "p") 'lsp-bridge-ref-jump-prev-file)
-;;   (define-key lsp-bridge-ref-mode-map (kbd "h") 'lsp-bridge-ref-jump-prev-keyword)
-;;   (define-key lsp-bridge-ref-mode-map (kbd "t") 'lsp-bridge-ref-jump-next-keyword)
-;;   (define-key lsp-bridge-ref-mode-map (kbd "n") 'lsp-bridge-ref-jump-next-file))
+(unless (package-installed-p 'lsp-bridge)
+  (package-vc-install "https://github.com/manateelazycat/lsp-bridge"))
+(setup lsp-bridge
+  (:autoload lsp-bridge-mode global-lsp-bridge-mode)
+  (:option acm-enable-doc nil
+           acm-enable-search-words nil
+           lsp-bridge-enable-search-words nil)
+  (defun eat/lsp-bridge-mode-setup ()
+    "My setup for lsp-bridge.
+Disable `corfu-mode'.
+When expand snippet, try complete if there's acm cond, or run `yas-next-field-or-maybe-expand'."
+    (interactive)
+    (ignore-errors
+      (corfu-mode -1))
+    (with-eval-after-load 'yasnippet
+      ;; FIXME
+      (define-key yas-keymap (kbd "<tab>") 'acm-complete-or-expand-yas-snippet)
+      (define-key yas-keymap (kbd "TAB") 'acm-complete-or-expand-yas-snippet)))
+  (with-eval-after-load 'lsp-bridge
+    (add-subdirs-to-load-path (expand-file-name "elpa/lsp-bridge" user-emacs-directory))
+    (:hook eat/lsp-bridge-mode-setup)
+    ;; keybindings
+    (:with-map lsp-bridge-mode-map
+      (:bind "M-." lsp-bridge-find-def
+             "C-x 4 ." lsp-bridge-find-def-other-window
+             "M-," lsp-bridge-return-from-def
+             "M-?" lsp-bridge-find-references
+             "M-'" lsp-bridge-find-impl
+             "C-c r" lsp-bridge-rename
+             "C-c <" lsp-bridge-diagnostic-jump-prev
+             "C-c >" lsp-bridge-diagnostic-jump-next))
+    (:with-map lsp-bridge-ref-mode-map
+      ;; FIXME p will say search failed " ", it should act like n, reach last file
+      (:bind "j" nil
+             "k" nil
+             "h" nil
+             "l" nil
+             "p" lsp-bridge-ref-jump-prev-file
+             "h" lsp-bridge-ref-jump-prev-keyword
+             "t" lsp-bridge-ref-jump-next-keyword
+             "n" lsp-bridge-ref-jump-next-file))))
 #+end_src
 *** Restart lsp client
 #+begin_src elisp
@@ -2185,44 +2102,12 @@ Center current window.
     (:hook visual-line-mode))
   (:option visual-fill-column-center-text t))
 #+end_src
-** Notifications
-Need =terminal-notifier= on MacOS.
-
-Actually, `notify-send' is not defined in notifications package, but the
-autoload cookie will make Emacs load `notifications' first, then our
-`defalias' will be evaluated.
-#+begin_src elisp
-(pcase system-type
-  ('gnu/linux
-   (autoload #'notify-send "notifications")
-   (with-eval-after-load "notifications"
-     (defalias 'notify-send 'notifications-notify)))
-  ('darwin
-   ;; HACK you must enable notify for emacs in macos system
-   ;;      Notifications & Focus -> Emacs -> Allow Notifications
-   (defun notify-send (&rest params)
-     "Send notifications via `terminal-notifier'."
-     (let ((title (plist-get params :title))
-           (body (plist-get params :body)))
-       (start-process "terminal-notifier"
-                      nil
-                      "terminal-notifier"
-                      "-group" "Emacs"
-                      "-title" title
-                      "-message" body
-                      ;; FIXME this option didn't show emacs icon
-                      ;; but -sender didn't show the message when focus on emacs
-                      "-activate" "org.gnu.Emacs"))))
-  (_
-   (defalias 'notify-send 'ignore)))
-#+end_src
 ** Rg
 #+begin_src elisp
 (setup (:needs "rg")
   (:package rg))
 #+end_src
 ** Translate
-*** go-translate
 #+begin_src elisp
 (setup (:package go-translate)
   (:option
@@ -2236,17 +2121,10 @@ autoload cookie will make Emacs load `notifications' first, then our
                              :engines (list (gts-bing-engine) (gts-google-rpc-engine))
                              :render (gts-buffer-render)))))
 #+end_src
-*** fanyi
-#+begin_src emacs-lisp
-(setup (:package fanyi)
-  (:option
-   fanyi-verbose nil)
-  (:global "C-c Y" fanyi-dwim))
-#+end_src
-
 ** Ghelp
 #+begin_src elisp
-(straight-use-package '(ghelp :host github :repo "casouri/ghelp"))
+(unless (package-installed-p 'ghelp)
+  (package-vc-install "https://github.com/404cn/ghelp.git"))
 (setup ghelp
   (:autoload
    ghelp-describe
@@ -2265,7 +2143,8 @@ autoload cookie will make Emacs load `notifications' first, then our
 
 ** Restclient
 #+begin_src emacs-lisp
-(setup (:needs "curl")
+(setup restclient
+  (:needs "curl")
   (:package restclient)
   (defun eat/restclient ()
     "Work with `rest' in the *restclient* buffer."
@@ -2279,7 +2158,6 @@ autoload cookie will make Emacs load `notifications' first, then our
 #+begin_src elisp
 (defun eat/org-hook ()
   "Configuration for Org Mode."
-  (eat/prose-mode)
   (org-indent-mode)
   (electric-pair-local-mode -1)
   (electric-quote-local-mode)
@@ -2316,39 +2194,7 @@ autoload cookie will make Emacs load `notifications' first, then our
     (require 'ob)
     (require 'ob-dot)
     (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-    (org-babel-do-load-languages 'org-babel-load-languages load-language-list)
-    ;; https://emacs-china.org/t/org-mode/22313
-    ;; 解决中文 markup 两边需要空格的问题
-    (font-lock-add-keywords 'org-mode
-                            '(("\\cc\\( \\)[/+*_=~][^a-zA-Z0-9/+*_=~\n]+?[/+*_=~]\\( \\)?\\cc?"
-                               (1 (prog1 () (compose-region (match-beginning 1) (match-end 1) ""))))
-                              ("\\cc?\\( \\)?[/+*_=~][^a-zA-Z0-9/+*_=~\n]+?[/+*_=~]\\( \\)\\cc"
-                               (2 (prog1 () (compose-region (match-beginning 2) (match-end 2) "")))))
-                            'append)
-
-    (with-eval-after-load 'ox
-      (defun eli-strip-ws-maybe (text _backend _info)
-        (let* ((text (replace-regexp-in-string
-                      "\\(\\cc\\) *\n *\\(\\cc\\)"
-                      "\\1\\2" text));; remove whitespace from line break
-               ;; remove whitespace from `org-emphasis-alist'
-               (text (replace-regexp-in-string "\\(\\cc\\) \\(.*?\\) \\(\\cc\\)"
-                                               "\\1\\2\\3" text))
-               ;; restore whitespace between English words and Chinese words
-               (text (replace-regexp-in-string "\\(\\cc\\)\\(\\(?:<[^>]+>\\)?[a-z0-9A-Z-]+\\(?:<[^>]+>\\)?\\)\\(\\cc\\)"
-                                               "\\1 \\2 \\3" text))
-               (text (replace-regexp-in-string "\\(\\cc\\) ?\\(\\\\[^{}()]*?\\)\\(\\cc\\)"
-                                               "\\1 \\2 \\3" text)))
-          text))
-      (add-to-list 'org-export-filter-paragraph-functions #'eli-strip-ws-maybe))
-    ;; markup 英文单词的一部分 *ha*ppy
-    (setq org-emphasis-regexp-components '("-[:space:]('\"{[:nonascii:][:alpha:]"
-                                           "-[:space:].,:!?;'\")}\\[[:nonascii:][:alpha:]"
-                                           "[:space:]"
-                                           "."
-                                           1))
-    (org-set-emph-re 'org-emphasis-regexp-components org-emphasis-regexp-components)
-    (org-element-update-syntax)))
+    (org-babel-do-load-languages 'org-babel-load-languages load-language-list)))
 #+end_src
 ** ox
 *** gfm
@@ -2361,7 +2207,8 @@ autoload cookie will make Emacs load `notifications' first, then our
 ** ob
 *** restclient
 #+begin_src elisp
-(setup (:needs "curl")
+(setup ob-restclient
+  (:needs "curl")
   (:package ob-restclient)
   (cl-pushnew '(restclient . t) load-language-list)
   (with-eval-after-load 'ob-restclient
@@ -2370,7 +2217,8 @@ autoload cookie will make Emacs load `notifications' first, then our
 
 *** go
 #+begin_src elisp
-(setup (:needs "go")
+(setup ob-go
+  (:needs "go")
   (:package ob-go)
   (cl-pushnew '(go .t) load-language-list)
   (with-eval-after-load 'ob-go
@@ -2568,8 +2416,9 @@ This is a variadic `cl-pushnew'."
 ** Magit
 *** config
 #+begin_src emacs-lisp
-(setup (:package magit)
+(setup magit
   (:needs "git")
+  (:package magit)
   (:with-hook git-commit-setup-hook
     (:hook git-commit-turn-on-flyspell))
   (:with-hook magit-diff-visit-file
@@ -2584,15 +2433,17 @@ This is a variadic `cl-pushnew'."
 
 *** magit-delta
 #+begin_src emacs-lisp
-(setup (:package magit-delta)
+(setup magit-delta
   (:needs "delta")
+  (:package magit-delta)
   (:hook-into magit-mode-hook))
 #+end_src
 
 *** diff-hl
 #+begin_src emacs-lisp
-(setup (:package diff-hl)
+(setup diff-hl
   (:needs "diff")
+  (:package diff-hl)
   (:with-hook (prog-mode-hook conf-mode-hook)
     (:hook diff-hl-mode))
   (:with-hook dired-mode-hook
@@ -2633,7 +2484,9 @@ This is a variadic `cl-pushnew'."
 (setup (:package dirvish)
   (:with-hook after-init-hook
     (:hook dirvish-override-dired-mode))
-  (:option dirvish-attributes '(vc-state subtree-state all-the-icons))
+  (:option dirvish-attributes '(vc-state subtree-state))
+  (when (eat/modulep '+icon)
+    (add-to-list 'dirvish-attributes 'all-the-icons))
   (:global "<f1>" dirvish-side
            "C-c f" dirvish-fd)
   (with-eval-after-load 'dirvish
@@ -2785,8 +2638,7 @@ Run =docker pull zevlg/telega-server:latest=
         (require 'notmuch)
         (notmuch-poll))
      (lambda (result)
-       (message "eat/async-notmuch-poll: %s" result)
-       (notify-send :title "Emacs" :body result :urgency 'critical))))
+       (message "eat/async-notmuch-poll: %s" result))))
   (defvar +notmuch-delete-tags '("+trash" "-inbox" "-unread")
     "Tags applied to mark email for deletion.
 
@@ -2860,10 +2712,9 @@ variable accordingly.")
 Need =xapian-core=.
 
 #+begin_src elisp
-(straight-use-package '(xeft :type git
-                             :host github
-                             :repo "casouri/xeft"
-                             :files (:defaults "Makefile" "module")))
+;; FIXME version must be a string
+(unless (package-installed-p 'xeft)
+  (package-vc-install "https://github.com/404cn/xeft.git"))
 (setup xeft
   (:only-if (eat/modulep '+note-taking))
   (setq xeft-directory "~/Dropbox/org/roam"
@@ -2907,15 +2758,7 @@ Need =xapian-core=.
                       '((nil "^[[:space:]]*\\(message\\|service\\|enum\\)[[:space:]]+\\([[:alnum:]]+\\)" 2)))))))
 #+end_src
 
-* TODO TOOD
-** aweshell
-#+begin_src emacs-lisp
-(straight-use-package '(aweshell :type git :host github :repo "manateelazycat/aweshell"))
-#+end_src
-** emacs-eat
-#+begin_src emacs-lisp
-(setup (:package eat))
-#+end_src
+* TOOD
 * Site Lisp
 ** Load Path
 #+begin_src elisp
