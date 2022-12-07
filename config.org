@@ -2124,7 +2124,7 @@ Center current window.
 ** Ghelp
 #+begin_src elisp
 (unless (package-installed-p 'ghelp)
-  (package-vc-install "https://github.com/404cn/ghelp.git"))
+  (package-vc-install "https://github.com/casouri/ghelp.git"))
 (setup ghelp
   (:autoload
    ghelp-describe
@@ -2712,9 +2712,8 @@ variable accordingly.")
 Need =xapian-core=.
 
 #+begin_src elisp
-;; FIXME version must be a string
 (unless (package-installed-p 'xeft)
-  (package-vc-install "https://github.com/404cn/xeft.git"))
+  (package-vc-install "https://github.com/casouri/xeft.git"))
 (setup xeft
   (:only-if (eat/modulep '+note-taking))
   (setq xeft-directory "~/Dropbox/org/roam"
