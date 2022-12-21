@@ -1001,7 +1001,7 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 
 *** Misc
 #+begin_src emacs-lisp
-(setup (:package tao-theme timu-spacegrey-theme kaolin-themes spacemacs-theme eziam-themes)
+(setup (:package tao-theme timu-spacegrey-theme kaolin-themes spacemacs-theme eziam-themes adwaita-dark-theme)
   (:option  kaolin-themes-underline-wave nil
             kaolin-themes-modeline-border nil
             kaolin-themes-modeline-padded 4
