@@ -1772,9 +1772,10 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 *** Apheleia
 #+begin_src elisp
 (setup (:package apheleia)
-  (:hook-into go-mode)
+  (:hook-into go-mode go-ts-mode)
   (:option apheleia-remote-algorithm 'local)
   (with-eval-after-load 'apheleia
+    (push '(go-ts-mode . gofmt) apheleia-mode-alist)
     (setf (alist-get 'gofmt apheleia-formatters)
           '("goimports"))))
 #+end_src
