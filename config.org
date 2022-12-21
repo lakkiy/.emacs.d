@@ -1593,12 +1593,6 @@ Need rime module.
            corfu-quit-at-boundary t
            corfu-auto t)
   (with-eval-after-load 'corfu
-    ;; tab in corfu-map
-    (defun eat/corfu-complete ()
-      (interactive)
-      (or (yas-expand)
-          ;; NOTE `corfu-complete' sometimes didn't quit corfu after complete
-          (corfu-insert)))
     (:bind-into corfu-map
       ;; quit corfu completion and back to meow normal mode
       "<escape>" (lambda ()
@@ -1606,28 +1600,24 @@ Need rime module.
                    (corfu-quit)
                    (when (meow-insert-mode-p)
                      (meow-insert-exit)))
-      "<tab>" eat/corfu-complete
-      "TAB" eat/corfu-complete
-      "RET" nil)
-
-    ;; tab in yas-keymap
-    (defun eat/corfu-insert-or-maybe-expand ()
-      "Try complete current cond or `yas-next-field-or-maybe-expand'.
-
-Sometime lsp client return a snippet and complete didn't work(TAB will jump to next field),
-so try complete filst, if there nothing to complete then try to jump to next field or expand."
-      (interactive)
-      (or (corfu-insert)
-          (yas-next-field-or-maybe-expand)))
-    (with-eval-after-load 'yasnippet
-      (:bind-into yas-keymap
-        "<tab>" eat/corfu-insert-or-maybe-expand
-        "TAB" eat/corfu-insert-or-maybe-expand)))
+      "RET" nil))
   ;; corfu-terminal
   (:with-hook corfu-mode-hook
     (:hook (lambda ()
              (unless (display-graphic-p)
                (corfu-terminal-mode +1))))))
+
+(defun eat/yas-next-field-or-maybe-expand ()
+  "Try complete current cond or `yas-next-field-or-maybe-expand'.
+
+Sometime lsp client return a snippet and complete didn't work(TAB will jump to next field),
+so try complete filst, if there nothing to complete then try to jump to next field or expand."
+  (interactive)
+  (or (corfu-insert) ;; NOTE this works
+      (yas-next-field-or-maybe-expand)))
+(with-eval-after-load 'yasnippet
+  (define-key yas-keymap (kbd "<tab>") 'eat/yas-next-field-or-maybe-expand)
+  (define-key yas-keymap (kbd "TAB") 'eat/yas-next-field-or-maybe-expand))
 #+end_src
 ** Yasnippet
 #+begin_src elisp
