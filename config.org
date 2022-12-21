@@ -1631,7 +1631,7 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 #+end_src
 ** Yasnippet
 #+begin_src elisp
-(setup (:package yasnippet yasnippet-snippets)
+(setup (:package yasnippet)
   (:with-hook (prog-mode-hook conf-mode-hook)
     (:hook yas-minor-mode))
   (with-eval-after-load 'yasnippet
