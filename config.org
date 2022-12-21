@@ -1928,6 +1928,26 @@ When expand snippet, try complete if there's acm cond, or run `yas-next-field-or
     (eglot-reconnect)))
 (global-set-key [f10] #'eat/lsp-reconnect)
 #+end_src
+** Tree-sitter
+1. Install =tree-sitter= on system.
+2. Build emacs with tree sitter =--with-tree-sitter=.
+3. Install language definitions to =/usr/local/lib= or =~/.config/emacs/tree-sitter= or =treesit-extra-load-path=.
+4. On windows, copy dll files to Emacs’s bin directory.
+
+Also check:
+[[https://git.savannah.gnu.org/cgit/emacs.git/tree/admin/notes/tree-sitter/starter-guide?h=emacs-29][Emacs tree sitter start guide.]]
+[[https://github.com/casouri/tree-sitter-module][Tree sitter language definitions build script.]]
+
+#+begin_src emacs-lisp
+(when (treesit-available-p)
+  (push '(go-mode . go-ts-mode) major-mode-remap-alist)
+  (push '(go-dot-mod-mode . go-mod-ts-mode) major-mode-remap-alist)
+  (push '(css-mode . css-ts-mode) major-mode-remap-alist)
+  (push '(python-mode . python-ts-mode) major-mode-remap-alist)
+  (push '(javascript-mode . js-ts-mode) major-mode-remap-alist)
+  (push '(c-mode . c-ts-mode) major-mode-remap-alist)
+  (push '(c++-mode . c++-ts-mode) major-mode-remap-alist))
+#+end_src
 ** Citre
 #+begin_src elisp
 (setup citre
