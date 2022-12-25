@@ -2563,8 +2563,6 @@ Run =docker pull zevlg/telega-server:latest=
 #+begin_src elisp
 (setup (:only-if (eat/modulep '+telega))
   (:package telega company)
-  (:with-hook telega-load-hook
-    (:hook(telega-notifications-mode telega-appindicator-mode)))
   (:option telega-use-docker t
            telega-chat-fill-column 75
            telega-server-libs-prefix "/usr")
@@ -2597,6 +2595,8 @@ Run =docker pull zevlg/telega-server:latest=
   (add-hook 'telega-chat-update-hook 'lg-telega-chat-update)
 
   (with-eval-after-load 'telega
+    (:with-hook telega-load-hook
+      (:hook(telega-notifications-mode telega-appindicator-mode)))
     ;; ignore blocked user
     (add-hook 'telega-msg-ignore-predicates
               (telega-match-gen-predicate "msg-" '(sender blocked)))
