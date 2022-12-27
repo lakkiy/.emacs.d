@@ -59,6 +59,7 @@
 
 (setup (:package elpa-mirror)
   (:option elpamr-default-output-directory "~/.myelpa"))
+
 #+end_src
 ** Variables
 #+begin_src elisp
@@ -99,6 +100,24 @@
   (gethash module eat/module--hash-table))
 #+end_src
 ** Optimization
+*** TODO on.el
+Work even =describe-variable= it’s value is nil.
+But manual =add-hook= then describe, it’s value is not nil.
+#+begin_src emacs-lisp
+(unless (package-installed-p 'on)
+  (package-vc-install "https://gitlab.com/ajgrf/on.el"))
+(require 'on)
+#+end_src
+
+*** gchm
+#+begin_src elisp
+(setup (:package gcmh)
+  (:with-hook after-init-hook
+    (:hook gcmh-mode))
+  (:option gcmh-idle-delay 5
+           gcmh-high-cons-threshold #x6400000))
+#+end_src
+
 #+begin_src elisp
 ;; bind `describe-keymap', added in emacs 28
 (global-set-key (kbd "C-h C-k") #'describe-keymap)
@@ -226,15 +245,6 @@
  split-width-threshold 120
  )
 #+end_src
-*** GCMH
-#+begin_src elisp
-(setup (:package gcmh)
-  (:with-hook after-init-hook
-    (:hook gcmh-mode))
-  (:option gcmh-idle-delay 5
-           gcmh-high-cons-threshold #x6400000))
-#+end_src
-
 ** PATH
 #+begin_src elisp
 ;;; Setup PATH
@@ -300,7 +310,7 @@
 *** recentf
 #+begin_src emacs-lisp
 (setup recentf
-  (:with-hook after-init-hook
+  (:with-hook on-first-input-hook
     (:hook recentf-mode))
   (:option
    recentf-max-saved-items 1000
@@ -345,6 +355,7 @@
 *** project.el
 #+begin_src elisp
 (setup project
+  (add-hook 'compilation-start-hook #'end-of-buffer)
   (defun eat/project-name ()
     (file-name-nondirectory
      (directory-file-name
@@ -490,16 +501,10 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 #+end_src
 
 * Window
-** Winner
-#+begin_src elisp
-(setup winner
-  (:with-hook (after-init-hook)
-    :hook winner-mode)
-  (setq winner-dont-bind-my-keys t))
-#+end_src
 ** Change Default Behavior of Split Window
 #+begin_src elisp
 ;; When splitting window, show (other-buffer) in the new window
+
 (defun split-window-func-with-other-buffer (split-function)
   (lambda (&optional arg)
     "Split this window and switch to the new window unless ARG is provided."
@@ -510,9 +515,8 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
       (unless arg
         (select-window target-window)))))
 
-;; FIXME
-;; (global-set-key (kbd "C-x 2") (split-window-func-with-other-buffer 'split-window-vertically))
-;; (global-set-key (kbd "C-x 3") (split-window-func-with-other-buffer 'split-window-horizontally))
+(global-set-key (kbd "C-x 2") (split-window-func-with-other-buffer 'split-window-vertically))
+(global-set-key (kbd "C-x 3") (split-window-func-with-other-buffer 'split-window-horizontally))
 
 (defun sanityinc/toggle-delete-other-windows ()
   "Delete other windows in frame if any, or restore previous window config."
@@ -547,7 +551,14 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 (global-set-key (kbd "C-x |") 'split-window-horizontally-instead)
 (global-set-key (kbd "C-x _") 'split-window-vertically-instead)
 #+end_src
-** Ace-window
+** winner
+#+begin_src elisp
+(setup winner
+  (:with-hook on-init-ui-hook
+    (:hook winner-mode))
+  (setq winner-dont-bind-my-keys t))
+#+end_src
+** ace-window
 #+begin_src elisp
 (setup (:package ace-window)
   (global-set-key (kbd "M-o") 'ace-window)
@@ -571,12 +582,11 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
                  aw--select-window))
     (advice-add cmd :after #'eat/pulse-momentary-line)))
 #+end_src
-** Popper
+** popper
 #+begin_src elisp
 (setup (:package popper)
-  (:with-hook after-init-hook
-    (:hook (lambda ()
-             (popper-mode +1))))
+  (:with-hook on-init-ui-hook
+    (:hook popper-mode))
   (setq popper-reference-buffers
         '("\\*Messages\\*"
           "Output\\*$"
@@ -589,6 +599,7 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
           "^\\*shell.*\\*$"  shell-mode  ;shell as a popup
           "^\\*term.*\\*$"   term-mode   ;term as a popup
           "^\\*vterm.*\\*$"  vterm-mode  ;vterm as a popup
+          "^\\*eat.*\\*$"    eat-mode    ;eat as a popup
 
           ;; help & message
           help-mode
@@ -605,6 +616,12 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
        (floor (frame-height) 3)
        (floor (frame-height) 3)))
     (setq popper-window-height #'my-popper-fit-window-height)))
+#+end_src
+** window-numbering
+#+begin_src emacs-lisp
+(setup (:package window-numbering)
+  (:autoload window-numbering-mode)
+  (add-hook 'after-init-hook #'window-numbering-mode))
 #+end_src
 * Buffer
 ** Functions
@@ -1001,18 +1018,23 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 
 *** Misc
 #+begin_src emacs-lisp
-(setup (:package tao-theme timu-spacegrey-theme kaolin-themes spacemacs-theme eziam-themes adwaita-dark-theme)
-  (:option  kaolin-themes-underline-wave nil
-            kaolin-themes-modeline-border nil
-            kaolin-themes-modeline-padded 4
-            spacemacs-theme-comment-italic t
-            spacemacs-theme-keyword-italic t
-            spacemacs-theme-org-agenda-height t
-            spacemacs-theme-org-bold t
-            spacemacs-theme-org-height t
-            spacemacs-theme-org-highlight t
-            spacemacs-theme-org-priority-bold t
-            spacemacs-theme-underline-parens t))
+(setup (:package timu-spacegrey-theme kaolin-themes spacemacs-theme eziam-themes)
+  (:option eziam-color-comments t
+           kaolin-themes-underline-wave nil
+           kaolin-themes-modeline-border nil
+           kaolin-themes-modeline-padded 4
+           spacemacs-theme-comment-italic t
+           spacemacs-theme-keyword-italic t
+           spacemacs-theme-org-agenda-height t
+           spacemacs-theme-org-bold t
+           spacemacs-theme-org-height t
+           spacemacs-theme-org-highlight t
+           spacemacs-theme-org-priority-bold t
+           spacemacs-theme-underline-parens t))
+
+
+(unless (package-installed-p 'carbon-theme)
+  (package-vc-install "https://github.com/DogLooksGood/carbon-theme.git"))
 #+end_src
 ** Mode line
 #+begin_src elisp
@@ -1942,7 +1964,6 @@ Also check:
 ** Citre
 #+begin_src elisp
 (setup citre
-  (:needs "ctags")
   (:package citre)
   (:option citre-default-create-tags-file-location 'global-cache
            citre-use-project-root-when-creating-tags t
@@ -1969,7 +1990,7 @@ Also check:
     (setenv "GTAGSLABEL" "native-pygments"))
   (with-eval-after-load 'citre-peek
     (define-key citre-peek-keymap (kbd "M-l r")
-      'citre-peek-through-references))
+                'citre-peek-through-references))
 
   (defun eat/citre-enable ()
     (interactive)
@@ -1994,7 +2015,6 @@ Also check:
 *** Go
 #+begin_src emacs-lisp
 (setup go-mode
-  (:needs "go")
   (:package go-mode flymake-go-staticcheck go-gen-test gotest go-tag go-dlv go-fill-struct go-impl)
   ;; Go-mode
   ;; Install or update tools
@@ -2057,34 +2077,31 @@ it enable on all go buffer."
      "C-c t r" go-tag-remove)))
 #+end_src
 *** Nix
+Install =rnix-lsp= and =nixfmt=.
 #+begin_src emacs-lisp
 (setup nix-mode
-  (:needs "nix")
   (:package nix-mode))
 #+end_src
 
 *** Clojure
 #+begin_src elisp
 (setup clojure-mode
-  (:needs "clojure")
   (:package clojure-mode cider))
 #+end_src
 *** Lua
 #+begin_src elisp
 (setup lua-mode
-  (:needs "lua")
   (:package lua-mode))
 #+end_src
 *** Rust
 #+begin_src elisp
 (setup rust-mode
-  (:needs "rustc")
   (:package rust-mode))
+
 #+end_src
 *** Typescript
 #+begin_src elisp
 (setup typescript-mode
-  (:needs "tsc")
   (:package typescript-mode)
   (:option typescript-indent-level 2))
 #+end_src
@@ -2115,8 +2132,7 @@ Center current window.
 #+end_src
 ** Rg
 #+begin_src elisp
-(setup (:needs "rg")
-  (:package rg))
+(setup (:package rg))
 #+end_src
 ** Translate
 #+begin_src elisp
@@ -2155,7 +2171,6 @@ Center current window.
 ** Restclient
 #+begin_src emacs-lisp
 (setup restclient
-  (:needs "curl")
   (:package restclient)
   (defun eat/restclient ()
     "Work with `rest' in the *restclient* buffer."
@@ -2219,7 +2234,6 @@ Center current window.
 *** restclient
 #+begin_src elisp
 (setup ob-restclient
-  (:needs "curl")
   (:package ob-restclient)
   (cl-pushnew '(restclient . t) load-language-list)
   (with-eval-after-load 'ob-restclient
@@ -2229,7 +2243,6 @@ Center current window.
 *** go
 #+begin_src elisp
 (setup ob-go
-  (:needs "go")
   (:package ob-go)
   (cl-pushnew '(go .t) load-language-list)
   (with-eval-after-load 'ob-go
@@ -2428,7 +2441,6 @@ This is a variadic `cl-pushnew'."
 *** config
 #+begin_src emacs-lisp
 (setup magit
-  (:needs "git")
   (:package magit)
   (:with-hook git-commit-setup-hook
     (:hook git-commit-turn-on-flyspell))
@@ -2445,16 +2457,16 @@ This is a variadic `cl-pushnew'."
 *** magit-delta
 #+begin_src emacs-lisp
 (setup magit-delta
-  (:needs "delta")
   (:package magit-delta)
+  (:needs "delta")
   (:hook-into magit-mode-hook))
 #+end_src
 
 *** diff-hl
 #+begin_src emacs-lisp
 (setup diff-hl
-  (:needs "diff")
   (:package diff-hl)
+  (:needs "diff")
   (:with-hook (prog-mode-hook conf-mode-hook)
     (:hook diff-hl-mode))
   (:with-hook dired-mode-hook
@@ -2482,11 +2494,10 @@ This is a variadic `cl-pushnew'."
   (when eat/macp
     (setq insert-directory-program "gls"))
   (:option dired-dwim-target t
-           dired-kill-when-opening-new-dired-buffer t
-           dired-listing-switches
-           "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
+           dired-kill-when-opening-new-dired-buffer t)
   (with-eval-after-load 'dired
-    (:option dired-recursive-deletes 'top)
+    (:option dired-listing-switches
+             "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
     (:bind
      "h" dired-up-directory
      [mouse-2] dired-find-file
@@ -2525,6 +2536,7 @@ This is a variadic `cl-pushnew'."
      "<mouse-3>" dired-mouse-find-file)))
 #+end_src
 ** TODO Terminal
+Use eat under linux and macos, use eshell under windows.
 #+begin_src elisp
 (setup eshell
   (:global "C-`" eshell))
@@ -2532,6 +2544,9 @@ This is a variadic `cl-pushnew'."
 ;; Quick editing in `describe-variable'
 (with-eval-after-load 'help-fns
   (put 'help-fns-edit-variable 'disabled nil))
+
+(setup (:package eat)
+  (:option eat-kill-buffer-on-exit t))
 #+end_src
 * Module
 ** Benchmark
@@ -2638,7 +2653,8 @@ Run =docker pull zevlg/telega-server:latest=
 
 ** Mail (notmuch)
 #+begin_src elisp
-(setup (:and (:needs "notmuch") (:only-if (eat/modulp +mail)))
+(setup notmuch
+  (:only-if (eat/modulep '+mail))
   (:package notmuch)
   (defun eat/async-notmuch-poll ()
     (interactive)
@@ -2741,7 +2757,8 @@ Need =xapian-core=.
 #+end_src
 ** Kubernetes
 #+begin_src emacs-lisp
-(setup (and (:needs "kubectl") (:only-if (eat/modulep '+kubernetes)))
+(setup kubernetes
+  (:only-if (eat/modulep '+kubernetes))
   (:package kubernetes)
   (with-eval-after-load 'kubernetes
     (:option kubernetes-poll-frequency 3600
@@ -2768,7 +2785,6 @@ Need =xapian-core=.
                       '((nil "^[[:space:]]*\\(message\\|service\\|enum\\)[[:space:]]+\\([[:alnum:]]+\\)" 2)))))))
 #+end_src
 
-* TOOD
 * Site Lisp
 ** Load Path
 #+begin_src elisp
@@ -4489,257 +4505,6 @@ backward."
 ;;; flique.el ends here
 #+end_src
 
-** window-numbering
-#+begin_src elisp
-(setup window-numbering
-  (:autoload window-numbering-mode)
-  (:with-hook (after-init-hook)
-    (:hook window-numbering-mode)))
-#+end_src
-
-*** Source
-#+begin_src elisp :tangle site-lisp/window-numbering.el
-;;; window-numbering.el --- Numbered window shortcuts
-;;
-;; Copyright (C) 2006-2007, 2013, 2015 Nikolaj Schumacher <bugs * nschum , de>
-;;
-;; Author: Nikolaj Schumacher <bugs * nschum de>
-;; Version: 1.1.2
-;; Keywords: faces, matching
-;; URL: http://nschum.de/src/emacs/window-numbering-mode/
-;; Compatibility: GNU Emacs 22.x, GNU Emacs 23.x, GNU Emacs 24.x
-;;
-;; This file is NOT part of GNU Emacs.
-;;
-;; This program is free software; you can redistribute it and/or
-;; modify it under the terms of the GNU General Public License
-;; as published by the Free Software Foundation; either version 2
-;; of the License, or (at your option) any later version.
-;;
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-;;
-;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
-;;
-;;; Commentary:
-;;
-;; Enable window-numbering-mode and use M-1 through M-0 to navigate.
-;;
-;; If you want to affect the numbers, use window-numbering-before-hook or
-;; window-numbering-assign-func.
-;; For instance, to always assign the calculator window the number 9, add the
-;; following to your .emacs:
-;;
-;; (setq window-numbering-assign-func
-;;       (lambda () (when (equal (buffer-name) "*Calculator*") 9)))
-;;
-;;; Changes Log:
-;; 2022-07-06
-;;
-;;   Use cl-lib instead of cl.
-;;   Update `define-minor-mode' key.
-;;
-;; Doglooksgod
-;;
-;;    Fix numbering of minibuffer for recent Emacs versions.
-;;
-;; 2013-03-23 (1.1.2)
-;;    Fix numbering in terminal mode with menu bar visible.
-;;    Add face for window number.  (thanks to Chen Bin)
-;;
-;; 2008-04-11 (1.1.1)
-;;    Added possibility to delete window with prefix arg.
-;;    Cleaned up code and migrated to `defcustom'.
-;;
-;; 2007-02-18 (1.1)
-;;    Added window-numbering-before-hook, window-numbering-assign-func.
-;;
-;;; Code:
-
-(eval-when-compile (require 'cl-lib))
-
-(push "^No window numbered .$" debug-ignored-errors)
-
-(defgroup window-numbering nil
-  "Numbered window shortcuts"
-  :group 'convenience)
-
-(defcustom window-numbering-auto-assign-0-to-minibuffer t
-  "*If non-nil, `window-numbering-mode' assigns 0 to the minibuffer if active."
-  :group 'window-numbering
-  :type '(choice (const :tag "Off" nil)
-                 (const :tag "On" t)))
-
-(defcustom window-numbering-before-hook nil
-  "*Hook called before `window-numbering-mode' starts assigning numbers.
-The number of windows that will be numbered is passed as a parameter.
-Use `window-numbering-assign' to manually assign some of them a number.
-If you want to assign a number to just one buffer, use
-`window-numbering-assign-func' instead."
-  :group 'window-numbering
-  :type 'hook)
-
-(defcustom window-numbering-assign-func nil
-  "*Function called for each window by `window-numbering-mode'.
-This is called before automatic assignment begins.  The function should
-return a number to have it assigned to the current-window, nil otherwise."
-  :group 'window-numbering
-  :type 'function)
-
-(defconst window-numbering-mode-line-position 1
-  "The position in the mode-line `window-numbering-mode' displays the number.")
-
-(defface window-numbering-face
-  '()
-  "Face used for the number in the mode-line."
-  :group 'window-numbering)
-
-(defvar window-numbering-table nil
-  "table -> (window vector . number table)")
-
-(defun select-window-by-number (i &optional arg)
-  "Select window given number I by `window-numbering-mode'.
-If prefix ARG is given, delete the window instead of selecting it."
-  (interactive "P")
-  (let ((windows (car (gethash (selected-frame) window-numbering-table)))
-        window)
-    (if (and (>= i 0) (< i 10)
-             (setq window (aref windows i)))
-        (if arg
-            (delete-window window)
-          (select-window window))
-      (error "No window numbered %s" i))))
-
-;; define interactive functions for keymap
-(dotimes (i 10)
-  (eval `(defun ,(intern (format "select-window-%s" i)) (&optional arg)
-           ,(format "Select the window with number %i." i)
-           (interactive "P")
-           (select-window-by-number ,i arg))))
-
-(defun window-numbering-calculate-left (windows)
-  (let ((i 9) left)
-    (while (>= i 0)
-      (let ((window (aref windows i)))
-        (unless window
-          (push (% (1+ i) 10) left)))
-      (cl-decf i))
-    left))
-
-(defvar window-numbering-windows nil
-  "A vector listing the window for each number.")
-(defvar window-numbering-numbers
-  "A hash map containing each window's number.")
-(defvar window-numbering-left
-  "A list of unused window numbers.")
-
-(defun window-numbering-assign (window &optional number)
-  (if number
-      (if (aref window-numbering-windows number)
-          (progn (message "Number %s assigned to two buffers (%s and %s)"
-                          number window (aref window-numbering-windows number))
-                 nil)
-        (setf (aref window-numbering-windows number) window)
-        (puthash window number window-numbering-numbers)
-        (setq window-numbering-left (delq number window-numbering-left))
-        t)
-    ;; else default adding
-    (when window-numbering-left
-      (unless (gethash window window-numbering-numbers)
-        (let ((number (car window-numbering-left)))
-          (window-numbering-assign window number)
-          number)))))
-
-(defun window-numbering-update ()
-  "Update the window numbering for the current frame.
-Optional parameter PREASSIGNED-WINDOWS is a hashmap already mapping some
-windows to numbers."
-  (setq window-numbering-windows (make-vector 10 nil)
-        window-numbering-numbers (make-hash-table :size 10)
-        window-numbering-left
-        (window-numbering-calculate-left window-numbering-windows))
-  (puthash (selected-frame)
-           (cons window-numbering-windows window-numbering-numbers)
-           window-numbering-table)
-  (when (and window-numbering-auto-assign-0-to-minibuffer
-             (active-minibuffer-window))
-    (window-numbering-assign (active-minibuffer-window) 0))
-  (let ((windows (window-list nil 0 (frame-first-window))))
-    (run-hook-with-args 'window-numbering-before-hook windows)
-    (when window-numbering-assign-func
-      (mapc (lambda (window)
-              (with-selected-window window
-                (with-current-buffer (window-buffer window)
-                  (let ((num (funcall window-numbering-assign-func)))
-                    (when num
-                      (window-numbering-assign window num))))))
-            windows))
-    (dolist (window windows)
-      (window-numbering-assign window))))
-
-(defun window-numbering-get-number-string (&optional window)
-  (let ((s (int-to-string (window-numbering-get-number window))))
-    (propertize s 'face 'window-numbering-face)))
-
-(defun window-numbering-get-number (&optional window)
-  (gethash (or window (selected-window))
-           (cdr (gethash (selected-frame) window-numbering-table))))
-
-(defvar window-numbering-keymap
-  (let ((map (make-sparse-keymap)))
-    (define-key map "\M-0" 'select-window-0)
-    (define-key map "\M-1" 'select-window-1)
-    (define-key map "\M-2" 'select-window-2)
-    (define-key map "\M-3" 'select-window-3)
-    (define-key map "\M-4" 'select-window-4)
-    (define-key map "\M-5" 'select-window-5)
-    (define-key map "\M-6" 'select-window-6)
-    (define-key map "\M-7" 'select-window-7)
-    (define-key map "\M-8" 'select-window-8)
-    (define-key map "\M-9" 'select-window-9)
-    map)
-  "Keymap used in by `window-numbering-mode'.")
-
-;;;###autoload
-(define-minor-mode window-numbering-mode
-  "A minor mode that assigns a number to each window."
-  :init-value nil :lighter nil :keymap window-numbering-keymap :global t
-  (if window-numbering-mode
-      (unless window-numbering-table
-        (save-excursion
-          (setq window-numbering-table (make-hash-table :size 16))
-          (add-hook 'minibuffer-setup-hook 'window-numbering-update)
-          (add-hook 'window-configuration-change-hook
-                    'window-numbering-update)
-          (dolist (frame (frame-list))
-            (select-frame frame)
-            (window-numbering-update))))
-    (window-numbering-clear-mode-line)
-    (remove-hook 'minibuffer-setup-hook 'window-numbering-update)
-    (remove-hook 'window-configuration-change-hook
-                 'window-numbering-update)
-    (setq window-numbering-table nil)))
-
-(defun window-numbering-clear-mode-line ()
-  "Remove the window number of `window-numbering-mode' from the mode-line."
-  (let ((mode-line (default-value 'mode-line-format))
-        (res))
-    (while mode-line
-      (let ((item (car mode-line)))
-        (unless (equal item '(:eval (window-numbering-get-number-string)))
-          (push item res)))
-      (pop mode-line))
-    (setq-default mode-line-format (nreverse res)))
-  (force-mode-line-update t))
-
-(provide 'window-numbering)
-
-;;; window-numbering.el ends here
-#+end_src
-
 ** Themes
 *** nano
 #+begin_src elisp :tangle themes/nano-theme.el
@@ -4956,300 +4721,9 @@ windows to numbers."
 
 ;;; nano-theme.el ends here
 #+end_src
-*** carbon
-#+begin_src elisp :tangle themes/carbon-theme.el
-;;; carbon-theme.el --- A minimal dark theme  -*- lexical-binding: t; -*-
-
-;; Author: Shi Tianshu
-;; Keywords: theme
-;; Package-Requires: ((emacs "28.0.50"))
-;; Version: 1.0.2
-
-;;
-;; This file is not part of GNU Emacs.
-
-;; This program is free software; you can redistribute it and/or
-;; modify it under the terms of the GNU General Public License
-;; as published by the Free Software Foundation; either version 3
-;; of the License, or (at your option) any later version.
-
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-
-;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-;; Boston, MA 02110-1301, USA.
-
-
-;;; Commentary:
-
-;;; This is a minimal light theme.
-
-;;; Code:
-
-(deftheme carbon "A minimal light theme.")
-
-(defvar carbon-theme-header-scales '(1.0 1.0 1.0 1.0 1.0 1.0 1.0)
-  "Scales for headers.")
-
-(let ((bg "#202020")
-      (fg "#A0A0A0")
-      (cm "#707070")
-      (rg "#024347")
-      (hl "#2A2A2A")
-      (lh "#0DA59B")
-      (ss "#353535")
-      (kw "#EEEEEE")
-      (fn "#bfaa6b")
-      (st "#4b9e6b")
-      (str "#4a95b5")
-      (num "#9466a5")
-      (doc "#cc725b")
-      (cur "#EFEFEF")
-      (pop "#272727")
-      (tb "#000000"))
-  (custom-theme-set-faces
-   `carbon
-   ;; We don't specify default foreground/background in TTY.
-   `(default                        ((((type tty)))
-                                     (((type graphic)) :background ,bg :foreground ,fg)))
-   ;; Basics
-   `(cursor                         ((t (:background ,cur))))
-   `(region                         ((t (:background ,rg :extend nil))))
-   `(hl-line                        ((t (:background ,hl))))
-   `(fringe                         ((t (:background ,bg))))
-   `(show-paren-match               ((t (:background ,hl :box (:line-width (-1 . -1) :style nil)))))
-   `(highlight                      ((t (:inverse-video t))))
-   `(button                         ((t (:box (:line-width (-1 . -1))))))
-   `(vertical-border                ((t ())))
-   `(window-divider                 ((t (:foreground ,cm))))
-   `(window-divider-first-pixel     ((t (:foreground ,cm))))
-   `(window-divider-last-pixel      ((t (:foreground ,cm))))
-   `(line-number                    ((t (:foreground ,cm))))
-   `(line-number-current-line       ((t (:foreground ,fn :background ,hl))))
-   `(completions-common-part        ((t ())))
-   `(minibuffer-prompt              ((t ())))
-   `(lazy-highlight                 ((t (:foreground ,lh :underline t))))
-   `(compilation-info               ((t ())))
-   `(compilation-warning            ((t ())))
-   `(warning                        ((t ())))
-   `(match                          ((t (:inverse-video t))))
-   `(secondary-selection            ((t (:background ,ss :extend nil))))
-   `(help-key-binding               ((t (:bold t))))
-   `(shadow                         ((t (:foreground ,cm))))
-
-   ;; ISearch
-   `(isearch                        ((t (:inverse-video t))))
-   `(isearch-fail                   ((t (:inverse-video t))))
-
-   ;; Font Locks
-   `(font-lock-comment-face         ((t (:foreground ,doc))))
-   `(font-lock-comment-delimiter-face  ((t (:inherit font-lock-comment-face))))
-   `(font-lock-string-face          ((t (:foreground ,str))))
-   `(font-lock-doc-face             ((t (:foreground ,doc))))
-   `(font-lock-builtin-face         ((t ())))
-   `(font-lock-type-face            ((t ())))
-   `(font-lock-variable-name-face   ((t ())))
-   `(font-lock-keyword-face         ((((type tty)) (:bold t))
-                                     (((type graphic)) (:foreground ,kw))))
-   `(font-lock-constant-face        ((t (:foreground ,st))))
-   `(font-lock-function-name-face   ((t (:foreground ,fn))))
-   `(font-lock-warning-face         ((t ())))
-   `(font-lock-preprocessor-face    ((t ())))
-   `(error                          ((t (:background "red" :foreground ,fn))))
-
-   `(highlight-numbers-number       ((t (:foreground ,num))))
-
-   ;; shell
-   `(sh-quoted-exec                 ((t ())))
-
-   ;; IMenu
-   `(imenu-list-entry-face-0          ((t ())))
-   `(imenu-list-entry-subalist-face-0 ((t (:bold t))))
-
-   ;; Mode Line
-   `(tab-line                       ((t ())))
-   `(mode-line                      ((t (:background ,fg :foreground ,bg))))
-   `(mode-line-inactive             ((t (:background ,cm :foreground ,hl))))
-   `(header-line                    ((t ())))
-   `(header-line-inactive           ((t ())))
-
-   ;; Company
-   `(company-tooltip-common         ((t ())))
-   `(company-tooltip-common-selection ((t ())))
-   `(company-tooltip                ((t (:background ,pop))))
-   `(company-tooltip-search         ((t ())))
-   `(company-tooltip-selection      ((t (:inverse-video t))))
-   `(company-tooltip-annotation     ((t ())))
-   `(company-scrollbar-bg           ((t (:background ,cm))))
-   `(company-scrollbar-fg           ((t (:background ,fg))))
-   `(company-template-field         ((t (:inherit yas-field-highlight-face))))
-
-   ;; Yasnippet
-   `(yas-field-highlight-face       ((t (:underline t))))
-
-   ;; Meow
-   `(meow-beacon-indicator          ((t (:bold t))))
-   `(meow-keypad-indicator          ((t (:bold t))))
-   `(meow-insert-indicator          ((t (:bold t))))
-   `(meow-normal-indicator          ((t (:bold t))))
-   `(meow-motion-indicator          ((t (:bold t))))
-   `(meow-keypad-cursor             ((t (:background ,cur))))
-   `(meow-insert-cursor             ((t (:background ,cur))))
-   `(meow-normal-cursor             ((t (:background ,cur))))
-   `(meow-motion-cursor             ((t (:background ,cur))))
-   `(meow-unknown-cursor            ((t (:background ,cur))))
-   `(meow-beacon-cursor             ((t (:background ,cur))))
-
-   ;; colorful paren
-   `(colorful-round           ((t ())))
-   `(colorful-square          ((t (:foreground ,str))))
-   `(colorful-curly           ((t (:foreground ,st))))
-   `(colorful-semicolon       ((t (:foreground ,fn))))
-
-   ;; Cider
-   `(cider-result-overlay-face      ((t (:inverse-video t))))
-   `(cider-repl-stderr-face         ((t ())))
-   `(cider-repl-stdout-face         ((t (:foreground "gray60"))))
-   `(cider-test-error-face          ((t (:foreground "yellow" :inverse-video t))))
-
-   ;; Clojure
-   `(clojure-character-face         ((t ())))
-
-   ;; Magit
-   `(magit-branch-local                ((t (:foreground ,st))))
-   `(magit-branch-remote               ((t (:foreground ,fn))))
-   `(magit-header-line                 ((t ())))
-   `(magit-head                        ((t ())))
-   `(magit-section-highlight           ((t (:background ,hl))))
-   `(magit-section-heading             ((t ())))
-   `(magit-section-selection           ((t ())))
-   `(magit-diff-removed                ((t (:background "#311"))))
-   `(magit-diff-removed-highlight      ((t (:background "#311"))))
-   `(magit-diff-added                  ((t (:background "#131"))))
-   `(magit-diff-added-highlight        ((t (:background "#131"))))
-   `(magit-diff-context-highlight      ((t (:background ,hl :foreground ,fg))))
-
-   ;; ;; SMerge
-   ;; `(smerge-refined-added           ((t (:background "#253325"))))
-   ;; `(smerge-lower                   ((t (:background "#173017"))))
-   ;;
-   ;; Diff-hl
-   `(diff-hl-insert                 ((t (:foreground ,cm :background ,cm))))
-   `(diff-hl-change                 ((t (:foreground ,hl :background ,hl))))
-   `(diff-hl-delete                 ((t (:foreground ,fg :background ,fg))))
-
-   `(eshell-prompt                  ((t (:bold t))))
-   ;;
-   ;; ;; Term
-   ;; `(term-color-blue                ((t (:foreground ,blue :background ,blue))))
-   ;; `(term-color-green               ((t (:foreground ,green :background ,green))))
-   ;; `(term-color-red                 ((t (:foreground ,red :background ,red))))
-   ;;
-   ;; ;; Popup
-   ;; `(popup-tip-face                 ((t (:background ,bg+4 :foreground ,fg))))
-   ;; `(popup-isearch-match            ((t (:background "#CFA300" :foreground "black"))))
-   ;;
-   ;; `(tooltip                        ((t ())))
-   ;; `(dired-directory                ((t (:foreground ,light-purple))))
-   ;; `(web-mode-html-attr-name-face   ((t ())))
-   ;; `(web-mode-html-tag-face         ((t ())))
-   ;;
-   ;; Emacs Rime
-   `(rime-preedit-face              ((t (:underline t))))
-   `(rime-cursor-face               ((t (:inherit font-lock-constant-face))))
-   `(rime-indicator-face            ((t ())))
-   `(rime-indicator-dim-face        ((t ())))
-   `(rime-candidate-num-face        ((t ())))
-   `(rime-comment-face              ((t ())))
-   `(rime-code-face                 ((t (:bold t))))
-   `(rime-default-face              ((t ())))
-   `(rime-highlight-candidate-face  ((t ())))
-
-   ;;
-   ;; ;; Web Mode
-   `(web-mode-function-call-face    ((t ())))
-   `(web-mode-function-name-face    ((t ())))
-   `(web-mode-html-tag-bracket-face ((t (:inherit parenthesis))))
-   `(web-mode-symbol-face           ((t ())))
-   `(css-selector                   ((t ())))
-   ;;
-   ;; Markdown
-   `(markdown-header-face-1         ((t (:underline t :height ,(nth 0 carbon-theme-header-scales)))))
-   `(markdown-header-face-2         ((t (:underline t :height ,(nth 1 carbon-theme-header-scales)))))
-   `(markdown-header-face-3         ((t (:underline t :height ,(nth 2 carbon-theme-header-scales)))))
-   `(markdown-header-face-4         ((t (:underline t :height ,(nth 3 carbon-theme-header-scales)))))
-   `(markdown-header-face-5         ((t (:underline t :height ,(nth 4 carbon-theme-header-scales)))))
-   `(markdown-header-face-6         ((t (:underline t :height ,(nth 5 carbon-theme-header-scales)))))
-   `(markdown-header-face-7         ((t (:underline t :height ,(nth 6 carbon-theme-header-scales)))))
-   ;;
-   ;; ;; Telega
-   `(telega-entity-type-code        ((t ())))
-   `(telega-msg-heading             ((t ())))
-   `(telega-msg-self-title          ((t (:foreground ,fn))))
-   `(telega-unmuted-count           ((t ())))
-   ;;
-   ;; ;; Org-mode
-   `(org-document-title             ((t (:bold t :height ,(nth 0 carbon-theme-header-scales)))))
-   `(org-link                       ((t (:underline t))))
-   `(org-document-title             ((t ())))
-   `(org-code                       ((t (:inherit font-lock-constant-face))))
-   `(org-level-1                    ((t (:inherit font-lock-string-face :height ,(nth 0 carbon-theme-header-scales)))))
-   `(org-level-2                    ((t (:inherit font-lock-function-name-face :height ,(nth 1 carbon-theme-header-scales)))))
-   `(org-level-3                    ((t (:inherit font-lock-keyword-face :height ,(nth 2 carbon-theme-header-scales)))))
-   `(org-level-4                    ((t (:height ,(nth 3 carbon-theme-header-scales)))))
-   `(org-level-5                    ((t (:height ,(nth 4 carbon-theme-header-scales)))))
-   `(org-level-6                    ((t (:height ,(nth 5 carbon-theme-header-scales)))))
-   `(org-level-7                    ((t (:height ,(nth 6 carbon-theme-header-scales)))))
-   ;;
-   ;; ;; Treemacs
-   ;; `(treemacs-root-face             ((t (:inherit font-lock-function-name-face :height 1.4 :underline t))))
-   `(fill-column-indicator          ((t (:foreground ,cm))))
-   `(scroll-bar                     ((t (:foreground ,fg))))
-   `(parenthesis                    ((t (:foreground ,cm))))
-   `(eldoc-box-body                 ((t (:background ,pop :inherit variable-pitch))))
-
-   `(flycheck-warning               ((t (:underline (:style wave :color ,cm)))))
-   `(flycheck-error                 ((t (:underline (:style wave :color ,st)))))
-   `(flymake-warning                ((t (:underline (:style wave :color ,st)))))
-   `(flymake-error                  ((t (:underline (:style wave :color ,st)))))
-   `(flymake-note                   ((t (:underline (:style wave :color ,cm)))))
-
-   `(wgrep-face                     ((t (:underline ,st))))
-
-   `(anzu-mode-line                 ((t (:foreground ,bg :background ,fg))))
-   `(erc-nick-default-face          ((t (:inherit font-lock-keyword-face))))
-   `(erc-input-face                 ((t (:inherit font-lock-function-name-face))))
-   `(erc-timestamp-face             ((t (:inherit font-lock-constant-face))))
-   `(erc-notice-face                ((t (:inherit font-lock-comment-face))))
-
-   `(tab-bar                        ((t (:background ,fg :foreground ,bg))))
-   `(tab-bar-tab                    ((t (:inverse-video t :bold t))))
-   `(tab-bar-tab-inactive           ((t ())))
-
-   `(ansi-color-blue                ((t (:foreground "#169edd"))))
-   `(ansi-color-bright-blue         ((t (:foreground "#169edd"))))
-   `(yascroll:thumb-fringe          ((t (:foreground ,cm :background ,cm))))
-   `(yascroll:thumb-text-area       ((t (:foreground ,cm :background ,cm))))
-
-   `(embark-keybinding              ((t (:inherit font-lock-constant-face))))))
-
-(and load-file-name
-     (boundp 'custom-theme-load-path)
-     (add-to-list 'custom-theme-load-path
-                  (file-name-as-directory
-                   (file-name-directory load-file-name))))
-
-(provide-theme 'carbon)
-
-;;; carbon-theme.el ends here
-#+end_src
-*** default
-#+begin_src elisp :tangle themes/default-theme.el
-(deftheme default "Emacs default theme, better version.")
+*** saltless
+#+begin_src elisp :tangle themes/saltless-theme.el
+(deftheme saltless "Theme, less salt.")
 
 (defvar my-bg-light "#F5F5F5"
   "Light background color, from minder-theme.")
@@ -5260,7 +4734,7 @@ windows to numbers."
 See https://github.com/atom/atom/blob/master/packages/one-dark-syntax/styles/colors.less.")
 
 (custom-theme-set-faces
- `default
+ `saltless
  ;; basic
  `(default           ((((type tty)))
                       (((type graphic)) :background ,my-bg-light)))
@@ -5304,7 +4778,7 @@ See https://github.com/atom/atom/blob/master/packages/one-dark-syntax/styles/col
                   (file-name-as-directory
                    (file-name-directory load-file-name))))
 
-(provide-theme 'default)
+(provide-theme 'saltless)
 #+end_src
 *** grayscale
 #+begin_src elisp :tangle themes/grayscale-theme.el
