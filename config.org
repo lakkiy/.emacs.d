@@ -1784,7 +1784,7 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 *** Apheleia
 #+begin_src elisp
 (setup (:package apheleia)
-  (:hook-into go-mode go-ts-mode)
+  (:hook-into go-mode)
   (:option apheleia-remote-algorithm 'local)
   (with-eval-after-load 'apheleia
     (push '(go-ts-mode . gofmt) apheleia-mode-alist)
@@ -2120,6 +2120,34 @@ Install =rnix-lsp= and =nixfmt=.
 *** Sql
 #+begin_src elisp
 (setq sql-mysql-login-params '(user password server database port))
+#+end_src
+** Tree-sitter
+1. Install =tree-sitter= on system.
+2. Build emacs with tree sitter =--with-tree-sitter=.
+3. Install language definitions to =/usr/local/lib= or =~/.config/emacs/tree-sitter= or =treesit-extra-load-path=.
+4. On windows, copy dll files to Emacs’s bin directory.
+
+Also check:
+[[https://git.savannah.gnu.org/cgit/emacs.git/tree/admin/notes/tree-sitter/starter-guide?h=emacs-29][Emacs tree sitter start guide.]]
+[[https://github.com/casouri/tree-sitter-module][Tree sitter language definitions build script.]]
+
+#+begin_src emacs-lisp
+(when (treesit-available-p)
+  (push '(go-mode . go-ts-mode) major-mode-remap-alist)
+  (push '(go-dot-mod-mode . go-mod-ts-mode) major-mode-remap-alist)
+  (push '(css-mode . css-ts-mode) major-mode-remap-alist)
+  (push '(python-mode . python-ts-mode) major-mode-remap-alist)
+  (push '(javascript-mode . js-ts-mode) major-mode-remap-alist)
+  (push '(c-mode . c-ts-mode) major-mode-remap-alist)
+  (push '(c++-mode . c++-ts-mode) major-mode-remap-alist)
+
+  (setq go-ts-mode-hook go-mode-hook))
+#+end_src
+*** go
+#+begin_src emacs-lisp
+(with-eval-after-load 'go-ts-mode
+  (require 'go-mode)
+  (set-keymap-parent go-ts-mode-map go-mode-map))
 #+end_src
 * Tools
 ** Visual Fill Column
