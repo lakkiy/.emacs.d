@@ -80,7 +80,6 @@
     ;; +blog
     ;; +telega
     ;; +mail
-    ;; +benchmark
     ;; +kubernetes
     ;; +note-taking
     ))
@@ -2576,15 +2575,6 @@ Use eat under linux and macos, use eshell under windows.
   (:option eat-kill-buffer-on-exit t))
 #+end_src
 * Module
-** Benchmark
-#+begin_src elisp
-(setup (:only-if (eat/modulep '+benchmark))
-  (:package benchmark-init)
-  (benchmark-init/activate)
-  (with-eval-after-load 'benchmark-init
-    (add-hook 'after-init-hook 'benchmark-init/deactivate)))
- #+end_src
-
 ** Icon
 #+begin_src elisp
 (setup (:only-if (eat/modulep '+icon))
