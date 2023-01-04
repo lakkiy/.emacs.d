@@ -145,30 +145,9 @@ But manual =add-hook= then describe, it’s value is not nil.
 ;; Don't ping things that look like domain names.
 (setq ffap-machine-p-known 'reject)
 
-;; The nano style for truncated long lines.
-(setq auto-hscroll-mode 'current-line)
-
-  ;; for mouse scroll
 (setq dired-mouse-drag-files t
       mouse-drag-and-drop-region t
       mouse-drag-and-drop-region-cross-program t)
-(if (fboundp 'pixel-scroll-precision-mode)
-    (add-hook 'after-init-hook (lambda () (pixel-scroll-precision-mode))))
-
-;; scroll nand hscroll
-(setq-default
- scroll-step 2
- scroll-margin 2
- hscroll-step 2                                     ; Horizontal Scroll
- hscroll-margin 2
- scroll-conservatively 101
- scroll-up-aggressively 0.01
- scroll-down-aggressively 0.01
- scroll-preserve-screen-position 'always
- auto-window-vscroll nil
- fast-but-imprecise-scrolling nil
- mouse-wheel-scroll-amount '(1 ((shift) . hscroll)) ; use shift + mouse wheel to scrll horizontally
- mouse-wheel-progressive-speed nil)
 
 ;; Contrary to what many Emacs users have in their configs, you don't need
 ;; more than this to make UTF-8 the default coding system:
@@ -181,16 +160,13 @@ But manual =add-hook= then describe, it’s value is not nil.
 (setq-default cursor-in-non-selected-windows nil)
 
 ;; Suppress GUI features and more
-(setq use-file-dialog nil
-      use-dialog-box nil
-      inhibit-splash-screen t
+(setq inhibit-splash-screen t
       inhibit-x-resources t
       inhibit-default-init t
       inhibit-startup-screen t
       inhibit-startup-message t
       inhibit-startup-buffer-menu t)
 
-(setq fast-but-imprecise-scrolling t)
 (setq redisplay-skip-fontification-on-input t)
 
 ;; Pixelwise resize
@@ -236,8 +212,6 @@ But manual =add-hook= then describe, it’s value is not nil.
  truncate-partial-width-windows 65                  ; Don't truncate lines in a window narrower than 65 chars.
  vc-follow-symlinks t                               ; always follow link
  server-client-instructions nil                     ; no client startup messages
- split-height-threshold nil                         ; prefer horizental split
- split-width-threshold 120
  )
 #+end_src
 ** PATH
@@ -466,11 +440,6 @@ Need ripgrep installed(check external program).
 
 * Frame
 #+begin_src elisp
-(setq frame-title-format
-      '((:eval (if (buffer-file-name)
-                   (abbreviate-file-name (buffer-file-name))
-                 "%b"))))
-
 (defvar eat/after-make-console-frame-hooks '()
   "Hooks to run after creating a new TTY frame")
 (defvar eat/after-make-window-system-frame-hooks '()
@@ -485,7 +454,7 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
                    'eat/after-make-window-system-frame-hooks
                  'eat/after-make-console-frame-hooks))))
 
-(add-hook 'after-make-frame-functions 'eat/run-after-make-frame-hooks)
+(add-hook 'server-after-make-frame-hook 'eat/run-after-make-frame-hooks)
 
 (defconst eat/initial-frame (selected-frame)
   "The frame (if any) active during Emacs initialization.")
@@ -891,6 +860,35 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 #+end_src
 
 * UI
+** Windows/frames
+#+begin_src emacs-lisp
+(setq frame-title-format
+      '((:eval (if (buffer-file-name)
+                   (abbreviate-file-name (buffer-file-name))
+                 "%b"))))
+
+(setq use-dialog-box nil
+      ;; Monitors are trending toward wide, rather than tall.
+      split-width-threshold 160
+      split-height-threshold nil)
+#+end_src
+** Scrolling
+#+begin_src emacs-lisp
+(setq hscroll-step 1
+      hscroll-margin 2
+      ;; The nano style for truncated long lines.
+      auto-hscroll-mode 'current-line
+      scroll-margin 0
+      scroll-conservatively 101
+      scroll-preserve-screen-position t
+      auto-window-vscroll nil
+      ;; Use shift + mouse wheel to scrll horizontally.
+      mouse-wheel-scroll-amount '(2 ((shift) . hscroll))
+      mouse-wheel-scroll-amount-horizontal 2)
+
+(if (fboundp 'pixel-scroll-precision-mode)
+    (add-hook 'after-init-hook (lambda () (pixel-scroll-precision-mode))))
+#+end_src
 ** Font
 #+begin_src elisp
 (defun font-installed-p (font-list)
