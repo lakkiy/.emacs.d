@@ -982,16 +982,19 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 (defvar load-theme-hook nil
   "Hooks that run after `load-theme'.")
 
-;; TODO use `enable-theme' instead
-(defun gh/load-theme-advice (f theme-id &optional no-confirm no-enable &rest args)
+(defun eat/load-theme (f theme &optional no-confirm no-enable &rest args)
+  (interactive
+   (list
+    (intern (completing-read "Theme: "
+                             (mapcar #'symbol-name
+				                     (custom-available-themes))))))
   (dolist (theme custom-enabled-themes)
     (disable-theme theme))
-  (apply f theme-id t no-enable args)
+  (if (featurep (intern (format "%s-theme" theme)))
+      (enable-theme theme)
+    (apply f theme t no-enable args))
   (run-hooks 'load-theme-hook))
-
-(advice-add 'load-theme
-            :around
-            #'gh/load-theme-advice)
+(advice-add 'load-theme :around #'eat/load-theme)
 
 (defun eat/tui-load-theme ()
   (when (fboundp 'menu-bar-mode)
