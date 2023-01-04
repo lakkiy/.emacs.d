@@ -2131,13 +2131,24 @@ Also check:
 
 #+begin_src emacs-lisp
 (when (treesit-available-p)
-  (push '(go-mode . go-ts-mode) major-mode-remap-alist)
-  (push '(go-dot-mod-mode . go-mod-ts-mode) major-mode-remap-alist)
-  (push '(css-mode . css-ts-mode) major-mode-remap-alist)
-  (push '(python-mode . python-ts-mode) major-mode-remap-alist)
-  (push '(javascript-mode . js-ts-mode) major-mode-remap-alist)
-  (push '(c-mode . c-ts-mode) major-mode-remap-alist)
-  (push '(c++-mode . c++-ts-mode) major-mode-remap-alist)
+  (setq major-mode-remap-alist
+        '((c-mode          . c-ts-mode)
+          (c++-mode        . c++-ts-mode)
+          (cmake-mode      . cmake-ts-mode)
+          (conf-toml-mode  . toml-ts-mode)
+          (csharp-mode     . csharp-ts-mode)
+          (css-mode        . css-ts-mode)
+          (dockerfile-mode . dockerfile-ts-mode)
+          (go-mode         . go-ts-mode)
+          (go-dot-mod-mode . go-mod-ts-mode)
+          (java-mode       . java-ts-mode)
+          (json-mode       . json-ts-mode)
+          (js-json-mode    . json-ts-mode)
+          (js-mode         . js-ts-mode)
+          (python-mode     . python-ts-mode)
+          (rust-mode       . rust-ts-mode)
+          (sh-mode         . bash-ts-mode)
+          (typescript-mode . typescript-ts-mode)))
 
   (setq go-ts-mode-hook go-mode-hook))
 #+end_src
