@@ -438,7 +438,7 @@ Need ripgrep installed(check external program).
   (:autoload pinyinlib-build-regexp-string))
 #+end_src
 
-* Frame
+* TODO Frame
 #+begin_src elisp
 (defvar eat/after-make-console-frame-hooks '()
   "Hooks to run after creating a new TTY frame")
@@ -454,7 +454,8 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
                    'eat/after-make-window-system-frame-hooks
                  'eat/after-make-console-frame-hooks))))
 
-(add-hook 'server-after-make-frame-hook 'eat/run-after-make-frame-hooks)
+;; FIXME font and theme not work
+;; (add-hook 'server-after-make-frame-hook 'eat/run-after-make-frame-hooks)
 
 (defconst eat/initial-frame (selected-frame)
   "The frame (if any) active during Emacs initialization.")
@@ -2574,14 +2575,15 @@ This is a variadic `cl-pushnew'."
 Use eat under linux and macos, use eshell under windows.
 #+begin_src elisp
 (setup eshell
-  (:global "C-`" eshell))
+  (:package eat)
+  (:global "C-`" eshell)
+  (:option eat-kill-buffer-on-exit t)
+  (add-hook 'eshell-load-hook #'eat-eshell-mode)
+  (add-hook 'eshell-load-hook #'eat-eshell-visual-command-mode))
 
 ;; Quick editing in `describe-variable'
 (with-eval-after-load 'help-fns
   (put 'help-fns-edit-variable 'disabled nil))
-
-(setup (:package eat)
-  (:option eat-kill-buffer-on-exit t))
 #+end_src
 * Module
 ** Icon
