@@ -4,6 +4,7 @@
 * Early init
 #+begin_src elisp :tangle early-init.el
 (setq frame-inhibit-implied-resize t
+      package-enable-at-startup nil
       file-name-handler-alist nil
       message-log-max 16384
       gc-cons-threshold most-positive-fixnum
@@ -28,17 +29,17 @@
 			             ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
                          ("melpa" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/"))
       package-quickstart t)
+(package-activate-all)
 
 (unless (package-installed-p 'setup)
   (package-refresh-contents)
   (package-install 'setup))
-(eval-when-compile
-  (require 'setup))
 
+(require 'setup)
 (setup-define :needs
   (lambda (executable)
     `(unless (executable-find ,executable)
-   ,(setup-quit)))
+       ,(setup-quit)))
   :documentation "If EXECUTABLE is not in the path, stop here."
   :repeatable 1)
 
@@ -55,7 +56,6 @@
 
 (setup (:package elpa-mirror)
   (:option elpamr-default-output-directory "~/.myelpa"))
-
 #+end_src
 ** Variables
 #+begin_src elisp
@@ -317,7 +317,7 @@ But manual =add-hook= then describe, it’s value is not nil.
 *** context-menu
 #+begin_src emacs-lisp
 (setup mouse
-  (:with-hook after-init-hook
+  (:with-hook on-init-ui-hook
     (:hook context-menu-mode)))
 #+end_src
 
@@ -519,7 +519,7 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 ** winner
 #+begin_src elisp
 (setup winner
-  (:with-hook on-init-ui-hook
+  (:with-hook on-first-buffer-hook
     (:hook winner-mode))
   (setq winner-dont-bind-my-keys t))
 #+end_src
@@ -543,14 +543,15 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
                   (winner-undo)
                   (setq this-command 'winner-undo))))
           (?r winner-redo)))
-  (dolist (cmd '(ace-window
-                 aw--select-window))
-    (advice-add cmd :after #'eat/pulse-momentary-line)))
+  (with-eval-after-load 'ace-window
+    (dolist (cmd '(ace-window
+                   aw--select-window))
+      (advice-add cmd :after #'eat/pulse-momentary-line))))
 #+end_src
 ** popper
 #+begin_src elisp
 (setup (:package popper)
-  (:with-hook on-init-ui-hook
+  (:with-hook on-first-buffer-hook
     (:hook popper-mode))
   (setq popper-reference-buffers
         '("\\*Messages\\*"
@@ -585,7 +586,7 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 ** window-numbering
 #+begin_src emacs-lisp
 (setup (:package window-numbering)
-  (:autoload window-numbering-mode)
+  (:autoload on-first-buffer-hook)
   (add-hook 'after-init-hook #'window-numbering-mode))
 #+end_src
 * Buffer
@@ -677,7 +678,7 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 #+end_src
 ** Auto-save
 #+begin_src elisp
-(add-hook 'after-init-hook #'auto-save-visited-mode)
+(add-hook 'on-first-file-hook #'auto-save-visited-mode)
 #+end_src
 ** Isearch
 #+begin_src elisp
@@ -740,7 +741,7 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
   (:option whitespace-style '(face trailing)))
 
 (setup global-goto-address
-  (:with-hook after-init-hook
+  (:with-hook on-first-file-hook
     (:hook global-goto-address-mode)))
 
 (setup savehist
@@ -750,13 +751,13 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
   (setq history-length 1000))
 
 (setup autorevert
-  (:with-hook after-init-hook
+  (:with-hook on-first-file-hook
     (:hook global-auto-revert-mode)))
 (setup saveplace
-  (:with-hook after-init-hook
+  (:with-hook on-first-file-hook
     :hook save-place-mode))
 (setup so-long
-  (:with-hook after-init-hook
+  (:with-hook on-first-file-hook
     (:hook global-so-long-mode)))
 #+end_src
 
