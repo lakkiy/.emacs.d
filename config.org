@@ -2662,9 +2662,8 @@ variable accordingly.")
 Need =xapian-core=.
 
 #+begin_src elisp
-(unless (package-installed-p 'xeft)
-  (package-vc-install "https://github.com/casouri/xeft.git"))
 (setup xeft
+  (:package xeft)
   (:only-if (eat/modulep '+note-taking))
   (setq xeft-directory "~/Dropbox/org/roam"
         xeft-database "~/.xeft/db")
