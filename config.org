@@ -425,7 +425,7 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 * Window
 ** tab-bar
 #+begin_src elisp
-(defun meomacs-format-tab (tab i)
+(defun eat/tab-bar-tab-name-format-function (tab i)
   (let ((current-p (eq (car tab) 'current-tab)))
     (concat
      (propertize (concat
@@ -436,18 +436,37 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
                  (funcall tab-bar-tab-face-function tab))
      " ")))
 
+(defun eat/tab-bar-switch-project ()
+  "Switch to project in a new tab, project name will be used as tab name.
+
+No tab will created if the command is cancelled."
+  (interactive)
+  (let (succ)
+    (unwind-protect
+        (progn
+          (tab-bar-new-tab)
+          (call-interactively #'project-switch-project)
+          (when-let ((proj (project-root (project-current))))
+            (tab-bar-rename-tab (format "%s" (file-name-nondirectory (directory-file-name proj))))
+            (setq succ t)))
+      (unless succ
+        (tab-bar-close-tab)))))
+
 (add-hook 'tab-bar-mode-hook
           #'(lambda ()
               (setq tab-bar-border nil
                     tab-bar-close-button nil ;; TODO this make tab face wired
                     tab-bar-new-button (propertize " 🞤 " 'display '(:height 2.0))
                     tab-bar-back-button nil
-                    tab-bar-tab-name-format-function 'meomacs-format-tab
+                    tab-bar-tab-name-format-function 'eat/tab-bar-tab-name-format-function
                     tab-bar-tab-name-truncated-max 10)))
 
 (with-eval-after-load 'tab-bar
+  (global-set-key (kbd "M-[") #'tab-bar-switch-to-prev-tab)
+  (global-set-key (kbd "M-]") #'tab-bar-switch-to-next-tab)
   (define-key tab-prefix-map (kbd ".") #'tab-bar-switch-to-recent-tab)
-  (define-key tab-prefix-map (kbd ",") #'tab-bar-rename-tab))
+  (define-key tab-prefix-map (kbd ",") #'tab-bar-rename-tab)
+  (define-key tab-prefix-map (kbd "l") #'eat/tab-bar-switch-project))
 #+end_src
 
 ** Change Default Behavior of Split Window
