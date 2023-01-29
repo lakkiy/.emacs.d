@@ -1533,10 +1533,13 @@ Better scroll on picture in GUI
 #+end_src
 
 ** TODO Chinese Input                                                 :deps:
-Need rime module.
+If you install emacs and librime with nix(replace to your own path):
+#+begin_src elisp
+(setq rime-emacs-module-header-root "/nix/store/ayyiild8rxw94z0gj15w1bwnsaqpaix3-emacs-git-20230128.0/include")
+(setq rime-librime-root "/nix/store/g5g449j7c9h0v5f6sp4jbl3w9k4ays8p-librime-1.7.3")
+#+end_src
+Then ~rime-compile-module~.
 
-- Enable rime will increase awesome-tray modeline width
-- Emacs can’t exis with =C-x C-c=
 #+begin_src elisp
 ;; curl -L -O https://github.com/rime/librime/releases/download/1.7.2/rime-1.7.2-osx.zip
 ;; unzip rime-1.7.2-osx.zip -d ~/.config/emacs/librime
