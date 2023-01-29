@@ -1301,7 +1301,7 @@ point reaches the beginning or end of the buffer, stop there."
    '("k" . kill-this-buffer)
 
    ;; window
-   '("w" . ace-window)
+   '("w" . ace-select-window)
    '("W" . ace-swap-window)
    '("o" . "C-x 1")
    '("O" . ace-delete-window)
