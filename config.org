@@ -80,8 +80,6 @@
     ;; +icon
     ;; +blog
     ;; +telega
-    ;; +mail
-    ;; +kubernetes
     ;; +note-taking
     ))
 
@@ -919,8 +917,7 @@ No tab will created if the command is cancelled."
 (defvar eat/font-emoji          (font-installed-p eat/fonts-emoji))
 
 (defvar eat/font-rescale-alist
-  `((,eat/font-variable-pitch . 1.3)
-    (,eat/font-cjk            . 0.95)
+  `((,eat/font-cjk            . 0.95)
     (,eat/font-emoji          . 0.85))
   "A list of font names that should be rescaled.")
 
@@ -2502,6 +2499,40 @@ Use eat under linux and macos, use eshell under windows.
 (with-eval-after-load 'help-fns
   (put 'help-fns-edit-variable 'disabled nil))
 #+end_src
+
+** Rss, Mail, News
+#+begin_src elisp
+(setup gnus
+  (:option
+   gnus-select-method '(nnnil "")
+   gnus-secondary-select-methods
+   `((nnimap "GMail"
+             (nnimap-user ,eat/user-mail-address)
+             (nnimap-inbox "INBOX")
+             (nnimap-address "imap.gmail.com")
+             (nnimap-stream ssl)
+             (nnimap-expunge 'never)))))
+
+(setup gnus-group
+  (:hook gnus-topic-mode))
+
+(setup message
+  (:with-hook message-mode-hook
+    (:hook auto-fill-mode))
+  (:option message-kill-buffer-on-exit t
+           message-mail-alias-type 'ecomplete
+           ;; Personal Information
+           user-full-name eat/user-full-name
+           user-mail-address eat/user-mail-address
+           message-signature user-full-name
+           smtpmail-smtp-user user-mail-address
+           ;; Send email through SMTP
+           send-mail-function #'smtpmail-send-it
+           message-send-mail-function #'message-use-send-mail-function
+           smtpmail-smtp-server "smtp.gmail.com"
+           smtpmail-smtp-service 587))
+#+end_src
+
 * Module
 ** Icon
 #+begin_src elisp
@@ -2596,90 +2627,6 @@ Run =docker pull zevlg/telega-server:latest=
              org-static-blog-page-postamble (get-string-from-file "~/p/blog/static/postamble.html"))))
 #+end_src
 
-** Mail (notmuch)
-#+begin_src elisp
-(setup notmuch
-  (:only-if (eat/modulep '+mail))
-  (:package notmuch)
-  (defun eat/async-notmuch-poll ()
-    (interactive)
-    (message "Start polling email...")
-    (async-start
-     `(lambda ()
-        ,(async-inject-variables "\\`load-path\\'")
-        (require 'notmuch)
-        (notmuch-poll))
-     (lambda (result)
-       (message "eat/async-notmuch-poll: %s" result))))
-  (defvar +notmuch-delete-tags '("+trash" "-inbox" "-unread")
-    "Tags applied to mark email for deletion.
-
-When replacing the +trash tag by a different tag such as
-+deleted, you will need to update the notmuch-saved-searches
-variable accordingly.")
-
-  (defvar +notmuch-spam-tags '("+spam" "-inbox" "-unread")
-    "Tags applied to mark email as spam.")
-
-  (defun +notmuch/search-delete ()
-    (interactive)
-    (notmuch-search-add-tag +notmuch-delete-tags)
-    (notmuch-tree-next-message))
-
-  (defun +notmuch/tree-delete ()
-    (interactive)
-    (notmuch-tree-add-tag +notmuch-delete-tags)
-    (notmuch-tree-next-message))
-
-  (defun +notmuch/show-delete ()
-    "Mark email for deletion in notmuch-show"
-    (interactive)
-    (notmuch-show-add-tag +notmuch-delete-tags)
-    (notmuch-show-next-thread-show))
-
-  (defun +notmuch/search-spam ()
-    (interactive)
-    (notmuch-search-add-tag +notmuch-spam-tags)
-    (notmuch-search-next-thread))
-
-  (defun +notmuch/tree-spam ()
-    (interactive)
-    (notmuch-tree-add-tag +notmuch-spam-tags)
-    (notmuch-tree-next-message))
-  (:option
-   notmuch-search-oldest-first nil
-   notmuch-fcc-dirs nil
-   notmuch-search-result-format '(("date" . "%12s ")
-                                  ("count" . "%-7s ")
-                                  ("authors" . "%-30s ")
-                                  ("subject" . "%-72s ")
-                                  ("tags" . "(%s)")))
-  (with-eval-after-load 'notmuch
-    (:global [remap notmuch-poll-and-refresh-this-buffer] #'eat/async-notmuch-poll)
-    (:with-mode notmuch-search-mode
-      (:hook eat/fixed-pitch-setup))))
-
-(setup message
-  (:with-hook message-mode-hook
-    (:hook (lambda ()
-             (setq-local fill-column 72)
-             (auto-fill-mode))))
-  (setq user-full-name eat/user-full-name
-        user-mail-address eat/user-mail-address
-        message-kill-buffer-on-exit t
-        message-mail-alias-type 'ecomplete
-        message-send-mail-function #'message-use-send-mail-function
-        message-signature user-full-name))
-
-(setup sendmail
-  (setq send-mail-function #'smtpmail-send-it))
-
-(setup smtpmail
-  (setq smtpmail-smtp-server "smtp.gmail.com"
-        smtpmail-smtp-user user-mail-address
-        smtpmail-smtp-service 587
-        smtpmail-stream-type 'ssl))
-#+end_src
 ** Note Taking (xeft)
 Need =xapian-core=.
 
@@ -2699,16 +2646,6 @@ Need =xapian-core=.
     (add-hook 'xeft-find-file-hook #'xeft-setup)
     (add-hook 'xeft-find-file-hook #'bklink-minor-mode)))
 #+end_src
-** Kubernetes
-#+begin_src emacs-lisp
-(setup kubernetes
-  (:only-if (eat/modulep '+kubernetes))
-  (:package kubernetes)
-  (with-eval-after-load 'kubernetes
-    (:option kubernetes-poll-frequency 3600
-             kubernetes-redraw-frequency 3600)))
-#+end_src
-
 * Modes
 #+begin_src elisp
 (setup (:package toml-mode yaml-mode docker-compose-mode dockerfile-mode k8s-mode git-modes terraform-mode markdown-mode markdown-toc protobuf-mode)
