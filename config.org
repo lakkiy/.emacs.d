@@ -57,6 +57,7 @@
 
 (setup (:package elpa-mirror)
   (:option elpamr-default-output-directory "~/.myelpa"))
+
 #+end_src
 ** Variables
 #+begin_src elisp
@@ -1798,6 +1799,8 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 #+begin_src elisp
 (setup flymake
   (:hook-into prog-mode)
+  (add-hook 'emacs-lisp-mode-hook #'(lambda ()
+                                      (flymake-mode -1)))
   (:option flymake-diagnostic-functions nil
            flymake-no-changes-timeout 0.2)
 
@@ -1851,26 +1854,6 @@ so try complete filst, if there nothing to complete then try to jump to next fie
                  '(sql-mode . ("sqls" "-config" "~/.config/sqls/config.yaml"))))
   (:with-hook eglot-managed-mode-hook
     (:hook eldoc-box-hover-mode)))
-#+end_src
-** Tree-sitter
-1. Install =tree-sitter= on system.
-2. Build emacs with tree sitter =--with-tree-sitter=.
-3. Install language definitions to =/usr/local/lib= or =~/.config/emacs/tree-sitter= or =treesit-extra-load-path=.
-4. On windows, copy dll files to Emacs’s bin directory.
-
-Also check:
-[[https://git.savannah.gnu.org/cgit/emacs.git/tree/admin/notes/tree-sitter/starter-guide?h=emacs-29][Emacs tree sitter start guide.]]
-[[https://github.com/casouri/tree-sitter-module][Tree sitter language definitions build script.]]
-
-#+begin_src emacs-lisp
-(when (treesit-available-p)
-  (push '(go-mode . go-ts-mode) major-mode-remap-alist)
-  (push '(go-dot-mod-mode . go-mod-ts-mode) major-mode-remap-alist)
-  (push '(css-mode . css-ts-mode) major-mode-remap-alist)
-  (push '(python-mode . python-ts-mode) major-mode-remap-alist)
-  (push '(javascript-mode . js-ts-mode) major-mode-remap-alist)
-  (push '(c-mode . c-ts-mode) major-mode-remap-alist)
-  (push '(c++-mode . c++-ts-mode) major-mode-remap-alist))
 #+end_src
 ** Citre
 #+begin_src elisp
@@ -2041,6 +2024,8 @@ Install =rnix-lsp= and =nixfmt=.
 Also check:
 [[https://git.savannah.gnu.org/cgit/emacs.git/tree/admin/notes/tree-sitter/starter-guide?h=emacs-29][Emacs tree sitter start guide.]]
 [[https://github.com/casouri/tree-sitter-module][Tree sitter language definitions build script.]]
+~treesit-language-source-alist~
+~treesit-install-language-grammar~
 
 #+begin_src emacs-lisp
 (when (treesit-available-p)
@@ -2061,14 +2046,16 @@ Also check:
           (python-mode     . python-ts-mode)
           (rust-mode       . rust-ts-mode)
           (sh-mode         . bash-ts-mode)
-          (typescript-mode . typescript-ts-mode)))
-
-  (setq go-ts-mode-hook go-mode-hook))
+          (typescript-mode . typescript-ts-mode))))
 #+end_src
 *** go
 #+begin_src emacs-lisp
 (with-eval-after-load 'go-ts-mode
   (require 'go-mode)
+
+  (setq go-ts-mode-hook go-mode-hook
+        go-ts-mode-indent-offset 4)
+
   (set-keymap-parent go-ts-mode-map go-mode-map))
 #+end_src
 * Tools
@@ -2515,45 +2502,145 @@ Use eat under linux and macos, use eshell under windows.
   (put 'help-fns-edit-variable 'disabled nil))
 #+end_src
 
-** Rss, Mail, News
+** Mail, News
 #+begin_src elisp
-(setup gnus
-  (:option
-   gnus-select-method '(nnnil "")
-   gnus-secondary-select-methods
-   `((nnimap "GMail"
-             (nnimap-user ,eat/user-mail-address)
-             (nnimap-inbox "INBOX")
-             (nnimap-address "imap.gmail.com")
-             (nnimap-stream ssl)
-             (nnimap-expunge 'never)))))
+;;; gnus
+(setq
+ gnus-use-cache t
+ gnus-use-scoring nil
+ gnus-suppress-duplicates t
+ gnus-novice-user nil
+ gnus-expert-user t
+ gnus-interactive-exit 'quiet
+ gnus-inhibit-startup-message t
+ gnus-select-method '(nnnil "")
+ gnus-secondary-select-methods
+ `((nntp "gmane" (nntp-address "news.gmane.io"))
+   (nntp "nntp.lore.kernel.org")
+   (nnimap "GMail"
+           (nnimap-user ,eat/user-mail-address)
+           (nnimap-inbox "INBOX")
+           (nnimap-address "imap.gmail.com")
+           (nnimap-stream ssl)
+           (nnimap-expunge 'never)))
+ ;; Startup functions
+ gnus-save-killed-list nil
+ gnus-check-new-newsgroups nil
+ ;; No other newsreader is used.
+ gnus-save-newsrc-file nil
+ gnus-read-newsrc-file nil
+ gnus-subscribe-newsgroup-method 'gnus-subscribe-interactively
+ ;; Emacs 28 introduces a unified query lang
+ gnus-search-use-parsed-queries t
+ ;; Article mode for Gnus
+ gnus-visible-headers (rx line-start (or "From"
+                                         "Subject"
+                                         "Mail-Followup-To"
+                                         "Date"
+                                         "To"
+                                         "Cc"
+                                         "Newsgroups"
+                                         "User-Agent"
+                                         "X-Mailer"
+                                         "X-Newsreader")
+                          ":")
+ gnus-article-sort-functions '((not gnus-article-sort-by-number)
+                               (not gnus-article-sort-by-date))
+ gnus-article-browse-delete-temp t
+ ;; Display more MINE stuff
+ gnus-mime-display-multipart-related-as-mixed t
+ ;; Asynchronous support for Gnus
+ gnus-asynchronous t
+ gnus-use-header-prefetch t
+ ;; Cache interface for Gnus
+ gnus-cache-enter-articles '(ticked dormant unread)
+ gnus-cache-remove-articles '(read)
+ gnus-cacheable-groups "^\\(nntp\\|nnimap\\)")
 
-(setup gnus-group
-  (:hook gnus-topic-mode))
+;; Group
+(setq
+ ;;          indentation ------------.
+ ;;  #      process mark ----------. |
+ ;;                level --------. | |
+ ;;           subscribed ------. | | |
+ ;;  %          new mail ----. | | | |
+ ;;  *   marked articles --. | | | | |
+ ;;                        | | | | | |  Ticked    New     Unread  open-status Group
+ gnus-group-line-format "%M%m%S%L%p%P %1(%7i%) %3(%7U%) %3(%7y%) %4(%B%-45G%) %d\n"
+ gnus-group-sort-function '(gnus-group-sort-by-level gnus-group-sort-by-alphabet))
 
-(setup gnus-sum
-  (:option
-   ;; Sorting
-   gnus-thread-sort-functions '(gnus-thread-sort-by-most-recent-date)
-   gnus-subthread-sort-functions '(gnus-thread-sort-by-date)))
+(add-hook 'gnus-group-mode-hook #'gnus-topic-mode)
 
-(setup message
-  (:with-hook message-mode-hook
-    (:hook auto-fill-mode))
-  (:option message-kill-buffer-on-exit t
-           message-mail-alias-type 'ecomplete
-           ;; Personal Information
-           user-full-name eat/user-full-name
-           user-mail-address eat/user-mail-address
-           message-signature user-full-name
-           smtpmail-smtp-user user-mail-address
-           ;; Send email through SMTP
-           send-mail-function #'smtpmail-send-it
-           message-send-mail-function #'message-use-send-mail-function
-           smtpmail-smtp-server "smtp.gmail.com"
-           smtpmail-smtp-service 587))
+;; Summary
+(setq
+ ;; Pretty marks
+ gnus-sum-thread-tree-root            "┌ "
+ gnus-sum-thread-tree-false-root      "◌ "
+ gnus-sum-thread-tree-single-indent   "◎ "
+ gnus-sum-thread-tree-vertical        "│"
+ gnus-sum-thread-tree-indent          "  "
+ gnus-sum-thread-tree-leaf-with-other "├─►"
+ gnus-sum-thread-tree-single-leaf     "╰─►"
+ gnus-summary-line-format "%U%R %3d %[%-23,23f%] %B %s\n"
+ ;; Threads!  I hate reading un-threaded email -- especially mailing
+ ;; lists.  This helps a ton!
+ gnus-summary-make-false-root 'adopt
+ gnus-simplify-subject-functions '(gnus-simplify-subject-re gnus-simplify-whitespace)
+ gnus-summary-thread-gathering-function 'gnus-gather-threads-by-subject
+ gnus-thread-indent-level 2
+ ;; Filling in threads
+ ;; 2 old articles are enough for memory
+ gnus-fetch-old-headers 2
+ gnus-fetch-old-ephemeral-headers 2
+ gnus-build-sparse-threads 'some
+ ;; Sorting
+ gnus-thread-sort-functions '(gnus-thread-sort-by-most-recent-date)
+ gnus-subthread-sort-functions '(gnus-thread-sort-by-date)
+ ;; Viewing
+ gnus-view-pseudos 'automatic
+ gnus-view-pseudo-asynchronously t
+ ;; No auto select
+ gnus-auto-select-first nil
+ gnus-auto-select-next nil
+ gnus-paging-select-next nil)
+
+(add-hook 'gnus-select-group-hook #'gnus-group-set-timestamp)
+
+(with-eval-after-load 'gnus-topic
+  (setq gnus-topic-alist '(("GMail"
+                            "nnimap+GMail:INBOX"
+                            "nnimap+GMail:[Gmail]/垃圾邮件"
+                            "nnimap+GMail:[Gmail]/已加星标"
+                            "nnimap+GMail:[Gmail]/所有邮件"
+                            "nnimap+GMail:[Gmail]/重要"
+                            "nnimap+GMail:Notes"
+                            "nnimap+GMail:[Gmail]/已删除邮件"
+                            "nnimap+GMail:[Gmail]/已发邮件"
+                            "nnimap+GMail:[Gmail]/草稿"
+                            "nnimap+GMail:emacs"
+                            "nnimap+GMail:golang")
+                           ("misc"
+                            "nndraft:drafts")
+                           ("Gnus"))))
+
+;;; message
+(add-hook 'message-mode-hook #'auto-fill-mode)
+(setq message-kill-buffer-on-exit t
+      message-mail-alias-type 'ecomplete
+      ;; Personal Information
+      user-full-name eat/user-full-name
+      user-mail-address eat/user-mail-address
+      message-signature user-full-name
+      smtpmail-smtp-user user-mail-address
+      ;; Send email through SMTP
+      send-mail-function #'smtpmail-send-it
+      message-send-mail-function #'message-use-send-mail-function
+      smtpmail-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-service 587)
 #+end_src
 
+** TODO Rss
+Use builtin newsticker with freshrss.
 * Module
 ** Icon
 #+begin_src elisp
