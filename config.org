@@ -2086,17 +2086,32 @@ Center current window.
 #+end_src
 ** Translate
 #+begin_src elisp
-(setup (:package go-translate)
+(setup (:package go-translate fanyi)
   (:option
    gts-translate-list '(("en" "zh")))
-  (:global
-   "C-c y" gts-do-translate)
+
+  (defun eat/translate ()
+    (interactive)
+    (if (use-region-p)
+        (gts-do-translate)
+      (fanyi-dwim2)))
+  (:global "C-c y" eat/translate)
+
   (with-eval-after-load 'go-translate
     (:option
      gts-default-translator (gts-translator
                              :picker (gts-noprompt-picker)
-                             :engines (list (gts-bing-engine) (gts-google-rpc-engine))
+                             :engines (list (gts-google-rpc-engine))
                              :render (gts-buffer-render)))))
+
+(defun eat/context-translate (menu click)
+  "My context MENU to translate text."
+  (define-key-after menu [dictionary-lookup]
+    '(menu-item "Translate" eat/translate))
+  menu)
+
+;; hook into context menu
+(add-hook 'context-menu-functions #'eat/context-translate)
 #+end_src
 ** Ghelp
 #+begin_src elisp
@@ -2515,6 +2530,12 @@ Use eat under linux and macos, use eshell under windows.
 
 (setup gnus-group
   (:hook gnus-topic-mode))
+
+(setup gnus-sum
+  (:option
+   ;; Sorting
+   gnus-thread-sort-functions '(gnus-thread-sort-by-most-recent-date)
+   gnus-subthread-sort-functions '(gnus-thread-sort-by-date)))
 
 (setup message
   (:with-hook message-mode-hook
