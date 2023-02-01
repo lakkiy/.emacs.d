@@ -828,9 +828,9 @@ No tab will created if the command is cancelled."
   (with-eval-after-load 'consult
     (consult-customize consult-ripgrep consult-git-grep consult-grep
                        consult-bookmark consult-recent-file consult-xref
-                       :preview-key (kbd "C-SPC"))
+                       :preview-key (kbd "M-."))
     (consult-customize consult-theme
-                       :preview-key (list (kbd "C-SPC") :debounce 0.5 'any)))
+                       :preview-key (list (kbd "M-.") :debounce 0.5 'any)))
   ;; Orderless
   (defun sanityinc/use-orderless-in-minibuffer ()
     (setq-local completion-styles '(substring orderless)))
