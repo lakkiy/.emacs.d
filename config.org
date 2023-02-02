@@ -2517,12 +2517,16 @@ Use eat under linux and macos, use eshell under windows.
  gnus-secondary-select-methods
  `((nntp "gmane" (nntp-address "news.gmane.io"))
    (nntp "nntp.lore.kernel.org")
-   (nnimap "GMail"
+   (nnimap "Gmail"
            (nnimap-user ,eat/user-mail-address)
            (nnimap-inbox "INBOX")
            (nnimap-address "imap.gmail.com")
            (nnimap-stream ssl)
-           (nnimap-expunge 'never)))
+           (nnimap-expunge 'never)
+           ;; @see http://www.gnu.org/software/emacs/manual/html_node/gnus/Expiring-Mail.html
+           ;; press 'E' to expire email
+           (nnmail-expiry-target "nnimap+Gmail:[Gmail]/Trash")
+           (nnmail-expiry-wait 90)))
  ;; Startup functions
  gnus-save-killed-list nil
  gnus-check-new-newsgroups nil
@@ -2605,20 +2609,20 @@ Use eat under linux and macos, use eshell under windows.
  gnus-paging-select-next nil)
 
 (add-hook 'gnus-select-group-hook #'gnus-group-set-timestamp)
+(add-hook 'gnus-summary-mode-hook #'hl-line-mode)
 
 (with-eval-after-load 'gnus-topic
-  (setq gnus-topic-alist '(("GMail"
-                            "nnimap+GMail:INBOX"
-                            "nnimap+GMail:[Gmail]/垃圾邮件"
-                            "nnimap+GMail:[Gmail]/已加星标"
-                            "nnimap+GMail:[Gmail]/所有邮件"
-                            "nnimap+GMail:[Gmail]/重要"
-                            "nnimap+GMail:Notes"
-                            "nnimap+GMail:[Gmail]/已删除邮件"
-                            "nnimap+GMail:[Gmail]/已发邮件"
-                            "nnimap+GMail:[Gmail]/草稿"
-                            "nnimap+GMail:emacs"
-                            "nnimap+GMail:golang")
+  (setq gnus-topic-alist '(("Gmail"
+                            "nnimap+Gmail:INBOX"
+                            "nnimap+Gmail:[Gmail]/Spam"
+                            "nnimap+Gmail:[Gmail]/Starred"
+                            "nnimap+Gmail:[Gmail]/All Mail"
+                            "nnimap+Gmail:[Gmail]/Important"
+                            "nnimap+Gmail:[Gmail]/Trash"
+                            "nnimap+Gmail:[Gmail]/Sent Mail"
+                            "nnimap+Gmail:[Gmail]/Drafts"
+                            "nnimap+Gmail:emacs"
+                            "nnimap+Gmail:golang")
                            ("misc"
                             "nndraft:drafts")
                            ("Gnus"))))
