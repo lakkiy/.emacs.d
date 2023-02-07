@@ -2030,7 +2030,6 @@ Also check:
           (css-mode        . css-ts-mode)
           (dockerfile-mode . dockerfile-ts-mode)
           (go-mode         . go-ts-mode)
-          (go-dot-mod-mode . go-mod-ts-mode)
           (java-mode       . java-ts-mode)
           (json-mode       . json-ts-mode)
           (js-json-mode    . json-ts-mode)
