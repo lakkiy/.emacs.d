@@ -1424,7 +1424,7 @@ point reaches the beginning or end of the buffer, stop there."
    '("S" . save-buffer)
 
    ;; window
-   '("s" . ace-window)
+   '("s" . ace-select-window)
 
    ;; wrap && unwrap
    '("\"" . insert-pair)
