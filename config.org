@@ -2144,7 +2144,9 @@ Center current window.
                                (python . t)
                                (js . t)
                                (C . t)
-                               (shell . t)))
+                               (shell . t)
+                               (plantuml . t)))
+  (setq org-plantuml-exec-mode 'plantuml)
   (with-eval-after-load 'org
     (setq org-edit-src-content-indentation 0
           org-special-ctrl-a/e t
@@ -2636,6 +2638,7 @@ Use eat under linux and macos, use eshell under windows.
 
 ** TODO Rss
 Use builtin newsticker with freshrss.
+
 * Module
 ** Icon
 #+begin_src elisp
