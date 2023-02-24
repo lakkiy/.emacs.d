@@ -32,32 +32,15 @@
       package-quickstart t)
 (package-activate-all)
 
-(unless (package-installed-p 'setup)
-  (package-refresh-contents)
-  (package-install 'setup))
+(defmacro eat/pkg (package &optional vc)
+  `(unless (package-installed-p ',package)
+     (unless (memq ',package package-archive-contents)
+       (package-refresh-contents))
+     (if ,vc (package-vc-install ,vc)
+       (package-install ',package))))
 
-(require 'setup)
-(setup-define :needs
-  (lambda (executable)
-    `(unless (executable-find ,executable)
-       ,(setup-quit)))
-  :documentation "If EXECUTABLE is not in the path, stop here."
-  :repeatable 1)
-
-(setup-define :autoload
-  (lambda (func)
-    (let ((fn (if (memq (car-safe func) '(quote function))
-		          (cadr func)
-		        func)))
-      `(unless (fboundp (quote ,fn))
-	     (autoload (function ,fn) ,(symbol-name (setup-get 'feature)) nil t))))
-  :documentation "Autoload COMMAND if not already bound."
-  :repeatable t
-  :signature '(FUNC ...))
-
-(setup (:package elpa-mirror)
-  (:option elpamr-default-output-directory "~/.myelpa"))
-
+(eat/pkg elpa-mirror)
+(setq elpamr-default-output-directory "~/Sync/.myelpa")
 #+end_src
 ** Variables
 #+begin_src elisp
@@ -99,25 +82,23 @@
 Work even =describe-variable= it’s value is nil.
 But manual =add-hook= then describe, it’s value is not nil.
 #+begin_src emacs-lisp
-(unless (package-installed-p 'on)
-  (package-vc-install "https://gitlab.com/ajgrf/on.el"))
+(eat/pkg on "https://gitlab.com/ajgrf/on.el")
 (require 'on)
 #+end_src
 
 *** gchm
 #+begin_src elisp
-(setup (:package gcmh)
-  (:with-hook after-init-hook
-    (:hook gcmh-mode))
-  (:option gcmh-idle-delay 5
-           gcmh-high-cons-threshold #x6400000))
+(eat/pkg gcmh)
+(add-hook 'after-init-hook #'gcmh-mode)
+(setq gcmh-idle-delay 5
+      gcmh-high-cons-threshold #x6400000)
 #+end_src
 
 #+begin_src elisp
 ;; bind `describe-keymap', added in emacs 28
-(global-set-key (kbd "C-h C-k") #'describe-keymap)
+(keymap-global-set "C-h C-k" #'describe-keymap)
 ;; this will stuck emacs
-(global-unset-key (kbd "C-h h"))
+(keymap-global-unset "C-h h")
 
 (defun eat/show-startup-time ()
   "Print startup time."
@@ -278,96 +259,88 @@ But manual =add-hook= then describe, it’s value is not nil.
 ** Built-in packages
 *** recentf
 #+begin_src emacs-lisp
-(setup recentf
-  (:with-hook on-first-input-hook
-    (:hook recentf-mode))
-  (:option
-   recentf-max-saved-items 1000
-   recentf-exclude `(,tramp-file-name-regexp
-                     "COMMIT_EDITMSG"))
-  (:global "C-x C-r" recentf-open-files))
+(add-hook 'on-first-input-hook #'recentf-mode)
+(setq recentf-max-saved-items 1000
+      recentf-exclude `(,tramp-file-name-regexp
+                        "COMMIT_EDITMSG"))
+(keymap-global-set "C-x C-r" #'recentf-open-files)
 #+end_src
 
 *** webjump
 #+begin_src emacs-lisp
-(setup webjump
-  (global-set-key (kbd "C-x C-/") #'webjump)
-  (setq webjump-sites
-        '(("Emacs Wiki" . [simple-query "www.emacswiki.org" "www.emacswiki.org/cgi-bin/wiki/" #1=""])
-          ("Emacs China" . "emacs-china.org")
-          ("Emacs Reddit" . "www.reddit.com/r/emacs/")
-          ("Emacs News" . "sachachua.com/blog/category/emacs-news/")
-          ("Github" . [simple-query "github.com" "github.com/search?q=" #1#])
-          ("Google" . [simple-query "google.com" "google.com/search?q=" #1#])
-          ("Youtube" . [simple-query "youtube.com" "youtube.com/results?search_query=" #1#])
-          ("Google Groups" . [simple-query "groups.google.com" "groups.google.com/groups?q=" #1#])
-          ("stackoverflow" . [simple-query "stackoverflow.com" "stackoverflow.com/search?q=" #1#])
-          ("Wikipedia" . [simple-query "wikipedia.org" "wikipedia.org/wiki/" #1#]))))
+(keymap-global-set "C-x C-/" #'webjump)
+(setq webjump-sites
+      '(("Emacs Wiki" . [simple-query "www.emacswiki.org" "www.emacswiki.org/cgi-bin/wiki/" #1=""])
+        ("Emacs China" . "emacs-china.org")
+        ("Emacs Reddit" . "www.reddit.com/r/emacs/")
+        ("Emacs News" . "sachachua.com/blog/category/emacs-news/")
+        ("Github" . [simple-query "github.com" "github.com/search?q=" #1#])
+        ("Google" . [simple-query "google.com" "google.com/search?q=" #1#])
+        ("Youtube" . [simple-query "youtube.com" "youtube.com/results?search_query=" #1#])
+        ("Google Groups" . [simple-query "groups.google.com" "groups.google.com/groups?q=" #1#])
+        ("stackoverflow" . [simple-query "stackoverflow.com" "stackoverflow.com/search?q=" #1#])
+        ("Wikipedia" . [simple-query "wikipedia.org" "wikipedia.org/wiki/" #1#])))
 #+end_src
 
 *** repeat
 #+begin_src emacs-lisp
-(setup repeat
-  (setq repeat-mode t
-        repeat-keep-prefix t
-        repeat-exit-timeout 3
-        repeat-exit-key (kbd "RET")))
+(setq repeat-mode t
+      repeat-keep-prefix t
+      repeat-exit-timeout 3
+      repeat-exit-key (kbd "RET"))
 #+end_src
 
 *** context-menu
 #+begin_src emacs-lisp
-(setup mouse
-  (:with-hook on-init-ui-hook
-    (:hook context-menu-mode)))
+(add-hook 'on-init-ui-hook #'context-menu-mode)
 #+end_src
 
 *** project.el
 #+begin_src elisp
-(setup project
-  (add-hook 'compilation-start-hook #'end-of-buffer)
-  (defun eat/project-name ()
-    (file-name-nondirectory
-     (directory-file-name
-      (project-root
-       (project-current)))))
+(add-hook 'compilation-start-hook #'end-of-buffer)
+(defun eat/project-name ()
+  (file-name-nondirectory
+   (directory-file-name
+    (project-root
+     (project-current)))))
 
-  ;; do not remember tramp project
-  (defun eat/project-remember-advice (fn pr &optional no-write)
-    (let* ((remote? (file-remote-p (project-root pr)))
-           (no-write (if remote? t no-write)))
-      (funcall fn pr no-write)))
-  (advice-add 'project-remember-project :around
-              'eat/project-remember-advice)
-  (with-eval-after-load 'project
-    (defun eat/project-files-in-directory (dir)
-      "Use `fd' to list files in DIR."
-      (let* ((default-directory dir)
-             (localdir (file-local-name (expand-file-name dir)))
-             (command (format "fd -c never -H -t f -0 . %s" localdir)))
-        (project--remote-file-names
-         (sort (split-string (shell-command-to-string command) "\0" t)
-               #'string<))))
+;; do not remember tramp project
+(defun eat/project-remember-advice (fn pr &optional no-write)
+  (let* ((remote? (file-remote-p (project-root pr)))
+         (no-write (if remote? t no-write)))
+    (funcall fn pr no-write)))
+(advice-add 'project-remember-project :around
+            'eat/project-remember-advice)
+(with-eval-after-load 'project
+  (defun eat/project-files-in-directory (dir)
+    "Use `fd' to list files in DIR."
+    (let* ((default-directory dir)
+           (localdir (file-local-name (expand-file-name dir)))
+           (command (format "fd -c never -H -t f -0 . %s" localdir)))
+      (project--remote-file-names
+       (sort (split-string (shell-command-to-string command) "\0" t)
+             #'string<))))
 
-    ;; use fd in `project-find-file'
-    (when (executable-find "fd")
-      (cl-defmethod project-files ((project (head local)) &optional dirs)
-        "Override `project-files' to use `fd' in local projects."
-        (mapcan #'eat/project-files-in-directory
-                (or dirs (list (project-root project))))))
+  ;; use fd in `project-find-file'
+  (when (executable-find "fd")
+    (cl-defmethod project-files ((project (head local)) &optional dirs)
+      "Override `project-files' to use `fd' in local projects."
+      (mapcan #'eat/project-files-in-directory
+              (or dirs (list (project-root project))))))
 
-    (defun eat/project-try-local (dir)
-      "Determine if DIR is a non-Git project."
-      (catch 'ret
-        (let ((pr-flags '((".project")
-                          ("go.mod" "Cargo.toml" "project.clj" "pom.xml" "package.json") ;; higher priority
-                          ("Makefile" "README.org" "README.md"))))
-          (dolist (current-level pr-flags)
-            (dolist (f current-level)
-              (when-let ((root (locate-dominating-file dir f)))
-                (throw 'ret (cons 'local root))))))))
-    (cl-defmethod project-root ((project (head local)))
-      (cdr project))
-    (add-to-list 'project-find-functions #'eat/project-try-local t)))
+  (defun eat/project-try-local (dir)
+    "Determine if DIR is a non-Git project."
+    (catch 'ret
+      (let ((pr-flags '((".project")
+                        ("go.mod" "Cargo.toml" "project.clj" "pom.xml" "package.json") ;; higher priority
+                        ("Makefile" "README.org" "README.md"))))
+        (dolist (current-level pr-flags)
+          (dolist (f current-level)
+            (when-let ((root (locate-dominating-file dir f)))
+              (throw 'ret (cons 'local root))))))))
+  (cl-defmethod project-root ((project (head local)))
+    (cdr project))
+  (add-to-list 'project-find-functions #'eat/project-try-local t))
 #+end_src
 
 *** TODO xref
@@ -376,22 +349,25 @@ Use control-left-click to jump to defintions.
 Need ripgrep installed(check external program).
 
 #+begin_src elisp
-(setup xref
-  (:with-hook (xref-after-return-hook xref-after-jump-hook)
-    (:hook recenter))
-  (global-unset-key (kbd "C-<down-mouse-1>"))
-  (global-set-key (kbd "C-<mouse-1>") #'xref-find-definitions-at-mouse)
-  (:option xref-prompt-for-identifier nil
-        xref-search-program 'ripgrep
-        xref-show-xrefs-function #'xref-show-definitions-completing-read
-        xref-show-definitions-function #'xref-show-definitions-completing-read))
+(add-hook 'xref-after-return-hook #'recenter)
+(add-hook 'xref-after-jump-hook #'recenter)
+
+(keymap-global-unset "C-<down-mouse-1>")
+(keymap-global-set "C-<mouse-1>" #'xref-find-definitions-at-mouse)
+
+(setq xref-prompt-for-identifier nil
+      xref-search-program 'ripgrep
+      xref-show-xrefs-function #'xref-show-definitions-completing-read
+      xref-show-definitions-function #'xref-show-definitions-completing-read)
 #+end_src
 
 * Lib
 #+begin_src elisp
-(setup (:package async fullframe hide-mode-line))
-(setup (:package pinyinlib)
-  (:autoload pinyinlib-build-regexp-string))
+(eat/pkg async)
+(eat/pkg fullframe)
+(eat/pkg hide-mode-line)
+(eat/pkg pinyinlib)
+(autoload #'pinyinlib-build-regexp-string "pinyinlib")
 #+end_src
 
 * TODO Frame
@@ -461,11 +437,11 @@ No tab will created if the command is cancelled."
                     tab-bar-tab-name-truncated-max 10)))
 
 (with-eval-after-load 'tab-bar
-  (global-set-key (kbd "M-[") #'tab-bar-switch-to-prev-tab)
-  (global-set-key (kbd "M-]") #'tab-bar-switch-to-next-tab)
-  (define-key tab-prefix-map (kbd ".") #'tab-bar-switch-to-recent-tab)
-  (define-key tab-prefix-map (kbd ",") #'tab-bar-rename-tab)
-  (define-key tab-prefix-map (kbd "l") #'eat/tab-bar-switch-project))
+  (keymap-global-set "M-[" #'tab-bar-switch-to-prev-tab)
+  (keymap-global-set "M-]" #'tab-bar-switch-to-next-tab)
+  (keymap-set tab-prefix-map "." #'tab-bar-switch-to-recent-tab)
+  (keymap-set tab-prefix-map "," #'tab-bar-rename-tab)
+  (keymap-set tab-prefix-map "l" #'eat/tab-bar-switch-project))
 #+end_src
 
 ** Change Default Behavior of Split Window
@@ -482,8 +458,8 @@ No tab will created if the command is cancelled."
       (unless arg
         (select-window target-window)))))
 
-(global-set-key (kbd "C-x 2") (split-window-func-with-other-buffer 'split-window-vertically))
-(global-set-key (kbd "C-x 3") (split-window-func-with-other-buffer 'split-window-horizontally))
+(keymap-global-set "C-x 2" (split-window-func-with-other-buffer 'split-window-vertically))
+(keymap-global-set "C-x 3" (split-window-func-with-other-buffer 'split-window-horizontally))
 
 (defun sanityinc/toggle-delete-other-windows ()
   "Delete other windows in frame if any, or restore previous window config."
@@ -493,7 +469,7 @@ No tab will created if the command is cancelled."
       (winner-undo)
     (delete-other-windows)))
 
-(global-set-key (kbd "C-x 1") 'sanityinc/toggle-delete-other-windows)
+(keymap-global-set "C-x 1" 'sanityinc/toggle-delete-other-windows)
 #+end_src
 ** Rearrange Split Winows
 #+begin_src elisp
@@ -515,81 +491,83 @@ No tab will created if the command is cancelled."
     (when other-buffer
       (set-window-buffer (next-window) other-buffer))))
 
-(global-set-key (kbd "C-x |") 'split-window-horizontally-instead)
-(global-set-key (kbd "C-x _") 'split-window-vertically-instead)
+(keymap-global-set "C-x |" 'split-window-horizontally-instead)
+(keymap-global-set "C-x _" 'split-window-vertically-instead)
 #+end_src
 ** winner
 #+begin_src elisp
-(setup winner
-  (:with-hook on-first-buffer-hook
-    (:hook winner-mode))
-  (setq winner-dont-bind-my-keys t))
+(add-hook 'on-first-buffer-hook #'winner-mode)
+(setq winner-dont-bind-my-keys t)
 #+end_src
 ** ace-window
 #+begin_src elisp
-(setup (:package ace-window)
-  (global-set-key (kbd "M-o") 'ace-window)
-  (setq aw-keys '(?a ?o ?e ?u ?i)
-        aw-scope 'frame
-        aw-dispatch-alist
-        '((?d aw-delete-window "Ace - Delete Window")
-          (?s aw-swap-window "Ace - Swap Window")
-          (?p aw-flip-window)
-          (?v aw-split-window-vert "Ace - Split Vert Window")
-          (?h aw-split-window-horz "Ace - Split Horz Window")
-          (?m delete-other-windows "Ace - Maximize Window")
-          (?g delete-other-windows)
-          (?b balance-windows)
-          (?u (lambda ()
-                (progn
-                  (winner-undo)
-                  (setq this-command 'winner-undo))))
-          (?r winner-redo)))
-  (with-eval-after-load 'ace-window
-    (dolist (cmd '(ace-window
-                   aw--select-window))
-      (advice-add cmd :after #'eat/pulse-momentary-line))))
+(eat/pkg ace-window)
+
+(keymap-global-set "M-o" 'ace-window)
+
+(setq aw-keys '(?a ?o ?e ?u ?i)
+      aw-scope 'frame
+      aw-dispatch-alist
+      '((?d aw-delete-window "Ace - Delete Window")
+        (?s aw-swap-window "Ace - Swap Window")
+        (?p aw-flip-window)
+        (?v aw-split-window-vert "Ace - Split Vert Window")
+        (?h aw-split-window-horz "Ace - Split Horz Window")
+        (?m delete-other-windows "Ace - Maximize Window")
+        (?g delete-other-windows)
+        (?b balance-windows)
+        (?u (lambda ()
+              (progn
+                (winner-undo)
+                (setq this-command 'winner-undo))))
+        (?r winner-redo)))
+(with-eval-after-load 'ace-window
+  (dolist (cmd '(ace-window
+                 aw--select-window))
+    (advice-add cmd :after #'eat/pulse-momentary-line)))
 #+end_src
 ** popper
 #+begin_src elisp
-(setup (:package popper)
-  (:with-hook on-first-buffer-hook
-    (:hook popper-mode))
-  (setq popper-reference-buffers
-        '("\\*Messages\\*"
-          "Output\\*$"
-          "\\*Async Shell Command\\*"
-          "\\*Compile-Log\\*"
-          "\\*Completions\\*"
-          "\\*Warnings\\*"
+(eat/pkg popper)
 
-          "^\\*eshell.*\\*$" eshell-mode ;eshell as a popup
-          "^\\*shell.*\\*$"  shell-mode  ;shell as a popup
-          "^\\*term.*\\*$"   term-mode   ;term as a popup
-          "^\\*vterm.*\\*$"  vterm-mode  ;vterm as a popup
-          "^\\*eat.*\\*$"    eat-mode    ;eat as a popup
+(add-hook 'on-first-buffer-hook #'popper-mode)
 
-          ;; help & message
-          help-mode
-          ghelp-page-mode
-          compilation-mode))
-  (with-eval-after-load 'project
-    (setq popper-group-function 'popper-group-by-project))
-  (with-eval-after-load 'popper
-    (global-set-key (kbd "C-M-`") #'popper-toggle-type)
-    (defun my-popper-fit-window-height (win)
-      "Determine the height of popup window WIN by fitting it to the buffer's content."
-      (fit-window-to-buffer
-       win
-       (floor (frame-height) 3)
-       (floor (frame-height) 3)))
-    (setq popper-window-height #'my-popper-fit-window-height)))
+(setq popper-reference-buffers
+      '("\\*Messages\\*"
+        "Output\\*$"
+        "\\*Async Shell Command\\*"
+        "\\*Compile-Log\\*"
+        "\\*Completions\\*"
+        "\\*Warnings\\*"
+
+        "^\\*eshell.*\\*$" eshell-mode  ;eshell as a popup
+        "^\\*shell.*\\*$"  shell-mode   ;shell as a popup
+        "^\\*term.*\\*$"   term-mode    ;term as a popup
+        "^\\*vterm.*\\*$"  vterm-mode   ;vterm as a popup
+        "^\\*eat.*\\*$"    eat-mode     ;eat as a popup
+
+        ;; help & message
+        help-mode
+        ghelp-page-mode
+        compilation-mode))
+
+(with-eval-after-load 'project
+  (setq popper-group-function 'popper-group-by-project))
+
+(with-eval-after-load 'popper
+  (keymap-global-set "C-M-`" #'popper-toggle-type)
+  (defun my-popper-fit-window-height (win)
+    "Determine the height of popup window WIN by fitting it to the buffer's content."
+    (fit-window-to-buffer
+     win
+     (floor (frame-height) 3)
+     (floor (frame-height) 3)))
+  (setq popper-window-height #'my-popper-fit-window-height))
 #+end_src
 ** window-numbering
 #+begin_src emacs-lisp
-(setup (:package window-numbering)
-  (:autoload on-first-buffer-hook)
-  (add-hook 'after-init-hook #'window-numbering-mode))
+(eat/pkg window-numbering)
+(add-hook 'after-init-hook #'window-numbering-mode)
 #+end_src
 * Buffer
 ** Functions
@@ -637,46 +615,46 @@ No tab will created if the command is cancelled."
 #+end_src
 ** Ibuffer
 #+begin_src elisp
-(setup ibuffer
-  (:package ibuffer-vc)
-  (fset 'list-buffers 'ibuffer)
-  (setq-default ibuffer-show-empty-filter-groups nil)
-  (global-set-key (kbd "C-x B") 'ibuffer)
-  ;; Modify the default ibuffer-formats (toggle with `)
-  (setq ibuffer-formats
-        '((mark modified read-only vc-status-mini " "
-                (name 22 22 :left :elide)
-                " "
-                (size-h 9 -1 :right)
-                " "
-                (mode 12 12 :left :elide)
-                " "
-                vc-relative-file)
-          (mark modified read-only vc-status-mini " "
-                (name 22 22 :left :elide)
-                " "
-                (size-h 9 -1 :right)
-                " "
-                (mode 14 14 :left :elide)
-                " "
-                (vc-status 12 12 :left)
-                " "
-                vc-relative-file)))
-  (with-eval-after-load 'ibuffer
-    (setq ibuffer-filter-group-name-face 'font-lock-doc-face)
-    (with-eval-after-load 'fullframe
-      (fullframe ibuffer ibuffer-quit))
-    ;; Use human readable Size column instead of original one
-    (define-ibuffer-column size-h
-      (:name "Size" :inline t)
-      (file-size-human-readable (buffer-size))))
-  ;; Ibuffer-vc
-  (:with-hook ibuffer-hook
-    (:hook ibuffer-set-up-preferred-filters))
-  (defun ibuffer-set-up-preferred-filters ()
-    (ibuffer-vc-set-filter-groups-by-vc-root)
-    (unless (eq ibuffer-sorting-mode 'filename/process)
-      (ibuffer-do-sort-by-filename/process))))
+(eat/pkg ibuffer-vc)
+(fset 'list-buffers 'ibuffer)
+(setq-default ibuffer-show-empty-filter-groups nil)
+(keymap-global-set "C-x B" 'ibuffer)
+;; Modify the default ibuffer-formats (toggle with `)
+(setq ibuffer-formats
+      '((mark modified read-only vc-status-mini " "
+              (name 22 22 :left :elide)
+              " "
+              (size-h 9 -1 :right)
+              " "
+              (mode 12 12 :left :elide)
+              " "
+              vc-relative-file)
+        (mark modified read-only vc-status-mini " "
+              (name 22 22 :left :elide)
+              " "
+              (size-h 9 -1 :right)
+              " "
+              (mode 14 14 :left :elide)
+              " "
+              (vc-status 12 12 :left)
+              " "
+              vc-relative-file)))
+(with-eval-after-load 'ibuffer
+  (setq ibuffer-filter-group-name-face 'font-lock-doc-face)
+  (with-eval-after-load 'fullframe
+    (fullframe ibuffer ibuffer-quit))
+  ;; Use human readable Size column instead of original one
+  (define-ibuffer-column size-h
+    (:name "Size" :inline t)
+    (file-size-human-readable (buffer-size))))
+
+;; Ibuffer-vc
+(add-hook 'ibuffer-hook #'ibuffer-set-up-preferred-filters)
+
+(defun ibuffer-set-up-preferred-filters ()
+  (ibuffer-vc-set-filter-groups-by-vc-root)
+  (unless (eq ibuffer-sorting-mode 'filename/process)
+    (ibuffer-do-sort-by-filename/process)))
 #+end_src
 ** Auto-save
 #+begin_src elisp
@@ -684,183 +662,200 @@ No tab will created if the command is cancelled."
 #+end_src
 ** Isearch
 #+begin_src elisp
-(setup isearch
-  (:package isearch-mb)
-  (:option
-   ;; Match count next to the minibuffer prompt
-   isearch-lazy-count t
-   ;; Don't be stingy with history; default is to keep just 16 entries
-   search-ring-max 200
-   regexp-search-ring-max 200
-   ;; htighlighted all matching
-   isearch-lazy-highlight t
-   lazy-highlight-buffer t
-   ;; show search count, TODO not work in isearch-mb-mode
-   lazy-count-prefix-format nil
-   lazy-count-suffix-format " [%s/%s]"
-   ;; Record isearch in minibuffer history, so C-x ESC ESC can repeat it.
-   isearch-resume-in-command-history t
-   ;; M-< and M-> move to the first/last occurrence of the current search string.
-   isearch-allow-motion t
-   isearch-motion-changes-direction t
-   ;; space matches any sequence of characters in a line.
-   isearch-regexp-lax-whitespace t
-   search-whitespace-regexp ".*?")
-  (:global
-   "C-s" isearch-forward-regexp
-   "C-r" isearch-backward-regexp)
-  (:bind
-   "C-c C-o" isearch-occur
-   [escape] isearch-cancel
-   ;; Edit the search string instead of jumping back
-   [remap isearch-delete-chac] isearch-del-chac)
-  (with-eval-after-load 'isearch
-    (define-advice isearch-occur (:after (_regexp &optional _nlines))
-      (isearch-exit)))
-  ;; Isearch-mb
-  (:with-hook after-init-hook
-    (:hook isearch-mb-mode))
-  (with-eval-after-load 'isearch-mb
-    (define-advice isearch-mb--update-prompt (:around (fn &rest _) show-case-fold-info)
-      "Show case fold info in the prompt."
-      (cl-letf* ((isearch--describe-regexp-mode-orig
-                  (symbol-function 'isearch--describe-regexp-mode))
-                 ((symbol-function 'isearch--describe-regexp-mode)
-                  (lambda (regexp-function &optional space-before)
-                    (concat (if isearch-case-fold-search "[Case Fold] " "")
-                            (funcall isearch--describe-regexp-mode-orig
-                                     regexp-function space-before)))))
-        (funcall fn _)))))
+(setq
+ ;; Match count next to the minibuffer prompt
+ isearch-lazy-count t
+ ;; Don't be stingy with history; default is to keep just 16 entries
+ search-ring-max 200
+ regexp-search-ring-max 200
+ ;; htighlighted all matching
+ isearch-lazy-highlight t
+ lazy-highlight-buffer t
+ ;; show search count, TODO not work in isearch-mb-mode
+ lazy-count-prefix-format nil
+ lazy-count-suffix-format " [%s/%s]"
+ ;; Record isearch in minibuffer history, so C-x ESC ESC can repeat it.
+ isearch-resume-in-command-history t
+ ;; M-< and M-> move to the first/last occurrence of the current search string.
+ isearch-allow-motion t
+ isearch-motion-changes-direction t
+ ;; space matches any sequence of characters in a line.
+ isearch-regexp-lax-whitespace t
+ search-whitespace-regexp ".*?")
+
+(with-eval-after-load 'isearch
+  (define-advice isearch-occur (:after (_regexp &optional _nlines))
+    (isearch-exit)))
+
+(keymap-global-set "C-s" #'isearch-forward-regexp)
+(keymap-global-set "C-r" #'isearch-backward-regexp)
+(keymap-set isearch-mode-map "C-c C-o" #'isearch-occur)
+(keymap-substitute isearch-mode-map #'isearch-delete-chac #'isearch-del-chac)
+;; TODO
+(define-key isearch-mode-map [escape] #'isearch-cancel)
+
+(eat/pkg isearch-mb)
+(add-hook 'isearch-mode-hook #'isearch-mb-mode)
+(with-eval-after-load 'isearch-mb
+  (define-advice isearch-mb--update-prompt (:around (fn &rest _) show-case-fold-info)
+    "Show case fold info in the prompt."
+    (cl-letf* ((isearch--describe-regexp-mode-orig
+                (symbol-function 'isearch--describe-regexp-mode))
+               ((symbol-function 'isearch--describe-regexp-mode)
+                (lambda (regexp-function &optional space-before)
+                  (concat (if isearch-case-fold-search "[Case Fold] " "")
+                          (funcall isearch--describe-regexp-mode-orig
+                                   regexp-function space-before)))))
+      (funcall fn _))))
 #+end_src
 
 ** Misc
 #+begin_src elisp
 (setq display-line-numbers-width 3)
 
-(setup whitespace
-  (:with-hook (prog-mode-hook conf-mode-hook)
-    (:hook whitespace-mode))
-  (:option whitespace-style '(face trailing)))
+;;; whitespace
+(add-hook 'prog-mode-hook #'whitespace-mode)
+(add-hook 'hook #'whitespace-mode)
+(setq whitespace-style '(face trailing))
 
-(setup global-goto-address
-  (:with-hook on-first-file-hook
-    (:hook global-goto-address-mode)))
+;;; global-goto-address
+(add-hook 'on-first-file-hook #'global-goto-address-mode)
 
-(setup savehist
-  (:with-hook after-init-hook
-    (:hook savehist-mode))
-  ;; Restore histories and registers after saving
-  (setq history-length 1000))
+;;; savehist
+(add-hook 'after-init-hook #'savehist-mode)
+;; Restore histories and registers after saving
+(setq history-length 1000)
 
-(setup autorevert
-  (:with-hook on-first-file-hook
-    (:hook global-auto-revert-mode)))
-(setup saveplace
-  (:with-hook on-first-file-hook
-    :hook save-place-mode))
-(setup so-long
-  (:with-hook on-first-file-hook
-    (:hook global-so-long-mode)))
+;;; autorevert
+(add-hook 'on-first-file-hook #'global-auto-revert-mode)
+
+;;; saveplace
+(add-hook 'on-first-file-hook #'save-place-mode)
+
+;;; so-long
+(add-hook 'on-first-file-hook #'global-so-long-mode)
 #+end_src
 
 * Minibuffer
 #+begin_src elisp
-(setup minibuffer
-  (setq
-   completion-styles '(basic partial-completion)
-   completion-category-overrides '((file (styles basic partial-completion)))
-   completion-cycle-threshold t
-   minibuffer-depth-indicate-mode t
-   minibuffer-eldef-shorten-default t
-   minibuffer-electric-default-mode t)
-  ;; Quit that fucking minibuffer!
-  (define-key minibuffer-local-map (kbd "C-g") #'keyboard-quit))
+(setq
+ completion-styles '(basic partial-completion)
+ completion-category-overrides '((file (styles basic partial-completion)))
+ completion-cycle-threshold t
+ minibuffer-depth-indicate-mode t
+ minibuffer-eldef-shorten-default t
+ minibuffer-electric-default-mode t)
+;; Quit that fucking minibuffer!
+(keymap-set minibuffer-local-map "C-g" #'keyboard-quit)
 #+end_src
 ** Vertico
 #+begin_src elisp
-(setup (:package vertico marginalia consult orderless embark)
-  ;; Vertico
-  (:with-hook after-init-hook
-    (:hook vertico-mode))
-  (:with-hook rfn-eshadow-update-overlay-hook
-    (:hook vertico-directory-tidy))
-  (:bind-into vertico-map
-    "DEL"   vertico-directory-delete-char
-    "M-DEL" vertico-directory-delete-word
-    "RET"   vertico-directory-enter)
-  (:option vertico-resize nil
-           vertico-count 17)
-  ;; Marginalia
-  (:with-hook after-init-hook
-    (:hook marginalia-mode))
-  ;; Consult
-  (advice-add #'multi-occur :override #'consult-multi-occur)
-  (:global [remap apropos]                       consult-apropos
-           [remap bookmark-jump]                 consult-bookmark
-           [remap goto-line]                     consult-goto-line
-           [remap imenu]                         consult-imenu
-           [remap locate]                        consult-locate
-           [remap man]                           consult-man
-           [remap recentf-open-files]            consult-recent-file
-           [remap switch-to-buffer]              consult-buffer
-           [remap switch-to-buffer-other-window] consult-buffer-other-window
-           [remap switch-to-buffer-other-frame]  consult-buffer-other-frame
-           [remap yank-pop]                      consult-yank-pop
-           [remap project-find-regexp]           consult-ripgrep)
-  (:option consult-project-root-function  (lambda ()
-                                            (when-let (project (project-current))
-                                              (car (project-roots project))))
-           consult-narrow-key             "<"
-           consult-line-numbers-widen     t
-           consult-async-min-input        2
-           consult-async-refresh-delay    0.15
-           consult-async-input-throttle   0.2
-           consult-async-input-debounce   0.1
-           xref-show-xrefs-function       #'consult-xref
-           xref-show-definitions-function #'consult-xref)
-  ;; Use minibuffer completion as the UI for `completion-at-point'.
-  (setq-default completion-in-region-function
-                (lambda (&rest args)
-                  (apply (if vertico-mode
-                             #'consult-completion-in-region
-                           #'completion--in-region)
-                         args)))
-  (with-eval-after-load 'consult
-    (consult-customize consult-ripgrep consult-git-grep consult-grep
-                       consult-bookmark consult-recent-file consult-xref
-                       :preview-key (kbd "M-."))
-    (consult-customize consult-theme
-                       :preview-key (list (kbd "M-.") :debounce 0.5 'any)))
-  ;; Orderless
-  (defun sanityinc/use-orderless-in-minibuffer ()
-    (setq-local completion-styles '(substring orderless)))
-  (:with-hook minibuffer-setup-hook
-    (:hook sanityinc/use-orderless-in-minibuffer))
-  (with-eval-after-load 'orderless
-    (defun completion--regex-pinyin (str)
-      (orderless-regexp (pinyinlib-build-regexp-string str)))
-    (add-to-list 'orderless-matching-styles 'completion--regex-pinyin))
-  ;; Embark
-  (:bind-into vertico-map
-    "C-c C-o" embark-export
-    "C-c C-c" embark-act)
-  (with-eval-after-load 'embark
-    (:bind-into embark-meta-map
-      "<escape>" keyboard-escape-quit))
-  (with-eval-after-load 'embark
-    ;; Hide the mode line of the Embark live/completions buffers
-    (add-to-list 'display-buffer-alist
-                 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                   nil
-                   (window-parameters (mode-line-format . none))))
-    (with-eval-after-load 'consult
-      (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode))))
+;;; vertico
+(eat/pkg vertico)
 
-(setup (:package consult-yasnippet consult-dir consult-eglot)
-  (:global [remap list-directory] #'consult-dir)
-  (:bind-into vertico-map
-    "C-x C-d" consult-dir
-    "C-x C-j" consult-dir-jump-file))
+(add-hook 'after-init-hook #'vertico-mode)
+(add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
+
+(with-eval-after-load 'vertico
+  (keymap-set vertico-map "DEL" #'vertico-directory-delete-char)
+  (keymap-set vertico-map "M-DEL" #'vertico-directory-delete-word)
+  (keymap-set vertico-map "RET" #'vertico-directory-enter))
+
+(setq vertico-resize nil
+      vertico-count 17)
+
+;;; marginalia
+(eat/pkg marginalia)
+(add-hook 'after-init-hook #'marginalia-mode)
+
+;;; consult
+(eat/pkg consult)
+
+(advice-add #'multi-occur :override #'consult-multi-occur)
+(global-set-key [remap apropos] #'consult-apropos)
+(global-set-key [remap bookmark-jump] #'consult-bookmark)
+(global-set-key [remap goto-line] #'consult-goto-line)
+(global-set-key [remap imenu] #'consult-imenu)
+(global-set-key [remap locate] #'consult-locate)
+(global-set-key [remap man] #'consult-man)
+(global-set-key [remap recentf-open-files] #'consult-recent-file)
+(global-set-key [remap switch-to-buffer] #'consult-buffer)
+(global-set-key [remap switch-to-buffer-other-window] #'consult-buffer-other-window)
+(global-set-key [remap switch-to-buffer-other-frame] #'consult-buffer-other-frame)
+(global-set-key [remap yank-pop] #'consult-yank-pop)
+(global-set-key [remap project-find-regexp] #'consult-ripgrep)
+
+(setq consult-project-root-function  (lambda ()
+                                       (when-let (project (project-current))
+                                         (car (project-roots project))))
+      consult-narrow-key             "<"
+      consult-line-numbers-widen     t
+      consult-async-min-input        2
+      consult-async-refresh-delay    0.15
+      consult-async-input-throttle   0.2
+      consult-async-input-debounce   0.1
+      xref-show-xrefs-function       #'consult-xref
+      xref-show-definitions-function #'consult-xref)
+
+;; Use minibuffer completion as the UI for `completion-at-point'.
+(setq-default completion-in-region-function
+              (lambda (&rest args)
+                (apply (if vertico-mode
+                           #'consult-completion-in-region
+                         #'completion--in-region)
+                       args)))
+
+(with-eval-after-load 'consult
+  (consult-customize consult-ripgrep consult-git-grep consult-grep
+                     consult-bookmark consult-recent-file consult-xref
+                     :preview-key (kbd "M-."))
+  (consult-customize consult-theme
+                     :preview-key (list (kbd "M-.") :debounce 0.5 'any)))
+
+;;; orderless
+(eat/pkg orderless)
+
+(defun sanityinc/use-orderless-in-minibuffer ()
+  (setq-local completion-styles '(substring orderless)))
+
+(add-hook 'minibuffer-setup-hook #'sanityinc/use-orderless-in-minibuffer)
+
+(with-eval-after-load 'orderless
+  (defun completion--regex-pinyin (str)
+    (orderless-regexp (pinyinlib-build-regexp-string str)))
+  (add-to-list 'orderless-matching-styles 'completion--regex-pinyin))
+
+;;; embark
+(eat/pkg embark)
+
+(with-eval-after-load 'vertico
+  (keymap-set vertico-map "C-c C-o" #'embark-export)
+  (keymap-set vertico-map "C-c C-c" #'embark-act))
+
+(with-eval-after-load 'embark
+  (keymap-set embark-meta-map "<escape>" #'keyboard-escape-quit))
+
+(with-eval-after-load 'embark
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none))))
+  (with-eval-after-load 'consult
+    (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode)))
+
+;;; consult-yasnippet
+(eat/pkg consult-yasnippet)
+;;; consult-dir
+(eat/pkg consult-dir)
+
+(global-set-key [remap list-directory] #'consult-dir)
+(with-eval-after-load 'vertico
+  (keymap-set vertico-map "C-x C-d" #'consult-dir)
+  (keymap-set vertico-map "C-x C-j" #'consult-dir-jump-file))
+
+;;; consult-eglot
+(eat/pkg consult-eglot)
 #+end_src
 
 * UI
@@ -964,7 +959,7 @@ No tab will created if the command is cancelled."
 (defvar eat/theme 'modus-operandi
   "Default theme.")
 
-(defvar eat/theme-tui 'modus-operandi
+(defvar eat/theme-tui nil
   "Default TUI theme.")
 
 (defvar eat/theme-system-light 'modus-operandi
@@ -993,7 +988,8 @@ No tab will created if the command is cancelled."
 (defun eat/tui-load-theme ()
   (when (fboundp 'menu-bar-mode)
     (menu-bar-mode -1))
-  (load-theme eat/theme-tui))
+  (when eat/theme-tui
+    (load-theme eat/theme-tui)))
 
 (defun eat/gui-load-theme ()
   (load-theme eat/theme)
@@ -1011,25 +1007,25 @@ No tab will created if the command is cancelled."
 
 *** Misc
 #+begin_src emacs-lisp
-(setup (:package kaolin-themes spacemacs-theme)
-  (:option kaolin-themes-underline-wave nil
-           kaolin-themes-modeline-border nil
-           kaolin-themes-modeline-padded 4
-           spacemacs-theme-comment-italic t
-           spacemacs-theme-keyword-italic t
-           spacemacs-theme-org-agenda-height t
-           spacemacs-theme-org-bold t
-           spacemacs-theme-org-height t
-           spacemacs-theme-org-highlight t
-           spacemacs-theme-org-priority-bold t
-           spacemacs-theme-underline-parens t))
+(eat/pkg kaolin-themes )
+(eat/pkg spacemacs-theme)
+(eat/pkg emacs-nasy-theme "https://github.com/nasyxx/emacs-nasy-theme.git")
 
-(unless (package-installed-p 'emacs-nasy-theme)
-  (package-vc-install "https://github.com/nasyxx/emacs-nasy-theme.git"))
+(setq kaolin-themes-underline-wave nil
+      kaolin-themes-modeline-border nil
+      kaolin-themes-modeline-padded 4
+      spacemacs-theme-comment-italic t
+      spacemacs-theme-keyword-italic t
+      spacemacs-theme-org-agenda-height t
+      spacemacs-theme-org-bold t
+      spacemacs-theme-org-height t
+      spacemacs-theme-org-highlight t
+      spacemacs-theme-org-priority-bold t
+      spacemacs-theme-underline-parens t)
 #+end_src
 ** Mode line
 #+begin_src elisp
-(setup (:package minions))
+(eat/pkg minions)
 
 (defun eat/setup-modeline ()
   (interactive)
@@ -1055,10 +1051,9 @@ No tab will created if the command is cancelled."
 #+end_src
 ** Text Scale
 #+begin_src elisp
-(setup (:package default-text-scale)
-  (:global
-   "C-x C-=" default-text-scale-increase
-   "C-x C--" default-text-scale-decrease))
+(eat/pkg default-text-scale)
+(keymap-global-set "C-x C-=" #'default-text-scale-increase)
+(keymap-global-set "C-x C--" #'default-text-scale-decrease)
 #+end_src
 
 * Editing
@@ -1092,160 +1087,148 @@ point reaches the beginning or end of the buffer, stop there."
 ** Built In Tools
 *** Ediff
 #+begin_src elisp
-(setup ediff
-  (defvar local-ediff-saved-window-conf nil)
+(defvar local-ediff-saved-window-conf nil)
+(defun eat/ediff-save-window-conf ()
+  (setq local-ediff-saved-window-conf (current-window-configuration)))
 
-  (defun eat/ediff-save-window-conf ()
-    (setq local-ediff-saved-window-conf (current-window-configuration)))
+(defun eat/ediff-restore-window-conf ()
+  (when (window-configuration-p local-ediff-saved-window-conf)
+    (set-window-configuration local-ediff-saved-window-conf)))
 
-  (defun eat/ediff-restore-window-conf ()
-    (when (window-configuration-p local-ediff-saved-window-conf)
-      (set-window-configuration local-ediff-saved-window-conf)))
-
-  (setq ediff-window-setup-function #'ediff-setup-windows-plain
-        ediff-highlight-all-diffs t
-        ediff-split-window-function 'split-window-horizontally
-        ediff-merge-split-window-function 'split-window-horizontally)
-  (with-eval-after-load 'ediff
-    ;; Restore window config after quitting ediff
-    (add-hook 'ediff-before-setup-hook #'eat/ediff-save-window-conf)
-    (add-hook 'ediff-quit-hook #'eat/ediff-restore-window-conf)))
+(setq ediff-window-setup-function #'ediff-setup-windows-plain
+      ediff-highlight-all-diffs t
+      ediff-split-window-function 'split-window-horizontally
+      ediff-merge-split-window-function 'split-window-horizontally)
+(with-eval-after-load 'ediff
+  ;; Restore window config after quitting ediff
+  (add-hook 'ediff-before-setup-hook #'eat/ediff-save-window-conf)
+  (add-hook 'ediff-quit-hook #'eat/ediff-restore-window-conf))
 #+end_src
 *** Tramp
 #+begin_src elisp
-(setup tramp
-  (setq
-   remote-file-name-inhibit-locks t
-   tramp-verbose 1 ;; only show error message
-   tramp-completion-reread-directory-timeout nil ;;  speed up complete
-   tramp-auto-save-directory temporary-file-directory
-   ;; Always use file cache when using tramp
-   remote-file-name-inhibit-cache nil
-   ;; C-x C-f /ssh:
-   tramp-default-method "ssh"
-   vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
-                                vc-ignore-dir-regexp
-                                tramp-file-name-regexp))
+(setq
+ remote-file-name-inhibit-locks t
+ tramp-verbose 1 ;; only show error message
+ tramp-completion-reread-directory-timeout nil ;;  speed up complete
+ tramp-auto-save-directory temporary-file-directory
+ ;; Always use file cache when using tramp
+ remote-file-name-inhibit-cache nil
+ ;; C-x C-f /ssh:
+ tramp-default-method "ssh"
+ vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
+                              vc-ignore-dir-regexp
+                              tramp-file-name-regexp))
 
-  (defun eat/reopen-file-with-sudo ()
-    (interactive)
-    (find-alternate-file (format "/sudo::%s" (buffer-file-name))))
-  (global-set-key (kbd "C-x C-z") #'eat/reopen-file-with-sudo)
+(defun eat/reopen-file-with-sudo ()
+  (interactive)
+  (find-alternate-file (format "/sudo::%s" (buffer-file-name))))
+(keymap-global-set "C-x C-z" #'eat/reopen-file-with-sudo)
 
-  ;; https://www.reddit.com/r/emacs/comments/y92y4b/tramp_users_slowness_got_you_down_check/
-  (defun my-vc-off-if-remote ()
-    (if (file-remote-p (buffer-file-name))
-        (setq-local vc-handled-backends '(Git))))
-  (add-hook 'find-file-hook 'my-vc-off-if-remote)
-  (with-eval-after-load 'tramp
-    ;; ‘Private Directories’ are the settings of the $PATH environment,
-    ;; as given in your ‘~/.profile’.  This entry is represented in
-    ;; the list by the special value ‘tramp-own-remote-path’.
-    (add-to-list 'tramp-remote-path 'tramp-own-remote-path)))
+;; https://www.reddit.com/r/emacs/comments/y92y4b/tramp_users_slowness_got_you_down_check/
+(defun my-vc-off-if-remote ()
+  (if (file-remote-p (buffer-file-name))
+      (setq-local vc-handled-backends '(Git))))
+
+(add-hook 'find-file-hook 'my-vc-off-if-remote)
+
+(with-eval-after-load 'tramp
+  ;; ‘Private Directories’ are the settings of the $PATH environment,
+  ;; as given in your ‘~/.profile’.  This entry is represented in
+  ;; the list by the special value ‘tramp-own-remote-path’.
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 #+end_src
 *** Spell check
 #+begin_src elisp
-(setup ispell
-  (when eat/macp
-    (setenv "DICTIONARY" "en_US"))
-  ;; no spell checking for org special blocks
-  (add-to-list 'ispell-skip-region-alist '(":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:"))
-  (add-to-list 'ispell-skip-region-alist '("#\\+begin_src" . "#\\+end_src"))
-  (add-to-list 'ispell-skip-region-alist '("#\\+begin_example" . "#\\+end_example"))
-  (setq ispell-dictionary "en_US"
-        ispell-following-word t))
+(when eat/macp
+  (setenv "DICTIONARY" "en_US"))
+;; no spell checking for org special blocks
+(add-to-list 'ispell-skip-region-alist '(":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:"))
+(add-to-list 'ispell-skip-region-alist '("#\\+begin_src" . "#\\+end_src"))
+(add-to-list 'ispell-skip-region-alist '("#\\+begin_example" . "#\\+end_example"))
+(setq ispell-dictionary "en_US"
+      ispell-following-word t)
 
-(setup flyspell
-  (:needs "aspell")
-  ;; `flyspell' -- only enable in magit commit
-  (setq flyspell-issue-welcome-flag nil
-        flyspell-issue-message-flag nil)
-  (with-eval-after-load 'flyspell
-    (setq flyspell-mode-map nil)))
+(setq flyspell-issue-welcome-flag nil
+      flyspell-issue-message-flag nil)
+(with-eval-after-load 'flyspell
+  (setq flyspell-mode-map nil))
 #+end_src
 *** Hl Line
 #+begin_src emacs-lisp
-(setup hl-line
-  (:option
-   hl-line-sticky-flag nil)
-  ;; (when (display-graphic-p)
-  ;;   (add-hook 'prog-mode-hook #'hl-line-mode)
-  ;;   (add-hook 'conf-mode-hook #'hl-line-mode))
-  (with-eval-after-load 'hl-line
-    (:with-hook post-command-hook
-      (:hook (lambda ()
-               "When `hl-line-mode' is enable, unhighlight if region is active."
-               (when (and (bound-and-true-p hl-line-mode)
-                          (region-active-p))
-                 (hl-line-unhighlight)))))))
+(setq hl-line-sticky-flag nil)
+;; (when (display-graphic-p)
+;;   (add-hook 'prog-mode-hook #'hl-line-mode)
+;;   (add-hook 'conf-mode-hook #'hl-line-mode))
+(with-eval-after-load 'hl-line
+  (add-hook 'post-command-hook #'(lambda ()
+                                   "When `hl-line-mode' is enable, unhighlight if region is active."
+                                   (when (and (bound-and-true-p hl-line-mode)
+                                              (region-active-p))
+                                     (hl-line-unhighlight)))))
 #+end_src
 
 *** Pulse
 #+begin_src elisp
-(setup pulse
-  (:with-hook (imenu-after-jump-hook isearch-update-post-hook)
-    (:hook eat/recenter-and-pulse))
-  (:with-hook (bookmark-after-jump  next-error)
-    (:hook eat/recenter-and-pulse-line))
+(custom-set-faces
+ '(pulse-highlight-start-face ((t (:inherit region))))
+ '(pulse-highlight-face ((t (:inherit region)))))
 
-  (custom-set-faces
-   '(pulse-highlight-start-face ((t (:inherit region))))
-   '(pulse-highlight-face ((t (:inherit region)))))
+(defun eat/pulse-momentary-line (&rest _)
+  "Pulse the current line."
+  (pulse-momentary-highlight-one-line (point)))
 
-  (defun eat/pulse-momentary-line (&rest _)
-    "Pulse the current line."
-    (pulse-momentary-highlight-one-line (point)))
+(defun eat/pulse-momentary (&rest _)
+  "Pulse the region or the current line."
+  (if (fboundp 'xref-pulse-momentarily)
+      (xref-pulse-momentarily)
+    (eat/pulse-momentary-line)))
 
-  (defun eat/pulse-momentary (&rest _)
-    "Pulse the region or the current line."
-    (if (fboundp 'xref-pulse-momentarily)
-        (xref-pulse-momentarily)
-      (eat/pulse-momentary-line)))
+(defun eat/recenter-and-pulse(&rest _)
+  "Recenter and pulse the region or the current line."
+  (recenter)
+  (eat/pulse-momentary))
 
-  (defun eat/recenter-and-pulse(&rest _)
-    "Recenter and pulse the region or the current line."
-    (recenter)
-    (eat/pulse-momentary))
+(defun eat/recenter-and-pulse-line (&rest _)
+  "Recenter and pulse the current line."
+  (recenter)
+  (eat/pulse-momentary-line))
 
-  (defun eat/recenter-and-pulse-line (&rest _)
-    "Recenter and pulse the current line."
-    (recenter)
-    (eat/pulse-momentary-line))
+(dolist (cmd '(recenter-top-bottom
+               other-window windmove-do-window-select
+               pager-page-down pager-page-up))
+  (advice-add cmd :after #'eat/pulse-momentary-line))
 
-  (dolist (cmd '(recenter-top-bottom
-                 other-window windmove-do-window-select
-                 pager-page-down pager-page-up))
-    (advice-add cmd :after #'eat/pulse-momentary-line))
+(dolist (cmd '(pop-to-mark-command
+               pop-global-mark
+               compile-goto-error
+               goto-last-change))
+  (advice-add cmd :after #'eat/recenter-and-pulse))
 
-  (dolist (cmd '(pop-to-mark-command
-                 pop-global-mark
-                 compile-goto-error
-                 goto-last-change))
-    (advice-add cmd :after #'eat/recenter-and-pulse)))
+(add-hook 'imenu-after-jump-hook #'eat/recenter-and-pulse)
+(add-hook 'isearch-update-post-hook #'eat/recenter-and-pulse)
+
+(add-hook 'bookmark-after-jump-hook #'eat/recenter-and-pulse-line)
+(add-hook 'next-error #'eat/recenter-and-pulse-line)
 #+end_src
 
 *** Outline
 #+begin_src emacs-lisp
-(setup outline
-  (:option outline-minor-mode-cycle t
-        outline-minor-mode-highlight t))
+(setq outline-minor-mode-cycle t
+      outline-minor-mode-highlight t)
 #+end_src
 
 *** Simple
 #+begin_src emacs-lisp
-(setup simple
-  (:with-hook before-save-hook
-    (:hook delete-trailing-whitespace))
-  (setq visual-line-fringe-indicators '(nil nil)
-        ;; List only applicable commands.
-        read-extended-command-predicate #'command-completion-default-include-p
-        fill-column 72))
+(add-hook 'before-save-hook #'delete-trailing-whitespace)
+(setq visual-line-fringe-indicators '(nil nil)
+      ;; List only applicable commands.
+      read-extended-command-predicate #'command-completion-default-include-p
+      fill-column 72)
 #+end_src
 
 *** Subword
 #+begin_src elisp
-(setup subword
-  (:hook-into prog-mode))
+(add-hook 'prog-mode-hook #'subword-mode)
 #+end_src
 ** Meow
 *** Setup
@@ -1268,7 +1251,7 @@ point reaches the beginning or end of the buffer, stop there."
   (defalias 'meow-leader-command-prefix (make-sparse-keymap))
   (defvar meow-leader-map (symbol-function 'meow-leader-command-prefix)
     "Keymap for characters following C-c m.")
-  (define-key global-map "\C-c\ m" 'meow-leader-command-prefix)
+  (keymap-global-set "C-c m" 'meow-leader-command-prefix)
   (add-to-list 'meow-keymap-alist (cons 'leader 'meow-leader-command-prefix))
 
   (meow-leader-define-key
@@ -1311,7 +1294,6 @@ point reaches the beginning or end of the buffer, stop there."
    ;; app
    '("d" . dired)
    '("v" . magit)
-   '("r" . rg-project)
    '("C" . xeft)
 
    ;; toggles
@@ -1446,76 +1428,71 @@ point reaches the beginning or end of the buffer, stop there."
 #+end_src
 *** Config
 #+begin_src elisp
-(setup (:package meow)
-  (require 'meow)
-  (:option
-   meow-visit-sanitize-completion nil
-   meow-esc-delay 0.001
-   meow-keypad-describe-delay 1.0
-   meow-replace-state-name-list
-   '((normal . "N")
-     (motion . "M")
-     (keypad . "K")
-     (insert . "I")
-     (beacon . "B")))
-  ;; specific font so that line won't break TODO chang to variable
-  ;; (advice-add 'meow-cheatsheet :after (lambda ()
-  ;;                                       (interactive)
-  ;;                                       (setq buffer-face-mode-face '(:family "Menlo"))
-  ;;                                       (buffer-face-mode +1)))
-  ;; normal mode list
-  (dolist (mode '(go-dot-mod-mode
-                  diff-mode))
-    (add-to-list 'meow-mode-state-list `(,mode . normal)))
-  ;; motion mode list
-  (dolist (mode '(lsp-bridge-ref-mode
-                  Info-mode
-                  ghelp-page-mode
-                  notmuch-hello-mode
-                  notmuch-search-mode
-                  notmuch-tree-mode))
-    (add-to-list 'meow-mode-state-list `(,mode . motion)))
-  (dolist (mode '(xeft-mode
-                  gud-mode))
-    (add-to-list 'meow-mode-state-list `(,mode . insert)))
+(eat/pkg meow)
 
-  (meow-setup-dvorak)
-  (meow-setup-indicator)
-  (meow-global-mode 1))
+(require 'meow)
+(setq meow-visit-sanitize-completion nil
+      meow-esc-delay 0.001
+      meow-keypad-describe-delay 1.0
+      meow-replace-state-name-list
+      '((normal . "N")
+        (motion . "M")
+        (keypad . "K")
+        (insert . "I")
+        (beacon . "B")))
+;; specific font so that line won't break TODO chang to variable
+;; (advice-add 'meow-cheatsheet :after (lambda ()
+;;                                       (interactive)
+;;                                       (setq buffer-face-mode-face '(:family "Menlo"))
+;;                                       (buffer-face-mode +1)))
+;; normal mode list
+(dolist (mode '(go-dot-mod-mode
+                diff-mode))
+  (add-to-list 'meow-mode-state-list `(,mode . normal)))
+;; motion mode list
+(dolist (mode '(lsp-bridge-ref-mode
+                Info-mode
+                ghelp-page-mode
+                notmuch-hello-mode
+                notmuch-search-mode
+                notmuch-tree-mode))
+  (add-to-list 'meow-mode-state-list `(,mode . motion)))
+(dolist (mode '(xeft-mode
+                gud-mode))
+  (add-to-list 'meow-mode-state-list `(,mode . insert)))
+
+(meow-setup-dvorak)
+(meow-setup-indicator)
+(meow-global-mode 1)
 #+end_src
 ** Anzu
 #+begin_src elisp
-(setup (:package anzu)
-  (:global
-   [remap query-replace] anzu-query-replace
-   [remap query-replace-regexp] anzu-query-replace-regexp))
+(eat/pkg anzu)
+(global-set-key [remap query-replace] #'anzu-query-replace)
+(global-set-key [remap query-replace-regexp] #'anzu-query-replace-regexp)
 #+end_src
 ** Separedit
 #+begin_src emacs-lisp
-(setup (:package separedit)
-  ;; use C-u C-c ' to select major mode
-  (:global "C-c '" separedit))
+(eat/pkg separedit)
+(keymap-global-set "C-c '" #'separedit)
 #+end_src
 ** Iscroll
 Better scroll on picture in GUI
 #+begin_src emacs-lisp
-(setup (:package iscroll))
+(eat/pkg iscroll)
 #+end_src
 
 ** Undo
 *** vundo
 #+begin_src emacs-lisp
-(setup (:package vundo)
-  (:autoload vundo))
+(eat/pkg vundo)
 #+end_src
 
 *** undo-hl
 #+begin_src emacs-lisp
-(unless (package-installed-p 'undo-hl)
-  (package-vc-install "https://github.com/casouri/undo-hl.git"))
-(setup undo-hl
-  (:with-hook (prog-mode-hook conf-mode-hook)
-    (:hook undo-hl-mode)))
+(eat/pkg undo-hl "https://github.com/casouri/undo-hl.git")
+(add-hook 'prog-mode-hook #'undo-hl-mode)
+(add-hook 'conf-mode-hook #'undo-hl-mode)
 #+end_src
 
 ** TODO Chinese Input                                                 :deps:
@@ -1530,28 +1507,28 @@ Then ~rime-compile-module~.
 ;; curl -L -O https://github.com/rime/librime/releases/download/1.7.2/rime-1.7.2-osx.zip
 ;; unzip rime-1.7.2-osx.zip -d ~/.config/emacs/librime
 ;; rm -rf rime-1.7.2-osx.zip
-(setup (:package rime)
-  (when eat/macp
-    (setq rime-librime-root (expand-file-name "librime/dist" user-emacs-directory)))
-  (:option
-   rime-disable-predicates '(meow-normal-mode-p
-                             ;; meow-motion-mode-p
-                             meow-keypad-mode-p
-                             meow-beacon-mode-p)
-   rime-inline-predicates '(rime-predicate-space-after-cc-p
-                            rime-predicate-current-uppercase-letter-p)
-   rime-translate-keybindings '("C-f" "C-b" "C-n" "C-p" "C-g" "C-v" "M-v")
-   rime-inline-ascii-holder ?a
-   default-input-method "rime"
-   rime-cursor "|"
-   rime-show-candidate 'minibuffer)
-  (with-eval-after-load 'rime
-    (setq-default
-     rime-posframe-properties (list :internal-border-width 1))
-    (set-face-attribute 'rime-indicator-face nil :height 0.9)
-    (set-face-attribute 'rime-indicator-dim-face nil :height 0.9)
-    (define-key rime-active-mode-map [tab] 'rime-inline-ascii)
-    (define-key rime-mode-map (kbd "M-j") 'rime-force-enable)))
+(eat/pkg rime)
+(when eat/macp
+  (setq rime-librime-root (expand-file-name "librime/dist" user-emacs-directory)))
+(setq
+ rime-disable-predicates '(meow-normal-mode-p
+                           ;; meow-motion-mode-p
+                           meow-keypad-mode-p
+                           meow-beacon-mode-p)
+ rime-inline-predicates '(rime-predicate-space-after-cc-p
+                          rime-predicate-current-uppercase-letter-p)
+ rime-translate-keybindings '("C-f" "C-b" "C-n" "C-p" "C-g" "C-v" "M-v")
+ rime-inline-ascii-holder ?a
+ default-input-method "rime"
+ rime-cursor "|"
+ rime-show-candidate 'minibuffer)
+(with-eval-after-load 'rime
+  (setq-default
+   rime-posframe-properties (list :internal-border-width 1))
+  (set-face-attribute 'rime-indicator-face nil :height 0.9)
+  (set-face-attribute 'rime-indicator-dim-face nil :height 0.9)
+  (define-key rime-active-mode-map [tab] 'rime-inline-ascii)
+  (keymap-set rime-mode-map "M-j" 'rime-force-enable))
 #+end_src
 
 *** TODO Search with regex
@@ -1563,66 +1540,66 @@ Only work for orderless for now.
 #+end_src
 
 ** TODO Symbol Overlay
-
 #+begin_src emacs-lisp
-(setup (:package symbol-overlay))
+(eat/pkg symbol-overlay)
  #+end_src
 ** Hl Todo
 #+begin_src emacs-lisp
-(setup (:package hl-todo)
-  (:with-hook (dired-mode-hook prog-mode-hook conf-mode-hook)
-    (:hook hl-todo-mode)))
+(eat/pkg hl-todo)
+(add-hook 'dired-mode-hook #'hl-todo-mode)
+(add-hook 'prog-mode-hook #'hl-todo-mode)
+(add-hook 'conf-mode-hook #'hl-todo-mode)
 #+end_src
 ** Ligature
 #+begin_src emacs-lisp
-(setup (:package ligature)
-  (:autoload global-ligature-mode)
-  (:with-hook prog-mode-hook
-    (:hook (lambda () (ligature-mode t))))
-  (with-eval-after-load 'ligature
-    ;; https://htmlpreview.github.io/?https://github.com/kiliman/operator-mono-lig/blob/master/images/preview/normal/index.html
-    (ligature-set-ligatures 'prog-mode
-                            '("&&" "||" "|>" ":=" "==" "===" "==>" "=>"
-                              "=<<" "!=" "!==" ">=" ">=>" ">>=" "->" "--"
-                              "-->" "<|" "<=" "<==" "<=>" "<=<" "<!--" "<-"
-                              "<->" "<--" "</" "+=" "++" "??" "/>" "__" "WWW"))))
+(eat/pkg ligature)
+
+(add-hook 'prog-mode-hook #'(lambda () (ligature-mode t)))
+
+(autoload #'global-ligature-mode "ligature")
+
+(with-eval-after-load 'ligature
+  ;; https://htmlpreview.github.io/?https://github.com/kiliman/operator-mono-lig/blob/master/images/preview/normal/index.html
+  (ligature-set-ligatures 'prog-mode
+                          '("&&" "||" "|>" ":=" "==" "===" "==>" "=>"
+                            "=<<" "!=" "!==" ">=" ">=>" ">>=" "->" "--"
+                            "-->" "<|" "<=" "<==" "<=>" "<=<" "<!--" "<-"
+                            "<->" "<--" "</" "+=" "++" "??" "/>" "__" "WWW")))
 #+end_src
 ** Avy
 #+begin_src elisp
-(setup (:package avy)
-  (with-eval-after-load 'avy
-    (:option
-     avy-background t
-     avy-style 'pre)))
+(eat/pkg avy)
+(with-eval-after-load 'avy
+  (setq avy-background t
+        avy-style 'pre))
 #+end_src
 
 * Completion
 ** Corfu
 #+begin_src elisp
-(setup corfu
-  (:package corfu popon corfu-terminal)
-  (:with-hook after-init-hook
-    (:hook (lambda () (global-corfu-mode 1))))
-  (:option corfu-preview-current nil
-           corfu-auto-delay 0.2
-           corfu-auto-prefix 2
-           corfu-quit-no-match t
-           corfu-quit-at-boundary t
-           corfu-auto t)
-  (with-eval-after-load 'corfu
-    (:bind-into corfu-map
-      ;; quit corfu completion and back to meow normal mode
-      "<escape>" (lambda ()
-                   (interactive)
-                   (corfu-quit)
-                   (when (meow-insert-mode-p)
-                     (meow-insert-exit)))
-      "RET" nil))
-  ;; corfu-terminal
-  (:with-hook corfu-mode-hook
-    (:hook (lambda ()
-             (unless (display-graphic-p)
-               (corfu-terminal-mode +1))))))
+(eat/pkg corfu)
+(eat/pkg popon)
+(eat/pkg corfu-terminal)
+
+(add-hook 'after-init-hook #'(lambda () (global-corfu-mode 1)))
+(add-hook 'corfu-mode-hook #'(lambda ()
+                               (unless (display-graphic-p)
+                                 (corfu-terminal-mode +1))))
+
+(setq corfu-preview-current nil
+      corfu-auto-delay 0.2
+      corfu-auto-prefix 2
+      corfu-quit-no-match t
+      corfu-quit-at-boundary t
+      corfu-auto t)
+
+(with-eval-after-load 'corfu
+  (keymap-set corfu-map "<escape>" #'(lambda ()
+                                       (interactive)
+                                       (corfu-quit)
+                                       (when (meow-insert-mode-p)
+                                         (meow-insert-exit))))
+  (keymap-set corfu-map "RET" nil))
 
 (defun eat/yas-next-field-or-maybe-expand ()
   "Try complete current cond or `yas-next-field-or-maybe-expand'.
@@ -1633,368 +1610,377 @@ so try complete filst, if there nothing to complete then try to jump to next fie
   (or (corfu-insert) ;; NOTE this works
       (yas-next-field-or-maybe-expand)))
 (with-eval-after-load 'yasnippet
-  (define-key yas-keymap (kbd "<tab>") 'eat/yas-next-field-or-maybe-expand)
-  (define-key yas-keymap (kbd "TAB") 'eat/yas-next-field-or-maybe-expand))
+  (keymap-set yas-keymap "<tab>" 'eat/yas-next-field-or-maybe-expand)
+  (keymap-set yas-keymap "TAB" 'eat/yas-next-field-or-maybe-expand))
 #+end_src
 ** Yasnippet
 #+begin_src elisp
-(setup (:package yasnippet)
-  (:with-hook (prog-mode-hook conf-mode-hook)
-    (:hook yas-minor-mode))
-  (with-eval-after-load 'yasnippet
-    (let ((inhibit-message t))
-      (yas-reload-all))))
+(eat/pkg yasnippet)
+(add-hook 'prog-mode-hook #'yas-minor-mode)
+(add-hook 'conf-mode-hook #'yas-minor-mode)
+(with-eval-after-load 'yasnippet
+  (let ((inhibit-message t))
+    (yas-reload-all)))
 #+end_src
 * Programming
 ** Tools
 *** Pair
 **** elec-pair
 #+begin_src elisp
-(setup elec-pair
-  (:with-hook prog-mode-hook
-    (:hook electric-pair-local-mode))
-  (:option electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
+(add-hook 'prog-mode-hook #'electric-pair-local-mode)
+(setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
 #+end_src
 **** paren
 #+begin_src elisp
-(setup paren
-  (:option show-paren-when-point-in-periphery t
-           show-paren-context-when-offscreen 'overlay
-           show-paren-when-point-inside-paren t
-           show-paren-context-when-offscreen t))
+(setq show-paren-when-point-in-periphery t
+      show-paren-context-when-offscreen 'overlay
+      show-paren-when-point-inside-paren t
+      show-paren-context-when-offscreen t)
 #+end_src
 *** Smerge
 #+begin_src elisp
-(setup smerge-mode
-  (:with-hook find-file-hook
-    (:hook (lambda ()
-             (save-excursion
-               (goto-char (point-min))
-               (when (re-search-forward "^<<<<<<< " nil t)
-                 (smerge-mode 1))))))
-  (with-eval-after-load 'smerge-mode
-    (:bind
-     "C-c r" smerge-refine
-     "C-c c" smerge-keep-current
-     "C-c a" smerge-keep-all
-     "C-c n" smerge-next
-     "C-c p" smerge-prev
-     "C-c l" smerge-keep-lower
-     "C-c u" smerge-keep-upper)))
+(add-hook 'find-file-hook #'(lambda ()
+                              (save-excursion
+                                (goto-char (point-min))
+                                (when (re-search-forward "^<<<<<<< " nil t)
+                                  (smerge-mode 1)))))
+
+(with-eval-after-load 'smerge-mode
+  (keymap-set smerge-mode-map "C-c r" #'smerge-refine)
+  (keymap-set smerge-mode-map "C-c c" #'smerge-keep-current)
+  (keymap-set smerge-mode-map "C-c a" #'smerge-keep-all)
+  (keymap-set smerge-mode-map "C-c n" #'smerge-next)
+  (keymap-set smerge-mode-map "C-c p" #'smerge-prev)
+  (keymap-set smerge-mode-map "C-c l" #'smerge-keep-lower)
+  (keymap-set smerge-mode-map "C-c u" #'smerge-keep-upper))
 #+end_src
 *** Eldoc
 #+begin_src elisp
-(setup eldoc
-  (:option eldoc-idle-delay 1))
+(setq eldoc-idle-delay 1)
 #+end_src
 *** Newcomment
 #+begin_src elisp
-(setup newcomment
-  (:option comment-auto-fill-only-comments t))
+(setq comment-auto-fill-only-comments t)
 #+end_src
 *** TODO Hideshow
 - Seems have error message.
 - And to context-menu-mode.
 #+begin_src elisp
-(setup hideshow
-  (:with-hook prog-mode-hook
-    (:hook hs-minor-mode))
-  ;; FIXME
-  (defconst hideshow-folded-face '((t (:inherit 'font-lock-comment-face :box t))))
+(add-hook 'prog-mode-hook #'hs-minor-mode)
 
-  (defface hideshow-border-face
-    '((((background light))
-       :background "rosy brown" :extend t)
-      (t
-       :background "sandy brown" :extend t))
-    "Face used for hideshow fringe."
-    :group 'hideshow)
+;; FIXME
+(defconst hideshow-folded-face '((t (:inherit 'font-lock-comment-face :box t))))
 
-  (define-fringe-bitmap 'hideshow-folded-fringe
-    (vector #b00000000
-            #b00000000
-            #b00000000
-            #b11000011
-            #b11100111
-            #b01111110
-            #b00111100
-            #b00011000))
+(defface hideshow-border-face
+  '((((background light))
+     :background "rosy brown" :extend t)
+    (t
+     :background "sandy brown" :extend t))
+  "Face used for hideshow fringe."
+  :group 'hideshow)
 
-  (defun hideshow-folded-overlay-fn (ov)
-    "Display a folded region indicator with the number of folded lines."
-    (when (eq 'code (overlay-get ov 'hs))
-      (let* ((nlines (count-lines (overlay-start ov) (overlay-end ov)))
-             (info (format " (%d)..." nlines)))
-        ;; fringe indicator
-        (overlay-put ov 'before-string (propertize " "
-                                                   'display '(left-fringe hideshow-folded-fringe
-                                                                          hideshow-border-face)))
-        ;; folding indicator
-        (overlay-put ov 'display (propertize info 'face hideshow-folded-face)))))
+(define-fringe-bitmap 'hideshow-folded-fringe
+  (vector #b00000000
+          #b00000000
+          #b00000000
+          #b11000011
+          #b11100111
+          #b01111110
+          #b00111100
+          #b00011000))
 
-  (setq hs-set-up-overlay #'hideshow-folded-overlay-fn))
+(defun hideshow-folded-overlay-fn (ov)
+  "Display a folded region indicator with the number of folded lines."
+  (when (eq 'code (overlay-get ov 'hs))
+    (let* ((nlines (count-lines (overlay-start ov) (overlay-end ov)))
+           (info (format " (%d)..." nlines)))
+      ;; fringe indicator
+      (overlay-put ov 'before-string (propertize " "
+                                                 'display '(left-fringe hideshow-folded-fringe
+                                                                        hideshow-border-face)))
+      ;; folding indicator
+      (overlay-put ov 'display (propertize info 'face hideshow-folded-face)))))
+
+(setq hs-set-up-overlay #'hideshow-folded-overlay-fn)
 #+end_src
 *** Devdocs
 #+begin_src elisp
-(setup (:package devdocs))
+(eat/pkg devdocs)
 #+end_src
 
 *** Imenu List
 #+begin_src emacs-lisp
-(setup (:package imenu-list)
-  (defun +imenu-scale-font-size ()
-    (face-remap-add-relative 'default :height 0.8))
-  (:option imenu-list-auto-resize t
-           imenu-list-mode-line-format nil)
-  (:with-hook imenu-list-major-mode-hook
-    (:hook (lambda ()
-             (setq-local header-line-format nil)))
-    (:hook +imenu-scale-font-size)))
+(eat/pkg imenu-list)
+
+(defun +imenu-scale-font-size ()
+  (face-remap-add-relative 'default :height 0.8))
+
+(setq imenu-list-auto-resize t
+      imenu-list-mode-line-format nil)
+
+(add-hook 'imenu-list-major-mode-hook #'(lambda () (setq-local header-line-format nil)))
+(add-hook 'imenu-list-major-mode-hook #'+imenu-scale-font-size)
 #+end_src
 *** Puni
 #+begin_src emacs-lisp
-(setup (:package puni)
-  ;; (:with-hook (emacs-lisp-mode-hook scheme-mode-hook clojure-mode-hook)
-  ;;   (:hook puni-mode))
-  ;; (:bind
-  ;;  "M-r" 'puni-splice
-  ;;  "C-(" 'puni-slurp-backward
-  ;;  "C-)" 'puni-slurp-forward
-  ;;  "C-{" 'puni-barf-backward
-  ;;  "C-}" 'puni-barf-forward)
-  )
+(eat/pkg puni)
+;; (:with-hook (emacs-lisp-mode-hook scheme-mode-hook clojure-mode-hook)
+;;   (:hook puni-mode))
+;; (:bind
+;;  "M-r" 'puni-splice
+;;  "C-(" 'puni-slurp-backward
+;;  "C-)" 'puni-slurp-forward
+;;  "C-{" 'puni-barf-backward
+;;  "C-}" 'puni-barf-forward)
 #+end_src
 *** Dumb Jump
 #+begin_src elisp
-(setup (:package dumb-jump)
-  (:option dumb-jump-force-searcher'rg
-           dumb-jump-quiet t
-           dumb-jump-aggressive t
-           dumb-jump-selector 'completing-read)
-  ;; NOTE use `dumb-jump' as default xref backend
-  ;; you can run `eglot' or `eat/citre-enable' to reset this
-  (:with-hook xref-backend-functions
-    (:hook dumb-jump-xref-activate)))
+(eat/pkg dumb-jump)
+
+(setq dumb-jump-force-searcher'rg
+      dumb-jump-quiet t
+      dumb-jump-aggressive t
+      dumb-jump-selector 'completing-read)
+
+;; NOTE use `dumb-jump' as default xref backend
+;; you can run `eglot' or `eat/citre-enable' to reset this
+(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 #+end_src
 *** Apheleia
 #+begin_src elisp
-(setup (:package apheleia)
-  (:hook-into go-mode)
-  (:option apheleia-remote-algorithm 'local)
-  (with-eval-after-load 'apheleia
-    (push '(go-ts-mode . gofmt) apheleia-mode-alist)
-    (setf (alist-get 'gofmt apheleia-formatters)
-          '("goimports"))))
+(eat/pkg apheleia)
+
+(setq apheleia-remote-algorithm 'local)
+
+(add-hook 'go-mode-hook #'apheleia-mode)
+
+(with-eval-after-load 'apheleia
+  (push '(go-ts-mode . gofmt) apheleia-mode-alist)
+  (setf (alist-get 'gofmt apheleia-formatters)
+        '("goimports")))
 #+end_src
 *** Clue
 #+begin_src emacs-lisp
-(unless (package-installed-p 'clue)
-  (package-vc-install "https://github.com/AmaiKinono/clue"))
-
+(eat/pkg clue "https://github.com/AmaiKinono/clue")
 #+end_src
 *** Flymake
 #+begin_src elisp
-(setup flymake
-  (:hook-into prog-mode)
-  (add-hook 'emacs-lisp-mode-hook #'(lambda ()
-                                      (flymake-mode -1)))
-  (:option flymake-diagnostic-functions nil
-           flymake-no-changes-timeout 0.2)
+(add-hook 'prog-mode-hook #'flymake-mode)
+(add-hook 'emacs-lisp-mode-hook #'(lambda ()
+                                    (flymake-mode -1)))
 
-  (defvar sekiro-flymake-mode-line-format `(:eval (sekiro-flymake-mode-line-format)))
-  (put 'sekiro-flymake-mode-line-format 'risky-local-variable t)
-  (defun sekiro-flymake-mode-line-format ()
-    (let* ((counter (string-to-number
-                     (nth 1
-                          (cadr
-                           (flymake--mode-line-counter :error t)))))
-           (sekiro-flymake (when (> counter 0)
-                             'compilation-error)))
-      (propertize
-       "危"
-       'face
-       sekiro-flymake)))
+(setq flymake-diagnostic-functions nil
+      flymake-no-changes-timeout 0.2)
 
-  (with-eval-after-load 'flymake
-    (add-to-list 'mode-line-misc-info
-                 `(flymake-mode (" [" sekiro-flymake-mode-line-format "] ")))))
+(defvar sekiro-flymake-mode-line-format `(:eval (sekiro-flymake-mode-line-format)))
+(put 'sekiro-flymake-mode-line-format 'risky-local-variable t)
+(defun sekiro-flymake-mode-line-format ()
+  (let* ((counter (string-to-number
+                   (nth 1
+                        (cadr
+                         (flymake--mode-line-counter :error t)))))
+         (sekiro-flymake (when (> counter 0)
+                           'compilation-error)))
+    (propertize
+     "危"
+     'face
+     sekiro-flymake)))
+
+(with-eval-after-load 'flymake
+  (add-to-list 'mode-line-misc-info
+               `(flymake-mode (" [" sekiro-flymake-mode-line-format "] "))))
 #+end_src
 ** Lsp
 *** eglot
 #+begin_src elisp
-(setup (:package eglot eldoc-box)
-  (:option eglot-events-buffer-size 0
-           eglot-sync-connect nil       ;; don't block of LSP connection attempts
-           eglot-extend-to-xref t       ;; make eglot manage file out of project by `xref-find-definitions'
-           eglot-ignored-server-capabilites '(:documentHighlightProvider :documentFormattingProvider :documentRangeFormattingProvider))
-  (setq-default eglot-workspace-configuration
-                '((gopls
-                   (usePlaceholders . t))))
-  (:bind "M-RET" eglot-code-actions
-         "C-c r" eglot-rename
-         "M-'" eglot-find-implementation)
-  (with-eval-after-load 'eglot
-    (add-to-list 'eglot-server-programs
-                 '(python-mode . ("pyright-langserver" "--stdio")))
-    (add-to-list 'eglot-server-programs
-			     '(rust-mode "rust-analyzer"))
-    ;; NOTE deno
-    (defclass eglot-deno (eglot-lsp-server) ()
-      :documentation "A custom class for deno lsp.")
-    (cl-defmethod eglot-initialization-options ((server eglot-deno))
-      "Passes through required deno initialization options"
-      (list :enable t
-            :lint t))
-    (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
-    ;; TODO code actions
-    (add-to-list 'eglot-server-programs
-                 '(sql-mode . ("sqls" "-config" "~/.config/sqls/config.yaml"))))
-  (:with-hook eglot-managed-mode-hook
-    (:hook eldoc-box-hover-mode)))
+(eat/pkg eldoc-box)
+
+(setq eglot-events-buffer-size 0
+      eglot-sync-connect nil       ;; don't block of LSP connection attempts
+      eglot-extend-to-xref t       ;; make eglot manage file out of project by `xref-find-definitions'
+      eglot-ignored-server-capabilites '(:documentHighlightProvider :documentFormattingProvider :documentRangeFormattingProvider))
+
+(setq-default eglot-workspace-configuration
+              '((gopls
+                 (usePlaceholders . t))))
+
+(with-eval-after-load 'eglot
+  (keymap-set eglot-mode-map "M-RET" #'eglot-code-actions)
+  (keymap-set eglot-mode-map "C-c r" #'eglot-rename)
+  (keymap-set eglot-mode-map "M-'" #'eglot-find-implementation)
+
+  (add-to-list 'eglot-server-programs
+               '(python-mode . ("pyright-langserver" "--stdio")))
+  (add-to-list 'eglot-server-programs
+			   '(rust-mode "rust-analyzer"))
+  ;; NOTE deno
+  (defclass eglot-deno (eglot-lsp-server) ()
+    :documentation "A custom class for deno lsp.")
+  (cl-defmethod eglot-initialization-options ((server eglot-deno))
+    "Passes through required deno initialization options"
+    (list :enable t
+          :lint t))
+  (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
+  ;; TODO code actions
+  (add-to-list 'eglot-server-programs
+               '(sql-mode . ("sqls" "-config" "~/.config/sqls/config.yaml"))))
+
+(add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode)
 #+end_src
 ** Citre
 #+begin_src elisp
-(setup citre
-  (:package citre)
-  (:option citre-default-create-tags-file-location 'global-cache
-           citre-use-project-root-when-creating-tags t
-           citre-prompt-language-for-ctags-command t
-           citre-auto-enable-citre-mode-modes '(prog-mode))
-  (:global "C-x c j" citre-jump
-           "C-x c J" citre-jump-back
-           "C-x c u" citre-update-this-tags-file
-           "C-x c p" citre-peek
-           ;; NOTE
-           ;; Notice that GTAGSOBJDIRPREFIX must exist for gtags to use it. So you need to run:
-           ;; $ mkdir -p ~/.cache/gtags/
-           "C-x c U" citre-global-update-database
-           "C-x c r" citre-jump-to-reference
-           "C-x c P" citre-ace-peek-references
-           )
-  (with-eval-after-load 'citre
-    (with-eval-after-load 'cc-mode (require 'citre-lang-c))
-    (with-eval-after-load 'dired (require 'citre-lang-fileref))
-    (with-eval-after-load 'verilog-mode (require 'citre-lang-verilog)))
-  (with-eval-after-load 'citre-global
-    (setenv "GTAGSOBJDIRPREFIX" (concat (getenv "HOME") "/.cache/gtags"))
-    (setenv "GTAGSCONF" (concat (getenv "HOME") "/.globalrc"))
-    (setenv "GTAGSLABEL" "native-pygments"))
-  (with-eval-after-load 'citre-peek
-    (define-key citre-peek-keymap (kbd "M-l r")
-                'citre-peek-through-references))
+(eat/pkg citre)
 
-  (defun eat/citre-enable ()
-    (interactive)
-    (citre-mode 1)
-    (add-hook 'find-file-hook #'citre-auto-enable-citre-mode))
-  (defun eat/citre-disable ()
-    (interactive)
-    (citre-mode 0)
-    (remove-hook 'find-file-hook #'citre-auto-enable-citre-mode)))
+(with-eval-after-load 'citre
+  (keymap-global-set "C-x c j" citre-jump)
+  (keymap-global-set "C-x c J" citre-jump-back)
+  (keymap-global-set "C-x c u" citre-update-this-tags-file)
+  (keymap-global-set "C-x c p" citre-peek)
+  ;; NOTE
+  ;; Notice that GTAGSOBJDIRPREFIX must exist for gtags to use it. So you need to run:
+  ;; $ mkdir -p ~/.cache/gtags/
+  (keymap-global-set "C-x c U" citre-global-update-database)
+  (keymap-global-set "C-x c r" citre-jump-to-reference)
+  (keymap-global-set "C-x c P" citre-ace-peek-references)
+  (setup citre-default-create-tags-file-location 'global-cache
+         citre-use-project-root-when-creating-tags t
+         citre-prompt-language-for-ctags-command t
+         citre-auto-enable-citre-mode-modes '(prog-mode))
+  (with-eval-after-load 'cc-mode (require 'citre-lang-c))
+  (with-eval-after-load 'dired (require 'citre-lang-fileref))
+  (with-eval-after-load 'verilog-mode (require 'citre-lang-verilog)))
+
+(with-eval-after-load 'citre-global
+  (setenv "GTAGSOBJDIRPREFIX" (concat (getenv "HOME") "/.cache/gtags"))
+  (setenv "GTAGSCONF" (concat (getenv "HOME") "/.globalrc"))
+  (setenv "GTAGSLABEL" "native-pygments"))
+
+(with-eval-after-load 'citre-peek
+  (keymap-set citre-peek-keymap "M-l r" 'citre-peek-through-references))
+
+(defun eat/citre-enable ()
+  (interactive)
+  (citre-mode 1)
+  (add-hook 'find-file-hook #'citre-auto-enable-citre-mode))
+
+(defun eat/citre-disable ()
+  (interactive)
+  (citre-mode 0)
+  (remove-hook 'find-file-hook #'citre-auto-enable-citre-mode))
 #+end_src
 ** Lang
 *** Lisp
 #+begin_src elisp
-(setup (:package aggressive-indent paredit)
-  (:with-hook (emacs-lisp-mode-hook
-               lisp-interaction-mode-hook
-               scheme-mode-hook
-               lisp-mode-hook)
-    (:hook aggressive-indent-mode)
-    (:hook paredit-mode)))
+(eat/pkg aggressive-indent)
+(eat/pkg paredit)
+
+(add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
+(add-hook 'emacs-lisp-mode-hook #'paredit-mode)
+
+(add-hook 'lisp-interaction-mode-hook #'aggressive-indent-mode)
+(add-hook 'lisp-interaction-mode-hook #'paredit-mode)
+
+(add-hook 'scheme-mode-hook #'aggressive-indent-mode)
+(add-hook 'scheme-mode-hook #'paredit-mode)
+
+(add-hook 'lisp-mode-hook #'aggressive-indent-mode)
+(add-hook 'lisp-mode-hook #'paredit-mode)
 #+end_src
 *** Go
 #+begin_src emacs-lisp
-(setup go-mode
-  (:package go-mode flymake-go-staticcheck go-gen-test gotest go-tag go-dlv go-fill-struct go-impl)
-  ;; Go-mode
-  ;; Install or update tools
-  (defvar go--tools '("golang.org/x/tools/gopls"
-                      "golang.org/x/tools/cmd/goimports"
-                      "honnef.co/go/tools/cmd/staticcheck"
-                      "github.com/go-delve/delve/cmd/dlv"
-                      "github.com/zmb3/gogetdoc"
-                      "github.com/josharian/impl"
-                      "github.com/cweill/gotests/..."
-                      "github.com/fatih/gomodifytags"
-                      "github.com/davidrjenni/reftools/cmd/fillstruct"
-                      "github.com/rogpeppe/godef")
-    "All necessary go tools.")
+(eat/pkg go-mode)
+(eat/pkg flymake-go-staticcheck)
+(eat/pkg go-gen-test)
+(eat/pkg go-tag)
+(eat/pkg go-dlv)
+(eat/pkg go-fill-struct)
+(eat/pkg go-impl)
 
-  (defun go-update-tools ()
-    "Install or update go tools."
-    (interactive)
-    (unless (executable-find "go")
-      (user-error "Unable to find `go' in `exec-path'!"))
+;; Install or update tools
+(defvar go--tools '("golang.org/x/tools/gopls"
+                    "golang.org/x/tools/cmd/goimports"
+                    "honnef.co/go/tools/cmd/staticcheck"
+                    "github.com/go-delve/delve/cmd/dlv"
+                    "github.com/zmb3/gogetdoc"
+                    "github.com/josharian/impl"
+                    "github.com/cweill/gotests/..."
+                    "github.com/fatih/gomodifytags"
+                    "github.com/davidrjenni/reftools/cmd/fillstruct"
+                    "github.com/rogpeppe/godef")
+  "All necessary go tools.")
 
-    (message "Installing go tools...")
-    (dolist (pkg go--tools)
-      (set-process-sentinel
-       (start-process "go-tools" "*Go Tools*" "go" "install" "-v" "-x" (concat pkg "@latest"))
-       (lambda (proc _)
-         (let ((status (process-exit-status proc)))
-           (if (= 0 status)
-               (message "Installed %s" pkg)
-             (message "Failed to install %s: %d" pkg status)))))))
-  (:option gofmt-command "goimports"
-           gofmt-show-errors nil)
-  (:with-hook go-test-mode-hook
-    (:hook visual-line-mode))
-  ;; Flymake-go-staticcheck
-  (defun eat/flymake-go-staticcheck-enable ()
-    "Enable flymake-go-staticcheck for all go buffer.
+(defun go-update-tools ()
+  "Install or update go tools."
+  (interactive)
+  (unless (executable-find "go")
+    (user-error "Unable to find `go' in `exec-path'!"))
+
+  (message "Installing go tools...")
+  (dolist (pkg go--tools)
+    (set-process-sentinel
+     (start-process "go-tools" "*Go Tools*" "go" "install" "-v" "-x" (concat pkg "@latest"))
+     (lambda (proc _)
+       (let ((status (process-exit-status proc)))
+         (if (= 0 status)
+             (message "Installed %s" pkg)
+           (message "Failed to install %s: %d" pkg status)))))))
+(setq gofmt-command "goimports"
+      gofmt-show-errors nil)
+(add-hook 'go-test-mode-hook #'visual-line-mode)
+
+
+;; Flymake-go-staticcheck
+(defun eat/flymake-go-staticcheck-enable ()
+  "Enable flymake-go-staticcheck for all go buffer.
 Call `flymake-go-staticcheck-enable' interactive will only
 enable this in current buffer, add to `go-mode-hook' to make
 it enable on all go buffer."
-    (interactive)
-    (flymake-go-staticcheck-enable)
-    (add-hook 'go-mode-hook #'flymake-go-staticcheck-enable))
-  (defun eat/flymake-go-staticcheck-disable ()
-    (interactive)
-    (flymake-go-staticcheck-disable)
-    (add-hook 'go-mode-hook #'flymake-go-staticcheck-disable))
-  ;; Go-test
-  (:option go-test-verbose t
-           ;; Do not cache test result.
-           go-test-args "-count=1")
-  ;; Go-tag
-  (:option go-tag-args (list "-transform" "camelcase"))
-  ;; Bind
-  (:with-map go-mode-map
-    (:bind
-     "C-c t g" go-gen-test-dwim
-     "C-c t t" go-test-current-test
-     "C-c t a" go-tag-add
-     "C-c t r" go-tag-remove)))
+  (interactive)
+  (flymake-go-staticcheck-enable)
+  (add-hook 'go-mode-hook #'flymake-go-staticcheck-enable))
+
+(defun eat/flymake-go-staticcheck-disable ()
+  (interactive)
+  (flymake-go-staticcheck-disable)
+  (add-hook 'go-mode-hook #'flymake-go-staticcheck-disable))
+
+
+;; Go-test
+(setq go-test-verbose t
+      ;; Do not cache test result.
+      go-test-args "-count=1")
+;; Go-tag
+(setq go-tag-args (list "-transform" "camelcase"))
+;; Bind
+(with-eval-after-load 'go-mode
+  (keymap-set go-mode-map "C-c t g" #'go-gen-test-dwim)
+  (keymap-set go-mode-map "C-c t t" #'go-test-current-test)
+  (keymap-set go-mode-map "C-c t a" #'go-tag-add)
+  (keymap-set go-mode-map "C-c t r" #'go-tag-remove))
 #+end_src
 *** Nix
 Install =rnix-lsp= and =nixfmt=.
 #+begin_src emacs-lisp
-(setup nix-mode
-  (:package nix-mode))
+(eat/pkg nix-mode)
 #+end_src
 
 *** Clojure
 #+begin_src elisp
-(setup clojure-mode
-  (:package clojure-mode cider))
+(eat/pkg clojure-mode)
+(eat/pkg cider)
 #+end_src
 *** Lua
 #+begin_src elisp
-(setup lua-mode
-  (:package lua-mode))
+(eat/pkg lua-mode)
 #+end_src
 *** Rust
 #+begin_src elisp
-(setup rust-mode
-  (:package rust-mode))
-
+(eat/pkg rust-mode)
 #+end_src
 *** Typescript
 #+begin_src elisp
-(setup typescript-mode
-  (:package typescript-mode)
-  (:option typescript-indent-level 2))
+(eat/pkg typescript-mode)
+(setq typescript-indent-level 2)
 #+end_src
 *** C
 #+begin_src elisp
@@ -2058,34 +2044,39 @@ Also check:
 ** Visual Fill Column
 Center current window.
 #+begin_src emacs-lisp
-(setup (:package visual-fill-column)
-  (:with-hook visual-fill-column-mode-hook
-    (:hook visual-line-mode))
-  (:option visual-fill-column-center-text t))
+(eat/pkg visual-fill-column)
+
+(add-hook 'visual-fill-column-mode-hook #'visual-line-mode)
+
+(setq visual-fill-column-center-text t)
 #+end_src
 ** Rg
 #+begin_src elisp
-(setup (:package rg))
+(eat/pkg rg)
+(autoload 'rg-menu "rg.el" nil t)
+(keymap-global-set "C-c s" #'rg-menu)
 #+end_src
 ** Translate
 #+begin_src elisp
-(setup (:package go-translate fanyi)
-  (:option
-   gts-translate-list '(("en" "zh")))
+(eat/pkg go-translate)
 
-  (defun eat/translate ()
-    (interactive)
-    (if (use-region-p)
-        (gts-do-translate)
-      (fanyi-dwim2)))
-  (:global "C-c y" eat/translate)
+(setq gts-translate-list '(("en" "zh")))
 
-  (with-eval-after-load 'go-translate
-    (:option
-     gts-default-translator (gts-translator
-                             :picker (gts-noprompt-picker)
-                             :engines (list (gts-google-rpc-engine) (gts-bing-engine))
-                             :render (gts-buffer-render)))))
+(eat/pkg fanyi)
+
+(defun eat/translate ()
+  (interactive)
+  (if (use-region-p)
+      (gts-do-translate)
+    (fanyi-dwim2)))
+
+(keymap-global-set "C-c y" #'eat/translate)
+
+(with-eval-after-load 'go-translate
+  (setq gts-default-translator (gts-translator
+                                :picker (gts-noprompt-picker)
+                                :engines (list (gts-google-rpc-engine) (gts-bing-engine))
+                                :render (gts-buffer-render))))
 
 (defun eat/context-translate (menu click)
   "My context MENU to translate text."
@@ -2098,34 +2089,26 @@ Center current window.
 #+end_src
 ** Ghelp
 #+begin_src elisp
-(unless (package-installed-p 'ghelp)
-  (package-vc-install "https://github.com/casouri/ghelp.git"))
-(setup ghelp
-  (:autoload
-   ghelp-describe
-   ghelp-describe-function
-   ghelp-describe-variable
-   ghelp-describe-key
-   ghelp-describe-elisp)
-  (global-set-key (kbd "C-h C-h") #'ghelp-describe)
-  (global-set-key (kbd "C-h f") #'ghelp-describe-function)
-  (global-set-key (kbd "C-h v") #'ghelp-describe-variable)
-  (global-set-key (kbd "C-h k") #'ghelp-describe-key)
-  (global-set-key (kbd "C-h o") #'ghelp-describe-elisp)
-  (with-eval-after-load 'ghelp
-    (global-set-key (kbd "C-h r") #'ghelp-resume)))
+(eat/pkg ghelp "https://github.com/casouri/ghelp.git")
+
+(autoload #'ghelp-describe "ghelp")
+(autoload #'ghelp-describe-function "ghelp")
+(autoload #'ghelp-describe-variable "ghelp")
+(autoload #'ghelp-describe-key "ghelp")
+(autoload #'ghelp-describe-elisp "ghelp")
+
+(keymap-global-set "C-h C-h" #'ghelp-describe)
+(keymap-global-set "C-h f" #'ghelp-describe-function)
+(keymap-global-set "C-h v" #'ghelp-describe-variable)
+(keymap-global-set "C-h k" #'ghelp-describe-key)
+(keymap-global-set "C-h o" #'ghelp-describe-elisp)
+(with-eval-after-load 'ghelp
+  (keymap-global-set "C-h r" #'ghelp-resume))
 #+end_src
 
 ** Restclient
 #+begin_src emacs-lisp
-(setup restclient
-  (:package restclient)
-  (defun eat/restclient ()
-    "Work with `rest' in the *restclient* buffer."
-    (interactive)
-    (with-current-buffer (get-buffer-create "*restclient*")
-      (restclient-mode)
-      (pop-to-buffer (current-buffer)))))
+(eat/pkg restclient)
 #+end_src
 * Org
 ** config
@@ -2140,118 +2123,117 @@ Center current window.
 (defun eat/insert-zero-width-space ()
   (interactive)
   (insert-char ?\u200B)) ;; code for ZERO WIDTH SPACE
-(global-set-key (kbd "C-x 8 0") #'eat/insert-zero-width-space)
+(keymap-global-set "C-x 8 0" #'eat/insert-zero-width-space)
 
-(setup org
-  (:hook eat/org-hook)
-  (setq org-directory (expand-file-name "~/Dropbox/org"))
-  (defvar load-language-list '((emacs-lisp . t)
-                               (python . t)
-                               (js . t)
-                               (C . t)
-                               (shell . t)
-                               (plantuml . t)))
-  (setq org-plantuml-exec-mode 'plantuml)
-  (with-eval-after-load 'org
-    (setq org-edit-src-content-indentation 0
-          org-special-ctrl-a/e t
-          org-special-ctrl-k t
-          ;; comment after emacs merge noverly branch
-          ;; org-src-fontify-natively nil ;; see it in `org-edit-special'
-          org-src-window-setup 'current-window
-          org-return-follows-link t
-          org-confirm-babel-evaluate nil
-          org-image-actual-width '(300)
-          org-ellipsis " ▾ "
-          ;; Faster loading
-          org-modules nil
-          org-log-done t)
-    (require 'org-tempo) ;; see `org-structure-template-alist'
-    (require 'ob)
-    (require 'ob-dot)
-    (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-    (org-babel-do-load-languages 'org-babel-load-languages load-language-list)))
+(add-hook 'org-mode-hook #'eat/org-hook)
+
+(setq org-directory (expand-file-name "~/Dropbox/org"))
+(defvar load-language-list '((emacs-lisp . t)
+                             (python . t)
+                             (js . t)
+                             (C . t)
+                             (shell . t)
+                             (plantuml . t)))
+(setq org-plantuml-exec-mode 'plantuml)
+
+(with-eval-after-load 'org
+  (setq org-edit-src-content-indentation 0
+        org-special-ctrl-a/e t
+        org-special-ctrl-k t
+        ;; comment after emacs merge noverly branch
+        ;; org-src-fontify-natively nil ;; see it in `org-edit-special'
+        org-src-window-setup 'current-window
+        org-return-follows-link t
+        org-confirm-babel-evaluate nil
+        org-image-actual-width '(300)
+        org-ellipsis " ▾ "
+        ;; Faster loading
+        org-modules nil
+        org-log-done t)
+  (require 'org-tempo) ;; see `org-structure-template-alist'
+  (require 'ob)
+  (require 'ob-dot)
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+  (org-babel-do-load-languages 'org-babel-load-languages load-language-list))
 #+end_src
 ** ox
 *** gfm
 #+begin_src elisp
-(setup (:package ox-gfm)
-  (with-eval-after-load 'ox-gfm
-    (add-to-list 'org-export-backends 'md)))
+(eat/pkg ox-gfm)
+(with-eval-after-load 'ox-gfm
+  (add-to-list 'org-export-backends 'md))
 #+end_src
 
 ** ob
 *** restclient
 #+begin_src elisp
-(setup ob-restclient
-  (:package ob-restclient)
-  (cl-pushnew '(restclient . t) load-language-list)
-  (with-eval-after-load 'ob-restclient
-    (add-to-list 'org-structure-template-alist '("rc" . "src restclient"))))
+(eat/pkg ob-restclient)
+(cl-pushnew '(restclient . t) load-language-list)
+(with-eval-after-load 'ob-restclient
+  (add-to-list 'org-structure-template-alist '("rc" . "src restclient")))
 #+end_src
 
 *** go
 #+begin_src elisp
-(setup ob-go
-  (:package ob-go)
-  (cl-pushnew '(go .t) load-language-list)
-  (with-eval-after-load 'ob-go
-    (add-to-list 'org-structure-template-alist '("go" . "src go"))))
+(eat/pkg ob-go)
+
+(cl-pushnew '(go .t) load-language-list)
+
+(with-eval-after-load 'ob-go
+  (add-to-list 'org-structure-template-alist '("go" . "src go")))
 #+end_src
 
 ** copture
 #+begin_src elisp
-(setup org-capture
-  (global-set-key (kbd "C-c c") 'org-capture)
+(keymap-global-set "C-c c" 'org-capture)
 
-  (defun eat/org-capture-inbox ()
-    (interactive)
-    (org-capture nil "i"))
-  (global-set-key (kbd "C-c I") #'eat/org-capture-inbox)
+(defun eat/org-capture-inbox ()
+  (interactive)
+  (org-capture nil "i"))
+(keymap-global-set "C-c I" #'eat/org-capture-inbox)
 
-  (setq
-   org-default-notes-file (concat org-directory "/default-notes.org")
-   org-capture-templates
-   `(("i" "Inbox" entry (file "~/Dropbox/org/inbox.org")
-      "* TODO %?\n:PROPERITIES:\n:Created: %T\n:END:")
-     ("w" "Work" entry (file+olp+datetree "~/Dropbox/org/Work.org")
-      "* %^{Title}\n:PROPERITIES:\n:Created: %T\n:END:" :tree-type week)
-     ("n" "Note" entry (file "~/Dropbox/org/Notes.org")
-      "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t))))
+(setq org-default-notes-file (concat org-directory "/default-notes.org")
+      org-capture-templates
+      `(("i" "Inbox" entry (file "~/Dropbox/org/inbox.org")
+         "* TODO %?\n:PROPERITIES:\n:Created: %T\n:END:")
+        ("w" "Work" entry (file+olp+datetree "~/Dropbox/org/Work.org")
+         "* %^{Title}\n:PROPERITIES:\n:Created: %T\n:END:" :tree-type week)
+        ("n" "Note" entry (file "~/Dropbox/org/Notes.org")
+         "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)))
 #+end_src
 
 ** agenda
 #+begin_src elisp
-(setup org-agenda
-  (setq org-agenda-files (list org-directory)
-        org-agenda-prefix-format '((agenda . " %i %-12:c%?-12t% s")
-                                   (todo   . " ")
-                                   (tags   . " %i %-12:c")
-                                   (search . " %i %-12:c"))
-        ;; hide any tag
-        org-agenda-hide-tags-regexp ".")
-  (global-set-key (kbd "C-c a") 'org-agenda)
-  (setq org-agenda-current-time-string
-        "⭠ now ─────────────────────────────────────────────────"))
+(setq org-agenda-files (list org-directory)
+      org-agenda-prefix-format '((agenda . " %i %-12:c%?-12t% s")
+                                 (todo   . " ")
+                                 (tags   . " %i %-12:c")
+                                 (search . " %i %-12:c"))
+      ;; hide any tag
+      org-agenda-hide-tags-regexp "."
+      org-agenda-current-time-string
+      "⭠ now ─────────────────────────────────────────────────")
+
+(keymap-global-set "C-c a" 'org-agenda)
 #+end_src
 
 ** org-appear
 #+begin_src elisp
-(setup (:package org-appear)
-  (:hook-into org-mode)
-  (setq org-hide-emphasis-markers t))
+(eat/pkg org-appear)
+(setq org-hide-emphasis-markers t)
+(add-hook 'org-mode-hook #'org-appear-mode)
 #+end_src
 
 ** valign
 #+begin_src elisp
-(setup (:package valign)
-  (setq valign-fancy-bar t)
-  (when (display-graphic-p)
-    (add-hook 'org-mode-hook #'valign-mode)))
+(eat/pkg valign)
+(setq valign-fancy-bar t)
+(when (display-graphic-p)
+  (add-hook 'org-mode-hook #'valign-mode))
 #+end_src
 ** toc
 #+begin_src elisp
-(setup (:package toc-org))
+(eat/pkg toc-org)
 #+end_src
 ** Export to html
 *** TODO Inline image
@@ -2269,19 +2251,19 @@ Need pandoc installed."
 #+end_src
 *** Syntax highlighting
 #+begin_src emacs-lisp
-(setup (:package htmlize))
+(eat/pkg htmlize)
 #+end_src
 
 ** org-variable-pitch
 #+begin_src emacs-lisp
-(setup (:package org-variable-pitch))
+(eat/pkg org-variable-pitch)
 #+end_src
 ** prose-mode for writting
 #+begin_src elisp
 (defvar eat/prose-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-a") #'beginning-of-visual-line)
-    (define-key map (kbd "C-e") #'end-of-visual-line)
+    (keymap-set map "C-a" #'beginning-of-visual-line)
+    (keymap-set map "C-e" #'end-of-visual-line)
     map)
   "Mode map for ‘eat/prose-mode’.")
 
@@ -2307,193 +2289,188 @@ Need pandoc installed."
 #+end_src
 ** org-download                                                       :deps:
 #+begin_src emacs-lisp
-(setup (:package org-download)
-  ;; :commands
-  ;; org-download-dnd
-  ;; org-download-yank
-  ;; org-download-screenshot
-  ;; org-download-clipboard
-  ;; org-download-dnd-base64
-  :init
-  ;; NOTE from doomemacs
-  (defmacro pushnew! (place &rest values)
-    "Push VALUES sequentially into PLACE, if they aren't already present.
+(eat/pkg org-download)
+
+;; NOTE from doomemacs
+(defmacro pushnew! (place &rest values)
+  "Push VALUES sequentially into PLACE, if they aren't already present.
 This is a variadic `cl-pushnew'."
-    (let ((var (make-symbol "result")))
-      `(dolist (,var (list ,@values) (with-no-warnings ,place))
-         (cl-pushnew ,var ,place :test #'equal))))
+  (let ((var (make-symbol "result")))
+    `(dolist (,var (list ,@values) (with-no-warnings ,place))
+       (cl-pushnew ,var ,place :test #'equal))))
 
-  ;; HACK We add these manually so that org-download is truly lazy-loaded
-  (pushnew! dnd-protocol-alist
-            '("^\\(?:https?\\|ftp\\|file\\|nfs\\):" . org-download-dnd)
-            '("^data:" . org-download-dnd-base64))
-  (advice-add #'org-download-enable :override #'ignore)
+;; HACK We add these manually so that org-download is truly lazy-loaded
+(pushnew! dnd-protocol-alist
+          '("^\\(?:https?\\|ftp\\|file\\|nfs\\):" . org-download-dnd)
+          '("^data:" . org-download-dnd-base64))
+(advice-add #'org-download-enable :override #'ignore)
 
-  (setq org-download-image-dir "img"
-        org-download-image-org-width 800))
+(setq org-download-image-dir "img"
+      org-download-image-org-width 800)
 #+end_src
 ** org-present
 #+begin_src emacs-lisp
-(setup (:package org-present)
-  (:with-hook org-present-mode-hook
-    (:hook (lambda ()
-             (eat/prose-mode -1)
-             ;; full frame
-             (toggle-frame-fullscreen)
-             ;; display header line so that we can use face-remapping
-             ;; to create big enought blank space at the top
-             (setq-local header-line-format " ")
-             ;; incraease font size
-             (setq-local
-              face-remapping-alist
-              '((default (:height 1.5) variable-pitch)
-                (header-line (:height 4.0) variable-pitch)
-                (org-document-title (:height 1.75) org-document-title)
-                (org-code (:height 1.55) org-code)
-                (org-verbatim (:height 0.7) org-verbatim)
-                (org-block (:height 1.25) org-block)
-                (org-block-begin-line (:height 0.7) org-block)))
-             ;; from org-present, after font rescale
-             (org-present-read-only)
-             (org-present-hide-cursor)
-             (org-display-inline-images)
-             ;; center the screen
-             (visual-fill-column-mode 1)
-             (setq-local visual-fill-column-center-text t)
-             (setq-local visual-fill-column-width 90)
-             ;; hide mode line
-             (hide-mode-line-mode 1)
-             ;;
-             (org-variable-pitch-minor-mode 1))))
-  (:with-hook org-present-mode-quit-hook
-    (:hook (lambda ()
-             (toggle-frame-fullscreen)
-             (hide-mode-line-mode -1)
-             (kill-local-variable 'face-remapping-alist)
-             (kill-local-variable 'header-line-format)
-             (eat/prose-mode 1)
-             ;; from org-present
-             (org-present-show-cursor)
-             (org-remove-inline-images)
-             (org-present-read-write))))
+(eat/pkg org-present)
 
-  (defun my/org-present-prepare-slide (buffer-name heading)
-    ;; Show only top-level hedlines.
-    (org-overview)
-    ;; Unfold the current entry.
-    (org-fold-show-entry)
-    ;; Show only direct subheadings of the slide but don't expand them.
-    (org-fold-show-children))
-  (add-hook 'org-present-after-navigate-functions #'my/org-present-prepare-slide))
+(add-hook 'org-present-mode-hook
+          #'(lambda ()
+              (eat/prose-mode -1)
+              ;; full frame
+              (toggle-frame-fullscreen)
+              ;; display header line so that we can use face-remapping
+              ;; to create big enought blank space at the top
+              (setq-local header-line-format " ")
+              ;; incraease font size
+              (setq-local
+               face-remapping-alist
+               '((default (:height 1.5) variable-pitch)
+                 (header-line (:height 4.0) variable-pitch)
+                 (org-document-title (:height 1.75) org-document-title)
+                 (org-code (:height 1.55) org-code)
+                 (org-verbatim (:height 0.7) org-verbatim)
+                 (org-block (:height 1.25) org-block)
+                 (org-block-begin-line (:height 0.7) org-block)))
+              ;; from org-present, after font rescale
+              (org-present-read-only)
+              (org-present-hide-cursor)
+              (org-display-inline-images)
+              ;; center the screen
+              (visual-fill-column-mode 1)
+              (setq-local visual-fill-column-center-text t)
+              (setq-local visual-fill-column-width 90)
+              ;; hide mode line
+              (hide-mode-line-mode 1)
+              ;;
+              (org-variable-pitch-minor-mode 1)))
+
+(add-hook 'org-present-mode-quit-hook
+          #'(lambda ()
+              (toggle-frame-fullscreen)
+              (hide-mode-line-mode -1)
+              (kill-local-variable 'face-remapping-alist)
+              (kill-local-variable 'header-line-format)
+              (eat/prose-mode 1)
+              ;; from org-present
+              (org-present-show-cursor)
+              (org-remove-inline-images)
+              (org-present-read-write)))
+
+(defun my/org-present-prepare-slide (buffer-name heading)
+  ;; Show only top-level hedlines.
+  (org-overview)
+  ;; Unfold the current entry.
+  (org-fold-show-entry)
+  ;; Show only direct subheadings of the slide but don't expand them.
+  (org-fold-show-children))
+
+(add-hook 'org-present-after-navigate-functions #'my/org-present-prepare-slide)
 #+end_src
 * Application
 ** Magit
 *** config
 #+begin_src emacs-lisp
-(setup magit
-  (:package magit)
-  (:with-hook git-commit-setup-hook
-    (:hook git-commit-turn-on-flyspell))
-  (:with-hook magit-diff-visit-file
-    (:hook my-recenter-and-pulse-line))
-  (defun eat/magit-yadm ()
-    (interactive)
-    (magit-status "/yadm::"))
-  (with-eval-after-load 'magit)
+(eat/pkg magit)
+
+(add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell)
+(add-hook 'magit-diff-visit-file #'my-recenter-and-pulse-line)
+
+(with-eval-after-load 'magit
   (fullframe magit-status magit-mode-quit-window)
   (setq-default magit-diff-refine-hunk t))
 #+end_src
 
 *** magit-delta
 #+begin_src emacs-lisp
-(setup magit-delta
-  (:package magit-delta)
-  (:needs "delta")
-  (:hook-into magit-mode-hook))
+(eat/pkg magit-delta)
+(add-hook 'magit-mode-hook #'magit-delta-mode)
 #+end_src
 
 *** diff-hl
 #+begin_src emacs-lisp
-(setup diff-hl
-  (:package diff-hl)
-  (:needs "diff")
-  (:with-hook (prog-mode-hook conf-mode-hook)
-    (:hook diff-hl-mode))
-  (:with-hook dired-mode-hook
-    (:hook diff-hl-dired-mode))
-  (:option diff-hl-draw-borders nil)
-  (with-eval-after-load 'diff-hl
-    (:with-hook magit-pre-refresh-hook
-      (:hook diff-hl-magit-pre-refresh))
-    (:with-hook magit-post-refresh-hook
-      (:hook diff-hl-magit-post-refresh))
-    ;; Highlight on-the-fly
-    (diff-hl-flydiff-mode 1)
-    (unless (display-graphic-p)
-      ;; Fall back to the display margin since the fringe is unavailable in tty
-      (diff-hl-margin-mode 1)
-      ;; Avoid restoring `diff-hl-margin-mode'
-      (with-eval-after-load 'desktop
-        (add-to-list 'desktop-minor-mode-table
-                     '(diff-hl-margin-mode nil))))))
+(eat/pkg diff-hl)
+
+(add-hook 'prog-mode-hook #'diff-hl-mode)
+(add-hook 'conf-mode-hook #'diff-hl-mode)
+(add-hook 'dired-mode-hook #'diff-hl-dired-mode)
+
+(setq diff-hl-draw-borders nil)
+
+(with-eval-after-load 'diff-hl
+  (add-hook 'magit-pre-refresh-hook #'diff-hl-magit-pre-refresh)
+  (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh)
+  ;; Highlight on-the-fly
+  (diff-hl-flydiff-mode 1)
+  (unless (display-graphic-p)
+    ;; Fall back to the display margin since the fringe is unavailable in tty
+    (diff-hl-margin-mode 1)
+    ;; Avoid restoring `diff-hl-margin-mode'
+    (with-eval-after-load 'desktop
+      (add-to-list 'desktop-minor-mode-table
+                   '(diff-hl-margin-mode nil)))))
 #+end_src
 ** File Manager (dirvish)
 #+begin_src elisp
-(setup dired
-  (:hook dired-hide-details-mode)
-  (when eat/macp
-    (setq insert-directory-program "gls"))
-  (:option dired-dwim-target t
-           dired-kill-when-opening-new-dired-buffer t)
-  (with-eval-after-load 'dired
-    (:option dired-listing-switches
-             "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
-    (:bind
-     "h" dired-up-directory
-     [mouse-2] dired-find-file
-     "C-c C-p" wdired-change-to-wdired-mode)))
+(add-hook 'dired-mode-hook #'dired-hide-details-mode)
 
-(setup (:package dirvish)
-  (:with-hook after-init-hook
-    (:hook dirvish-override-dired-mode))
-  (:option dirvish-attributes '(vc-state subtree-state))
-  (when (eat/modulep '+icon)
-    (add-to-list 'dirvish-attributes 'all-the-icons))
-  (:global "<f1>" dirvish-side
-           "C-c f" dirvish-fd)
-  (with-eval-after-load 'dirvish
-    (dirvish-side-follow-mode)
-    (:bind
-     "TAB" dirvish-subtree-toggle
-     "<tab>" dirvish-subtree-toggle
-     "a" dirvish-quick-access
-     "f" dirvish-file-info-menu
-     "y" dirvish-yank-menu
-     "N" dirvish-narrow
-     "H" dirvish-history-jump
-     "s" dirvish-quicksort
-     "v" dirvish-vc-menu
-     "M-f" dirvish-history-go-forward
-     "M-b" dirvish-history-go-backward
-     "M-l" dirvish-ls-switches-menu
-     "M-m" dirvish-mark-menu
-     "M-t" dirvish-layout-toggle
-     "M-s" dirvish-setup-menu
-     "M-e" dirvish-emerge-menu
-     "M-j" dirvish-fd-jump
-     "<mouse-1>" dirvish-subtree-toggle-or-open
-     "<mouse-2>" dired-mouse-find-file-other-window
-     "<mouse-3>" dired-mouse-find-file)))
+(when eat/macp
+  (setq insert-directory-program "gls"))
+
+(setq dired-dwim-target t
+      dired-kill-when-opening-new-dired-buffer t)
+
+(with-eval-after-load 'dired
+  (setq dired-listing-switches
+        "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
+  (keymap-set dired-mode-map "C-c C-p" #'wdired-change-to-wdired-mode)
+  (define-key dired-mode-map (kbd "h") #'dired-up-directory)
+  (define-key dired-mode-map [mouse-2] #'dired-find-file))
+
+(eat/pkg dirvish)
+
+(add-hook 'after-init-hook #'dirvish-override-dired-mode)
+
+(setq dirvish-attributes '(vc-state subtree-state))
+
+(when (eat/modulep '+icon)
+  (add-to-list 'dirvish-attributes 'all-the-icons))
+
+(keymap-global-set "C-c f" #'dirvish-fd)
+(keymap-global-set "<f1>" #'dirvish-side)
+
+(with-eval-after-load 'dirvish
+  (dirvish-side-follow-mode)
+  (keymap-set dirvish-mode-map "TAB" #'dirvish-subtree-toggle)
+  (keymap-set dirvish-mode-map "<tab>" #'dirvish-subtree-toggle)
+  (keymap-set dirvish-mode-map "a" #'dirvish-quick-access)
+  (keymap-set dirvish-mode-map "f" #'dirvish-file-info-menu)
+  (keymap-set dirvish-mode-map "y" #'dirvish-yank-menu)
+  (keymap-set dirvish-mode-map "N" #'dirvish-narrow)
+  (keymap-set dirvish-mode-map "H" #'dirvish-history-jump)
+  (keymap-set dirvish-mode-map "s" #'dirvish-quicksort)
+  (keymap-set dirvish-mode-map "v" #'dirvish-vc-menu)
+  (keymap-set dirvish-mode-map "M-f" #'dirvish-history-go-forward)
+  (keymap-set dirvish-mode-map "M-b" #'dirvish-history-go-backward)
+  (keymap-set dirvish-mode-map "M-l" #'dirvish-ls-switches-menu)
+  (keymap-set dirvish-mode-map "M-m" #'dirvish-mark-menu)
+  (keymap-set dirvish-mode-map "M-t" #'dirvish-layout-toggle)
+  (keymap-set dirvish-mode-map "M-s" #'dirvish-setup-menu)
+  (keymap-set dirvish-mode-map "M-e" #'dirvish-emerge-menu)
+  (keymap-set dirvish-mode-map "M-j" #'dirvish-fd-jump)
+  (keymap-set dirvish-mode-map "<mouse-1>" #'dirvish-subtree-toggle-or-open)
+  (keymap-set dirvish-mode-map "<mouse-2>" #'dired-mouse-find-file-other-window)
+  (keymap-set dirvish-mode-map "<mouse-3>" #'dired-mouse-find-file))
 #+end_src
 ** TODO Terminal
 Use eat under linux and macos, use eshell under windows.
 #+begin_src elisp
-(setup eshell
-  (:package eat)
-  (:global "C-`" eshell)
-  (:option eat-kill-buffer-on-exit t)
-  (add-hook 'eshell-load-hook #'eat-eshell-mode)
-  (add-hook 'eshell-load-hook #'eat-eshell-visual-command-mode))
+(eat/pkg eat)
+
+(keymap-global-set "C-`" #'eshell)
+
+(setq eat-kill-buffer-on-exit t)
+
+(add-hook 'eshell-load-hook #'eat-eshell-mode)
+(add-hook 'eshell-load-hook #'eat-eshell-visual-command-mode)
 
 ;; Quick editing in `describe-variable'
 (with-eval-after-load 'help-fns
@@ -2647,13 +2624,13 @@ Use builtin newsticker with freshrss.
 * Module
 ** Icon
 #+begin_src elisp
-(setup (:only-if (eat/modulep '+icon))
-  (:package all-the-icons all-the-icons-ibuffer all-the-icons-completion)
-  (:with-hook ibuffer-mode-hook
-    (:hook all-the-icons-ibuffer-mode))
-  (:with-hook after-init-hook
-    (:hook (lambda ()
-             (all-the-icons-completion-mode))))
+(when (eat/modulep '+icon)
+  (eat/pkg all-the-icons)
+  (eat/pkg all-the-icons-ibuffer)
+  (eat/pkg all-the-icons-completion)
+  (add-hook 'buffer-mode-hook #'all-the-icons-ibuffer-mode)
+  (add-hook 'after-init-hook #'(lambda ()
+                                 (all-the-icons-completion-mode)))
   (with-eval-after-load 'all-the-icons-completion
     (with-eval-after-load 'marginalia
       (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup))))
@@ -2663,11 +2640,12 @@ Need =telegram-tdlib=.
 Run =docker pull zevlg/telega-server:latest=
 
 #+begin_src elisp
-(setup (:only-if (eat/modulep '+telega))
-  (:package telega company)
-  (:option telega-use-docker t
-           telega-chat-fill-column 75
-           telega-server-libs-prefix "/usr")
+(when (eat/modulep '+telega)
+  (eat/pkg telega)
+  (eat/pkg company)
+  (setq telega-use-docker t
+        telega-chat-fill-column 75
+        telega-server-libs-prefix "/usr")
 
   (defun eat/telega-root-setup ()
     ;; (eat/fixed-pitch-setup) ;; FIXME
@@ -2697,8 +2675,8 @@ Run =docker pull zevlg/telega-server:latest=
   (add-hook 'telega-chat-update-hook 'lg-telega-chat-update)
 
   (with-eval-after-load 'telega
-    (:with-hook telega-load-hook
-      (:hook(telega-notifications-mode telega-appindicator-mode)))
+    (add-hook 'telega-load-hook #'telega-notifications-mode)
+    (add-hook 'telega-load-hook #'telega-appindicator-mode)
     ;; ignore blocked user
     (add-hook 'telega-msg-ignore-predicates
               (telega-match-gen-predicate "msg-" '(sender blocked)))
@@ -2720,31 +2698,30 @@ Run =docker pull zevlg/telega-server:latest=
 
 ** Blog (org-static-blog)
 #+begin_src elisp
-(setup (:only-if (eat/modulep '+blog))
-  (:package org-static-blog)
-  (:option org-static-blog-publish-title "404cn's blog"
-           org-static-blog-publish-url "https://404cn.github.io/"
-           org-static-blog-publish-directory "~/p/blog/"
-           org-static-blog-posts-directory "~/p/blog/posts/"
-           org-static-blog-drafts-directory "~/p/blog/drafts/"
-           org-static-blog-enable-tags t
-           org-static-blog-use-preview t
-           org-static-blog-preview-ellipsis ""
-           org-export-with-toc nil
-           org-export-with-section-numbers nil)
+(when (eat/modulep '+blog)
+  (eat/pkg org-static-blog)
+  (setq org-static-blog-publish-title "404cn's blog"
+        org-static-blog-publish-url "https://404cn.github.io/"
+        org-static-blog-publish-directory "~/p/blog/"
+        org-static-blog-posts-directory "~/p/blog/posts/"
+        org-static-blog-drafts-directory "~/p/blog/drafts/"
+        org-static-blog-enable-tags t
+        org-static-blog-use-preview t
+        org-static-blog-preview-ellipsis ""
+        org-export-with-toc nil
+        org-export-with-section-numbers nil)
   (with-eval-after-load 'org-static-blog
-    (:option org-static-blog-page-header (get-string-from-file "~/p/blog/static/header.html")
-             org-static-blog-page-preamble (get-string-from-file "~/p/blog/static/preamble.html")
-             org-static-blog-page-postamble (get-string-from-file "~/p/blog/static/postamble.html"))))
+    (setq org-static-blog-page-header (get-string-from-file "~/p/blog/static/header.html")
+          org-static-blog-page-preamble (get-string-from-file "~/p/blog/static/preamble.html")
+          org-static-blog-page-postamble (get-string-from-file "~/p/blog/static/postamble.html"))))
 #+end_src
 
 ** Note Taking (xeft)
 Need =xapian-core=.
 
 #+begin_src elisp
-(setup xeft
-  (:package xeft)
-  (:only-if (eat/modulep '+note-taking))
+(when (eat/modulep '+note-taking)
+  (eat/pkg xeft)
   (setq xeft-directory "~/Dropbox/org/roam"
         xeft-default-extension "org"
         xeft-database "~/.xeft/db")
@@ -2755,22 +2732,35 @@ Need =xapian-core=.
 #+end_src
 * Modes
 #+begin_src elisp
-(setup (:package toml-mode yaml-mode docker-compose-mode dockerfile-mode k8s-mode git-modes terraform-mode markdown-mode markdown-toc protobuf-mode)
-  (:with-hook (toml-mode-hook yaml-mode-hook)
-    (:hook goto-address-prog-mode))
-  (add-to-list 'auto-mode-alist
-               (cons "/.dockerignore\\'" 'gitignore-mode))
-  (:option markdown-enable-wiki-links t
-           markdown-italic-underscore t
-           markdown-asymmetric-header t
-           markdown-make-gfm-checkboxes-buttons t
-           markdown-gfm-uppercase-checkbox t
-           markdown-fontify-code-blocks-natively t)
-  (with-eval-after-load "protobuf-mode"
-    (add-hook 'protobuf-mode-hook
-              (lambda ()
-                (setq imenu-generic-expression
-                      '((nil "^[[:space:]]*\\(message\\|service\\|enum\\)[[:space:]]+\\([[:alnum:]]+\\)" 2)))))))
+(eat/pkg toml-mode)
+(eat/pkg yaml-mode)
+(eat/pkg docker-compose-mode)
+(eat/pkg dockerfile-mode)
+(eat/pkg k8s-mode)
+(eat/pkg git-modes)
+(eat/pkg terraform-mode)
+(eat/pkg markdown-mode)
+(eat/pkg markdown-toc)
+(eat/pkg protobuf-mode)
+
+(add-hook 'toml-mode-hook #'goto-address-prog-mode)
+(add-hook 'yaml-mode-hook #'goto-address-prog-mode)
+
+(add-to-list 'auto-mode-alist
+             (cons "/.dockerignore\\'" 'gitignore-mode))
+
+(setq markdown-enable-wiki-links t
+      markdown-italic-underscore t
+      markdown-asymmetric-header t
+      markdown-make-gfm-checkboxes-buttons t
+      markdown-gfm-uppercase-checkbox t
+      markdown-fontify-code-blocks-natively t)
+
+(with-eval-after-load "protobuf-mode"
+  (add-hook 'protobuf-mode-hook
+            (lambda ()
+              (setq imenu-generic-expression
+                    '((nil "^[[:space:]]*\\(message\\|service\\|enum\\)[[:space:]]+\\([[:alnum:]]+\\)" 2))))))
 #+end_src
 
 * Site Lisp
@@ -2782,10 +2772,10 @@ Need =xapian-core=.
 
 ** Form Feed
 #+begin_src elisp
-(setup form-feed
-  (:autoload form-feed-mode)
-  (:with-hook (emacs-lisp-mode-hook text-mode-hook special-mode-hook)
-    (:hook form-feed-mode)))
+(autoload #'form-feed-mode "form-feed")
+(add-hook 'emacs-lisp-mode-hook #'form-feed-mode)
+(add-hook 'text-mode-hook #'form-feed-mode)
+(add-hook 'special-mode-hook #'form-feed-mode)
 #+end_src
 
 *** Source
@@ -2923,8 +2913,7 @@ window."
 
 ** Dired Toggle Sudo
 #+begin_src elisp
-(setup dired-toggle-sudo
-  (:autoload dired-toggle-sudo))
+(autoload #'dired-toggle-sudo "dired-toggle-sudo")
 #+end_src
 
 *** Source
@@ -3062,9 +3051,8 @@ If called with `universal-argument' (C-u), ask for username.
 
 ** Color Outline
 #+begin_src elisp
-(setup color-outline
-  (:autoload color-outline-mode)
-  (:hook-into prog-mode))
+(autoload #'color-outline-mode "color-outline")
+(add-hook 'prog-mode-hook #'color-outline-mode)
 #+end_src
 
 *** Source
@@ -3275,10 +3263,9 @@ COMMENT-BEGIN is string pattern starting a comment."
 ** iimg
 *** config
 #+begin_src elisp
-(setup iimg
-  (:autoload iimg-enable)
-  (add-hook 'text-mode-hook #'iimg-enable)
-  (setq iimg-prune-slices-p nil))
+(autoload #'iimg-enable "iimg")
+(add-hook 'text-mode-hook #'iimg-enable)
+(setq iimg-prune-slices-p nil)
 #+end_src
 
 *** Source
@@ -3836,13 +3823,12 @@ Also refresh the image at point."
 #+end_src
 ** bklink
 #+begin_src elisp
-(setup bklink
-  (:autoload bklink-minor-mode)
-  (with-eval-after-load 'bklink
-    (define-key bklink-minor-mode-map (kbd "C-c l") #'bklink-show-back-link)
-    (define-key bklink-minor-mode-map (kbd "C-c i") #'bklink-insert))
-  (setq bklink-summary-read-only-p nil
-        bklink-prune-summary-p nil))
+(autoload #'bklink-minor-mode "bklink")
+(with-eval-after-load 'bklink
+  (keymap-set bklink-minor-mode-map "C-c l" #'bklink-show-back-link)
+  (keymap-set bklink-minor-mode-map "C-c i" #'bklink-insert))
+(setq bklink-summary-read-only-p nil
+      bklink-prune-summary-p nil)
 #+end_src
 
 *** Source
@@ -4394,10 +4380,6 @@ The files to replace are in PATH-FILE"
 #+end_src
 
 ** flique
-*** config
-#+begin_src emacs-lisp
-(setup flique)
-#+end_src
 *** Source
 #+begin_src elisp :tangle site-lisp/flique.el
 ;;; flique.el --- File cliques  -*- lexical-binding: t; -*-
