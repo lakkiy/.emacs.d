@@ -2744,6 +2744,10 @@ Need =xapian-core=.
 (eat/pkg protobuf-mode)
 (eat/pkg csv-mode)
 
+(add-hook 'csv-mode-hook
+          #'(lambda ()
+              (setq-local auto-hscroll-mode t)))
+
 (add-hook 'toml-mode-hook #'goto-address-prog-mode)
 (add-hook 'yaml-mode-hook #'goto-address-prog-mode)
 
