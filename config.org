@@ -2742,6 +2742,7 @@ Need =xapian-core=.
 (eat/pkg markdown-mode)
 (eat/pkg markdown-toc)
 (eat/pkg protobuf-mode)
+(eat/pkg csv-mode)
 
 (add-hook 'toml-mode-hook #'goto-address-prog-mode)
 (add-hook 'yaml-mode-hook #'goto-address-prog-mode)
