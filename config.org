@@ -42,6 +42,30 @@
 (eat/pkg elpa-mirror)
 (setq elpamr-default-output-directory "~/Sync/.myelpa")
 #+end_src
+** TODO Define key
+#+begin_src elisp
+
+#+end_src
+** Hook
+#+begin_src elisp
+(defun eat/hook (hook function)
+  "Add hooks FUNCTION to HOOK.
+If FUNCTION is a list, then add all FUNCTION hooks to HOOK.
+If HOOK is a list, then add all FUNCTION hooks to HOOK."
+  (cond
+   ((and (listp hook) (listp function))
+    (dolist (h hook)
+      (dolist (f function)
+        (add-hook h f))))
+   ((listp hook)
+    (dolist (h hook)
+      (add-hook h function)))
+   ((listp function)
+    (dolist (f function)
+      (add-hook hook f)))
+   (t
+    (add-hook hook function))))
+#+end_src
 ** Variables
 #+begin_src elisp
 (defvar eat/user-full-name "Liu Bo")
@@ -718,22 +742,15 @@ No tab will created if the command is cancelled."
 (add-hook 'hook #'whitespace-mode)
 (setq whitespace-style '(face trailing))
 
-;;; global-goto-address
-(add-hook 'on-first-file-hook #'global-goto-address-mode)
-
 ;;; savehist
 (add-hook 'after-init-hook #'savehist-mode)
 ;; Restore histories and registers after saving
 (setq history-length 1000)
 
-;;; autorevert
-(add-hook 'on-first-file-hook #'global-auto-revert-mode)
-
-;;; saveplace
-(add-hook 'on-first-file-hook #'save-place-mode)
-
-;;; so-long
-(add-hook 'on-first-file-hook #'global-so-long-mode)
+(eat/hook 'on-first-file-hook '(global-goto-address-mode
+                                global-auto-revert-mode
+                                save-place-mode
+                                global-so-long-mode))
 #+end_src
 
 * Minibuffer
@@ -1546,9 +1563,7 @@ Only work for orderless for now.
 ** Hl Todo
 #+begin_src emacs-lisp
 (eat/pkg hl-todo)
-(add-hook 'dired-mode-hook #'hl-todo-mode)
-(add-hook 'prog-mode-hook #'hl-todo-mode)
-(add-hook 'conf-mode-hook #'hl-todo-mode)
+(eat/hook '(dired-mode-hook prog-mode-hook conf-mode-hook) #'hl-todo-mode)
 #+end_src
 ** Ligature
 #+begin_src emacs-lisp
@@ -1616,8 +1631,7 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 ** Yasnippet
 #+begin_src elisp
 (eat/pkg yasnippet)
-(add-hook 'prog-mode-hook #'yas-minor-mode)
-(add-hook 'conf-mode-hook #'yas-minor-mode)
+(eat/hook '(prog-mode-hook conf-mode-hook) #'yas-minor-mode)
 (with-eval-after-load 'yasnippet
   (let ((inhibit-message t))
     (yas-reload-all)))
@@ -1718,8 +1732,8 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 (setq imenu-list-auto-resize t
       imenu-list-mode-line-format nil)
 
-(add-hook 'imenu-list-major-mode-hook #'(lambda () (setq-local header-line-format nil)))
-(add-hook 'imenu-list-major-mode-hook #'+imenu-scale-font-size)
+(eat/hook 'imenu-list-major-mode-hook '(+imenu-scale-font-size
+                                        (lambda () (setq-local header-line-format nil))))
 #+end_src
 *** Puni
 #+begin_src emacs-lisp
@@ -1873,18 +1887,8 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 #+begin_src elisp
 (eat/pkg aggressive-indent)
 (eat/pkg paredit)
-
-(add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
-(add-hook 'emacs-lisp-mode-hook #'paredit-mode)
-
-(add-hook 'lisp-interaction-mode-hook #'aggressive-indent-mode)
-(add-hook 'lisp-interaction-mode-hook #'paredit-mode)
-
-(add-hook 'scheme-mode-hook #'aggressive-indent-mode)
-(add-hook 'scheme-mode-hook #'paredit-mode)
-
-(add-hook 'lisp-mode-hook #'aggressive-indent-mode)
-(add-hook 'lisp-mode-hook #'paredit-mode)
+(eat/hook '(emacs-lisp-mode-hook lisp-interaction-mode-hook scheme-mode-hook lisp-mode-hook)
+          '(aggressive-indent-mode paredit-mode))
 #+end_src
 *** Go
 #+begin_src emacs-lisp
@@ -2389,8 +2393,7 @@ This is a variadic `cl-pushnew'."
 #+begin_src emacs-lisp
 (eat/pkg diff-hl)
 
-(add-hook 'prog-mode-hook #'diff-hl-mode)
-(add-hook 'conf-mode-hook #'diff-hl-mode)
+(eat/hook '(prog-mode-hook conf-mode-hook ) #'diff-hl-mode)
 (add-hook 'dired-mode-hook #'diff-hl-dired-mode)
 
 (setq diff-hl-draw-borders nil)
@@ -2469,8 +2472,7 @@ Use eat under linux and macos, use eshell under windows.
 
 (setq eat-kill-buffer-on-exit t)
 
-(add-hook 'eshell-load-hook #'eat-eshell-mode)
-(add-hook 'eshell-load-hook #'eat-eshell-visual-command-mode)
+(eat/hook 'eshell-load-hook '(eat-eshell-mode eat-eshell-visual-command-mode))
 
 ;; Quick editing in `describe-variable'
 (with-eval-after-load 'help-fns
