@@ -1,3 +1,4 @@
+*.md
 codeium
 session.*
 tree-sitter
