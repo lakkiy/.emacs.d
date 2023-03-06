@@ -2047,6 +2047,9 @@ Center current window.
 
 (eat/pkg fanyi)
 
+(defvar gts-deepl-auth-key nil
+  "Free auto key to access deepl api.")
+
 (defun eat/translate ()
   (interactive)
   (if (use-region-p)
@@ -2056,10 +2059,20 @@ Center current window.
 (keymap-global-set "C-c y" #'eat/translate)
 
 (with-eval-after-load 'go-translate
-  (setq gts-default-translator (gts-translator
-                                :picker (gts-noprompt-picker)
-                                :engines (list (gts-google-rpc-engine) (gts-bing-engine))
-                                :render (gts-buffer-render))))
+  (setq gts-default-translator
+        (gts-translator
+         :picker
+         (gts-noprompt-picker)
+
+         :engines
+         (list
+          (gts-google-rpc-engine)
+          (gts-bing-engine)
+          (when gts-deepl-auth-key
+            (gts-deepl-engine :auth-key gts-deepl-auth-key :pro nil)))
+
+         :render
+         (gts-buffer-render))))
 
 (defun eat/context-translate (menu click)
   "My context MENU to translate text."
@@ -2359,6 +2372,7 @@ M-x ~org-cite-insert~
       org-cite-follow-processor 'citar
       org-cite-activate-processor 'citar
       citar-bibliography org-cite-global-bibliography)
+
 #+end_src
 * Application
 ** Magit
