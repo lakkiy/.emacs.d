@@ -822,9 +822,9 @@ No tab will created if the command is cancelled."
 (with-eval-after-load 'consult
   (consult-customize consult-ripgrep consult-git-grep consult-grep
                      consult-bookmark consult-recent-file consult-xref
-                     :preview-key (kbd "M-."))
+                     :preview-key nil)
   (consult-customize consult-theme
-                     :preview-key (list (kbd "M-.") :debounce 0.5 'any)))
+                     :preview-key (list nil :debounce 0.5 'any)))
 
 ;;; orderless
 (eat/pkg orderless)
