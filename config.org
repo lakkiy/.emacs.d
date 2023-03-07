@@ -318,7 +318,9 @@ But manual =add-hook= then describe, it’s value is not nil.
 
 *** project.el
 #+begin_src elisp
+;; go to the end of buffer after `project-compile'
 (add-hook 'compilation-start-hook #'end-of-buffer)
+
 (defun eat/project-name ()
   (file-name-nondirectory
    (directory-file-name
@@ -332,7 +334,10 @@ But manual =add-hook= then describe, it’s value is not nil.
     (funcall fn pr no-write)))
 (advice-add 'project-remember-project :around
             'eat/project-remember-advice)
+
 (with-eval-after-load 'project
+
+  ;; use fd in `project-find-file'
   (defun eat/project-files-in-directory (dir)
     "Use `fd' to list files in DIR."
     (let* ((default-directory dir)
@@ -341,27 +346,22 @@ But manual =add-hook= then describe, it’s value is not nil.
       (project--remote-file-names
        (sort (split-string (shell-command-to-string command) "\0" t)
              #'string<))))
-
-  ;; use fd in `project-find-file'
   (when (executable-find "fd")
     (cl-defmethod project-files ((project (head local)) &optional dirs)
       "Override `project-files' to use `fd' in local projects."
       (mapcan #'eat/project-files-in-directory
               (or dirs (list (project-root project))))))
 
-  (defun eat/project-try-local (dir)
-    "Determine if DIR is a non-Git project."
-    (catch 'ret
-      (let ((pr-flags '((".project")
-                        ("go.mod" "Cargo.toml" "project.clj" "pom.xml" "package.json") ;; higher priority
-                        ("Makefile" "README.org" "README.md"))))
-        (dolist (current-level pr-flags)
-          (dolist (f current-level)
-            (when-let ((root (locate-dominating-file dir f)))
-              (throw 'ret (cons 'local root))))))))
-  (cl-defmethod project-root ((project (head local)))
-    (cdr project))
-  (add-to-list 'project-find-functions #'eat/project-try-local t))
+  (setq project-vc-ignores '("target/" "bin/" "obj/")
+        project-vc-extra-root-markers '(".project"
+                                        "go.mod"
+                                        "Cargo.toml"
+                                        "project.clj"
+                                        "pom.xml"
+                                        "package.json"
+                                        "Makefile"
+                                        "README.org"
+                                        "README.md")))
 #+end_src
 
 *** TODO xref
@@ -458,8 +458,10 @@ No tab will created if the command is cancelled."
                     tab-bar-tab-name-truncated-max 10)))
 
 (with-eval-after-load 'tab-bar
-  (keymap-global-set "M-[" #'tab-bar-switch-to-prev-tab)
-  (keymap-global-set "M-]" #'tab-bar-switch-to-next-tab)
+  ;; FIXME 这会导致焦点在 tui emacs 和其他程序切换时自动输入 IO
+  ;; (keymap-global-set "M-[" #'tab-bar-switch-to-prev-tab)
+  ;; (keymap-global-set "M-]" #'tab-bar-switch-to-next-tab)
+
   (keymap-set tab-prefix-map "." #'tab-bar-switch-to-recent-tab)
   (keymap-set tab-prefix-map "," #'tab-bar-rename-tab)
   (keymap-set tab-prefix-map "l" #'eat/tab-bar-switch-project))
@@ -822,9 +824,7 @@ No tab will created if the command is cancelled."
 (with-eval-after-load 'consult
   (consult-customize consult-ripgrep consult-git-grep consult-grep
                      consult-bookmark consult-recent-file consult-xref
-                     :preview-key nil)
-  (consult-customize consult-theme
-                     :preview-key (list nil :debounce 0.5 'any)))
+                     :preview-key nil))
 
 ;;; orderless
 (eat/pkg orderless)
