@@ -1132,22 +1132,6 @@ point reaches the beginning or end of the buffer, stop there."
   ;; the list by the special value ‘tramp-own-remote-path’.
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 #+end_src
-*** Spell check
-#+begin_src elisp
-(when eat/macp
-  (setenv "DICTIONARY" "en_US"))
-;; no spell checking for org special blocks
-(add-to-list 'ispell-skip-region-alist '(":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:"))
-(add-to-list 'ispell-skip-region-alist '("#\\+begin_src" . "#\\+end_src"))
-(add-to-list 'ispell-skip-region-alist '("#\\+begin_example" . "#\\+end_example"))
-(setq ispell-dictionary "en_US"
-      ispell-following-word t)
-
-(setq flyspell-issue-welcome-flag nil
-      flyspell-issue-message-flag nil)
-(with-eval-after-load 'flyspell
-  (setq flyspell-mode-map nil))
-#+end_src
 *** Hl Line
 #+begin_src emacs-lisp
 (setq hl-line-sticky-flag nil)
@@ -2106,6 +2090,39 @@ Center current window.
 #+begin_src emacs-lisp
 (eat/pkg restclient)
 #+end_src
+
+** Spell check
+Use ispell to config checker and dictionaries, and jit-spell to do the check.
+
+This behavior is different from the built-in Flyspell package, which only checks words as the cursor moves over them. Moreover, unlike Flyspell, jit-spell communicates with the spell-checking subprocess entirely asynchronously, which can lead to a noticeable performance improvement.
+
+*** ispell
+#+begin_src elisp
+(when eat/macp
+  (setenv "DICTIONARY" "en_US"))
+;; no spell checking for org special blocks
+(add-to-list 'ispell-skip-region-alist '(":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:"))
+(add-to-list 'ispell-skip-region-alist '("#\\+begin_src" . "#\\+end_src"))
+(add-to-list 'ispell-skip-region-alist '("#\\+begin_example" . "#\\+end_example"))
+(setq ispell-dictionary "en_US"
+      ispell-following-word t
+      ispell-really-hunspell t
+      ispell-program-name "hunspell"
+      ispell-personal-dictionary "~/Sync/hunspell_dict.txt")
+
+(setq flyspell-issue-welcome-flag nil
+      flyspell-issue-message-flag nil)
+(with-eval-after-load 'flyspell
+  (setq flyspell-mode-map nil))
+#+end_src
+
+*** jit-spell
+#+begin_src emacs-lisp
+(eat/pkg jit-spell)
+;; (add-hook 'org-mode-hook 'jit-spell-mode)
+;; (add-hook 'prog-mode-hook 'jit-spell-mode)
+#+end_src
+
 * Org
 ** config
 #+begin_src elisp
