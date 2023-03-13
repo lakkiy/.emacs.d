@@ -2433,6 +2433,15 @@ M-x ~org-cite-insert~
       (add-to-list 'desktop-minor-mode-table
                    '(diff-hl-margin-mode nil)))))
 #+end_src
+
+*** magit-todo
+#+begin_src emacs-lisp
+(eat/pkg magit-todos)
+
+(with-eval-after-load 'magit
+  (require 'magit-todos)
+  (magit-todos-mode))
+#+end_src
 ** File Manager (dirvish)
 #+begin_src elisp
 (add-hook 'dired-mode-hook #'dired-hide-details-mode)
