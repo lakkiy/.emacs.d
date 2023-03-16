@@ -1980,22 +1980,9 @@ Also check:
 #+begin_src emacs-lisp
 (when (treesit-available-p)
   (setq major-mode-remap-alist
-        '((c-mode          . c-ts-mode)
-          (c++-mode        . c++-ts-mode)
-          (cmake-mode      . cmake-ts-mode)
-          (conf-toml-mode  . toml-ts-mode)
-          (csharp-mode     . csharp-ts-mode)
-          (css-mode        . css-ts-mode)
-          (dockerfile-mode . dockerfile-ts-mode)
-          (go-mode         . go-ts-mode)
-          (java-mode       . java-ts-mode)
+        '((go-mode         . go-ts-mode)
           (json-mode       . json-ts-mode)
-          (js-json-mode    . json-ts-mode)
-          (js-mode         . js-ts-mode)
-          (python-mode     . python-ts-mode)
-          (rust-mode       . rust-ts-mode)
-          (sh-mode         . bash-ts-mode)
-          (typescript-mode . typescript-ts-mode))))
+          (js-json-mode    . json-ts-mode))))
 #+end_src
 *** go
 #+begin_src emacs-lisp
@@ -2809,14 +2796,7 @@ Need =xapian-core=.
 #+end_src
 ** elpa-mirror
 #+begin_src elisp
-(setq elpamr-default-output-directory "~/Sync/myelpa"
-      elpamr-tar-command-exclude-patterns '("*.elc"
-                                            "*~"
-                                            "*.so"
-                                            "*.dylib"
-                                            "*.dll"
-                                            "*/bin"
-                                            "*/__pycache__"))
+(setq elpamr-default-output-directory "~/Sync/myelpa")
 #+end_src
 *** Source
 #+begin_src elisp :tangle site-lisp/elpa-mirror.el
