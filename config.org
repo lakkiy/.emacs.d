@@ -1635,8 +1635,10 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 (setq eldoc-idle-delay 1)
 #+end_src
 *** Newcomment
+Set this localy in prog mode, or auto fill mode will not work since there’s no comment in some mode.
 #+begin_src elisp
-(setq comment-auto-fill-only-comments t)
+(add-hook 'prog-mode-hook #'(lambda () (setq-local comment-auto-fill-only-comments t)))
+(add-hook 'prog-mode-hook #'turn-on-auto-fill)
 #+end_src
 *** TODO Hideshow
 - Seems have error message.
