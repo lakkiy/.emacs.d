@@ -1799,9 +1799,11 @@ Set this localy in prog mode, or auto fill mode will not work since there’s no
     (list :enable t
           :lint t))
   (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
-  ;; TODO code actions
   (add-to-list 'eglot-server-programs
-               '(sql-mode . ("sqls" "-config" "~/.config/sqls/config.yaml"))))
+               '(sql-mode . ("sqls" "-config" "~/.config/sqls/config.yaml")))
+  ;; NOTE Install https://github.com/valentjn/ltex-ls
+  (add-to-list 'eglot-server-programs
+               '(message-mode . ("ltex-ls"))))
 
 (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode)
 #+end_src
