@@ -39,6 +39,13 @@
      (if ,vc (package-vc-install ,vc)
        (package-install ',package))))
 #+end_src
+
+*** TODO guix
+
+#+begin_src emacs-lisp
+(eat/pkg guix)
+#+end_src
+
 ** TODO Define key
 #+begin_example
 
@@ -100,8 +107,7 @@ If HOOK is a list, then add all FUNCTION hooks to HOOK."
 #+end_src
 ** Optimization
 *** TODO on.el
-Work even =describe-variable= it’s value is nil.
-But manual =add-hook= then describe, it’s value is not nil.
+Some of hook of this packgae is too hacked, maybe drop it.
 #+begin_src emacs-lisp
 (eat/pkg on "https://gitlab.com/ajgrf/on.el")
 (require 'on)
@@ -115,12 +121,9 @@ But manual =add-hook= then describe, it’s value is not nil.
       gcmh-high-cons-threshold #x6400000)
 #+end_src
 
-#+begin_src elisp
-;; bind `describe-keymap', added in emacs 28
-(keymap-global-set "C-h C-k" #'describe-keymap)
-;; this will stuck emacs
-(keymap-global-unset "C-h h")
 
+*** show start up time
+#+begin_src elisp
 (defun eat/show-startup-time ()
   "Print startup time."
   (message
@@ -131,6 +134,15 @@ But manual =add-hook= then describe, it’s value is not nil.
      (time-subtract after-init-time before-init-time)))
    gcs-done))
 (add-hook 'emacs-startup-hook #'eat/show-startup-time)
+#+end_src
+
+*** misc
+#+begin_src elisp
+;; bind `describe-keymap', added in emacs 28
+(keymap-global-set "C-h C-k" #'describe-keymap)
+;; this will stuck emacs
+(keymap-global-unset "C-h h")
+
 
 ;; GC automatically while unfocusing the frame
 (add-function :after after-focus-change-function
@@ -216,6 +228,7 @@ But manual =add-hook= then describe, it’s value is not nil.
  server-client-instructions nil                     ; no client startup messages
  )
 #+end_src
+
 ** PATH
 #+begin_src elisp
 ;;; Setup PATH
@@ -1558,10 +1571,10 @@ Only work for orderless for now.
 (eat/pkg popon)
 (eat/pkg corfu-terminal)
 
-(add-hook 'after-init-hook #'(lambda () (global-corfu-mode 1)))
-(add-hook 'corfu-mode-hook #'(lambda ()
-                               (unless (display-graphic-p)
-                                 (corfu-terminal-mode +1))))
+;; (add-hook 'after-init-hook #'(lambda () (global-corfu-mode 1)))
+;; (add-hook 'corfu-mode-hook #'(lambda ()
+;;                                (unless (display-graphic-p)
+;;                                  (corfu-terminal-mode +1))))
 
 (setq corfu-preview-current nil
       corfu-auto-delay 0.2
@@ -1589,6 +1602,15 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 (with-eval-after-load 'yasnippet
   (keymap-set yas-keymap "<tab>" 'eat/yas-next-field-or-maybe-expand)
   (keymap-set yas-keymap "TAB" 'eat/yas-next-field-or-maybe-expand))
+#+end_src
+
+** company
+#+begin_src elisp
+(eat/pkg company)
+
+(eat/hook '(prog-mode-hook conf-mode-hook) 'company-mode)
+
+(setq company-tooltip-align-annotations t)
 #+end_src
 ** Yasnippet
 #+begin_src elisp
@@ -1769,6 +1791,84 @@ Set this localy in prog mode, or auto fill mode will not work since there’s no
                `(flymake-mode (" [" sekiro-flymake-mode-line-format "] "))))
 #+end_src
 ** Lsp
+*** lsp-bridge                                                       :deps:
+Need a lot...
+
+#+begin_src elisp
+(defun add-subdirs-to-load-path (search-dir)
+  (interactive)
+  (let* ((dir (file-name-as-directory search-dir)))
+    (dolist (subdir
+             ;; 过滤出不必要的目录，提升 Emacs 启动速度
+             (cl-remove-if
+              #'(lambda (subdir)
+                  (or
+                   ;; 不是目录的文件都移除
+                   (not (file-directory-p (concat dir subdir)))
+                   ;; 父目录、 语言相关和版本控制目录都移除
+                   (member subdir '("." ".."
+                                    "dist" "node_modules" "__pycache__"
+                                    "RCS" "CVS" "rcs" "cvs" ".git" ".github"))))
+              (directory-files dir)))
+      (let ((subdir-path (concat dir (file-name-as-directory subdir))))
+        ;; 目录下有 .el .so .dll 文件的路径才添加到 `load-path' 中，提升 Emacs 启动速度
+        (when (cl-some #'(lambda (subdir-file)
+                           (and (file-regular-p (concat subdir-path subdir-file))
+                                ;; .so .dll 文件指非 Elisp 语言编写的 Emacs 动态库
+                                (member (file-name-extension subdir-file) '("el" "so" "dll"))))
+                       (directory-files subdir-path))
+
+          ;; 注意：`add-to-list' 函数的第三个参数必须为 t ，表示加到列表末尾
+          ;; 这样 Emacs 会从父目录到子目录的顺序搜索 Elisp 插件，顺序反过来会导致 Emacs 无法正常启动
+          (add-to-list 'load-path subdir-path t))
+
+        ;; 继续递归搜索子目录
+        (add-subdirs-to-load-path subdir-path)))))
+
+;; this need pip install epc, orjson
+(unless (package-installed-p 'lsp-bridge)
+  (package-vc-install "https://github.com/manateelazycat/lsp-bridge"))
+
+(setq acm-enable-doc nil
+      acm-enable-search-words nil
+      lsp-bridge-enable-search-words nil)
+
+(defun eat/lsp-bridge-mode-setup ()
+  "My setup for lsp-bridge.
+Disable `corfu-mode'.
+When expand snippet, try complete if there's acm cond, or run `yas-next-field-or-maybe-expand'."
+  (interactive)
+  (ignore-errors
+    (company-mode -1))
+  (with-eval-after-load 'yasnippet
+    ;; FIXME
+    (define-key yas-keymap (kbd "<tab>") 'acm-complete-or-expand-yas-snippet)
+    (define-key yas-keymap (kbd "TAB") 'acm-complete-or-expand-yas-snippet)))
+
+(with-eval-after-load 'lsp-bridge
+  (add-subdirs-to-load-path (expand-file-name "elpa/lsp-bridge" user-emacs-directory))
+  (eat/hook 'lsp-bridge-mode-hook 'eat/lsp-bridge-mode-setup)
+
+  (define-key lsp-bridge-mode-map (kbd "M-.") #'lsp-bridge-find-def)
+  (define-key lsp-bridge-mode-map (kbd "C-x 4 .") #'lsp-bridge-find-def-other-window)
+  (define-key lsp-bridge-mode-map (kbd "M-,") #'lsp-bridge-return-from-def)
+  (define-key lsp-bridge-mode-map (kbd "M-?") #'lsp-bridge-find-references)
+  (define-key lsp-bridge-mode-map (kbd "M-'") #'lsp-bridge-find-impl)
+  (define-key lsp-bridge-mode-map (kbd "C-c r") #'lsp-bridge-rename)
+  (define-key lsp-bridge-mode-map (kbd "C-c <") #'lsp-bridge-diagnostic-jump-prev)
+  (define-key lsp-bridge-mode-map (kbd "C-c >") #'lsp-bridge-diagnostic-jump-next)
+
+  (define-key lsp-bridge-ref-mode-map (kbd "j") nil)
+  (define-key lsp-bridge-ref-mode-map (kbd "k") nil)
+  (define-key lsp-bridge-ref-mode-map (kbd "h") nil)
+  (define-key lsp-bridge-ref-mode-map (kbd "l") nil)
+  (define-key lsp-bridge-ref-mode-map (kbd "p") #'lsp-bridge-ref-jump-prev-file)
+  (define-key lsp-bridge-ref-mode-map (kbd "t") #'lsp-bridge-ref-jump-prev-keyword)
+  (define-key lsp-bridge-ref-mode-map (kbd "t") #'lsp-bridge-ref-jump-next-keyword)
+  (define-key lsp-bridge-ref-mode-map (kbd "n") #'lsp-bridge-ref-jump-next-file)
+  )
+#+end_src
+
 *** eglot
 #+begin_src elisp
 (eat/pkg eldoc-box)
@@ -1812,20 +1912,20 @@ Set this localy in prog mode, or auto fill mode will not work since there’s no
 (eat/pkg citre)
 
 (with-eval-after-load 'citre
-  (keymap-global-set "C-x c j" citre-jump)
-  (keymap-global-set "C-x c J" citre-jump-back)
-  (keymap-global-set "C-x c u" citre-update-this-tags-file)
-  (keymap-global-set "C-x c p" citre-peek)
+  (keymap-global-set "C-x c j" #'citre-jump)
+  (keymap-global-set "C-x c J" #'citre-jump-back)
+  (keymap-global-set "C-x c u" #'citre-update-this-tags-file)
+  (keymap-global-set "C-x c p" #'citre-peek)
   ;; NOTE
   ;; Notice that GTAGSOBJDIRPREFIX must exist for gtags to use it. So you need to run:
   ;; $ mkdir -p ~/.cache/gtags/
-  (keymap-global-set "C-x c U" citre-global-update-database)
-  (keymap-global-set "C-x c r" citre-jump-to-reference)
-  (keymap-global-set "C-x c P" citre-ace-peek-references)
-  (setup citre-default-create-tags-file-location 'global-cache
-         citre-use-project-root-when-creating-tags t
-         citre-prompt-language-for-ctags-command t
-         citre-auto-enable-citre-mode-modes '(prog-mode))
+  (keymap-global-set "C-x c U" #'citre-global-update-database)
+  (keymap-global-set "C-x c r" #'citre-jump-to-reference)
+  (keymap-global-set "C-x c P" #'citre-ace-peek-references)
+  (setq citre-default-create-tags-file-location 'global-cache
+        citre-use-project-root-when-creating-tags t
+        citre-prompt-language-for-ctags-command t
+        citre-auto-enable-citre-mode-modes '(prog-mode))
   (with-eval-after-load 'cc-mode (require 'citre-lang-c))
   (with-eval-after-load 'dired (require 'citre-lang-fileref))
   (with-eval-after-load 'verilog-mode (require 'citre-lang-verilog)))
@@ -2107,6 +2207,8 @@ Use ispell to config checker and dictionaries, and jit-spell to do the check.
 This behavior is different from the built-in Flyspell package, which only checks words as the cursor moves over them. Moreover, unlike Flyspell, jit-spell communicates with the spell-checking subprocess entirely asynchronously, which can lead to a noticeable performance improvement.
 
 *** ispell
+Just us jinx, don’t need ispell.
+
 #+begin_src elisp
 (when eat/macp
   (setenv "DICTIONARY" "en_US"))
@@ -2126,13 +2228,32 @@ This behavior is different from the built-in Flyspell package, which only checks
   (setq flyspell-mode-map nil))
 #+end_src
 
-*** jit-spell
+*** TODO jinx
+
+Need =Libenchant= installed.
+
 #+begin_src emacs-lisp
-(eat/pkg jit-spell)
-;; (add-hook 'org-mode-hook 'jit-spell-mode)
-;; (add-hook 'prog-mode-hook 'jit-spell-mode)
+(eat/pkg jinx)
+
+;; (eat/hook '(text-mode-hook prog-mode-hook conf-mode-hook) #'jinx-mode)
+
+;; (keymap-global-set "<remap> <ispell-word>" #'jinx-correct)
 #+end_src
 
+** leetcode
+~pip3 install my_cookies~
+
+Set cookie manually:
+~(url-cookie-store "LEETCODE_SESSION" leetcode-session nil "leetcode.com" "/" t)~
+~(url-cookie-store "csrftoken" leetcode-csrftoken nil "leetcode.com" "/" t)~
+
+#+begin_src emacs-lisp
+(eat/pkg leetcode)
+
+(setq leetcode-prefer-language "golang")
+(setq leetcode-save-solutions t)
+(setq leetcode-directory "~/Dropbox/leetcode")
+#+end_src
 * Org
 ** config
 #+begin_src elisp
@@ -2300,7 +2421,6 @@ Need pandoc installed."
         (visual-fill-column-mode 1)
         (setq-local cursor-type 'bar)
         (setq-local line-spacing 0.15)
-        (corfu-mode -1)
         (setq-local whitespace-style '(tab-mark))
         (whitespace-mode))
     (org-variable-pitch-minor-mode -1)
@@ -2685,7 +2805,6 @@ Run =docker pull zevlg/telega-server:latest=
 #+begin_src elisp
 (when (eat/modulep '+telega)
   (eat/pkg telega)
-  (eat/pkg company)
   (setq telega-use-docker t
         telega-chat-fill-column 75
         telega-server-libs-prefix "/usr")
@@ -2695,14 +2814,7 @@ Run =docker pull zevlg/telega-server:latest=
     (hl-line-mode 1))
   (add-hook 'telega-root-mode-hook 'eat/telega-root-setup)
 
-  ;; Use capf to complete in telega chat buffer.
-  (defun my-telega-chat-mode ()
-    (require 'company)
-    (add-hook 'completion-at-point-functions
-              #'telega-chatbuf-complete-at-point nil 'local))
-
   (defun eat/telega-chat-setup ()
-    (my-telega-chat-mode)
     ;; (make-variable-buffer-local 'face-font-rescale-alist)
     ;; (add-to-list 'face-font-rescale-alist `(,eat/font-chinese . 0.9))
     ;; (add-to-list 'face-font-rescale-alist `(,eat/font-emoji . 0.8))
@@ -2714,15 +2826,12 @@ Run =docker pull zevlg/telega-server:latest=
 
   (defun lg-telega-chat-update (chat)
     (with-telega-root-buffer
-      (hl-line-highlight)))
+     (hl-line-highlight)))
   (add-hook 'telega-chat-update-hook 'lg-telega-chat-update)
 
   (with-eval-after-load 'telega
     (add-hook 'telega-load-hook #'telega-notifications-mode)
     (add-hook 'telega-load-hook #'telega-appindicator-mode)
-    ;; ignore blocked user
-    (add-hook 'telega-msg-ignore-predicates
-              (telega-match-gen-predicate "msg-" '(sender blocked)))
 
     (setq telega-chat-input-format "›"
           telega-animation-play-inline nil

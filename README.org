@@ -1,11 +1,9 @@
-
-Tangle config.org:
+* 个人 =Emacs= 配置
 
 #+begin_src bash
 emacs --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "~/.config/emacs/config.org")'
 #+end_src
 
-Test emacs startup time:
-#+begin_src bash
-time emacs -kill
-#+end_src
+* 需要的依赖
+
+- =ltex-ls= (optional) 用于语法检查，一般在回复邮件时使用，需要手动开启 ~eglot~
