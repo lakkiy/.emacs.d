@@ -392,7 +392,9 @@ Need ripgrep installed(check external program).
 (setq xref-prompt-for-identifier nil
       xref-search-program 'ripgrep
       xref-show-xrefs-function #'xref-show-definitions-completing-read
-      xref-show-definitions-function #'xref-show-definitions-completing-read)
+      xref-show-definitions-function #'xref-show-definitions-completing-read
+      ;; fix massed xref cross multiple project
+      xref-history-storage 'xref-window-local-history)
 #+end_src
 
 * Lib
