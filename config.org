@@ -630,19 +630,6 @@ No tab will created if the command is cancelled."
     (delete-file (buffer-file-name))
     (kill-this-buffer)))
 
-(defun eat/rename-this-file-and-buffer (new-name)
-  "Renames both current buffer and file it's visiting to NEW-NAME."
-  (interactive "sNew name: ")
-  (let ((name (buffer-name))
-        (filename (buffer-file-name)))
-    (unless filename
-      (error "Buffer '%s' is not visiting a file!" name))
-    (progn
-      (when (file-exists-p filename)
-        (rename-file filename new-name 1))
-      (set-visited-file-name new-name)
-      (rename-buffer new-name))))
-
 (defun get-string-from-file (filePath)
   "Return file content as string."
   (with-temp-buffer
