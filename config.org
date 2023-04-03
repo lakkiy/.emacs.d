@@ -2130,6 +2130,9 @@ Also check:
 - Paste your cookies into a file cookies.json
 - Set =aichat-bingai-cookies-file= to your cookies.json path
 
+For openai, set api key in auth file:
+=machine platform.openai.com login aichat-openai password your-app-key=
+
 #+begin_src elisp
 (eat/pkg websocket)
 (eat/pkg async-await)
@@ -2139,6 +2142,13 @@ Also check:
       aichat-bingai-file "~/Sync/aichat.md")
 (autoload #'aichat-bingai-chat "aichat-bingai.el" nil t)
 (autoload #'aichat-bingai-assistant "aichat-bingai.el" nil t)
+(autoload #'aichat-openai-assistant "aichat-openai.el" nil t)
+#+end_src
+** chatgpt
+Set ~gptel-api-key~.
+
+#+begin_src emacs-lisp
+(eat/pkg gptel)
 #+end_src
 
 ** Visual Fill Column
