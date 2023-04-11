@@ -646,6 +646,14 @@ No tab will created if the command is cancelled."
 (eat/pkg window-numbering)
 (add-hook 'after-init-hook #'window-numbering-mode)
 #+end_src
+** switch-window
+
+#+begin_src elisp
+(eat/pkg switchy-window)
+
+(eat/hook 'on-first-file-hook #'switchy-window-minor-mode)
+#+end_src
+
 * Buffer
 ** Functions
 #+begin_src emacs-lisp
@@ -1422,7 +1430,7 @@ point reaches the beginning or end of the buffer, stop there."
    '("S" . save-buffer)
 
    ;; window
-   '("s" . ace-select-window)
+   '("s" . switchy-window)
 
    ;; wrap && unwrap
    '("\"" . insert-pair)
@@ -2149,6 +2157,8 @@ Set ~gptel-api-key~.
 
 #+begin_src emacs-lisp
 (eat/pkg gptel)
+
+(setq gptel-default-mode 'org-mode)
 #+end_src
 
 ** Visual Fill Column
