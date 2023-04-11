@@ -1,4 +1,4 @@
-* 个人 =Emacs= 配置
+* 个人 =Emacs= 配置(WIP)
 
 #+begin_src bash
 emacs --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "~/.config/emacs/config.org")'

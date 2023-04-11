@@ -49,35 +49,6 @@
 ** TODO Define key
 #+begin_src emacs-lisp
 (defun eat/key (&rest bindings)
-  "Bind or unbind keys according to the given BINDINGS.
-
-BINDINGS should be a list of key and function bindings. Each
-binding should be specified by a key followed by a function,
-like KEY FUNCTION. If you want to bind a key to a specific map,
-you can use :map MAPNAME syntax before the key, like :map
-EMACS-LISP-MODE-MAP C-c a. If you want to unbind a key from a
-specific map, you can use :unset syntax before the key, like
-:unset C-c a.
-
-For example:
-  (eat/key
-    \"C-c a\" #'func1
-    \"C-c b\" #'func2
-    :unset
-    \"C-c a\"
-    \"C-c b\"
-    :map 'emacs-lisp-mode-map
-    \"C-c a\" #'func1
-    \"C-c b\" #'func2
-    :unset 'emacs-lisp-mode-map
-    \"C-c a\"
-    \"C-c b\"
-    :map '(global-map emacs-lisp-mode-map)
-    \"C-c a\" #'func1
-    \"C-c b\" #'func2
-    :unset '(global-map emacs-lisp-mode-map)
-    \"C-c a\"
-    \"C-c b\")"
   (let ((map nil))
     (while bindings
       (let ((key (pop bindings)))
@@ -188,12 +159,6 @@ Some of hook of this packgae is too hacked, maybe drop it.
               (lambda ()
                 (unless (frame-focus-state)
                   (garbage-collect))))
-
-;; Speed up startup
-(setq auto-mode-case-fold nil)
-
-;; Optimization
-(setq idle-update-delay 1.0)
 
 ;; Don't ping things that look like domain names.
 (setq ffap-machine-p-known 'reject)
@@ -421,6 +386,7 @@ Must set before consult.
 Use control-left-click to jump to defintions.
 Need ripgrep installed(check external program).
 
+Set cursor pos to mouse pos if they are not in same pos.
 #+begin_src elisp
 (add-hook 'xref-after-return-hook #'recenter)
 (add-hook 'xref-after-jump-hook #'recenter)
@@ -437,6 +403,7 @@ Need ripgrep installed(check external program).
 #+end_src
 
 * Lib
+
 #+begin_src elisp
 (eat/pkg async)
 (eat/pkg fullframe)
@@ -446,6 +413,9 @@ Need ripgrep installed(check external program).
 #+end_src
 
 * TODO Frame
+
+Some config need these hooks to work in emacsclient, like code or theme.
+
 #+begin_src elisp
 (defvar eat/after-make-console-frame-hooks '()
   "Hooks to run after creating a new TTY frame")
@@ -473,7 +443,7 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 #+end_src
 
 * Window
-** tab-bar
+** TODO tab-bar
 #+begin_src elisp
 (defun eat/tab-bar-tab-name-format-function (tab i)
   (let ((current-p (eq (car tab) 'current-tab)))
@@ -652,6 +622,8 @@ No tab will created if the command is cancelled."
 (eat/pkg switchy-window)
 
 (eat/hook 'on-first-file-hook #'switchy-window-minor-mode)
+
+;; (keymap-set switchy-window-minor-mode-map "<remap> <other-window>" #'switchy-window)
 #+end_src
 
 * Buffer
@@ -759,8 +731,8 @@ No tab will created if the command is cancelled."
   (define-advice isearch-occur (:after (_regexp &optional _nlines))
     (isearch-exit)))
 
-(keymap-global-set "C-s" #'isearch-forward-regexp)
-(keymap-global-set "C-r" #'isearch-backward-regexp)
+;; (keymap-global-set "C-s" #'isearch-forward-regexp)
+;; (keymap-global-set "C-r" #'isearch-backward-regexp)
 (keymap-set isearch-mode-map "C-c C-o" #'isearch-occur)
 (keymap-substitute isearch-mode-map #'isearch-delete-chac #'isearch-del-chac)
 ;; TODO
@@ -813,6 +785,9 @@ No tab will created if the command is cancelled."
 ;; Quit that fucking minibuffer!
 (keymap-set minibuffer-local-map "C-g" #'keyboard-quit)
 #+end_src
+
+Isearch 搜索的时候会自动展开折叠的东西（代码， org heading，magit log）等，弃用，使用 consult-line
+
 ** Vertico
 #+begin_src elisp
 ;;; vertico
@@ -837,6 +812,7 @@ No tab will created if the command is cancelled."
 (eat/pkg consult)
 
 (advice-add #'multi-occur :override #'consult-multi-occur)
+(global-set-key (kbd "C-s") #'consult-line)
 (global-set-key [remap apropos] #'consult-apropos)
 (global-set-key [remap bookmark-jump] #'consult-bookmark)
 (global-set-key [remap goto-line] #'consult-goto-line)
@@ -1065,17 +1041,6 @@ No tab will created if the command is cancelled."
 
 (add-hook 'eat/after-make-console-frame-hooks       #'eat/tui-load-theme)
 (add-hook 'eat/after-make-window-system-frame-hooks #'eat/gui-load-theme)
-#+end_src
-
-** Mode line
-#+begin_src elisp
-(eat/pkg minions)
-
-(defun eat/setup-modeline ()
-  (interactive)
-  (minions-mode))
-
-(add-hook 'after-init-hook #'eat/setup-modeline)
 #+end_src
 
 ** Adjust opacity
@@ -1430,7 +1395,7 @@ point reaches the beginning or end of the buffer, stop there."
    '("S" . save-buffer)
 
    ;; window
-   '("s" . switchy-window)
+   '("s" . ace-select-window)
 
    ;; wrap && unwrap
    '("\"" . insert-pair)
@@ -2244,7 +2209,7 @@ Center current window.
 (eat/pkg restclient)
 #+end_src
 
-** Spell check
+** TODO Spell check
 Need =libenchant= installed.
 Also install =hunspell= and =hunspell-en_us=.
 
@@ -2252,8 +2217,9 @@ Also install =hunspell= and =hunspell-en_us=.
 (eat/pkg jinx)
 
 (when (executable-find "hunspell")
-  (eat/hook '(text-mode-hook prog-mode-hook conf-mode-hook) #'jinx-mode)
-  (keymap-global-set "<remap> <ispell-word>" #'jinx-correct))
+  ;; (eat/hook '(text-mode-hook prog-mode-hook conf-mode-hook) #'jinx-mode)
+  ;; (keymap-global-set "<remap> <ispell-word>" #'jinx-correct)
+  )
 #+end_src
 
 ** leetcode
