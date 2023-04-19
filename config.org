@@ -2771,14 +2771,16 @@ Use builtin newsticker with freshrss.
 #+begin_src elisp
 (when (eat/modulep '+icon)
   (eat/pkg all-the-icons)
-  (eat/pkg all-the-icons-ibuffer)
   (eat/pkg all-the-icons-completion)
-  (add-hook 'buffer-mode-hook #'all-the-icons-ibuffer-mode)
   (add-hook 'after-init-hook #'(lambda ()
                                  (all-the-icons-completion-mode)))
   (with-eval-after-load 'all-the-icons-completion
     (with-eval-after-load 'marginalia
-      (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup))))
+      (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup)))
+
+  ;; ttf-nerd-fonts-symbols-1000-em-mono
+  (eat/pkg nerd-icons-ibuffer)
+  (add-hook 'ibuffer-mode-hook #'nerd-icons-ibuffer-mode))
 #+end_src
 ** Telega
 Need =telegram-tdlib=.
