@@ -178,7 +178,7 @@ Some of hook of this packgae is too hacked, maybe drop it.
 (setq-default cursor-in-non-selected-windows nil)
 
 ;; Suppress GUI features and more
-(setq inhibit-splash-screen t
+(setq inhibit-splash-screen t ;; 这个和 `inhibit-startup-screen' 有什么区别吗
       inhibit-x-resources t
       inhibit-default-init t
       inhibit-startup-screen t
@@ -2035,6 +2035,7 @@ Install =rnix-lsp= and =nixfmt=.
 #+begin_src elisp
 (eat/pkg clojure-mode)
 (eat/pkg cider)
+(eat/pkg clj-refactor)
 #+end_src
 *** Lua
 #+begin_src elisp
@@ -2577,8 +2578,10 @@ M-x ~org-cite-insert~
 
 (setq dirvish-attributes '(vc-state subtree-state))
 
-(when (eat/modulep '+icon)
-  (add-to-list 'dirvish-attributes 'all-the-icons))
+;; TODO wait this merge
+;; https://github.com/alexluigit/dirvish/pull/201
+;; (when (eat/modulep '+icon)
+;;   (add-to-list 'dirvish-attributes 'nerd-icons))
 
 (keymap-global-set "C-c f" #'dirvish-fd)
 (keymap-global-set "<f1>" #'dirvish-side)
@@ -2770,17 +2773,19 @@ Use builtin newsticker with freshrss.
 ** Icon
 #+begin_src elisp
 (when (eat/modulep '+icon)
-  (eat/pkg all-the-icons)
-  (eat/pkg all-the-icons-completion)
-  (add-hook 'after-init-hook #'(lambda ()
-                                 (all-the-icons-completion-mode)))
-  (with-eval-after-load 'all-the-icons-completion
-    (with-eval-after-load 'marginalia
-      (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup)))
+  ;; run `nerd-icons-install-fonts'
+  (eat/pkg nerd-icons)
 
   ;; ttf-nerd-fonts-symbols-1000-em-mono
   (eat/pkg nerd-icons-ibuffer)
-  (add-hook 'ibuffer-mode-hook #'nerd-icons-ibuffer-mode))
+  (add-hook 'ibuffer-mode-hook #'nerd-icons-ibuffer-mode)
+
+  (eat/pkg nerd-icons-completion "https://github.com/rainstormstudio/nerd-icons-completion")
+  (add-hook 'minibuffer-setup-hook #'nerd-icons-completion-mode)
+
+  (eat/pkg nerd-icons-dired "https://github.com/rainstormstudio/nerd-icons-dired")
+  (add-hook 'dired-mode-hook #'nerd-icons-dired-mode)
+  )
 #+end_src
 ** Telega
 Need =telegram-tdlib=.
