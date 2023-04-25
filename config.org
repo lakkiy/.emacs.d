@@ -48,18 +48,6 @@
 
 ** TODO Define key
 #+begin_src emacs-lisp
-(defun eat/key (&rest bindings)
-  (let ((map nil))
-    (while bindings
-      (let ((key (pop bindings)))
-        (cond
-         ((eq key :map) (setq map (pop bindings)))
-         ((eq key :unset)
-          (dolist (k (pop bindings))
-            (define-key (or map global-map) (kbd k) nil)))
-         (t
-          (let ((func (pop bindings)))
-            (define-key (or map global-map) (kbd key) func))))))))
 #+end_src
 ** Hook
 #+begin_src elisp
@@ -2220,9 +2208,12 @@ Also install =hunspell= and =hunspell-en_us=.
 (eat/pkg jinx)
 
 (when (executable-find "hunspell")
-  ;; (eat/hook '(text-mode-hook prog-mode-hook conf-mode-hook) #'jinx-mode)
-  ;; (keymap-global-set "<remap> <ispell-word>" #'jinx-correct)
-  )
+  (eat/hook '(text-mode-hook prog-mode-hook conf-mode-hook) #'jinx-mode)
+  (keymap-global-set "<remap> <ispell-word>" #'jinx-correct))
+
+(with-eval-after-load 'jinx
+  ;; ignore Chinese
+  (add-to-list 'jinx-exclude-regexps '(t "\\cc")))
 #+end_src
 
 ** leetcode
@@ -2771,6 +2762,18 @@ Use eat under linux and macos, use eshell under windows.
 ** TODO Rss
 Use builtin newsticker with freshrss.
 
+** TODO Draw
+- plantuml
+- mermaid
+
+*** mermaid
+#+begin_src emacs-lisp
+(eat/pkg mermaid-mode)
+#+end_src
+
+*** plantuml
+org-babel support it natively
+
 * Module
 ** Icon
 #+begin_src elisp
@@ -2785,7 +2788,7 @@ Use builtin newsticker with freshrss.
   (eat/pkg nerd-icons-completion "https://github.com/rainstormstudio/nerd-icons-completion")
   (add-hook 'minibuffer-setup-hook #'nerd-icons-completion-mode)
 
-  (eat/pkg nerd-icons-dired "https://github.com/rainstormstudio/nerd-icons-dired")
+  (eat/pkg nerd-icons-dired)
   (add-hook 'dired-mode-hook #'nerd-icons-dired-mode)
   )
 #+end_src
