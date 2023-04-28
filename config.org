@@ -38,11 +38,14 @@
        (package-refresh-contents))
      (if ,vc (package-vc-install ,vc)
        (package-install ',package))))
+
+(eat/pkg elpa-mirror)
+(setq elpamr-default-output-directory "~/Sync/myelpa")
 #+end_src
 
 ** Bind
 #+begin_src emacs-lisp
-(eat/pkg bind "https://github.com/repelliuss/bind")
+(eat/pkg bind)
 #+end_src
 ** Hook
 #+begin_src elisp
@@ -779,6 +782,15 @@ Isearch 搜索的时候会自动展开折叠的东西（代码， org heading，
 (add-hook 'after-init-hook #'vertico-mode)
 (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
 
+;; Use `consult-completion-in-region' if Vertico is enabled.
+;; Otherwise use the default `completion--in-region' function.
+(setq completion-in-region-function
+      (lambda (&rest args)
+        (apply (if vertico-mode
+                   #'consult-completion-in-region
+                 #'completion--in-region)
+               args)))
+
 (with-eval-after-load 'vertico
   (keymap-set vertico-map "DEL" #'vertico-directory-delete-char)
   (keymap-set vertico-map "M-DEL" #'vertico-directory-delete-word)
@@ -820,14 +832,6 @@ Isearch 搜索的时候会自动展开折叠的东西（代码， org heading，
       consult-async-input-debounce   0.1
       xref-show-xrefs-function       #'consult-xref
       xref-show-definitions-function #'consult-xref)
-
-;; Use minibuffer completion as the UI for `completion-at-point'.
-(setq-default completion-in-region-function
-              (lambda (&rest args)
-                (apply (if vertico-mode
-                           #'consult-completion-in-region
-                         #'completion--in-region)
-                       args)))
 
 (with-eval-after-load 'consult
   (consult-customize consult-ripgrep consult-git-grep consult-grep
@@ -892,6 +896,8 @@ Isearch 搜索的时候会自动展开折叠的东西（代码， org heading，
       ;; Monitors are trending toward wide, rather than tall.
       split-width-threshold 160
       split-height-threshold nil)
+
+(add-hook 'after-init-hook #'window-divider-mode)
 #+end_src
 ** Scrolling
 #+begin_src emacs-lisp
@@ -926,7 +932,7 @@ Isearch 搜索的时候会自动展开折叠的东西（代码， org heading，
                                    "Source Code Pro"))
 (defvar eat/fonts-variable-pitch '("Bookerly" "Cardo" "Times New Roman" "DejaVu Sans"))
 (defvar eat/fonts-cjk            '("LXGW WenKai" "WenQuanYi Micro Hei" "Microsoft Yahei"))
-(defvar eat/fonts-emoji          '("Noto Color Emoji" "Segoe UI Symbol" "Apple Color Emoji"))
+(defvar eat/fonts-emoji          '("Symbola" "Segoe UI Symbol" "Apple Color Emoji"))
 
 (defvar eat/font-size-default   13)
 (defvar eat/font-default        (font-installed-p eat/fonts-default))
@@ -952,6 +958,10 @@ Isearch 搜索的时候会自动展开折叠的东西（代码， org heading，
   (setq buffer-face-mode-face '(:family "等距更纱黑体 SC"))
   (buffer-face-mode +1))
 
+(defun eat/setup-mode-line-font ()
+  (set-face-attribute 'mode-line nil :inherit 'variable-pitch)
+  (set-face-attribute 'mode-line-inactive nil :inherit 'variable-pitch))
+
 (defun eat/setup-font ()
   (interactive)
   (set-face-attribute 'default     nil :height (* 10 eat/font-size-default))
@@ -968,7 +978,8 @@ Isearch 搜索的时候会自动展开折叠的东西（代码， org heading，
   (when eat/font-cjk
     (set-fontset-font t 'kana     eat/font-cjk)
     (set-fontset-font t 'han      eat/font-cjk)
-    (set-fontset-font t 'cjk-misc eat/font-cjk)))
+    (set-fontset-font t 'cjk-misc eat/font-cjk))
+  (eat/setup-mode-line-font))
 
 (add-hook 'eat/after-make-window-system-frame-hooks #'eat/setup-font)
 (add-hook 'eat/after-make-window-system-frame-hooks #'eat/rescale-font)
@@ -1024,6 +1035,10 @@ Isearch 搜索的时候会自动展开折叠的东西（代码， org heading，
 
 (add-hook 'eat/after-make-console-frame-hooks       #'eat/tui-load-theme)
 (add-hook 'eat/after-make-window-system-frame-hooks #'eat/gui-load-theme)
+(add-hook 'load-theme-hook #'eat/setup-mode-line-font)
+
+
+(eat/pkg color-theme-sanityinc-tomorrow)
 #+end_src
 
 ** Adjust opacity
@@ -1621,23 +1636,29 @@ so try complete filst, if there nothing to complete then try to jump to next fie
                                   (smerge-mode 1)))))
 
 (with-eval-after-load 'smerge-mode
-  (keymap-set smerge-mode-map "C-c r" #'smerge-refine)
-  (keymap-set smerge-mode-map "C-c c" #'smerge-keep-current)
-  (keymap-set smerge-mode-map "C-c a" #'smerge-keep-all)
-  (keymap-set smerge-mode-map "C-c n" #'smerge-next)
-  (keymap-set smerge-mode-map "C-c p" #'smerge-prev)
-  (keymap-set smerge-mode-map "C-c l" #'smerge-keep-lower)
-  (keymap-set smerge-mode-map "C-c u" #'smerge-keep-upper))
+  (bind smerge-mode-map
+        "C-c r" #'smerge-refine
+        "C-c c" #'smerge-keep-current
+        "C-c a" #'smerge-keep-all
+        "C-c n" #'smerge-next
+        "C-c p" #'smerge-prev
+        "C-c l" #'smerge-keep-lower
+        "C-c u" #'smerge-keep-upper))
 #+end_src
 *** Eldoc
 #+begin_src elisp
 (setq eldoc-idle-delay 1)
 #+end_src
 *** Newcomment
-Set this localy in prog mode, or auto fill mode will not work since there’s no comment in some mode.
+Set this localy in prog mode, or auto fill mode will not work since
+there’s no comment in some mode.
+
 #+begin_src elisp
-(add-hook 'prog-mode-hook #'(lambda () (setq-local comment-auto-fill-only-comments t)))
-(add-hook 'prog-mode-hook #'turn-on-auto-fill)
+;; (eat/hook 'prog-mode-hook
+;;           #'(lambda ()
+;;               (setq-local comment-auto-fill-only-comments t)
+;;               (turn-on-auto-fill)
+;;               ))
 #+end_src
 *** TODO Hideshow
 - Seems have error message.
@@ -1689,14 +1710,14 @@ Set this localy in prog mode, or auto fill mode will not work since there’s no
 #+begin_src emacs-lisp
 (eat/pkg imenu-list)
 
-(defun +imenu-scale-font-size ()
-  (face-remap-add-relative 'default :height 0.8))
-
 (setq imenu-list-auto-resize t
       imenu-list-mode-line-format nil)
 
-(eat/hook 'imenu-list-major-mode-hook '(+imenu-scale-font-size
-                                        (lambda () (setq-local header-line-format nil))))
+(defun eat/imenu-list-setup ()
+  (setq-local header-line-format nil)
+  (face-remap-add-relative 'default :height 0.8))
+
+(eat/hook 'imenu-list-major-mode-hook #'eat/imenu-list-setup)
 #+end_src
 *** Puni
 #+begin_src emacs-lisp
@@ -1936,9 +1957,14 @@ Need a lot...
 *** Lisp
 #+begin_src elisp
 (eat/pkg aggressive-indent)
-(eat/pkg paredit)
-(eat/hook '(emacs-lisp-mode-hook lisp-interaction-mode-hook scheme-mode-hook lisp-mode-hook)
-          '(aggressive-indent-mode paredit-mode))
+
+(eat/hook
+ '(emacs-lisp-mode-hook
+   lisp-interaction-mode-hook
+   scheme-mode-hook
+   lisp-mode-hook)
+ '(aggressive-indent-mode
+   puni-mode))
 #+end_src
 *** Go
 #+begin_src emacs-lisp
@@ -2025,9 +2051,26 @@ Install =rnix-lsp= and =nixfmt=.
 (eat/pkg cider)
 (eat/pkg clj-refactor)
 
-(eat/hook 'clojure-mode-hook #'paredit-mode)
+(eat/hook 'clojure-mode-hook #'puni-mode)
 
 (setq cider-repl-display-help-banner nil)
+
+(with-eval-after-load 'clojure-mode
+  ;; better indentation for compojure
+  ;; https://github.com/weavejester/compojure/wiki/Emacs-indentation
+  (define-clojure-indent
+   (defroutes 'defun)
+   (GET 2)
+   (POST 2)
+   (PUT 2)
+   (DELETE 2)
+   (HEAD 2)
+   (ANY 2)
+   (OPTIONS 2)
+   (PATCH 2)
+   (rfn 2)
+   (let-routes 1)
+   (context 2)))
 #+end_src
 *** Lua
 #+begin_src elisp
@@ -2071,11 +2114,11 @@ Also check:
 ~treesit-install-language-grammar~
 
 #+begin_src emacs-lisp
-(when (treesit-available-p)
-  (setq major-mode-remap-alist
-        '((go-mode         . go-ts-mode)
-          (json-mode       . json-ts-mode)
-          (js-json-mode    . json-ts-mode))))
+;; (when (treesit-available-p)
+;;   (setq major-mode-remap-alist
+;;         '((go-mode         . go-ts-mode)
+;;           (json-mode       . json-ts-mode)
+;;           (js-json-mode    . json-ts-mode))))
 #+end_src
 *** go
 #+begin_src emacs-lisp
@@ -2105,7 +2148,7 @@ For openai, set api key in auth file:
 (eat/pkg markdown-mode)
 (eat/pkg emacs-aichat "https://github.com/xhcoding/emacs-aichat")
 (setq aichat-bingai-cookies-file "~/Dropbox/.bingcookies.json"
-      aichat-bingai-file "~/Sync/aichat.md")
+      aichat-bingai-chat-file "~/Sync/aichat.md")
 (autoload #'aichat-bingai-chat "aichat-bingai.el" nil t)
 (autoload #'aichat-bingai-assistant "aichat-bingai.el" nil t)
 (autoload #'aichat-openai-assistant "aichat-openai.el" nil t)
@@ -2182,19 +2225,20 @@ Center current window.
 #+begin_src elisp
 (eat/pkg ghelp "https://github.com/casouri/ghelp.git")
 
-(autoload #'ghelp-describe "ghelp")
+(autoload #'ghelp-describe          "ghelp")
 (autoload #'ghelp-describe-function "ghelp")
 (autoload #'ghelp-describe-variable "ghelp")
-(autoload #'ghelp-describe-key "ghelp")
-(autoload #'ghelp-describe-elisp "ghelp")
+(autoload #'ghelp-describe-key      "ghelp")
+(autoload #'ghelp-describe-elisp    "ghelp")
 
-(keymap-global-set "C-h C-h" #'ghelp-describe)
-(keymap-global-set "C-h f" #'ghelp-describe-function)
-(keymap-global-set "C-h v" #'ghelp-describe-variable)
-(keymap-global-set "C-h k" #'ghelp-describe-key)
-(keymap-global-set "C-h o" #'ghelp-describe-elisp)
+(bind global-map
+      "C-h C-h" #'ghelp-describe
+      "C-h f"   #'ghelp-describe-function
+      "C-h v"   #'ghelp-describe-variable
+      "C-h k"   #'ghelp-describe-key
+      "C-h o"   #'ghelp-describe-elisp)
 (with-eval-after-load 'ghelp
-  (keymap-global-set "C-h r" #'ghelp-resume))
+  (bind global-map "C-h r" #'ghelp-resume))
 #+end_src
 
 ** Restclient
@@ -2559,9 +2603,6 @@ M-x ~org-cite-insert~
 #+begin_src elisp
 (add-hook 'dired-mode-hook #'dired-hide-details-mode)
 
-(when eat/macp
-  (setq insert-directory-program "gls"))
-
 (setq dired-dwim-target t
       dired-kill-when-opening-new-dired-buffer t)
 
@@ -2588,26 +2629,27 @@ M-x ~org-cite-insert~
 
 (with-eval-after-load 'dirvish
   (dirvish-side-follow-mode)
-  (keymap-set dirvish-mode-map "TAB" #'dirvish-subtree-toggle)
-  (keymap-set dirvish-mode-map "<tab>" #'dirvish-subtree-toggle)
-  (keymap-set dirvish-mode-map "a" #'dirvish-quick-access)
-  (keymap-set dirvish-mode-map "f" #'dirvish-file-info-menu)
-  (keymap-set dirvish-mode-map "y" #'dirvish-yank-menu)
-  (keymap-set dirvish-mode-map "N" #'dirvish-narrow)
-  (keymap-set dirvish-mode-map "H" #'dirvish-history-jump)
-  (keymap-set dirvish-mode-map "s" #'dirvish-quicksort)
-  (keymap-set dirvish-mode-map "v" #'dirvish-vc-menu)
-  (keymap-set dirvish-mode-map "M-f" #'dirvish-history-go-forward)
-  (keymap-set dirvish-mode-map "M-b" #'dirvish-history-go-backward)
-  (keymap-set dirvish-mode-map "M-l" #'dirvish-ls-switches-menu)
-  (keymap-set dirvish-mode-map "M-m" #'dirvish-mark-menu)
-  (keymap-set dirvish-mode-map "M-t" #'dirvish-layout-toggle)
-  (keymap-set dirvish-mode-map "M-s" #'dirvish-setup-menu)
-  (keymap-set dirvish-mode-map "M-e" #'dirvish-emerge-menu)
-  (keymap-set dirvish-mode-map "M-j" #'dirvish-fd-jump)
-  (keymap-set dirvish-mode-map "<mouse-1>" #'dirvish-subtree-toggle-or-open)
-  (keymap-set dirvish-mode-map "<mouse-2>" #'dired-mouse-find-file-other-window)
-  (keymap-set dirvish-mode-map "<mouse-3>" #'dired-mouse-find-file))
+  (bind dirvish-mode-map
+        "TAB" #'dirvish-subtree-toggle
+        "<tab>" #'dirvish-subtree-toggle
+        "a" #'dirvish-quick-access
+        "f" #'dirvish-file-info-menu
+        "y" #'dirvish-yank-menu
+        "N" #'dirvish-narrow
+        "H" #'dirvish-history-jump
+        "s" #'dirvish-quicksort
+        "v" #'dirvish-vc-menu
+        "M-f" #'dirvish-history-go-forward
+        "M-b" #'dirvish-history-go-backward
+        "M-l" #'dirvish-ls-switches
+        "M-m" #'dirvish-mark-menu
+        "M-t" #'dirvish-layout-toggle
+        "M-s" #'dirvish-setup-menu
+        "M-e" #'dirvish-emerge-menu
+        "M-j" #'dirvish-fd-jump
+        "<mouse-1>" #'dirvish-subtree-toggle-or-open
+        "<mouse-2>" #'dired-mouse-find-file-other-window
+        "<mouse-3>" #'dired-mouse-find-file))
 #+end_src
 ** TODO Terminal
 Use eat under linux and macos, use eshell under windows.
@@ -2795,7 +2837,7 @@ org-babel support it natively
   (eat/pkg nerd-icons-ibuffer)
   (add-hook 'ibuffer-mode-hook #'nerd-icons-ibuffer-mode)
 
-  (eat/pkg nerd-icons-completion "https://github.com/rainstormstudio/nerd-icons-completion")
+  (eat/pkg nerd-icons-completion)
   (add-hook 'minibuffer-setup-hook #'nerd-icons-completion-mode)
 
   (eat/pkg nerd-icons-dired)
@@ -2930,17 +2972,10 @@ Need =xapian-core=.
 (add-to-list 'load-path (expand-file-name "site-lisp" user-emacs-directory))
 (add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))
 #+end_src
-** elpa-mirror
-#+begin_src elisp
-(eat/pkg elpa-mirror)
-(setq elpamr-default-output-directory "~/Sync/myelpa")
-#+end_src
 ** Form Feed
 #+begin_src elisp
 (autoload #'form-feed-mode "form-feed")
-(add-hook 'emacs-lisp-mode-hook #'form-feed-mode)
-(add-hook 'text-mode-hook #'form-feed-mode)
-(add-hook 'special-mode-hook #'form-feed-mode)
+(eat/hook '(emacs-lisp-mode-hook text-mode-hook special-mode-hook) #'form-feed-mode)
 #+end_src
 
 *** Source
@@ -3078,140 +3113,7 @@ window."
 
 ** Dired Toggle Sudo
 #+begin_src elisp
-(autoload #'dired-toggle-sudo "dired-toggle-sudo")
-#+end_src
-
-*** Source
-#+begin_src elisp :tangle site-lisp/dired-toggle-sudo.el
-;;; dired-toggle-sudo.el --- Browse directory with sudo privileges.
-
-;; Copyright © 2011 Sebastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
-
-;; Author: Sebastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
-;; Keywords: emacs, dired
-;; Created: 2011-07-06
-;; Last changed: 2020-04-01 15:52:40
-;; Licence: WTFPL, grab your copy here: http://sam.zoy.org/wtfpl/
-
-;; This file is NOT part of GNU Emacs.
-
-;;; Commentary:
-;;
-;; Allow to switch from current user to sudo when browsind `dired' buffers.
-;;
-;; To activate and switch with "C-c C-s" just put in your .emacs:
-;;
-;; (require 'dired-toggle-sudo)
-;; (define-key dired-mode-map (kbd "C-c C-s") 'dired-toggle-sudo)
-;; (eval-after-load 'tramp
-;;  '(progn
-;;     ;; Allow to use: /sudo:user@host:/path/to/file
-;;     (add-to-list 'tramp-default-proxies-alist
-;;		  '(".*" "\\`.+\\'" "/ssh:%h:"))))
-
-
-
-;;; Code:
-
-(require 'files)
-(require 'tramp)
-(require 'dired)
-
-(defun dired-toggle-sudo-internal (path &optional sudo-user)
-  "Convert PATH to its sudoed version. root is used by default
-unless SUDO-USER is provided."
-  (let* (;; Handle the case of local files. `tramp-dissect-file-name' does
-	 ;; not raise an error anymore.
-	 (tramp-pseudo-method (if (> emacs-major-version 25)
-				  "/-::" "/:"))
-	 (path (if (tramp-tramp-file-p path)
-		   path
-		 (concat tramp-pseudo-method path)))
-	 (file-vec (or (ignore-errors (tramp-dissect-file-name
-				       path))
-		       (tramp-dissect-file-name
-			(concat tramp-pseudo-method path) 1)))
-	 (method  (tramp-file-name-method file-vec))
-	 (user (tramp-file-name-user file-vec))
-	 (host  (tramp-file-name-host file-vec))
-	 (localname (expand-file-name
-		     (tramp-file-name-localname file-vec))))
-    ;; (message "(tramp-make-tramp-file-name %s %s %s %s %s %s)"
-    ;; 	     method
-    ;; 	     (tramp-file-name-domain file-vec)
-    ;; 	     user host
-    ;; 	     (tramp-file-name-port file-vec)
-    ;; 	     localname)
-    (when (or (string= system-name host)
-	      (string= "-" host))
-      (setq host nil))
-    (cond
-     ;; remote directory -> sudo
-     ((and host (string= method "ssh"))
-      (setq method "sudo" user sudo-user))
-     ;; remote directory -> normal
-     ((and host (string= method "sudo"))
-      (setq method "ssh" user nil))
-     ;; Local directory -> normal
-     ((and (not host) (string= method "ssh"))
-      (setq method "sudo"))
-     ;; Local directory -> sudo
-     ((and (not host) (string= method "sudo"))
-      (setq method nil user sudo-user))
-     ;; Local directory -> normal
-     (t
-      (setq method "sudo" user sudo-user)))
-    ;; (message "%s -> %s" path file-vec)
-    ;; (message "(tramp-make-tramp-file-name %s %s %s %s %s %s)"
-    ;; 	     method
-    ;; 	     (tramp-file-name-domain file-vec)
-    ;; 	     user host
-    ;; 	     (tramp-file-name-port file-vec)
-    ;; 	     localname)
-    (replace-regexp-in-string
-     "^/:/" "/"
-     (if (> emacs-major-version 25)
-	 (tramp-make-tramp-file-name method
-				     user
-				     (tramp-file-name-domain file-vec)
-				     host
-				     (tramp-file-name-port file-vec)
-				     localname)
-	 (tramp-make-tramp-file-name method user host localname)))))
-
-(defun dired-toggle-sudo-find (fname)
-  "Create a new buffer for file name FNAME."
-  (let ((save-point (point)))
-    (find-alternate-file fname)
-    (goto-char save-point)))
-
-;;;###autoload
-(defun dired-toggle-sudo (&optional sudo-user)
-  "Reopen current file or dired buffer with sudo.
-If SUDO-USER is nil assume root.
-If called with `universal-argument' (C-u), ask for username.
-"
-  (interactive "P")
-  (let* ((fname (or buffer-file-name
-		    dired-directory))
-	 (sudo-user (if current-prefix-arg
-			(read-string "Username: ")
-		      sudo-user))
-	 (orig (current-buffer))
-         (file-now (if (eq major-mode 'dired-mode)
-                       (dired-get-filename t))))
-    (when fname
-      (setq fname (dired-toggle-sudo-internal fname sudo-user))
-      (if (not (eq major-mode 'dired-mode))
-	  (dired-toggle-sudo-find fname)
-	(kill-buffer orig)
-	(dired fname)
-        (when file-now
-          (dired-goto-file (expand-file-name file-now fname)))))))
-
-(provide 'dired-toggle-sudo)
-
-;;; dired-toggle-sudo.el ends here
+(eat/pkg dired-toggle-sudo)
 #+end_src
 
 ** Color Outline
@@ -4900,66 +4802,6 @@ backward."
 (provide-theme 'nano)
 
 ;;; nano-theme.el ends here
-#+end_src
-*** saltless
-#+begin_src elisp :tangle themes/saltless-theme.el
-(deftheme saltless "Theme, less salt.")
-
-(defvar my-bg-light "#F5F5F5"
-  "Light background color, from minder-theme.")
-
-;; TODO
-(defvar my-bg-dark "#282c34"
-  "Dark background color, from atom-one-dark.
-See https://github.com/atom/atom/blob/master/packages/one-dark-syntax/styles/colors.less.")
-
-(custom-theme-set-faces
- `saltless
- ;; basic
- `(default           ((((type tty)))
-                      (((type graphic)) :background ,my-bg-light)))
- `(fringe            ((t (:inherit default))))
- `(cursor            ((t (:background "black"))))
- `(highlight         ((t (:background "#CFD8DC"))))
- '(minibuffer-prompt ((t ())))
-
- ;; Font Locks
- ;; TODO Global var; Comment; Const; Func; String
- `(font-lock-comment-face           ((t (:foreground "#90A4AE" :slant italic))))
- `(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
- `(font-lock-doc-face               ((t (:inherit font-lock-comment-face))))
- `(font-lock-string-face            ((t ())))
- `(font-lock-builtin-face           ((t ())))
- `(font-lock-type-face              ((t ())))
- `(font-lock-variable-name-face     ((t ())))
- `(font-lock-keyword-face           ((t ())))
- `(font-lock-constant-face          ((t ())))
- `(font-lock-function-name-face     ((t (:bolt t :underline t))))
- `(font-lock-warning-face           ((t (:inherit warning))))
- `(font-lock-preprocessor-face      ((t ())))
-
- ;; org-mode
- `(org-level-1 ((t ())))
- `(org-level-2 ((t (:inherit org-level-1))))
- `(org-level-3 ((t (:inherit org-level-1))))
- `(org-level-4 ((t (:inherit org-level-1))))
- `(org-level-5 ((t (:inherit org-level-1))))
- `(org-level-6 ((t (:inherit org-level-1))))
- `(org-level-7 ((t (:inherit org-level-1))))
- `(org-level-8 ((t (:inherit org-level-1))))
-
- ;; mode-line
- `(mode-line          ((t (:foreground "black" :background "grey75"))))
- `(mode-line-inactive ((t (:foreground "#535c65" :background "#e3e5e8" :weight light))))
- )
-
-(and load-file-name
-     (boundp 'custom-theme-load-path)
-     (add-to-list 'custom-theme-load-path
-                  (file-name-as-directory
-                   (file-name-directory load-file-name))))
-
-(provide-theme 'saltless)
 #+end_src
 *** grayscale
 #+begin_src elisp :tangle themes/grayscale-theme.el

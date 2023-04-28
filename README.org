@@ -1,9 +1,16 @@
-* 个人 =Emacs= 配置(WIP)
+** 个人 =Emacs= 配置(WIP)
 
 #+begin_src bash
 emacs --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "~/.config/emacs/config.org")'
 #+end_src
 
-* 需要的依赖
+** 需要的依赖
 
 - =ltex-ls= (optional) 用于语法检查，一般在回复邮件时使用，需要手动开启 ~eglot~
+
+** Eshell
+
+*** 如何输入上一条命令？
+
+因为 =C-p= 在 Emacs 中默认是向上移动所以没办法像终端一样。
+使用 =M-p= 或者 =up= 即可。
