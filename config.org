@@ -1040,6 +1040,13 @@ Isearch 搜索的时候会自动展开折叠的东西（代码， org heading，
 
 (eat/pkg color-theme-sanityinc-tomorrow)
 #+end_src
+** solaire mode
+
+#+begin_src emacs-lisp
+(eat/pkg solaire-mode)
+
+(add-hook 'after-init-hook #'solaire-global-mode)
+#+end_src
 
 ** Adjust opacity
 #+begin_src emacs-lisp
