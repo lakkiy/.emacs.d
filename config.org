@@ -1726,6 +1726,17 @@ there’s no comment in some mode.
 
 (eat/hook 'imenu-list-major-mode-hook #'eat/imenu-list-setup)
 #+end_src
+*** Paredit
+#+begin_src emacs-lisp
+(eat/pkg paredit)
+
+(eat/hook
+ '(emacs-lisp-mode-hook
+   lisp-interaction-mode-hook
+   scheme-mode-hook
+   lisp-mode-hook)
+ #'paredit-mode)
+#+end_src
 *** Puni
 #+begin_src emacs-lisp
 (eat/pkg puni)
@@ -1970,8 +1981,7 @@ Need a lot...
    lisp-interaction-mode-hook
    scheme-mode-hook
    lisp-mode-hook)
- '(aggressive-indent-mode
-   puni-mode))
+ #'aggressive-indent-mode)
 #+end_src
 *** Go
 #+begin_src emacs-lisp
