@@ -717,8 +717,8 @@ No tab will created if the command is cancelled."
   (define-advice isearch-occur (:after (_regexp &optional _nlines))
     (isearch-exit)))
 
-;; (keymap-global-set "C-s" #'isearch-forward-regexp)
-;; (keymap-global-set "C-r" #'isearch-backward-regexp)
+(keymap-global-set "C-s" #'isearch-forward-regexp)
+(keymap-global-set "C-r" #'isearch-backward-regexp)
 (keymap-set isearch-mode-map "C-c C-o" #'isearch-occur)
 (keymap-substitute isearch-mode-map #'isearch-delete-chac #'isearch-del-chac)
 ;; TODO
@@ -772,8 +772,6 @@ No tab will created if the command is cancelled."
 (keymap-set minibuffer-local-map "C-g" #'keyboard-quit)
 #+end_src
 
-Isearch 搜索的时候会自动展开折叠的东西（代码， org heading，magit log）等，弃用，使用 consult-line
-
 ** Vertico
 #+begin_src elisp
 ;;; vertico
@@ -807,7 +805,7 @@ Isearch 搜索的时候会自动展开折叠的东西（代码， org heading，
 (eat/pkg consult)
 
 (advice-add #'multi-occur :override #'consult-multi-occur)
-(global-set-key (kbd "C-s") #'consult-line)
+;; (global-set-key (kbd "C-s") #'consult-line)
 (global-set-key [remap apropos] #'consult-apropos)
 (global-set-key [remap bookmark-jump] #'consult-bookmark)
 (global-set-key [remap goto-line] #'consult-goto-line)
@@ -896,8 +894,6 @@ Isearch 搜索的时候会自动展开折叠的东西（代码， org heading，
       ;; Monitors are trending toward wide, rather than tall.
       split-width-threshold 160
       split-height-threshold nil)
-
-(add-hook 'after-init-hook #'window-divider-mode)
 #+end_src
 ** Scrolling
 #+begin_src emacs-lisp
@@ -1037,8 +1033,9 @@ Isearch 搜索的时候会自动展开折叠的东西（代码， org heading，
 (add-hook 'eat/after-make-window-system-frame-hooks #'eat/gui-load-theme)
 (add-hook 'load-theme-hook #'eat/setup-mode-line-font)
 
-
 (eat/pkg color-theme-sanityinc-tomorrow)
+(eat/pkg kaolin-themes)
+(eat/pkg spacemacs-theme)
 #+end_src
 ** solaire mode
 
@@ -1661,11 +1658,16 @@ Set this localy in prog mode, or auto fill mode will not work since
 there’s no comment in some mode.
 
 #+begin_src elisp
+;; FIXME eat/hook
 ;; (eat/hook 'prog-mode-hook
 ;;           #'(lambda ()
 ;;               (setq-local comment-auto-fill-only-comments t)
 ;;               (turn-on-auto-fill)
 ;;               ))
+(add-hook 'prog-mode-hook
+          #'(lambda ()
+              (setq-local comment-auto-fill-only-comments t)
+              (turn-on-auto-fill)))
 #+end_src
 *** TODO Hideshow
 - Seems have error message.
@@ -2636,10 +2638,8 @@ M-x ~org-cite-insert~
 
 (setq dirvish-attributes '(vc-state subtree-state))
 
-;; TODO wait this merge
-;; https://github.com/alexluigit/dirvish/pull/201
-;; (when (eat/modulep '+icon)
-;;   (add-to-list 'dirvish-attributes 'nerd-icons))
+(when (eat/modulep '+icon)
+  (add-to-list 'dirvish-attributes 'nerd-icons))
 
 (keymap-global-set "C-c f" #'dirvish-fd)
 (keymap-global-set "<f1>" #'dirvish-side)
@@ -2856,9 +2856,6 @@ org-babel support it natively
 
   (eat/pkg nerd-icons-completion)
   (add-hook 'minibuffer-setup-hook #'nerd-icons-completion-mode)
-
-  (eat/pkg nerd-icons-dired)
-  (add-hook 'dired-mode-hook #'nerd-icons-dired-mode)
   )
 #+end_src
 ** Telega
