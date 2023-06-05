@@ -1606,6 +1606,18 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 (with-eval-after-load 'yasnippet
   (keymap-set yas-keymap "<tab>" 'eat/yas-next-field-or-maybe-expand)
   (keymap-set yas-keymap "TAB" 'eat/yas-next-field-or-maybe-expand))
+
+
+(eat/pkg tabnine "https://github.com/shuxiao9058/tabnine")
+
+(with-eval-after-load 'tabnine
+  (tabnine-start-process)
+  (bind tabnine-completion-map
+        "M-<return> "#'tabnine-accept-completion-by-line
+        "C-g" #'tabnine-clear-overlay
+        "M-[" #'tabnine-previous-completion
+        "M-]" #'tabnine-next-completion)
+  (add-hook 'kill-emacs-hook #'tabnine-kill-process))
 #+end_src
 
 ** Yasnippet

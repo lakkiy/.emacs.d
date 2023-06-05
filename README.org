@@ -4,6 +4,14 @@
 emacs --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "~/.config/emacs/config.org")'
 #+end_src
 
+*** Enable tabnine
+
+Add this to =custom.el=:
+
+#+begin_src emacs-lisp
+(add-to-list 'prog-mode-hook #'tabnine-mode)
+#+end_src
+
 ** 需要的依赖
 
 - =ltex-ls= (optional) 用于语法检查，一般在回复邮件时使用，需要手动开启 ~eglot~
