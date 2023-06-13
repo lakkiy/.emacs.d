@@ -2284,9 +2284,9 @@ Also install =hunspell= and =hunspell-en_us=.
 #+begin_src emacs-lisp
 (eat/pkg jinx)
 
-(when (executable-find "hunspell")
-  (eat/hook '(text-mode-hook prog-mode-hook conf-mode-hook) #'jinx-mode)
-  (keymap-global-set "<remap> <ispell-word>" #'jinx-correct))
+;; (when (executable-find "hunspell")
+;;   (eat/hook '(text-mode-hook prog-mode-hook conf-mode-hook) #'jinx-mode)
+;;   (keymap-global-set "<remap> <ispell-word>" #'jinx-correct))
 
 (with-eval-after-load 'jinx
   ;; ignore Chinese
@@ -2846,6 +2846,7 @@ Use builtin newsticker with freshrss.
 - mermaid
 - graphviz
 - exclidraw
+- d2, written in go
 
 *** mermaid
 #+begin_src emacs-lisp
@@ -2854,6 +2855,8 @@ Use builtin newsticker with freshrss.
 
 *** plantuml
 org-babel support it natively
+
+*** TODO d2
 
 * Module
 ** Icon
