@@ -1924,15 +1924,12 @@ Need a lot...
         "C-c r" #'eglot-rename
         "M-'" #'eglot-find-implementation)
 
-  (add-to-list 'eglot-server-programs
-               '(python-mode . ("pyright-langserver" "--stdio")))
-  (add-to-list 'eglot-server-programs
-			   '(rust-mode "rust-analyzer"))
-  (add-to-list 'eglot-server-programs
-               '(sql-mode . ("sqls" "-config" "~/.config/sqls/config.yaml")))
+  (add-to-list 'eglot-server-programs '(python-mode . ("pyright-langserver" "--stdio")))
+  (add-to-list 'eglot-server-programs '(rust-mode "rust-analyzer"))
+  (add-to-list 'eglot-server-programs '(sql-mode . ("sqls" "-config" "~/.config/sqls/config.yaml")))
+  (add-to-list 'eglot-server-programs '(nix-mode . ("nixd")))
   ;; NOTE Install https://github.com/valentjn/ltex-ls
-  (add-to-list 'eglot-server-programs
-               '(message-mode . ("ltex-ls")))
+  (add-to-list 'eglot-server-programs '(message-mode . ("ltex-ls")))
   ;; NOTE deno
   (defclass eglot-deno (eglot-lsp-server) ()
     :documentation "A custom class for deno lsp.")
