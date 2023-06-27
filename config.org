@@ -987,13 +987,13 @@ No tab will created if the command is cancelled."
 (defvar eat/theme 'modus-operandi
   "Default theme.")
 
-(defvar eat/theme-tui nil
+(defvar eat/theme-tui 'wombat
   "Default TUI theme.")
 
 (defvar eat/theme-system-light 'modus-operandi
   "Default light theme after system appearance changed.")
 
-(defvar eat/theme-system-dark 'modus-vivendi
+(defvar eat/theme-system-dark 'wombat
   "Default dark theme after system appearance changed.")
 
 (defvar load-theme-hook nil
@@ -1032,10 +1032,6 @@ No tab will created if the command is cancelled."
 (add-hook 'eat/after-make-console-frame-hooks       #'eat/tui-load-theme)
 (add-hook 'eat/after-make-window-system-frame-hooks #'eat/gui-load-theme)
 (add-hook 'load-theme-hook #'eat/setup-mode-line-font)
-
-(eat/pkg color-theme-sanityinc-tomorrow)
-(eat/pkg kaolin-themes)
-(eat/pkg spacemacs-theme)
 #+end_src
 ** solaire mode
 
@@ -2274,22 +2270,6 @@ Center current window.
 (eat/pkg restclient)
 #+end_src
 
-** TODO Spell check
-Need =libenchant= installed.
-Also install =hunspell= and =hunspell-en_us=.
-
-#+begin_src emacs-lisp
-(eat/pkg jinx)
-
-;; (when (executable-find "hunspell")
-;;   (eat/hook '(text-mode-hook prog-mode-hook conf-mode-hook) #'jinx-mode)
-;;   (keymap-global-set "<remap> <ispell-word>" #'jinx-correct))
-
-(with-eval-after-load 'jinx
-  ;; ignore Chinese
-  (add-to-list 'jinx-exclude-regexps '(t "\\cc")))
-#+end_src
-
 ** leetcode
 ~pip3 install my_cookies~
 
@@ -2304,6 +2284,21 @@ Set cookie manually:
 (setq leetcode-save-solutions t)
 (setq leetcode-directory "~/Dropbox/leetcode")
 #+end_src
+** Draw
+
+- plantuml
+- graphviz
+- d2, written in go
+- tikz
+- exclidraw
+
+*** d2
+
+#+begin_src emacs-lisp
+(eat/pkg d2-mode)
+(eat/pkg ob-d2)
+#+end_src
+
 * Org
 ** config
 #+begin_src elisp
@@ -2836,24 +2831,6 @@ Use eat under linux and macos, use eshell under windows.
 
 ** TODO Rss
 Use builtin newsticker with freshrss.
-
-** TODO Draw
-
-- plantuml
-- mermaid
-- graphviz
-- exclidraw
-- d2, written in go
-
-*** mermaid
-#+begin_src emacs-lisp
-(eat/pkg mermaid-mode)
-#+end_src
-
-*** plantuml
-org-babel support it natively
-
-*** TODO d2
 
 * Module
 ** Icon
