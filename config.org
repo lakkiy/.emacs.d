@@ -2298,6 +2298,20 @@ Set cookie manually:
 (eat/pkg d2-mode)
 (eat/pkg ob-d2)
 #+end_src
+** copilot
+
+#+begin_src emacs-lisp
+  (eat/pkg copilot "https://github.com/zerolfx/copilot.el")
+
+  (add-hook 'prog-mode-hook 'copilot-mode)
+
+  (with-eval-after-load 'copilot
+    (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion)
+    (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion)
+    (define-key copilot-completion-map (kbd "M-L") 'copilot-clear-overlay)
+    (define-key copilot-completion-map (kbd "M-N") 'copilot-next-completion)
+    (define-key copilot-completion-map (kbd "M-P") 'copilot-previous-completion))
+#+end_src
 
 * Org
 ** config
