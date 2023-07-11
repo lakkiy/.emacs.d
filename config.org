@@ -219,6 +219,10 @@ Some of hook of this packgae is too hacked, maybe drop it.
  )
 #+end_src
 
+*** add example to help
+#+begin_src emacs-lisp
+(add-hook 'help-fns-describe-function-functions #'shortdoc-help-fns-examples-function)
+#+end_src
 ** PATH
 #+begin_src elisp
 ;;; Setup PATH
