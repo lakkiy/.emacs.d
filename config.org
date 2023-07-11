@@ -1062,7 +1062,12 @@ No tab will created if the command is cancelled."
 (keymap-global-set "C-x C-=" #'default-text-scale-increase)
 (keymap-global-set "C-x C--" #'default-text-scale-decrease)
 #+end_src
+** hide minor modes on mode line
+#+begin_src emacs-lisp
+(eat/pkg minions)
 
+(add-hook 'after-init-hook 'minions-mode)
+#+end_src
 * Editing
 ** Functions
 #+begin_src emacs-lisp
@@ -1796,6 +1801,7 @@ there’s no comment in some mode.
                                     (flymake-mode -1)))
 
 (setq flymake-diagnostic-functions nil
+      flymake-show-diagnostics-at-end-of-line t
       flymake-no-changes-timeout 0.2)
 
 (defvar sekiro-flymake-mode-line-format `(:eval (sekiro-flymake-mode-line-format)))
