@@ -2194,6 +2194,10 @@ Set ~gptel-api-key~.
 (eat/pkg gptel)
 
 (setq gptel-default-mode 'org-mode)
+
+(setq gptel-api-key
+      (lambda ()
+        (auth-source-pick-first-password :host "api.openai.com")))
 #+end_src
 
 ** Visual Fill Column
@@ -2322,7 +2326,21 @@ Set cookie manually:
     (define-key copilot-completion-map (kbd "M-N") 'copilot-next-completion)
     (define-key copilot-completion-map (kbd "M-P") 'copilot-previous-completion))
 #+end_src
+** chatgpt-shell
+#+begin_src emacs-lisp
+(eat/pkg chatgpt-shell)
 
+;; lazy loaded
+;; so the file ~/.authinfo has this line:
+;;  machine api.openai.com password OPENAI_KEY
+(setq chatgpt-shell-openai-key
+      (lambda ()
+        (auth-source-pick-first-password :host "api.openai.com")))
+#+end_src
+** TODO dwim-shell-command
+#+begin_src emacs-lisp
+(eat/pkg dwim-shell-command)
+#+end_src
 * Org
 ** config
 #+begin_src elisp
@@ -2651,7 +2669,8 @@ M-x ~org-cite-insert~
 (add-hook 'dired-mode-hook #'dired-hide-details-mode)
 
 (setq dired-dwim-target t
-      dired-kill-when-opening-new-dired-buffer t)
+      dired-kill-when-opening-new-dired-buffer t
+      dired-auto-revert-buffer t)
 
 (with-eval-after-load 'dired
   (setq dired-listing-switches
