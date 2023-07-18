@@ -615,6 +615,14 @@ No tab will created if the command is cancelled."
 
 ;; (keymap-set switchy-window-minor-mode-map "<remap> <other-window>" #'switchy-window)
 #+end_src
+** auto balance
+https://zck.org/balance-emacs-windows
+#+begin_src emacs-lisp
+(seq-doseq (fn (list #'split-window #'delete-window))
+  (advice-add fn
+              :after
+              #'(lambda (&rest args) (balance-windows))))
+#+end_src
 
 * Buffer
 ** Functions
