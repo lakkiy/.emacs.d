@@ -2173,41 +2173,6 @@ Also check:
   (set-keymap-parent go-ts-mode-map go-mode-map))
 #+end_src
 * Tools
-** Bing Chat
-- Install the cookie editor extension for [[https://microsoftedge.microsoft.com/addons/detail/cookieeditor/neaplmfkghagebokkhpjpoebhdledlfi][Egde]]
-- Go to bing.com
-- Open the extension
-- Click “Export” on the bottom right (This saves your cookies to clipboard)
-- Paste your cookies into a file cookies.json
-- Set =aichat-bingai-cookies-file= to your cookies.json path
-
-For openai, set api key in auth file:
-=machine platform.openai.com login aichat-openai password your-app-key=
-
-#+begin_src elisp
-(eat/pkg websocket)
-(eat/pkg async-await)
-(eat/pkg markdown-mode)
-(eat/pkg emacs-aichat "https://github.com/xhcoding/emacs-aichat")
-(setq aichat-bingai-cookies-file "~/Dropbox/.bingcookies.json"
-      aichat-bingai-chat-file "~/Sync/aichat.md")
-(autoload #'aichat-bingai-chat "aichat-bingai.el" nil t)
-(autoload #'aichat-bingai-assistant "aichat-bingai.el" nil t)
-(autoload #'aichat-openai-assistant "aichat-openai.el" nil t)
-#+end_src
-** chatgpt
-Set ~gptel-api-key~.
-
-#+begin_src emacs-lisp
-(eat/pkg gptel)
-
-(setq gptel-default-mode 'org-mode)
-
-(setq gptel-api-key
-      (lambda ()
-        (auth-source-pick-first-password :host "api.openai.com")))
-#+end_src
-
 ** Visual Fill Column
 Center current window.
 #+begin_src emacs-lisp
@@ -2320,7 +2285,8 @@ Set cookie manually:
 (eat/pkg d2-mode)
 (eat/pkg ob-d2)
 #+end_src
-** copilot
+** AI
+*** copilot
 
 #+begin_src emacs-lisp
   (eat/pkg copilot "https://github.com/zerolfx/copilot.el")
@@ -2334,21 +2300,49 @@ Set cookie manually:
     (define-key copilot-completion-map (kbd "M-N") 'copilot-next-completion)
     (define-key copilot-completion-map (kbd "M-P") 'copilot-previous-completion))
 #+end_src
-** chatgpt-shell
-#+begin_src emacs-lisp
-(eat/pkg chatgpt-shell)
+*** Bing Chat
+- Install the cookie editor extension for [[https://microsoftedge.microsoft.com/addons/detail/cookieeditor/neaplmfkghagebokkhpjpoebhdledlfi][Egde]]
+- Go to bing.com
+- Open the extension
+- Click “Export” on the bottom right (This saves your cookies to clipboard)
+- Paste your cookies into a file cookies.json
+- Set =aichat-bingai-cookies-file= to your cookies.json path
 
-;; lazy loaded
-;; so the file ~/.authinfo has this line:
-;;  machine api.openai.com password OPENAI_KEY
-(setq chatgpt-shell-openai-key
-      (lambda ()
-        (auth-source-pick-first-password :host "api.openai.com")))
+For openai, set api key in auth file:
+=machine platform.openai.com login aichat-openai password your-app-key=
+
+#+begin_src elisp
+(eat/pkg websocket)
+(eat/pkg async-await)
+(eat/pkg markdown-mode)
+(eat/pkg emacs-aichat "https://github.com/xhcoding/emacs-aichat")
+(setq aichat-bingai-cookies-file "~/Dropbox/.bingcookies.json"
+      aichat-bingai-chat-file "~/Sync/aichat.md")
+(autoload #'aichat-bingai-chat "aichat-bingai.el" nil t)
+(autoload #'aichat-bingai-assistant "aichat-bingai.el" nil t)
+(autoload #'aichat-openai-assistant "aichat-openai.el" nil t)
 #+end_src
-** TODO dwim-shell-command
+*** gptel
+Set ~gptel-api-key~.
+
 #+begin_src emacs-lisp
-(eat/pkg dwim-shell-command)
+(eat/pkg gptel)
+
+(setq gptel-default-mode 'org-mode)
+
+(setq gptel-api-key (auth-source-pick-first-password :host "api.openai.com"))
 #+end_src
+
+*** gpt-commit
+#+begin_src emacs-lisp
+(eat/pkg gpt-commit)
+
+(autoload 'gpt-commit-message "gpt-commit" nil t)
+
+(setq gpt-commit-openai-key
+      (auth-source-pick-first-password :host "api.openai.com"))
+#+end_src
+
 * Org
 ** config
 #+begin_src elisp
