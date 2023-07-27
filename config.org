@@ -996,7 +996,7 @@ https://zck.org/balance-emacs-windows
 #+begin_src elisp
 (setq modus-themes-fringes nil)
 
-(defvar eat/theme 'modus-operandi
+(defvar eat/theme nil
   "Default theme.")
 
 (defvar eat/theme-tui 'wombat
@@ -1032,7 +1032,8 @@ https://zck.org/balance-emacs-windows
     (load-theme eat/theme-tui)))
 
 (defun eat/gui-load-theme ()
-  (load-theme eat/theme)
+  (when eat/theme
+    (load-theme eat/theme))
   ;; For MacOS, load theme after system appearance changed.
   (when (boundp 'ns-system-appearance)
     (add-to-list 'ns-system-appearance-change-functions
