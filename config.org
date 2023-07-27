@@ -2672,8 +2672,9 @@ M-x ~org-cite-insert~
   (require 'magit-todos)
   (magit-todos-mode))
 #+end_src
-** File Manager (dirvish)
-#+begin_src elisp
+** File Manager
+*** dired
+#+begin_src emacs-lisp
 (add-hook 'dired-mode-hook #'dired-hide-details-mode)
 
 (setq dired-dwim-target t
@@ -2687,6 +2688,20 @@ M-x ~org-cite-insert~
   (define-key dired-mode-map (kbd "h") #'dired-up-directory)
   (define-key dired-mode-map [mouse-2] #'dired-find-file))
 
+#+end_src
+
+**** dired-sidebar
+#+begin_src emacs-lisp
+(eat/pkg dired-sidebar)
+
+(unless (eat/modulep '+icon)
+  (setq dired-sidebar-theme 'ascii))
+(setq dired-sidebar-use-term-integration t)
+
+(keymap-global-set "<f1>" #'dired-sidebar-toggle-sidebar)
+#+end_src
+*** dirvish
+#+begin_src elisp
 (eat/pkg dirvish)
 
 (add-hook 'after-init-hook #'dirvish-override-dired-mode)
@@ -2697,7 +2712,7 @@ M-x ~org-cite-insert~
   (add-to-list 'dirvish-attributes 'nerd-icons))
 
 (keymap-global-set "C-c f" #'dirvish-fd)
-(keymap-global-set "<f1>" #'dirvish-side)
+;; (keymap-global-set "<f1>" #'dirvish-side)
 
 (with-eval-after-load 'dirvish
   (dirvish-side-follow-mode)
@@ -2723,6 +2738,7 @@ M-x ~org-cite-insert~
         "<mouse-2>" #'dired-mouse-find-file-other-window
         "<mouse-3>" #'dired-mouse-find-file))
 #+end_src
+
 ** TODO Terminal
 Use eat under linux and macos, use eshell under windows.
 #+begin_src elisp
