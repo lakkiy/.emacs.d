@@ -921,8 +921,24 @@ https://zck.org/balance-emacs-windows
       mouse-wheel-scroll-amount '(2 ((shift) . hscroll))
       mouse-wheel-scroll-amount-horizontal 2)
 
-(if (fboundp 'pixel-scroll-precision-mode)
-    (add-hook 'after-init-hook (lambda () (pixel-scroll-precision-mode))))
+(when (fboundp 'pixel-scroll-precision-mode)
+  (add-hook 'after-init-hook (lambda () (pixel-scroll-precision-mode)))
+
+  (setq pixel-scroll-precision-interpolate-page t)
+  (defun +pixel-scroll-interpolate-down (&optional lines)
+    (interactive)
+    (if lines
+        (pixel-scroll-precision-interpolate (* -1 lines (pixel-line-height)))
+      (pixel-scroll-interpolate-down)))
+
+  (defun +pixel-scroll-interpolate-up (&optional lines)
+    (interactive)
+    (if lines
+        (pixel-scroll-precision-interpolate (* lines (pixel-line-height))))
+    (pixel-scroll-interpolate-up))
+
+  (defalias 'scroll-up-command '+pixel-scroll-interpolate-down)
+  (defalias 'scroll-down-command '+pixel-scroll-interpolate-up))
 #+end_src
 ** Font
 #+begin_src elisp
