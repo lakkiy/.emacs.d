@@ -2364,6 +2364,12 @@ Set ~gptel-api-key~.
 #+begin_src emacs-lisp
 (eat/pkg tabnine)
 #+end_src
+** direnv
+#+begin_src emacs-lisp
+(eat/pkg envrc)
+
+(add-hook 'after-init-hook #'envrc-global-mode)
+#+end_src
 
 * Org
 ** config
