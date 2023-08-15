@@ -1334,6 +1334,7 @@ point reaches the beginning or end of the buffer, stop there."
    '(";" . meow-reverse)
    '("g" . meow-cancel-selection)
    '("q" . meow-quit)
+   '("\\" . comment-dwim)
 
    ;; expand by numbers
    '("0" . meow-expand-0)
@@ -1596,7 +1597,6 @@ Only work for orderless for now.
   (setq avy-background t
         avy-style 'pre))
 #+end_src
-
 * Completion
 ** Corfu
 #+begin_src elisp
