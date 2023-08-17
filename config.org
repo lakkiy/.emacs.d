@@ -2080,12 +2080,6 @@ it enable on all go buffer."
   (flymake-go-staticcheck-enable)
   (add-hook 'go-mode-hook #'flymake-go-staticcheck-enable))
 
-(defun eat/flymake-go-staticcheck-disable ()
-  (interactive)
-  (flymake-go-staticcheck-disable)
-  (add-hook 'go-mode-hook #'flymake-go-staticcheck-disable))
-
-
 ;; Go-test
 (setq go-test-verbose t
       ;; Do not cache test result.
