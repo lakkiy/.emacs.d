@@ -2911,6 +2911,11 @@ Use eat under linux and macos, use eshell under windows.
       message-send-mail-function #'message-use-send-mail-function
       smtpmail-smtp-server "smtp.gmail.com"
       smtpmail-smtp-service 587)
+
+
+;; read html mail
+(eat/pkg w3m)
+(setq mm-text-html-renderer 'w3m)
 #+end_src
 
 ** TODO Rss
