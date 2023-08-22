@@ -13,7 +13,9 @@
                             (vertical-scroll-bars . nil)
                             ;; (undecorated . t)
                             (menu-bar-lines . 0)
-                            (tool-bar-lines . 0)))
+                            (tool-bar-lines . 0))
+      ;; disable native compilation
+      native-comp-jit-compilation nil)
 #+end_src
 
 * Basic
@@ -1013,7 +1015,7 @@ https://zck.org/balance-emacs-windows
 #+begin_src elisp
 (setq modus-themes-fringes nil)
 
-(defvar eat/theme nil
+(defvar eat/theme 'pale
   "Default theme.")
 
 (defvar eat/theme-tui 'wombat
@@ -3020,7 +3022,7 @@ Run =docker pull zevlg/telega-server:latest=
 
   (defun lg-telega-chat-update (chat)
     (with-telega-root-buffer
-     (hl-line-highlight)))
+      (hl-line-highlight)))
   (add-hook 'telega-chat-update-hook 'lg-telega-chat-update)
 
   (with-eval-after-load 'telega
