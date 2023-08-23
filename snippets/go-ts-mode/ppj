@@ -4,5 +4,3 @@
 # --
 b, _ := json.MarshalIndent($1, "", "  ")
 fmt.Println(string(b))
-
-$0

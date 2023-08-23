@@ -221,10 +221,6 @@ Some of hook of this packgae is too hacked, maybe drop it.
  )
 #+end_src
 
-*** add example to help
-#+begin_src emacs-lisp
-(add-hook 'help-fns-describe-function-functions #'shortdoc-help-fns-examples-function)
-#+end_src
 ** PATH
 #+begin_src elisp
 ;;; Setup PATH
@@ -2169,6 +2165,17 @@ Also check:
 ~treesit-language-source-alist~
 ~treesit-install-language-grammar~
 
+*** go
+#+begin_src emacs-lisp
+(with-eval-after-load 'go-ts-mode
+  (require 'go-mode)
+
+  (setq go-ts-mode-hook go-mode-hook
+        go-ts-mode-indent-offset 4)
+
+  (set-keymap-parent go-ts-mode-map go-mode-map))
+#+end_src
+*** remap major mode
 #+begin_src emacs-lisp
 (when (treesit-available-p)
   (push '(css-mode . css-ts-mode) major-mode-remap-alist)
@@ -2182,7 +2189,9 @@ Also check:
   (push '(typescript-mode . tsx-ts-mode) major-mode-remap-alist)
   (push '(javascript-mode . tsx-ts-mode) major-mode-remap-alist)
   (push '(go-mode . go-ts-mode) major-mode-remap-alist))
-
+#+end_src
+*** folding
+#+begin_src emacs-lisp
 (defun treesit-fold-toggle (arg)
   "Toggle folding for the defun at point.
 
@@ -2233,16 +2242,6 @@ This command only works in a tree-sitter major mode."
             (overlay-put ov 'treesit-fold-tactic tactic)
             (overlay-put ov 'display (concat (make-string indent ?\s)
                                              "..."))))))))
-#+end_src
-*** go
-#+begin_src emacs-lisp
-(with-eval-after-load 'go-ts-mode
-  (require 'go-mode)
-
-  (setq go-ts-mode-hook go-mode-hook
-        go-ts-mode-indent-offset 4)
-
-  (set-keymap-parent go-ts-mode-map go-mode-map))
 #+end_src
 * Tools
 ** Visual Fill Column
@@ -3003,7 +3002,8 @@ Run =docker pull zevlg/telega-server:latest=
   (eat/pkg telega)
   (setq telega-use-docker t
         telega-chat-fill-column 75
-        telega-server-libs-prefix "/usr")
+        telega-server-libs-prefix "/usr"
+        telega-translate-to-language-by-default "zh")
 
   (defun eat/telega-root-setup ()
     ;; (eat/fixed-pitch-setup) ;; FIXME
@@ -5573,7 +5573,7 @@ COLOR is like ”#RRGGBB”."
 
 *** nano
 #+begin_src emacs-lisp
-(eat/pkg carbon-theme "https://github.com/404cn/nano-theme.el")
+(eat/pkg nano-theme "https://github.com/404cn/nano-theme.el")
 (add-to-list 'custom-theme-load-path (expand-file-name "elpa/nano-theme" user-emacs-directory))
 #+end_src
 *** carbon
