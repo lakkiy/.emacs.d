@@ -3091,6 +3091,9 @@ Need =xapian-core=.
 (eat/pkg markdown-toc)
 (eat/pkg protobuf-mode)
 (eat/pkg csv-mode)
+(eat/pkg yuck-mode)
+
+(add-hook 'yuck-mode-hook #'paredit-mode)
 
 (add-hook 'csv-mode-hook
           #'(lambda ()
