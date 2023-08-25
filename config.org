@@ -1970,6 +1970,9 @@ Need a lot...
   (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp"))))
 
 (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode)
+
+
+(eat/pkg eglot-hierarchy "https://github.com/dolmens/eglot-hierarchy")
 #+end_src
 ** Citre
 #+begin_src elisp
