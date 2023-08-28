@@ -861,6 +861,7 @@ https://zck.org/balance-emacs-windows
 
 ;;; embark
 (eat/pkg embark)
+(eat/pkg embark-consult)
 
 (with-eval-after-load 'vertico
   (keymap-set vertico-map "C-c C-o" #'embark-export)
