@@ -896,10 +896,12 @@ https://zck.org/balance-emacs-windows
 * UI
 ** Windows/frames
 #+begin_src emacs-lisp
-(setq frame-title-format
-      '((:eval (if (buffer-file-name)
-                   (abbreviate-file-name (buffer-file-name))
-                 "%b"))))
+(eat/pkg breadcrumb "https://github.com/joaotavora/breadcrumb")
+
+(setq-default frame-title-format
+              '((:eval (breadcrumb-project-crumbs))
+                " : "
+                (:eval (breadcrumb-imenu-crumbs))))
 
 (setq use-dialog-box nil
       ;; Monitors are trending toward wide, rather than tall.
@@ -1979,16 +1981,17 @@ Need a lot...
 #+begin_src elisp
 (eat/pkg citre)
 
+(keymap-global-set "C-x c j" #'citre-jump)
+(keymap-global-set "C-x c u" #'citre-update-this-tags-file)
+(keymap-global-set "C-x c p" #'citre-peek)
+(keymap-global-set "C-x c U" #'citre-global-update-database)
+(keymap-global-set "C-x c r" #'citre-jump-to-reference)
+
 (with-eval-after-load 'citre
-  (keymap-global-set "C-x c j" #'citre-jump)
   (keymap-global-set "C-x c J" #'citre-jump-back)
-  (keymap-global-set "C-x c u" #'citre-update-this-tags-file)
-  (keymap-global-set "C-x c p" #'citre-peek)
   ;; NOTE
   ;; Notice that GTAGSOBJDIRPREFIX must exist for gtags to use it. So you need to run:
   ;; $ mkdir -p ~/.cache/gtags/
-  (keymap-global-set "C-x c U" #'citre-global-update-database)
-  (keymap-global-set "C-x c r" #'citre-jump-to-reference)
   (keymap-global-set "C-x c P" #'citre-ace-peek-references)
   (setq citre-default-create-tags-file-location 'global-cache
         citre-use-project-root-when-creating-tags t
