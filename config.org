@@ -390,7 +390,6 @@ Set cursor pos to mouse pos if they are not in same pos.
 * Lib
 
 #+begin_src elisp
-(eat/pkg async)
 (eat/pkg fullframe)
 (eat/pkg hide-mode-line)
 (eat/pkg pinyinlib)
@@ -1952,7 +1951,8 @@ Need a lot...
 
 (setq-default eglot-workspace-configuration
               '((gopls
-                 (usePlaceholders . t))))
+                 (usePlaceholders . t)
+                 (staticcheck . t))))
 
 (when (executable-find "ltex-ls")
   (eat/hook 'message-mode-hook #'eglot-ensure))
@@ -1967,16 +1967,7 @@ Need a lot...
   (add-to-list 'eglot-server-programs '(rust-mode "rust-analyzer"))
   (add-to-list 'eglot-server-programs '(sql-mode . ("sqls" "-config" "~/.config/sqls/config.yaml")))
   (add-to-list 'eglot-server-programs '(nix-mode . ("nixd")))
-  ;; NOTE Install https://github.com/valentjn/ltex-ls
-  (add-to-list 'eglot-server-programs '(message-mode . ("ltex-ls")))
-  ;; NOTE deno
-  (defclass eglot-deno (eglot-lsp-server) ()
-    :documentation "A custom class for deno lsp.")
-  (cl-defmethod eglot-initialization-options ((server eglot-deno))
-    "Passes through required deno initialization options"
-    (list :enable t
-          :lint t))
-  (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp"))))
+  (add-to-list 'eglot-server-programs '(message-mode . ("ltex-ls"))))
 
 (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode)
 
@@ -2137,19 +2128,6 @@ Install =rnix-lsp= and =nixfmt=.
    (let-routes 1)
    (context 2)))
 #+end_src
-*** Lua
-#+begin_src elisp
-(eat/pkg lua-mode)
-#+end_src
-*** Rust
-#+begin_src elisp
-(eat/pkg rust-mode)
-#+end_src
-*** Typescript
-#+begin_src elisp
-(eat/pkg typescript-mode)
-(setq typescript-indent-level 2)
-#+end_src
 *** C
 #+begin_src elisp
 (setq c-default-style "linux"
@@ -2188,22 +2166,35 @@ Also check:
 
   (set-keymap-parent go-ts-mode-map go-mode-map))
 #+end_src
-*** remap major mode
+
+*** Js etc...
+#+begin_src emacs-lisp
+(setq-default js-indent-level 2)
+(add-hook 'tsx-ts-mode-hook #'setup-tsx)
+(add-to-list 'auto-mode-alist '("\\.ts\\'" . tsx-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
+
+(defun setup-tsx ()
+  (fset 'js-find-symbol 'xref-find-definitions))
+#+end_src
+
+*** Rust
+#+begin_src emacs-lisp
+(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
+#+end_src
+*** Remap major mode
 #+begin_src emacs-lisp
 (when (treesit-available-p)
   (push '(css-mode . css-ts-mode) major-mode-remap-alist)
   (push '(python-mode . python-ts-mode) major-mode-remap-alist)
-  (push '(javascript-mode . js-ts-mode) major-mode-remap-alist)
   (push '(c-mode . c-ts-mode) major-mode-remap-alist)
   (push '(c++-mode . c++-ts-mode) major-mode-remap-alist)
   (push '(toml-mode . toml-ts-mode) major-mode-remap-alist)
   (push '(yaml-mode . yaml-ts-mode) major-mode-remap-alist)
-  (push '(tsx-mode . tsx-ts-mode) major-mode-remap-alist)
-  (push '(typescript-mode . tsx-ts-mode) major-mode-remap-alist)
   (push '(javascript-mode . tsx-ts-mode) major-mode-remap-alist)
   (push '(go-mode . go-ts-mode) major-mode-remap-alist))
 #+end_src
-*** folding
+*** olding
 #+begin_src emacs-lisp
 (defun treesit-fold-toggle (arg)
   "Toggle folding for the defun at point.
@@ -2371,16 +2362,20 @@ Set cookie manually:
 *** copilot
 
 #+begin_src emacs-lisp
-  (eat/pkg copilot "https://github.com/zerolfx/copilot.el")
+(eat/pkg copilot "https://github.com/zerolfx/copilot.el")
 
-  (add-hook 'prog-mode-hook 'copilot-mode)
+(add-hook 'prog-mode-hook 'copilot-mode)
 
-  (with-eval-after-load 'copilot
-    (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion)
-    (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion)
-    (define-key copilot-completion-map (kbd "M-L") 'copilot-clear-overlay)
-    (define-key copilot-completion-map (kbd "M-N") 'copilot-next-completion)
-    (define-key copilot-completion-map (kbd "M-P") 'copilot-previous-completion))
+(with-eval-after-load 'copilot
+  (add-to-list 'copilot-major-mode-alist '("go" . "go"))
+  (add-to-list 'copilot-major-mode-alist '("go-ts" . "go"))
+  (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion)
+  (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion)
+  (define-key copilot-completion-map (kbd "M-L") 'copilot-clear-overlay)
+  (define-key copilot-completion-map (kbd "M-N") 'copilot-next-completion)
+  (define-key copilot-completion-map (kbd "M-P") 'copilot-previous-completion)
+  (with-eval-after-load 'meow
+    (add-to-list 'copilot-enable-predicates 'meow-insert-mode-p)))
 #+end_src
 *** Bing Chat
 - Install the cookie editor extension for [[https://microsoftedge.microsoft.com/addons/detail/cookieeditor/neaplmfkghagebokkhpjpoebhdledlfi][Egde]]
@@ -3107,9 +3102,6 @@ Need =xapian-core=.
 (eat/pkg markdown-toc)
 (eat/pkg protobuf-mode)
 (eat/pkg csv-mode)
-(eat/pkg yuck-mode)
-
-(add-hook 'yuck-mode-hook #'paredit-mode)
 
 (add-hook 'csv-mode-hook
           #'(lambda ()
