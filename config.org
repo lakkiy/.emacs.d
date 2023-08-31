@@ -1,7 +1,8 @@
 #+STARTUP: fold
 #+PROPERTY: header-args :tangle init.el :mkdirp yes
 
-* Early init
+* Basic
+** Early init
 #+begin_src elisp :tangle early-init.el
 (setq frame-inhibit-implied-resize t
       package-enable-at-startup nil
@@ -18,7 +19,6 @@
       native-comp-jit-compilation nil)
 #+end_src
 
-* Basic
 ** Load custom file
 #+begin_src elisp
 ;;; -*- lexical-binding: t -*-
@@ -26,7 +26,7 @@
 (when (and (file-exists-p custom-file) (file-readable-p custom-file))
   (load custom-file :no-error :no-message))
 #+end_src
-** Package
+** Package manager
 #+begin_src emacs-lisp
 (setq package-archives '(("gnu"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
 			             ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
@@ -45,9 +45,14 @@
 (setq elpamr-default-output-directory "~/Sync/myelpa")
 #+end_src
 
-** Bind
+** Key binding
 #+begin_src emacs-lisp
 (eat/pkg bind)
+
+;; bind `describe-keymap', added in emacs 28
+(keymap-global-set "C-h C-k" #'describe-keymap)
+;; this will stuck emacs
+(keymap-global-unset "C-h h")
 #+end_src
 ** Hook
 #+begin_src elisp
@@ -68,11 +73,13 @@ If HOOK is a list, then add all FUNCTION hooks to HOOK."
       (add-hook hook f)))
    (t
     (add-hook hook function))))
+
+;; Disable cursor blink
+(add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
 #+end_src
 ** Variables
 #+begin_src elisp
 (defvar eat/user-full-name "Liu Bo")
-
 (defvar eat/user-mail-address "liubolovelife@gmail.com")
 
 (defconst eat/macp (eq system-type 'darwin)
@@ -83,70 +90,6 @@ If HOOK is a list, then add all FUNCTION hooks to HOOK."
 
 (defconst eat/winp (eq system-type 'windows-nt)
   "Are we running on a Windows system?")
-#+end_src
-** Module
-#+begin_src emacs-lisp
-(defvar eat/module-list
-  `(
-    ;; +icon
-    ;; +blog
-    ;; +telega
-    ;; +note-taking
-    ))
-
-(defvar eat/module--hash-table
-  ((lambda ()
-     (setq hash--table (make-hash-table))
-     (dolist (m eat/module-list)
-       (puthash m t hash--table))
-     hash--table)))
-
-(defun eat/modulep (module)
-  (gethash module eat/module--hash-table))
-#+end_src
-** Optimization
-*** TODO on.el
-Some of hook of this packgae is too hacked, maybe drop it.
-#+begin_src emacs-lisp
-(eat/pkg on "https://gitlab.com/ajgrf/on.el")
-(require 'on)
-#+end_src
-
-*** gchm
-#+begin_src elisp
-(eat/pkg gcmh)
-(add-hook 'after-init-hook #'gcmh-mode)
-(setq gcmh-idle-delay 5
-      gcmh-high-cons-threshold #x6400000)
-#+end_src
-
-*** show start up time
-#+begin_src elisp
-(defun eat/show-startup-time ()
-  "Print startup time."
-  (message
-   "Emacs loaded in %s with %d garbage collections."
-   (format
-    "%.2f seconds"
-    (float-time
-     (time-subtract after-init-time before-init-time)))
-   gcs-done))
-(add-hook 'emacs-startup-hook #'eat/show-startup-time)
-#+end_src
-
-*** misc
-#+begin_src elisp
-;; bind `describe-keymap', added in emacs 28
-(keymap-global-set "C-h C-k" #'describe-keymap)
-;; this will stuck emacs
-(keymap-global-unset "C-h h")
-
-
-;; GC automatically while unfocusing the frame
-(add-function :after after-focus-change-function
-              (lambda ()
-                (unless (frame-focus-state)
-                  (garbage-collect))))
 
 ;; Don't ping things that look like domain names.
 (setq ffap-machine-p-known 'reject)
@@ -158,9 +101,6 @@ Some of hook of this packgae is too hacked, maybe drop it.
 ;; Contrary to what many Emacs users have in their configs, you don't need
 ;; more than this to make UTF-8 the default coding system:
 (set-language-environment "UTF-8")
-
-;; Disable cursor blink
-(add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
 
 ;; Do not show cursor in nonselected windows
 (setq-default cursor-in-non-selected-windows nil)
@@ -220,6 +160,61 @@ Some of hook of this packgae is too hacked, maybe drop it.
  server-client-instructions nil                     ; no client startup messages
  )
 #+end_src
+** Module
+#+begin_src emacs-lisp
+(defvar eat/module-list
+  `(
+    ;; +icon
+    ;; +blog
+    ;; +telega
+    ;; +note-taking
+    ))
+
+(defvar eat/module--hash-table
+  ((lambda ()
+     (setq hash--table (make-hash-table))
+     (dolist (m eat/module-list)
+       (puthash m t hash--table))
+     hash--table)))
+
+(defun eat/modulep (module)
+  (gethash module eat/module--hash-table))
+#+end_src
+** Optimization
+*** TODO on.el
+Some of hook of this packgae is too hacked, maybe drop it.
+#+begin_src emacs-lisp
+(eat/pkg on "https://gitlab.com/ajgrf/on.el")
+(require 'on)
+#+end_src
+
+*** garbage collection
+#+begin_src elisp
+(eat/pkg gcmh)
+(add-hook 'after-init-hook #'gcmh-mode)
+(setq gcmh-idle-delay 5
+      gcmh-high-cons-threshold #x6400000)
+
+;; GC automatically while unfocusing the frame
+(add-function :after after-focus-change-function
+              (lambda ()
+                (unless (frame-focus-state)
+                  (garbage-collect))))
+#+end_src
+
+*** Show start up time
+#+begin_src elisp
+(defun eat/show-startup-time ()
+  "Print startup time."
+  (message
+   "Emacs loaded in %s with %d garbage collections."
+   (format
+    "%.2f seconds"
+    (float-time
+     (time-subtract after-init-time before-init-time)))
+   gcs-done))
+(add-hook 'emacs-startup-hook #'eat/show-startup-time)
+#+end_src
 
 ** PATH
 #+begin_src elisp
@@ -227,6 +222,8 @@ Some of hook of this packgae is too hacked, maybe drop it.
 ;; https://emacs-china.org/t/emacs-mac-port-profile/2895/29?u=rua
 ;; NOTE: When PATH is changed, run the following command
 ;; $ sh -c 'printf "%s" "$PATH"' > ~/.path
+;; then add this to custom.el
+;; (add-hook 'after-init-hook #'eat/getenv-path)
 (defun eat/getenv-path()
   (interactive)
   (condition-case err
@@ -431,6 +428,15 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 #+end_src
 
 * Window
+** Helper funcs
+#+begin_src emacs-lisp
+(defun eat/quit ()
+  "Delete current window switch to prevous buffer."
+  (interactive)
+  (if (> (seq-length (window-list (selected-frame))) 1)
+      (delete-window)
+    (previous-buffer)))
+#+end_src
 ** TODO tab-bar
 #+begin_src elisp
 (defun eat/tab-bar-tab-name-format-function (tab i)
@@ -1335,7 +1341,7 @@ point reaches the beginning or end of the buffer, stop there."
    '("<escape>" . mode-line-other-buffer)
    '(";" . meow-reverse)
    '("g" . meow-cancel-selection)
-   '("q" . meow-quit)
+   '("q" . eat/quit)
    '("\\" . comment-dwim)
 
    ;; expand by numbers
@@ -2825,7 +2831,10 @@ Use eat under linux and macos, use eshell under windows.
 #+begin_src elisp
 (eat/pkg eat)
 
-(keymap-global-set "C-`" #'eshell)
+(keymap-global-set "C-`" #'eat)
+
+(with-eval-after-load 'eat
+  (bind eat-mode-map "C-`" #'eat/quit))
 
 (setq eat-kill-buffer-on-exit t)
 
