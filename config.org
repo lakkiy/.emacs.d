@@ -625,10 +625,10 @@ No tab will created if the command is cancelled."
 ** auto balance
 https://zck.org/balance-emacs-windows
 #+begin_src emacs-lisp
-(seq-doseq (fn (list #'split-window #'delete-window))
-  (advice-add fn
-              :after
-              #'(lambda (&rest args) (balance-windows))))
+;; (seq-doseq (fn (list #'split-window #'delete-window))
+;;   (advice-add fn
+;;               :after
+;;               #'(lambda (&rest args) (balance-windows))))
 #+end_src
 
 * Buffer
@@ -2141,7 +2141,6 @@ Install =rnix-lsp= and =nixfmt=.
 #+begin_src elisp
 (setq python-indent-offset 4
       python-shell-completion-native-enable nil
-      python-shell-interpreter "ipython"
       python-indent-guess-indent-offset nil)
 #+end_src
 *** Sql
