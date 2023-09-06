@@ -159,6 +159,9 @@ If HOOK is a list, then add all FUNCTION hooks to HOOK."
  vc-follow-symlinks t                               ; always follow link
  server-client-instructions nil                     ; no client startup messages
  )
+
+;; https://github.com/Genivia/ugrep#using-ugrep-within-emacs
+(setq-default grep-template "ugrep -0Iinr -e <R>")
 #+end_src
 ** Module
 #+begin_src emacs-lisp
@@ -369,7 +372,7 @@ Some of hook of this packgae is too hacked, maybe drop it.
 *** TODO xref
 Must set before consult.
 Use control-left-click to jump to defintions.
-Need ripgrep installed(check external program).
+Need ugrep installed(check external program).
 
 Set cursor pos to mouse pos if they are not in same pos.
 #+begin_src elisp
@@ -380,7 +383,8 @@ Set cursor pos to mouse pos if they are not in same pos.
 (keymap-global-set "C-<mouse-1>" #'xref-find-definitions-at-mouse)
 
 (setq xref-prompt-for-identifier nil
-      xref-search-program 'ripgrep
+      ;; Commands such as `project-find-regexp' that rely on Xref can now leverage the power of ugrep.
+      xref-search-program 'ugrep
       xref-show-xrefs-function #'xref-show-definitions-completing-read
       xref-show-definitions-function #'xref-show-definitions-completing-read
       ;; fix massed xref cross multiple project
@@ -832,7 +836,7 @@ https://zck.org/balance-emacs-windows
 (global-set-key [remap switch-to-buffer-other-window] #'consult-buffer-other-window)
 (global-set-key [remap switch-to-buffer-other-frame] #'consult-buffer-other-frame)
 (global-set-key [remap yank-pop] #'consult-yank-pop)
-(global-set-key [remap project-find-regexp] #'consult-ripgrep)
+(global-set-key [remap project-find-regexp] #'consult-grep)
 
 (setq consult-project-root-function  (lambda ()
                                        (when-let (project (project-current))
@@ -2259,7 +2263,11 @@ Center current window.
 #+end_src
 ** Rg
 #+begin_src elisp
-(eat/pkg deadgrep)
+(eat/pkg wgrep)
+(eat/pkg urgrep)
+
+(with-eval-after-load 'urgrep
+  (require 'urgrep-wgrep))
 #+end_src
 ** Translate
 #+begin_src elisp
