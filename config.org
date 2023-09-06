@@ -2986,6 +2986,13 @@ Use eat under linux and macos, use eshell under windows.
 (setq mm-text-html-renderer 'w3m)
 #+end_src
 
+*** fontify patch
+#+begin_src emacs-lisp
+(eat/pkg fontify-patch "https://github.com/whame/fontify-patch")
+
+(add-hook 'gnus-part-display-hook 'fontify-patch-buffer)
+#+end_src
+
 ** TODO Rss
 Use builtin newsticker with freshrss.
 
