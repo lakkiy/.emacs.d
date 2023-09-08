@@ -1907,7 +1907,8 @@ Need a lot...
 (defun eat/lsp-bridge-mode-setup ()
   (interactive)
   ;; Add sub dirs to load path.
-  (add-subdirs-to-load-path (expand-file-name "elpa/lsp-bridge" user-emacs-directory))
+  (if (file-directory-p (expand-file-name "elpa/lsp-bridge" user-emacs-directory))
+      (add-subdirs-to-load-path (expand-file-name "elpa/lsp-bridge" user-emacs-directory)))
   ;; Disable corfu since lsp-bridge use acm.
   (ignore-errors
     (corfu-mode -1))
@@ -2142,6 +2143,12 @@ Install =rnix-lsp= and =nixfmt=.
 (setq python-indent-offset 4
       python-shell-completion-native-enable nil
       python-indent-guess-indent-offset nil)
+
+
+(eat/pkg pet)
+;; Emacs 29+
+;; This will turn on `pet-mode' on `python-mode' and `python-ts-mode'
+(add-hook 'python-base-mode-hook 'pet-mode -10)
 #+end_src
 *** Sql
 #+begin_src elisp
