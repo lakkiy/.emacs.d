@@ -961,7 +961,7 @@ https://zck.org/balance-emacs-windows
           (throw 'foo t))))
     font-installed))
 
-(defvar eat/fonts-default        '("Cascadia Code" "Menlo" "Monaco" "Source Code Pro"))
+(defvar eat/fonts-default        '("DejaVu Sans Mono" "Monaco" "Cascadia Code" "Menlo" "Source Code Pro"))
 (defvar eat/fonts-variable-pitch '("Bookerly" "Cardo" "Times New Roman" "DejaVu Sans"))
 (defvar eat/fonts-cjk            '("LXGW WenKai" "WenQuanYi Micro Hei" "Microsoft Yahei"))
 (defvar eat/fonts-unicode        '("Symbols Nerd Font"))
