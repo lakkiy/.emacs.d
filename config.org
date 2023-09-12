@@ -278,8 +278,8 @@ Some of hook of this packgae is too hacked, maybe drop it.
 ** Dvorak
 #+begin_src elisp
 ;; Make “C-t” act like “C-x”, so it's easier to type on Dvorak layout
-(keyboard-translate ?\C-t ?\C-x)
-(keyboard-translate ?\C-x ?\C-t)
+;; (keyboard-translate ?\C-t ?\C-x)
+;; (keyboard-translate ?\C-x ?\C-t)
 #+end_src
 
 ** Built-in packages
@@ -905,7 +905,7 @@ https://zck.org/balance-emacs-windows
 * UI
 ** Windows/frames
 #+begin_src emacs-lisp
-(eat/pkg breadcrumb "https://github.com/joaotavora/breadcrumb")
+(eat/pkg breadcrumb)
 
 (setq-default frame-title-format
               '((:eval (breadcrumb-project-crumbs))
@@ -1107,6 +1107,34 @@ https://zck.org/balance-emacs-windows
 (eat/pkg minions)
 
 (add-hook 'after-init-hook 'minions-mode)
+#+end_src
+** indent bars
+#+begin_src emacs-lisp
+(eat/pkg indent-bars "https://github.com/jdtsmith/indent-bars.git")
+
+(eat/hook '(python-base-mode-hook
+            yaml-mode-hook
+            yaml-ts-mode-hook)
+          #'indent-bars-mode)
+
+(setq
+ indent-bars-color '(highlight :face-bg t :blend 0.15)
+ indent-bars-pattern "."
+ indent-bars-width-frac 0.1
+ indent-bars-pad-frac 0.1
+ indent-bars-zigzag nil
+ indent-bars-color-by-depth nil
+ indent-bars-display-on-blank-lines nil)
+
+(setq indent-bars-treesit-support (treesit-available-p)
+      ;; indent-bars-prefer-character "│"
+      indent-bars-highlight-current-depth '(:face default :blend 0.3)
+      ;; https://github.com/jdtsmith/indent-bars#configuring-tree-sitter
+      indent-bars-treesit-ignore-blank-lines-types '("module")
+      indent-bars-treesit-wrap '((python argument_list parameters
+				                         list list_comprehension
+				                         dictionary dictionary_comprehension
+				                         parenthesized_expression subscript)))
 #+end_src
 * Editing
 ** Functions
@@ -1808,10 +1836,13 @@ there’s no comment in some mode.
 #+begin_src elisp
 (eat/pkg dumb-jump)
 
-(setq dumb-jump-force-searcher'rg
-      dumb-jump-quiet t
+(setq dumb-jump-quiet t
       dumb-jump-aggressive t
       dumb-jump-selector 'completing-read)
+
+(when (executable-find "ugrep")
+  (setq dumb-jump-grep-cmd "ugrep"
+        dumb-jump-grep-args "-G -U -Y -. --sort -Dread -dread"))
 
 ;; NOTE use `dumb-jump' as default xref backend
 ;; you can run `eglot' or `eat/citre-enable' to reset this
@@ -1957,7 +1988,15 @@ Need a lot...
 (setq-default eglot-workspace-configuration
               '((gopls
                  (usePlaceholders . t)
-                 (staticcheck . t))))
+                 (staticcheck . t))
+                ;; (pyright
+                ;;  (autoImportCompletions . t)
+                ;;  (useLibraryCodeForTypes . t)
+                ;;  (diagnosticMode . "openFilesOnly")
+                ;;  (typeCheckingMode . "basic")
+                ;;  (logLevel . "verbose")
+                ;;  (autoSearchPaths . t))
+                ))
 
 (when (executable-find "ltex-ls")
   (eat/hook 'message-mode-hook #'eglot-ensure))
@@ -1968,7 +2007,6 @@ Need a lot...
         "C-c r" #'eglot-rename
         "M-'" #'eglot-find-implementation)
 
-  (add-to-list 'eglot-server-programs '(python-mode . ("pyright-langserver" "--stdio")))
   (add-to-list 'eglot-server-programs '(rust-mode "rust-analyzer"))
   (add-to-list 'eglot-server-programs '(sql-mode . ("sqls" "-config" "~/.config/sqls/config.yaml")))
   (add-to-list 'eglot-server-programs '(nix-mode . ("nixd")))
@@ -1996,7 +2034,7 @@ Need a lot...
   ;; $ mkdir -p ~/.cache/gtags/
   (keymap-global-set "C-x c P" #'citre-ace-peek-references)
   (setq citre-default-create-tags-file-location 'global-cache
-        citre-use-project-root-when-creating-tags t
+        ;; citre-use-project-root-when-creating-tags t
         citre-prompt-language-for-ctags-command t
         citre-auto-enable-citre-mode-modes '(prog-mode))
   (with-eval-after-load 'cc-mode (require 'citre-lang-c))
@@ -2786,16 +2824,6 @@ M-x ~org-cite-insert~
 
 #+end_src
 
-**** dired-sidebar
-#+begin_src emacs-lisp
-(eat/pkg dired-sidebar)
-
-(unless (eat/modulep '+icon)
-  (setq dired-sidebar-theme 'ascii))
-(setq dired-sidebar-use-term-integration t)
-
-(keymap-global-set "<f1>" #'dired-sidebar-toggle-sidebar)
-#+end_src
 *** dirvish
 #+begin_src elisp
 (eat/pkg dirvish)
@@ -2808,10 +2836,10 @@ M-x ~org-cite-insert~
   (add-to-list 'dirvish-attributes 'nerd-icons))
 
 (keymap-global-set "C-c f" #'dirvish-fd)
-;; (keymap-global-set "<f1>" #'dirvish-side)
+(keymap-global-set "<f1>" #'dirvish-side)
 
 (with-eval-after-load 'dirvish
-  (dirvish-side-follow-mode)
+  ;; (dirvish-side-follow-mode) ;; FIXME
   (bind dirvish-mode-map
         "TAB" #'dirvish-subtree-toggle
         "<tab>" #'dirvish-subtree-toggle
