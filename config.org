@@ -391,6 +391,13 @@ Set cursor pos to mouse pos if they are not in same pos.
       xref-history-storage 'xref-window-local-history)
 #+end_src
 
+*** eww
+#+begin_src emacs-lisp
+;; Install: npm install -g readability-cli
+(when (executable-find "readable")
+  (setq eww-retrieve-command '("readable")))
+#+end_src
+
 * Lib
 
 #+begin_src elisp
@@ -2192,6 +2199,11 @@ Install =rnix-lsp= and =nixfmt=.
 #+begin_src elisp
 (setq sql-mysql-login-params '(user password server database port))
 #+end_src
+*** Javascript
+#+begin_src emacs-lisp
+;; NOTE js-ts-mode and tsx-ts-mode have bug to stuck emacs
+(setq-default js-indent-level 2)
+#+end_src
 ** Tree-sitter
 1. Install =tree-sitter= on system.
 2. Build emacs with tree sitter =--with-tree-sitter=.
@@ -2215,34 +2227,17 @@ Also check:
   (set-keymap-parent go-ts-mode-map go-mode-map))
 #+end_src
 
-*** Js etc...
-#+begin_src emacs-lisp
-(setq-default js-indent-level 2)
-(add-hook 'tsx-ts-mode-hook #'setup-tsx)
-(add-to-list 'auto-mode-alist '("\\.ts\\'" . tsx-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
-
-(defun setup-tsx ()
-  (fset 'js-find-symbol 'xref-find-definitions))
-#+end_src
-
-*** Rust
-#+begin_src emacs-lisp
-(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
-#+end_src
 *** Remap major mode
 #+begin_src emacs-lisp
 (when (treesit-available-p)
-  (push '(css-mode . css-ts-mode) major-mode-remap-alist)
   (push '(python-mode . python-ts-mode) major-mode-remap-alist)
-  (push '(c-mode . c-ts-mode) major-mode-remap-alist)
-  (push '(c++-mode . c++-ts-mode) major-mode-remap-alist)
-  (push '(toml-mode . toml-ts-mode) major-mode-remap-alist)
-  (push '(yaml-mode . yaml-ts-mode) major-mode-remap-alist)
-  (push '(javascript-mode . tsx-ts-mode) major-mode-remap-alist)
-  (push '(go-mode . go-ts-mode) major-mode-remap-alist))
+  (push '(go-mode . go-ts-mode) major-mode-remap-alist)
+
+  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.toml\\'" . toml-ts-mode)))
 #+end_src
-*** olding
+*** Folding
 #+begin_src emacs-lisp
 (defun treesit-fold-toggle (arg)
   "Toggle folding for the defun at point.
@@ -2305,7 +2300,7 @@ Center current window.
 
 (setq visual-fill-column-center-text t)
 #+end_src
-** Rg
+** Grep
 #+begin_src elisp
 (eat/pkg wgrep)
 (eat/pkg urgrep)
@@ -3140,13 +3135,7 @@ Need =xapian-core=.
 #+end_src
 * Modes
 #+begin_src elisp
-(eat/pkg toml-mode)
-(eat/pkg yaml-mode)
-(eat/pkg docker-compose-mode)
-(eat/pkg dockerfile-mode)
-(eat/pkg k8s-mode)
 (eat/pkg git-modes)
-(eat/pkg terraform-mode)
 (eat/pkg markdown-mode)
 (eat/pkg markdown-toc)
 (eat/pkg protobuf-mode)
@@ -3155,9 +3144,6 @@ Need =xapian-core=.
 (add-hook 'csv-mode-hook
           #'(lambda ()
               (setq-local auto-hscroll-mode t)))
-
-(add-hook 'toml-mode-hook #'goto-address-prog-mode)
-(add-hook 'yaml-mode-hook #'goto-address-prog-mode)
 
 (add-to-list 'auto-mode-alist
              (cons "/.dockerignore\\'" 'gitignore-mode))
