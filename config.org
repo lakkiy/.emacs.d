@@ -829,6 +829,7 @@ https://zck.org/balance-emacs-windows
 
 ;;; consult
 (eat/pkg consult)
+(eat/pkg consult-todo "https://github.com/liuyinz/consult-todo")
 
 (advice-add #'multi-occur :override #'consult-multi-occur)
 ;; (global-set-key (kbd "C-s") #'consult-line)
@@ -2787,14 +2788,6 @@ M-x ~org-cite-insert~
                    '(diff-hl-margin-mode nil)))))
 #+end_src
 
-*** magit-todo
-#+begin_src emacs-lisp
-(eat/pkg magit-todos)
-
-(with-eval-after-load 'magit
-  (require 'magit-todos)
-  (magit-todos-mode))
-#+end_src
 ** File Manager
 *** dired
 #+begin_src emacs-lisp
