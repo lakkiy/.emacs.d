@@ -1993,17 +1993,11 @@ Need a lot...
       eglot-ignored-server-capabilites '(:documentHighlightProvider :documentFormattingProvider :documentRangeFormattingProvider))
 
 (setq-default eglot-workspace-configuration
-              '((gopls
-                 (usePlaceholders . t)
-                 (staticcheck . t))
-                ;; (pyright
-                ;;  (autoImportCompletions . t)
-                ;;  (useLibraryCodeForTypes . t)
-                ;;  (diagnosticMode . "openFilesOnly")
-                ;;  (typeCheckingMode . "basic")
-                ;;  (logLevel . "verbose")
-                ;;  (autoSearchPaths . t))
-                ))
+              '((:gopls
+                 (:ui.completion.usePlaceholders . t)
+                 (:ui.diagnostic.staticcheck . t)
+                 ;; for I have to edit wire.go even ignore it in build time
+                 (:build.buildFlags . ["-tags" "wireinject"]))))
 
 (when (executable-find "ltex-ls")
   (eat/hook 'message-mode-hook #'eglot-ensure))
