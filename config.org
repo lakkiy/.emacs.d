@@ -2478,9 +2478,18 @@ Set ~gptel-api-key~.
 
 (add-hook 'after-init-hook #'envrc-global-mode)
 #+end_src
+* Markup Languages
+** Align table
+#+begin_src elisp
+(eat/pkg valign)
+(setq valign-fancy-bar t)
+(when (display-graphic-p)
+  (add-hook 'org-mode-hook #'valign-mode)
+  (add-hook 'markdown-mode-hook #'valign-mode))
+#+end_src
 
-* Org
-** config
+** Org
+*** config
 #+begin_src elisp
 (defun eat/org-hook ()
   "Configuration for Org Mode."
@@ -2488,11 +2497,6 @@ Set ~gptel-api-key~.
   (electric-pair-local-mode -1)
   (electric-quote-local-mode)
   (electric-indent-local-mode -1))
-
-(defun eat/insert-zero-width-space ()
-  (interactive)
-  (insert-char ?\u200B)) ;; code for ZERO WIDTH SPACE
-(keymap-global-set "C-x 8 0" #'eat/insert-zero-width-space)
 
 (add-hook 'org-mode-hook #'eat/org-hook)
 
@@ -2523,22 +2527,15 @@ Set ~gptel-api-key~.
         ;; Faster loading
         org-modules nil
         org-log-done t)
+  (require 'org-mouse) ;; mouse support
   (require 'org-tempo) ;; see `org-structure-template-alist'
   (require 'ob)
   (require 'ob-dot)
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
   (org-babel-do-load-languages 'org-babel-load-languages load-language-list))
 #+end_src
-** ox
-*** gfm
-#+begin_src elisp
-(eat/pkg ox-gfm)
-(with-eval-after-load 'ox-gfm
-  (add-to-list 'org-export-backends 'md))
-#+end_src
-
-** ob
-*** restclient
+*** ob
+**** restclient
 #+begin_src elisp
 (eat/pkg ob-restclient)
 (cl-pushnew '(restclient . t) load-language-list)
@@ -2546,7 +2543,7 @@ Set ~gptel-api-key~.
   (add-to-list 'org-structure-template-alist '("rc" . "src restclient")))
 #+end_src
 
-*** go
+**** go
 #+begin_src elisp
 (eat/pkg ob-go)
 
@@ -2556,7 +2553,7 @@ Set ~gptel-api-key~.
   (add-to-list 'org-structure-template-alist '("go" . "src go")))
 #+end_src
 
-** copture
+*** Copture
 #+begin_src elisp
 (keymap-global-set "C-c c" 'org-capture)
 
@@ -2575,7 +2572,7 @@ Set ~gptel-api-key~.
          "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)))
 #+end_src
 
-** agenda
+*** Agenda
 #+begin_src elisp
 (setq org-agenda-files (list org-directory)
       org-agenda-prefix-format '((agenda . " %i %-12:c%?-12t% s")
@@ -2590,98 +2587,7 @@ Set ~gptel-api-key~.
 (keymap-global-set "C-c a" 'org-agenda)
 #+end_src
 
-** org-appear
-#+begin_src elisp
-(eat/pkg org-appear)
-(setq org-hide-emphasis-markers t)
-(add-hook 'org-mode-hook #'org-appear-mode)
-#+end_src
-
-** valign
-#+begin_src elisp
-(eat/pkg valign)
-(setq valign-fancy-bar t)
-(when (display-graphic-p)
-  (add-hook 'org-mode-hook #'valign-mode))
-#+end_src
-** toc
-#+begin_src elisp
-(eat/pkg toc-org)
-#+end_src
-** Export to html
-*** TODO Inline image
-For now use ~pandoc --embed-resources --standalone~.
-
-#+begin_src emacs-lisp
-(defun eat/org-export-to-html ()
-  "Convert current org buffer to html with image embed.
-Need pandoc installed."
-  (interactive)
-  (let* ((from (buffer-file-name))
-         (to (concat (file-name-sans-extension from) ".html")))
-    (shell-command (format "pandoc --embed-resources --standalone %s -o %s" from to))
-    (find-file to)))
-#+end_src
-*** Syntax highlighting
-#+begin_src emacs-lisp
-(eat/pkg htmlize)
-#+end_src
-
-** org-variable-pitch
-#+begin_src emacs-lisp
-(eat/pkg org-variable-pitch)
-#+end_src
-** prose-mode for writting
-#+begin_src elisp
-(defvar eat/prose-mode-map
-  (let ((map (make-sparse-keymap)))
-    (keymap-set map "C-a" #'beginning-of-visual-line)
-    (keymap-set map "C-e" #'end-of-visual-line)
-    map)
-  "Mode map for ‘eat/prose-mode’.")
-
-(define-minor-mode eat/prose-mode
-  "A mode that optimizes for prose editing."
-  :lighter " PROSE"
-  :keymap eat/prose-mode-map
-  (if eat/prose-mode
-      (progn
-        (org-variable-pitch-minor-mode 1)
-        (visual-fill-column-mode 1)
-        (setq-local cursor-type 'bar)
-        (setq-local line-spacing 0.15)
-        (setq-local whitespace-style '(tab-mark))
-        (turn-off-auto-fill)
-        (whitespace-mode))
-    (org-variable-pitch-minor-mode -1)
-    (visual-fill-column-mode -1)
-    (whitespace-mode -1)
-    (variable-pitch-mode -1)
-    (kill-local-variable 'line-spacing)
-    (kill-local-variable 'cursor-type)))
-#+end_src
-** org-download                                                       :deps:
-#+begin_src emacs-lisp
-(eat/pkg org-download)
-
-;; NOTE from doomemacs
-(defmacro pushnew! (place &rest values)
-  "Push VALUES sequentially into PLACE, if they aren't already present.
-This is a variadic `cl-pushnew'."
-  (let ((var (make-symbol "result")))
-    `(dolist (,var (list ,@values) (with-no-warnings ,place))
-       (cl-pushnew ,var ,place :test #'equal))))
-
-;; HACK We add these manually so that org-download is truly lazy-loaded
-(pushnew! dnd-protocol-alist
-          '("^\\(?:https?\\|ftp\\|file\\|nfs\\):" . org-download-dnd)
-          '("^data:" . org-download-dnd-base64))
-(advice-add #'org-download-enable :override #'ignore)
-
-(setq org-download-image-dir "img"
-      org-download-image-org-width 800)
-#+end_src
-** org-present
+*** org-present
 #+begin_src emacs-lisp
 (eat/pkg org-present)
 
@@ -2738,7 +2644,80 @@ This is a variadic `cl-pushnew'."
 
 (add-hook 'org-present-after-navigate-functions #'my/org-present-prepare-slide)
 #+end_src
-** cite
+*** UI
+**** Chinese inline format
+#+begin_src emacs-lisp
+(defun eat/insert-zero-width-space ()
+  (interactive)
+  (insert-char ?\u200B)) ;; code for ZERO WIDTH SPACE
+(keymap-global-set "C-x 8 0" #'eat/insert-zero-width-space)
+#+end_src
+
+**** Auto hide/display emphasis
+#+begin_src emacs-lisp
+(eat/pkg org-appear)
+(setq org-hide-emphasis-markers t)
+(add-hook 'org-mode-hook #'org-appear-mode)
+#+end_src
+
+**** Use variable pitch font
+#+begin_src emacs-lisp
+(eat/pkg org-variable-pitch)
+#+end_src
+**** Org Modern
+#+begin_src emacs-lisp
+(eat/pkg org-modern)
+(eat/pkg org-modern-indent "https://github.com/jdtsmith/org-modern-indent")
+
+(setq org-modern-star ["›"]
+      org-modern-hide-stars nil
+      ;; Enable this will break code block indentation.
+      org-modern-block-fringe nil
+      ;; Use valign instead
+      org-modern-table nil)
+
+(defun eat/setup-org-modern ()
+  (setq-local line-spacing 0.15)
+  (org-modern-mode))
+(add-hook 'org-mode-hook 'eat/setup-org-modern)
+(add-hook 'org-mode-hook 'org-modern-indent-mode 90)
+#+end_src
+*** Export
+
+**** Html
+
+***** Syntax highlighting
+#+begin_src emacs-lisp
+(eat/pkg htmlize)
+#+end_src
+
+***** TODO Inline image
+For now use ~pandoc --embed-resources --standalone~.
+
+#+begin_src emacs-lisp
+(defun eat/org-export-to-html ()
+  "Convert current org buffer to html with image embed.
+Need pandoc installed."
+  (interactive)
+  (let* ((from (buffer-file-name))
+         (to (concat (file-name-sans-extension from) ".html")))
+    (shell-command (format "pandoc --embed-resources --standalone %s -o %s" from to))
+    (find-file to)))
+#+end_src
+
+**** Markdown
+#+begin_src emacs-lisp
+(eat/pkg ox-gfm)
+(with-eval-after-load 'ox-gfm
+  (add-to-list 'org-export-backends 'md))
+#+end_src
+*** Writing
+**** Table of content
+#+begin_src elisp
+(eat/pkg toc-org)
+#+end_src
+
+**** Cite
 M-x ~org-cite-insert~
 
 #+begin_src elisp
@@ -2751,10 +2730,77 @@ M-x ~org-cite-insert~
       citar-bibliography org-cite-global-bibliography)
 
 #+end_src
+
+**** Drag image
+#+begin_src emacs-lisp
+(eat/pkg org-download)
+
+;; NOTE from doomemacs
+(defmacro pushnew! (place &rest values)
+  "Push VALUES sequentially into PLACE, if they aren't already present.
+This is a variadic `cl-pushnew'."
+  (let ((var (make-symbol "result")))
+    `(dolist (,var (list ,@values) (with-no-warnings ,place))
+       (cl-pushnew ,var ,place :test #'equal))))
+
+;; HACK We add these manually so that org-download is truly lazy-loaded
+(pushnew! dnd-protocol-alist
+          '("^\\(?:https?\\|ftp\\|file\\|nfs\\):" . org-download-dnd)
+          '("^data:" . org-download-dnd-base64))
+(advice-add #'org-download-enable :override #'ignore)
+
+(setq org-download-image-dir "img"
+      org-download-image-org-width 800)
+#+end_src
+**** A minor mode
+#+begin_src elisp
+(defvar eat/prose-mode-map
+  (let ((map (make-sparse-keymap)))
+    (keymap-set map "C-a" #'beginning-of-visual-line)
+    (keymap-set map "C-e" #'end-of-visual-line)
+    map)
+  "Mode map for ‘eat/prose-mode’.")
+
+(define-minor-mode eat/prose-mode
+  "A mode that optimizes for prose editing."
+  :lighter " PROSE"
+  :keymap eat/prose-mode-map
+  (if eat/prose-mode
+      (progn
+        (org-variable-pitch-minor-mode 1)
+        (visual-fill-column-mode 1)
+        (setq-local cursor-type 'bar)
+        (setq-local line-spacing 0.15)
+        (setq-local whitespace-style '(tab-mark))
+        (turn-off-auto-fill)
+        (whitespace-mode))
+    (org-variable-pitch-minor-mode -1)
+    (visual-fill-column-mode -1)
+    (whitespace-mode -1)
+    (variable-pitch-mode -1)
+    (kill-local-variable 'line-spacing)
+    (kill-local-variable 'cursor-type)))
+#+end_src
+
+** Markdown
+#+begin_src emacs-lisp
+(eat/pkg markdown-mode)
+(eat/pkg markdown-toc)
+
+(setq markdown-enable-wiki-links t
+      markdown-italic-underscore t
+      markdown-asymmetric-header t
+      markdown-make-gfm-checkboxes-buttons t
+      markdown-gfm-uppercase-checkbox t
+      markdown-fontify-code-blocks-natively t)
+
+(add-to-list 'auto-mode-alist '("README\\.md\\'" . gfm-mode))
+#+end_src
 * Application
 ** Magit
 *** config
 #+begin_src emacs-lisp
+(eat/pkg git-modes)
 (eat/pkg magit)
 
 (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell)
@@ -3128,9 +3174,6 @@ Need =xapian-core=.
 #+end_src
 * Modes
 #+begin_src elisp
-(eat/pkg git-modes)
-(eat/pkg markdown-mode)
-(eat/pkg markdown-toc)
 (eat/pkg protobuf-mode)
 (eat/pkg csv-mode)
 
@@ -3140,13 +3183,6 @@ Need =xapian-core=.
 
 (add-to-list 'auto-mode-alist
              (cons "/.dockerignore\\'" 'gitignore-mode))
-
-(setq markdown-enable-wiki-links t
-      markdown-italic-underscore t
-      markdown-asymmetric-header t
-      markdown-make-gfm-checkboxes-buttons t
-      markdown-gfm-uppercase-checkbox t
-      markdown-fontify-code-blocks-natively t)
 
 (with-eval-after-load "protobuf-mode"
   (add-hook 'protobuf-mode-hook
