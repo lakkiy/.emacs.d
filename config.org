@@ -1080,6 +1080,8 @@ https://zck.org/balance-emacs-windows
 (add-hook 'eat/after-make-console-frame-hooks       #'eat/tui-load-theme)
 (add-hook 'eat/after-make-window-system-frame-hooks #'eat/gui-load-theme)
 (add-hook 'load-theme-hook #'eat/setup-mode-line-font)
+
+(eat/pkg gruber-darker-theme)
 #+end_src
 ** solaire mode
 
