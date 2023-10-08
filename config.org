@@ -28,9 +28,14 @@
 #+end_src
 ** Package manager
 #+begin_src emacs-lisp
-(setq package-archives '(("gnu"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-			             ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
-                         ("melpa" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/"))
+(setq package-archives '(("gnu"          . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+			             ("nongnu"       . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
+			             ("melpa-stable" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/stable-melpa/")
+                         ("melpa"        . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/"))
+      package-archive-priorities '(("gnu"          . 9)
+                                   ("nongnu"       . 8)
+                                   ("melpa-stable" . 7)
+                                   ("melpa"        . 6))
       package-quickstart t)
 (package-activate-all)
 
