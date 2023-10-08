@@ -250,15 +250,10 @@ Some of hook of this packgae is too hacked, maybe drop it.
 ** MacOS
 #+begin_src elisp
 (when eat/macp
-  (setq mac-option-modifier 'meta
-        mac-command-modifier 'super
-        ;; Render thinner fonts
-        ns-use-thin-smoothing t
-        ;; Don't open a file in a new frame
-        ns-pop-up-frames nil)
-
   (add-hook 'after-init-hook #'eat/getenv-path)
 
+  (setq mac-option-modifier 'meta
+        mac-command-modifier 'super)
   (global-set-key [(super a)] #'mark-whole-buffer)
   (global-set-key [(super v)] #'yank)
   (global-set-key [(super c)] #'kill-ring-save)
@@ -267,7 +262,16 @@ Some of hook of this packgae is too hacked, maybe drop it.
   (global-set-key [(super w)] #'delete-frame)
   (global-set-key [(super z)] #'undo)
   ;; `save-buffers-kill-emacs' will shutdown emacs daemon
-  (global-set-key [(super q)] #'save-buffers-kill-terminal))
+  (global-set-key [(super q)] #'save-buffers-kill-terminal)
+
+  (setq ns-use-native-fullscreen nil
+        ;; Render thinner fonts
+        ns-use-thin-smoothing t
+        ;; Don't open a file in a new frame
+        ns-pop-up-frames nil)
+  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+  (add-to-list 'default-frame-alist '(ns-appearance . dark))
+  (set-frame-parameter nil 'fullscreen 'maximized))
 #+end_src
 
 ** Linux
@@ -981,7 +985,7 @@ https://zck.org/balance-emacs-windows
 (defvar eat/fonts-default        '("DejaVu Sans Mono" "Monaco" "Cascadia Code" "Menlo" "Source Code Pro"))
 (defvar eat/fonts-variable-pitch '("Bookerly" "Cardo" "Times New Roman" "DejaVu Sans"))
 (defvar eat/fonts-cjk            '("LXGW WenKai" "WenQuanYi Micro Hei" "Microsoft Yahei"))
-(defvar eat/fonts-unicode        '("Symbols Nerd Font"))
+(defvar eat/fonts-unicode        '("Symbols Nerd Font" "Apple Color Emoji"))
 (defvar eat/fonts-emoji          '("Apple Color Emoji" "Segoe UI Symbol" "Noto Color Emoji"))
 
 (defvar eat/font-size-default   13)
@@ -1022,9 +1026,11 @@ https://zck.org/balance-emacs-windows
     (set-face-attribute 'fixed-pitch nil :font eat/font-default))
   ;; variable-pitch
   (when eat/font-variable-pitch (set-face-font 'variable-pitch eat/font-variable-pitch))
+  ;; unicode
+  (when eat/font-unicode
+    (set-fontset-font t 'unicode eat/font-unicode))
   ;;  emoji
   (when eat/font-emoji
-    (set-fontset-font t 'unicode eat/font-unicode)
     (set-fontset-font t 'emoji   eat/font-emoji))
   ;; Chinese font, NOTE must set after unicode
   (when eat/font-cjk
@@ -1046,7 +1052,7 @@ https://zck.org/balance-emacs-windows
 (defvar eat/theme-tui 'wombat
   "Default TUI theme.")
 
-(defvar eat/theme-system-light 'modus-operandi
+(defvar eat/theme-system-light 'pale
   "Default light theme after system appearance changed.")
 
 (defvar eat/theme-system-dark 'wombat
@@ -1083,7 +1089,10 @@ https://zck.org/balance-emacs-windows
     (add-to-list 'ns-system-appearance-change-functions
                  (lambda (l?d)
                    (if (eq l?d 'light)
-                       (load-theme eat/theme-system-light)
+                       (progn
+                         (set-frame-parameter nil 'ns-appearance 'light)
+                         (load-theme eat/theme-system-light))
+                     (set-frame-parameter nil 'ns-appearance 'dark)
                      (load-theme eat/theme-system-dark))))))
 
 (add-hook 'eat/after-make-console-frame-hooks       #'eat/tui-load-theme)
