@@ -411,6 +411,12 @@ Set cursor pos to mouse pos if they are not in same pos.
   (setq eww-retrieve-command '("readable")))
 #+end_src
 
+*** vc
+#+begin_src emacs-lisp
+;; Enought for me
+(setq-default vc-handled-backends '(Git))
+#+end_src
+
 * Lib
 
 #+begin_src elisp
@@ -1231,13 +1237,6 @@ point reaches the beginning or end of the buffer, stop there."
   (interactive)
   (find-alternate-file (format "/sudo::%s" (buffer-file-name))))
 (keymap-global-set "C-x C-z" #'eat/reopen-file-with-sudo)
-
-;; https://www.reddit.com/r/emacs/comments/y92y4b/tramp_users_slowness_got_you_down_check/
-(defun my-vc-off-if-remote ()
-  (if (file-remote-p (buffer-file-name))
-      (setq-local vc-handled-backends '(Git))))
-
-(add-hook 'find-file-hook 'my-vc-off-if-remote)
 
 (with-eval-after-load 'tramp
   ;; ‘Private Directories’ are the settings of the $PATH environment,
