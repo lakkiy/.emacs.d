@@ -3107,7 +3107,7 @@ Run =docker pull zevlg/telega-server:latest=
 #+begin_src elisp
 (when (eat/modulep '+telega)
   (eat/pkg telega)
-  (setq telega-use-docker t
+  (setq ;; telega-use-docker t
         telega-chat-fill-column 75
         telega-server-libs-prefix "/usr"
         telega-translate-to-language-by-default "zh")
