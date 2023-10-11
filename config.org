@@ -1014,8 +1014,8 @@ https://zck.org/balance-emacs-windows
 
 (defvar eat/font-rescale-alist
   `((,eat/font-cjk     . 0.95)
-    (,eat/font-emoji   . 0.85)
-    (,eat/font-unicode . 0.85))
+    (,eat/font-emoji   . 0.80)
+    (,eat/font-unicode . 0.80))
   "A list of font names that should be rescaled.")
 
 (defun eat/rescale-font ()
