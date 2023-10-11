@@ -6,7 +6,6 @@
 #+begin_src elisp :tangle early-init.el
 (setq frame-inhibit-implied-resize t
       package-enable-at-startup nil
-      file-name-handler-alist nil
       message-log-max 16384
       gc-cons-threshold most-positive-fixnum
       gc-cons-percentage 0.6
@@ -227,6 +226,31 @@ Some of hook of this packgae is too hacked, maybe drop it.
      (time-subtract after-init-time before-init-time)))
    gcs-done))
 (add-hook 'emacs-startup-hook #'eat/show-startup-time)
+#+end_src
+
+*** misc
+#+begin_src emacs-lisp
+;; Don't pass case-insensitive to `auto-mode-alist'
+(setq auto-mode-case-fold nil)
+
+;; file-remote-p relies on an entry in file-name-handler-alist
+;; (autoloaded by tramp.el) to detect remote paths, which causes tramp
+;; to be loaded.
+;; sets file-name-handler-alist to nil at startup for a noteable boost
+;; in startup performance and restore after startup or tramp won't
+;; loaded and project won't remember remote projects.
+(unless (or (daemonp) noninteractive init-file-debug)
+  ;; Suppress file handlers operations at startup
+  ;; `file-name-handler-alist' is consulted on each call to `require' and `load'
+  (let ((old-value file-name-handler-alist))
+    (setq file-name-handler-alist nil)
+    (set-default-toplevel-value 'file-name-handler-alist file-name-handler-alist)
+    (add-hook 'emacs-startup-hook
+              (lambda ()
+                "Recover file name handlers."
+                (setq file-name-handler-alist
+                      (delete-dups (append file-name-handler-alist old-value))))
+              101)))
 #+end_src
 
 ** PATH
