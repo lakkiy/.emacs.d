@@ -3120,9 +3120,10 @@ Run =docker pull zevlg/telega-server:latest=
 (when (eat/modulep '+telega)
   (eat/pkg telega)
   (setq ;; telega-use-docker t
-        telega-chat-fill-column 75
-        telega-server-libs-prefix "/usr"
-        telega-translate-to-language-by-default "zh")
+   telega-chat-fill-column 75
+   telega-server-libs-prefix "/usr"
+   telega-translate-to-language-by-default "zh"
+   telega-chat-input-markups '("markdown2" "org"))
 
   (defun eat/telega-root-setup ()
     ;; (eat/fixed-pitch-setup) ;; FIXME
