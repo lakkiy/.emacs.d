@@ -169,8 +169,9 @@ If HOOK is a list, then add all FUNCTION hooks to HOOK."
  server-client-instructions nil                     ; no client startup messages
  )
 
-;; https://github.com/Genivia/ugrep#using-ugrep-within-emacs
-(setq-default grep-template "ugrep -0Iinr -e <R>")
+(when (executable-find "ugrep")
+  ;; https://github.com/Genivia/ugrep#using-ugrep-within-emacs
+  (setq-default grep-template "ugrep -0Iinr -e <R>"))
 #+end_src
 ** Module
 #+begin_src emacs-lisp
@@ -335,26 +336,13 @@ Some of hook of this packgae is too hacked, maybe drop it.
 #+end_src
 
 *** project.el
+
+TODO: add a function to clear remote projects
+
 #+begin_src elisp
-;; go to the end of buffer after `project-compile'
-(add-hook 'compilation-start-hook #'end-of-buffer)
-
-(defun eat/project-name ()
-  (file-name-nondirectory
-   (directory-file-name
-    (project-root
-     (project-current)))))
-
-;; do not remember tramp project
-(defun eat/project-remember-advice (fn pr &optional no-write)
-  (let* ((remote? (file-remote-p (project-root pr)))
-         (no-write (if remote? t no-write)))
-    (funcall fn pr no-write)))
-(advice-add 'project-remember-project :around
-            'eat/project-remember-advice)
-
 (with-eval-after-load 'project
-
+  ;; go to the end of buffer after `project-compile'
+  (add-hook 'compilation-start-hook #'end-of-buffer)
   ;; use fd in `project-find-file'
   (defun eat/project-files-in-directory (dir)
     "Use `fd' to list files in DIR."
@@ -369,7 +357,6 @@ Some of hook of this packgae is too hacked, maybe drop it.
       "Override `project-files' to use `fd' in local projects."
       (mapcan #'eat/project-files-in-directory
               (or dirs (list (project-root project))))))
-
   (setq project-vc-ignores '("target/" "bin/" "obj/")
         project-vc-extra-root-markers '(".project"
                                         "go.mod"
