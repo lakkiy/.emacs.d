@@ -2929,7 +2929,7 @@ Use eat under linux and macos, use eshell under windows.
   (put 'help-fns-edit-variable 'disabled nil))
 #+end_src
 
-** Mail, News
+** gnus, Mail, News
 #+begin_src elisp
 ;;; gnus
 (setq
@@ -3018,17 +3018,21 @@ Use eat under linux and macos, use eshell under windows.
  gnus-summary-make-false-root 'adopt
  gnus-simplify-subject-functions '(gnus-simplify-subject-re gnus-simplify-whitespace)
  gnus-summary-thread-gathering-function 'gnus-gather-threads-by-subject
- gnus-thread-indent-level 2
  ;; Filling in threads
  ;; 2 old articles are enough for memory
  gnus-fetch-old-headers 2
  gnus-fetch-old-ephemeral-headers 2
  gnus-build-sparse-threads 'some
+ ;; More threading
+ gnus-show-threads t
+ gnus-thread-indent-level 2
+ gnus-thread-hide-subtree nil
  ;; Sorting
  gnus-thread-sort-functions '(gnus-thread-sort-by-most-recent-date)
  gnus-subthread-sort-functions '(gnus-thread-sort-by-date)
  ;; Viewing
  gnus-view-pseudos 'automatic
+ gnus-view-pseudos-separately t
  gnus-view-pseudo-asynchronously t
  ;; No auto select
  gnus-auto-select-first nil
@@ -3037,22 +3041,6 @@ Use eat under linux and macos, use eshell under windows.
 
 (add-hook 'gnus-select-group-hook #'gnus-group-set-timestamp)
 (add-hook 'gnus-summary-mode-hook #'hl-line-mode)
-
-(with-eval-after-load 'gnus-topic
-  (setq gnus-topic-alist '(("Gmail"
-                            "nnimap+Gmail:INBOX"
-                            "nnimap+Gmail:[Gmail]/Spam"
-                            "nnimap+Gmail:[Gmail]/Starred"
-                            "nnimap+Gmail:[Gmail]/All Mail"
-                            "nnimap+Gmail:[Gmail]/Important"
-                            "nnimap+Gmail:[Gmail]/Trash"
-                            "nnimap+Gmail:[Gmail]/Sent Mail"
-                            "nnimap+Gmail:[Gmail]/Drafts"
-                            "nnimap+Gmail:emacs"
-                            "nnimap+Gmail:golang")
-                           ("misc"
-                            "nndraft:drafts")
-                           ("Gnus"))))
 
 ;;; message
 (add-hook 'message-mode-hook #'auto-fill-mode)
