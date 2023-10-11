@@ -1063,13 +1063,13 @@ https://zck.org/balance-emacs-windows
 #+begin_src elisp
 (setq modus-themes-fringes nil)
 
-(defvar eat/theme 'pale
+(defvar eat/theme 'modus-operandi
   "Default theme.")
 
 (defvar eat/theme-tui 'wombat
   "Default TUI theme.")
 
-(defvar eat/theme-system-light 'pale
+(defvar eat/theme-system-light 'modus-operandi
   "Default light theme after system appearance changed.")
 
 (defvar eat/theme-system-dark 'wombat
