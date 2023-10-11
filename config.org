@@ -2230,6 +2230,13 @@ Also check:
 ~treesit-language-source-alist~
 ~treesit-install-language-grammar~
 
+#+begin_src emacs-lisp
+(setq
+ ;; 没有在 tree-sitter 组织下的 parser
+ treesit-language-source-alist
+ '((gomod . ("https://github.com/camdencheek/tree-sitter-gomod.git"))))
+#+end_src
+
 *** go
 #+begin_src emacs-lisp
 (with-eval-after-load 'go-ts-mode
