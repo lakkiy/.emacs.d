@@ -361,7 +361,9 @@ Some of hook of this packgae is too hacked, maybe drop it.
 
 *** project.el
 
-TODO: add a function to clear remote projects
+TODOs:
+- Add a function to clear all remote projects.
+- Add project manually via M-x.
 
 #+begin_src elisp
 (with-eval-after-load 'project
@@ -1240,9 +1242,13 @@ point reaches the beginning or end of the buffer, stop there."
  remote-file-name-inhibit-cache nil
  ;; C-x C-f /ssh:
  tramp-default-method "ssh"
- vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
-                              vc-ignore-dir-regexp
-                              tramp-file-name-regexp))
+ ;; NOTE this will make project didn't regconize and save remote
+ ;; project, and eglot also didn't work under project, only works for
+ ;; single buffer
+ ;; vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
+ ;;                              vc-ignore-dir-regexp
+ ;;                              tramp-file-name-regexp)
+ )
 
 (defun eat/reopen-file-with-sudo ()
   (interactive)
