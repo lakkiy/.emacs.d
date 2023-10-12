@@ -359,8 +359,22 @@ Some of hook of this packgae is too hacked, maybe drop it.
 (add-hook 'on-init-ui-hook #'context-menu-mode)
 #+end_src
 
-*** project.el
+*** eww
+#+begin_src emacs-lisp
+;; Install: npm install -g readability-cli
+(when (executable-find "readable")
+  (setq eww-retrieve-command '("readable")))
+#+end_src
 
+*** vc project xref tramp
+
+**** vc
+#+begin_src emacs-lisp
+;; Enought for me
+(setq-default vc-handled-backends '(Git))
+#+end_src
+
+**** project
 TODOs:
 - Add a function to clear all remote projects.
 - Add project manually via M-x.
@@ -395,7 +409,7 @@ TODOs:
                                         "README.md")))
 #+end_src
 
-*** TODO xref
+**** xref
 Must set before consult.
 Use control-left-click to jump to defintions.
 Need ugrep installed(check external program).
@@ -417,17 +431,40 @@ Set cursor pos to mouse pos if they are not in same pos.
       xref-history-storage 'xref-window-local-history)
 #+end_src
 
-*** eww
-#+begin_src emacs-lisp
-;; Install: npm install -g readability-cli
-(when (executable-find "readable")
-  (setq eww-retrieve-command '("readable")))
+**** tramp
+#+begin_src elisp
+(setq
+ remote-file-name-inhibit-locks t
+ tramp-verbose 1 ;; only show error message
+ tramp-completion-reread-directory-timeout nil ;;  speed up complete
+ tramp-auto-save-directory temporary-file-directory
+ ;; Always use file cache when using tramp
+ remote-file-name-inhibit-cache nil
+ ;; C-x C-f /ssh:
+ tramp-default-method "ssh"
+ ;; NOTE this will make project didn't regconize and save remote
+ ;; project, and eglot also didn't work under project, only works for
+ ;; single buffer
+ ;; vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
+ ;;                              vc-ignore-dir-regexp
+ ;;                              tramp-file-name-regexp)
+ )
+
+(defun eat/reopen-file-with-sudo ()
+  (interactive)
+  (find-alternate-file (format "/sudo::%s" (buffer-file-name))))
+(keymap-global-set "C-x C-z" #'eat/reopen-file-with-sudo)
+
+(with-eval-after-load 'tramp
+  ;; ‘Private Directories’ are the settings of the $PATH environment,
+  ;; as given in your ‘~/.profile’.  This entry is represented in
+  ;; the list by the special value ‘tramp-own-remote-path’.
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 #+end_src
 
-*** vc
+*** help shortdoc
 #+begin_src emacs-lisp
-;; Enought for me
-(setq-default vc-handled-backends '(Git))
+(add-hook 'help-fns-describe-function-functions #'shortdoc-help-fns-examples-function)
 #+end_src
 
 * Lib
@@ -1230,36 +1267,6 @@ point reaches the beginning or end of the buffer, stop there."
   ;; Restore window config after quitting ediff
   (add-hook 'ediff-before-setup-hook #'eat/ediff-save-window-conf)
   (add-hook 'ediff-quit-hook #'eat/ediff-restore-window-conf))
-#+end_src
-*** Tramp
-#+begin_src elisp
-(setq
- remote-file-name-inhibit-locks t
- tramp-verbose 1 ;; only show error message
- tramp-completion-reread-directory-timeout nil ;;  speed up complete
- tramp-auto-save-directory temporary-file-directory
- ;; Always use file cache when using tramp
- remote-file-name-inhibit-cache nil
- ;; C-x C-f /ssh:
- tramp-default-method "ssh"
- ;; NOTE this will make project didn't regconize and save remote
- ;; project, and eglot also didn't work under project, only works for
- ;; single buffer
- ;; vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
- ;;                              vc-ignore-dir-regexp
- ;;                              tramp-file-name-regexp)
- )
-
-(defun eat/reopen-file-with-sudo ()
-  (interactive)
-  (find-alternate-file (format "/sudo::%s" (buffer-file-name))))
-(keymap-global-set "C-x C-z" #'eat/reopen-file-with-sudo)
-
-(with-eval-after-load 'tramp
-  ;; ‘Private Directories’ are the settings of the $PATH environment,
-  ;; as given in your ‘~/.profile’.  This entry is represented in
-  ;; the list by the special value ‘tramp-own-remote-path’.
-  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 #+end_src
 *** Hl Line
 #+begin_src emacs-lisp
@@ -3124,7 +3131,8 @@ Run =docker pull zevlg/telega-server:latest=
    telega-chat-fill-column 75
    telega-server-libs-prefix "/usr"
    telega-translate-to-language-by-default "zh"
-   telega-chat-input-markups '("markdown2" "org"))
+   telega-chat-input-markups '("markdown2" "org")
+   telega-completing-read-function completing-read-function)
 
   (defun eat/telega-root-setup ()
     ;; (eat/fixed-pitch-setup) ;; FIXME
