@@ -1978,6 +1978,7 @@ Need a lot...
 (eat/pkg popon "https://codeberg.org/akib/emacs-popon.git")
 (eat/pkg acm-terminal "https://github.com/twlz0ne/acm-terminal")
 
+(setq lsp-bridge-enable-with-tramp t)
 
 (defun eat/lsp-bridge-mode-setup ()
   (interactive)
