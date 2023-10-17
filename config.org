@@ -2138,7 +2138,8 @@ Need a lot...
                     "github.com/cweill/gotests/..."
                     "github.com/fatih/gomodifytags"
                     "github.com/davidrjenni/reftools/cmd/fillstruct"
-                    "github.com/rogpeppe/godef")
+                    "github.com/rogpeppe/godef"
+                    "github.com/traefik/yaegi/cmd/yaegi")
   "All necessary go tools.")
 
 (defun go-update-tools ()
@@ -2352,6 +2353,13 @@ This command only works in a tree-sitter major mode."
          :request "launch"
          :cwd dape-cwd-fn
          :program dape-cwd-fn)))
+#+end_src
+** REPL programming for all languages
+#+begin_src emacs-lisp
+  (eat/pkg repl-driven-development)
+
+  (with-eval-after-load 'go-mode
+    (repl-driven-development [C-x C-g] "yaegi"))
 #+end_src
 * Tools
 ** Visual Fill Column
