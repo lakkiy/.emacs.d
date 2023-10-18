@@ -467,6 +467,16 @@ Set cursor pos to mouse pos if they are not in same pos.
 (add-hook 'help-fns-describe-function-functions #'shortdoc-help-fns-examples-function)
 #+end_src
 
+*** browse-url
+#+begin_src emacs-lisp
+(setq browse-url-generic-program
+      (or (executable-find "firefox")
+          (executable-find "chromium")
+          (executable-find "google-chrome-stable")
+          (executable-find "google-chrome")
+          (when eat/macp "open")
+          (when eat/linuxp "xdg-open")))
+#+end_src
 * Lib
 
 #+begin_src elisp
@@ -2547,6 +2557,15 @@ Set ~gptel-api-key~.
 (eat/pkg envrc)
 
 (add-hook 'after-init-hook #'envrc-global-mode)
+#+end_src
+** pastebin service
+#+begin_src emacs-lisp
+(eat/pkg webpaste)
+
+(setq webpaste-paste-confirmation t
+      webpaste-add-to-killring t
+      webpaste-provider-priority '("paste.mozilla.org")
+      webpaste-open-in-browser nil)
 #+end_src
 * Markup Languages
 ** Align table
