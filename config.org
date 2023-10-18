@@ -171,6 +171,11 @@ If HOOK is a list, then add all FUNCTION hooks to HOOK."
 (when (executable-find "ugrep")
   ;; https://github.com/Genivia/ugrep#using-ugrep-within-emacs
   (setq-default grep-template "ugrep -0Iinr -e <R>"))
+
+
+;; coding-system
+(prefer-coding-system 'utf-8)
+(setq-default buffer-file-coding-system 'utf-8)
 #+end_src
 ** Module
 #+begin_src emacs-lisp
