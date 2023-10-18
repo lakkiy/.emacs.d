@@ -17,10 +17,54 @@
       ;; disable native compilation
       native-comp-jit-compilation nil)
 #+end_src
+** Enable lexical binding
+#+begin_src emacs-lisp
+;;; -*- lexical-binding: t -*-
+#+end_src
+
+Emacs 默认使用 dynamic binding，主要影响的是变量的作用域。
+
+在默认的 dynamic binding 下变量的作用域是基于函数调用栈的，变量被修改
+后会影响到整个函数调用链上。
+
+在开启 lexcial binding 后变量的作用域是基于代码块的结构的，更符合通常
+的编程语言中的作用域规则，变量的作用域被限制在定义它的代码块内，不会泄
+露到外部代码块。
+
+例如对于如下代码，在未开始 lexcial binding 时输出为：
+#+RESULTS:
+: Outer: x is 10
+: Inner: x is 20
+: Outer: x is 20
+当调用 =inner-function= 中内部引用 =x= 时，会查找外部调用堆栈中的 =x= ，既
+=outer-function= 中的 =x= ，值为 =10= 。
+
+而当开启 lexcial binding 时输出的结果为：
+: Outer: x is 10
+: Inner: x is 20
+: Outer: x is 10
+当调用 =inner-function= 中内部引用 =x= 时，它只会看到自己的局部变量 =x= ，值
+为 =20= ，而不会改变外部函数 =outer-function= 中的 =x= 的值，仍为 =10= 。
+
+#+begin_src emacs-lisp :tangle no
+;;; -*- lexical-binding: t -*-
+
+(defun outer-function ()
+  (let ((x 10))
+    (message "Outer: x is %d" x)
+    (inner-function)
+    (message "Outer: x is %d" x)))
+
+(defun inner-function ()
+  (let ((x 20))
+    (message "Inner: x is %d" x)))
+
+(outer-function)
+#+end_src
+
 
 ** Load custom file
 #+begin_src elisp
-;;; -*- lexical-binding: t -*-
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (and (file-exists-p custom-file) (file-readable-p custom-file))
   (load custom-file :no-error :no-message))
@@ -2490,6 +2534,8 @@ Set cookie manually:
 #+begin_src emacs-lisp
 (eat/pkg d2-mode)
 (eat/pkg ob-d2)
+
+(add-to-list 'auto-mode-alist '("\\.d2" . d2-mode))
 #+end_src
 ** AI
 *** copilot
