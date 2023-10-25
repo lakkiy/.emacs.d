@@ -599,25 +599,23 @@ No tab will created if the command is cancelled."
           (tab-bar-new-tab)
           (call-interactively #'project-switch-project)
           (when-let ((proj (project-root (project-current))))
-            (tab-bar-rename-tab (format "%s" (file-name-nondirectory (directory-file-name proj))))
+            (tab-bar-rename-tab
+             (format "%s" (file-name-nondirectory (directory-file-name proj))))
             (setq succ t)))
       (unless succ
         (tab-bar-close-tab)))))
 
-(add-hook 'tab-bar-mode-hook
-          #'(lambda ()
-              (setq tab-bar-border nil
-                    tab-bar-close-button nil ;; TODO this make tab face wired
-                    tab-bar-new-button (propertize " 🞤 " 'display '(:height 2.0))
-                    tab-bar-back-button nil
-                    tab-bar-tab-name-format-function 'eat/tab-bar-tab-name-format-function
-                    tab-bar-tab-name-truncated-max 10)))
-
 (with-eval-after-load 'tab-bar
-  ;; FIXME 这会导致焦点在 tui emacs 和其他程序切换时自动输入 IO
-  ;; (keymap-global-set "M-[" #'tab-bar-switch-to-prev-tab)
-  ;; (keymap-global-set "M-]" #'tab-bar-switch-to-next-tab)
+  (setq
+   tab-bar-tab-hints t
+   tab-bar-close-button-show nil
+   tab-bar-format '(tab-bar-tabs tab-bar-separator)
+   tab-bar-border nil
+   tab-bar-tab-name-format-function 'eat/tab-bar-tab-name-format-function)
 
+  ;; NOTE do not bind `tab-bar-switch-to-prev-tab' and
+  ;; `tab-bar-switch-to-next-tab' to M-[ or M-], it will make emacs
+  ;; have some bug to auto insert characters after you type everytime
   (keymap-set tab-prefix-map "." #'tab-bar-switch-to-recent-tab)
   (keymap-set tab-prefix-map "," #'tab-bar-rename-tab)
   (keymap-set tab-prefix-map "l" #'eat/tab-bar-switch-project))
@@ -1983,7 +1981,8 @@ there’s no comment in some mode.
 
 (setq flymake-diagnostic-functions nil
       ;; flymake-show-diagnostics-at-end-of-line t
-      flymake-no-changes-timeout 0.2)
+      ;; 过低的延时在使用 tramp 编辑文件时会导致 eglot 报错不准确
+      flymake-no-changes-timeout 0.5)
 
 (defvar sekiro-flymake-mode-line-format `(:eval (sekiro-flymake-mode-line-format)))
 (put 'sekiro-flymake-mode-line-format 'risky-local-variable t)
@@ -2412,6 +2411,8 @@ This command only works in a tree-sitter major mode."
          :request "launch"
          :cwd dape-cwd-fn
          :program dape-cwd-fn)))
+
+(autoload #'dape-toggle-breakpoint "dape" nil t)
 #+end_src
 ** REPL programming for all languages
 #+begin_src emacs-lisp
@@ -3222,12 +3223,20 @@ Run =docker pull zevlg/telega-server:latest=
 #+begin_src elisp
 (when (eat/modulep '+telega)
   (eat/pkg telega)
-  (setq ;; telega-use-docker t
-   telega-chat-fill-column 75
+  (setq
+   ;; telega-use-docker t
    telega-server-libs-prefix "/usr"
+   telega-chat-fill-column 75
    telega-translate-to-language-by-default "zh"
+   ;; send code in markdown format
    telega-chat-input-markups '("markdown2" "org")
-   telega-completing-read-function completing-read-function)
+   ;; use completing instead default ido
+   telega-completing-read-function completing-read-function
+   ;; 省略消息中过长的 url
+   telega-url-shorten-regexps (list `(too-long-link
+                                      :regexp "^\\(https?://\\)\\(.\\{55\\}\\).*?$"
+                                      :symbol ""
+                                      :replace "\\1\\2...")))
 
   (defun eat/telega-root-setup ()
     ;; (eat/fixed-pitch-setup) ;; FIXME
