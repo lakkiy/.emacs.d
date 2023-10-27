@@ -1745,59 +1745,52 @@ Only work for orderless for now.
         avy-style 'pre))
 #+end_src
 * Completion
-** Corfu
-#+begin_src elisp
-(eat/pkg corfu)
-(eat/pkg popon)
-(eat/pkg corfu-terminal)
+** company
+- use C-p/C-n to select prev/next
+- use tab to do complete
+- free ret, popup will no longer interrupt typing
 
-(add-hook 'after-init-hook #'(lambda () (global-corfu-mode 1)))
-(add-hook 'corfu-mode-hook #'(lambda ()
-                               (unless (display-graphic-p)
-                                 (corfu-terminal-mode +1))
-                               (corfu-popupinfo-mode)))
+#+begin_src emacs-lisp
+  (eat/pkg company)
 
-(setq corfu-preview-current nil
-      corfu-auto-delay 0.2
-      corfu-auto-prefix 2
-      corfu-quit-no-match t
-      corfu-quit-at-boundary t
-      corfu-auto t)
+  (add-hook 'prog-mode-hook 'company-mode)
 
-(with-eval-after-load 'corfu
-  (keymap-set corfu-map "<escape>" #'(lambda ()
-                                       (interactive)
-                                       (corfu-quit)
-                                       (when (meow-insert-mode-p)
-                                         (meow-insert-exit))))
-  (keymap-set corfu-map "RET" nil))
+  (defun my-company-capf--candidates (func &rest args)
+    "Try default completion styles."
+    (let ((completion-styles '(basic partial-completion)))
+      (apply func args)))
+  (advice-add 'company-capf--candidates :around 'my-company-capf--candidates)
 
-(defun eat/yas-next-field-or-maybe-expand ()
-  "Try complete current cond or `yas-next-field-or-maybe-expand'.
+  (setq company-idle-delay 0.2) ;; time for snippet expand
+  (setq company-require-match nil)
+  (setq company-minimum-prefix-length 3)
+  (setq company-tooltip-width-grow-only t)
+  (setq company-tooltip-align-annotations t)
+  (setq company-dabbrev-other-buffers nil)
+  (setq company-dabbrev-ignore-case nil)
+  (setq company-dabbrev-downcase nil)
+  (setq company-dabbrev-code-ignore-case nil)
+  (setq company-dabbrev-code-everywhere t)
+  (setq company-tempo-expand t)
+  (setq company-files-exclusions '(".git/" ".DS_Store"))
+  (setq company-format-margin-function nil)
+  (setq company-backends '((company-capf :with company-tempo)
+                           company-files
+                           (company-dabbrev-code company-keywords)
+                           company-dabbrev))
 
-Sometime lsp client return a snippet and complete didn't work(TAB will jump to next field),
-so try complete filst, if there nothing to complete then try to jump to next field or expand."
-  (interactive)
-  (or (corfu-insert) ;; NOTE this works
-      (yas-next-field-or-maybe-expand)))
-(with-eval-after-load 'yasnippet
-  (keymap-set yas-keymap "<tab>" 'eat/yas-next-field-or-maybe-expand)
-  (keymap-set yas-keymap "TAB" 'eat/yas-next-field-or-maybe-expand))
-
-
-(eat/pkg tabnine "https://github.com/shuxiao9058/tabnine")
-
-(with-eval-after-load 'tabnine
-  (tabnine-start-process)
-  (bind tabnine-completion-map
-        "M-<return> "#'tabnine-accept-completion-by-line
-        "C-g" #'tabnine-clear-overlay
-        "M-[" #'tabnine-previous-completion
-        "M-]" #'tabnine-next-completion)
-  (add-hook 'kill-emacs-hook #'tabnine-kill-process))
+  (with-eval-after-load "company"
+    (define-key company-active-map [tab] 'company-complete)
+    (define-key company-active-map (kbd "TAB") 'company-complete)
+    (define-key company-mode-map [remap completion-at-point] 'company-complete)
+    (define-key company-active-map (kbd "C-s") 'company-filter-candidates)
+    ;; Free SPC and RET, popup will no longer interrupt typing.
+    (define-key company-active-map [escape] nil)
+    (define-key company-active-map [return] nil)
+    (define-key company-active-map (kbd "RET") nil)
+    (define-key company-active-map (kbd "SPC") nil))
 #+end_src
-
-** Yasnippet
+** yasnippet
 #+begin_src elisp
 (eat/pkg yasnippet)
 (eat/hook '(prog-mode-hook conf-mode-hook) #'yas-minor-mode)
@@ -1805,6 +1798,32 @@ so try complete filst, if there nothing to complete then try to jump to next fie
   (let ((inhibit-message t))
     (yas-reload-all)))
 #+end_src
+
+** tabnine
+#+begin_src emacs-lisp
+(eat/pkg company-tabnine)
+(autoload #'company-tabnine-install-binary "company-tabnine" nil t)
+;; (add-to-list 'company-backends #'company-tabnine)
+#+end_src
+** copilot
+
+#+begin_src emacs-lisp
+(eat/pkg copilot "https://github.com/zerolfx/copilot.el")
+
+(add-hook 'prog-mode-hook 'copilot-mode)
+
+(with-eval-after-load 'copilot
+  (add-to-list 'copilot-major-mode-alist '("go" . "go"))
+  (add-to-list 'copilot-major-mode-alist '("go-ts" . "go"))
+  (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion)
+  (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion)
+  (define-key copilot-completion-map (kbd "M-L") 'copilot-clear-overlay)
+  (define-key copilot-completion-map (kbd "M-N") 'copilot-next-completion)
+  (define-key copilot-completion-map (kbd "M-P") 'copilot-previous-completion)
+  (with-eval-after-load 'meow
+    (add-to-list 'copilot-enable-predicates 'meow-insert-mode-p)))
+#+end_src
+
 * Programming
 ** Tools
 *** Pair
@@ -2052,7 +2071,8 @@ Need a lot...
       (add-subdirs-to-load-path (expand-file-name "elpa/lsp-bridge" user-emacs-directory)))
   ;; Disable corfu since lsp-bridge use acm.
   (ignore-errors
-    (corfu-mode -1))
+    (corfu-mode -1)
+    (company-mode -1))
   ;; Use tab to jump to next field but do complete when there's acm complete.
   (with-eval-after-load 'yasnippet
     (define-key yas-keymap (kbd "<tab>") 'acm-complete-or-expand-yas-snippet)
@@ -2093,7 +2113,11 @@ Need a lot...
 (setq eglot-events-buffer-size 0
       eglot-sync-connect nil       ;; don't block of LSP connection attempts
       eglot-extend-to-xref t       ;; make eglot manage file out of project by `xref-find-definitions'
-      eglot-ignored-server-capabilites '(:documentHighlightProvider :documentFormattingProvider :documentRangeFormattingProvider))
+      eglot-stay-out-of  '(company)
+      eglot-ignored-server-capabilites
+      '(:documentHighlightProvider
+        :documentFormattingProvider
+        :documentRangeFormattingProvider))
 
 (setq-default eglot-workspace-configuration
               '((:gopls
@@ -2539,24 +2563,6 @@ Set cookie manually:
 (add-to-list 'auto-mode-alist '("\\.d2" . d2-mode))
 #+end_src
 ** AI
-*** copilot
-
-#+begin_src emacs-lisp
-(eat/pkg copilot "https://github.com/zerolfx/copilot.el")
-
-(add-hook 'prog-mode-hook 'copilot-mode)
-
-(with-eval-after-load 'copilot
-  (add-to-list 'copilot-major-mode-alist '("go" . "go"))
-  (add-to-list 'copilot-major-mode-alist '("go-ts" . "go"))
-  (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion)
-  (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion)
-  (define-key copilot-completion-map (kbd "M-L") 'copilot-clear-overlay)
-  (define-key copilot-completion-map (kbd "M-N") 'copilot-next-completion)
-  (define-key copilot-completion-map (kbd "M-P") 'copilot-previous-completion)
-  (with-eval-after-load 'meow
-    (add-to-list 'copilot-enable-predicates 'meow-insert-mode-p)))
-#+end_src
 *** Bing Chat
 - Install the cookie editor extension for [[https://microsoftedge.microsoft.com/addons/detail/cookieeditor/neaplmfkghagebokkhpjpoebhdledlfi][Egde]]
 - Go to bing.com
@@ -2598,11 +2604,6 @@ Set ~gptel-api-key~.
 
 (setq gpt-commit-openai-key
       (auth-source-pick-first-password :host "api.openai.com"))
-#+end_src
-
-*** tabnine
-#+begin_src emacs-lisp
-(eat/pkg tabnine)
 #+end_src
 ** direnv
 #+begin_src emacs-lisp
@@ -5794,4 +5795,45 @@ COLOR is like ”#RRGGBB”."
 #+begin_src emacs-lisp
 (eat/pkg carbon-theme "https://github.com/DogLooksGood/carbon-theme")
 (add-to-list 'custom-theme-load-path (expand-file-name "elpa/carbon-theme" user-emacs-directory))
+#+end_src
+* Trash
+** Corfu
+#+begin_src elisp :tangle trash.el
+(eat/pkg corfu)
+(eat/pkg popon)
+(eat/pkg corfu-terminal)
+
+;; (add-hook 'after-init-hook #'(lambda () (global-corfu-mode 1)))
+(add-hook 'corfu-mode-hook #'(lambda ()
+                               (unless (display-graphic-p)
+                                 (corfu-terminal-mode +1))
+                               (corfu-popupinfo-mode)))
+
+(setq corfu-preview-current nil
+      corfu-auto-delay 0.2
+      corfu-auto-prefix 2
+      corfu-quit-no-match t
+      corfu-quit-at-boundary t
+      corfu-auto t)
+
+(with-eval-after-load 'corfu
+  ;; company can quit capf and insert mode without config
+  (keymap-set corfu-map "<escape>" #'(lambda ()
+                                       (interactive)
+                                       (corfu-quit)
+                                       (when (meow-insert-mode-p)
+                                         (meow-insert-exit))))
+  (keymap-set corfu-map "RET" nil))
+
+(defun eat/yas-next-field-or-maybe-expand ()
+  "Try complete current cond or `yas-next-field-or-maybe-expand'.
+
+Sometime lsp client return a snippet and complete didn't work(TAB will jump to next field),
+so try complete filst, if there nothing to complete then try to jump to next field or expand."
+  (interactive)
+  (or (corfu-insert) ;; NOTE this works
+      (yas-next-field-or-maybe-expand)))
+(with-eval-after-load 'yasnippet
+  (keymap-set yas-keymap "<tab>" 'eat/yas-next-field-or-maybe-expand)
+  (keymap-set yas-keymap "TAB" 'eat/yas-next-field-or-maybe-expand))
 #+end_src

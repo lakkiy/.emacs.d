@@ -1,4 +1,5 @@
 *.md
+trash.el
 codeium
 session.*
 tree-sitter
