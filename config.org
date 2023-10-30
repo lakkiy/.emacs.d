@@ -511,9 +511,10 @@ Set cursor pos to mouse pos if they are not in same pos.
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 #+end_src
 
-*** help shortdoc
+*** TODO help shortdoc
+Why this works under macos but not work under linux(can’t find function)?
 #+begin_src emacs-lisp
-(add-hook 'help-fns-describe-function-functions #'shortdoc-help-fns-examples-function)
+;; (add-hook 'help-fns-describe-function-functions #'shortdoc-help-fns-examples-function)
 #+end_src
 
 *** browse-url
@@ -1803,7 +1804,8 @@ Only work for orderless for now.
 #+begin_src emacs-lisp
 (eat/pkg company-tabnine)
 (autoload #'company-tabnine-install-binary "company-tabnine" nil t)
-;; (add-to-list 'company-backends #'company-tabnine)
+(when (file-directory-p "~/.TabNine/")
+  (add-to-list 'company-backends #'company-tabnine t))
 #+end_src
 ** copilot
 
@@ -1992,7 +1994,9 @@ there’s no comment in some mode.
 #+begin_src emacs-lisp
 (eat/pkg clue "https://github.com/AmaiKinono/clue")
 #+end_src
-*** Flymake
+*** TODO Flymake
+Cause redisplay error under linux with go project.
+
 #+begin_src elisp
 (add-hook 'prog-mode-hook #'flymake-mode)
 (add-hook 'emacs-lisp-mode-hook #'(lambda ()
@@ -2438,12 +2442,14 @@ This command only works in a tree-sitter major mode."
 
 (autoload #'dape-toggle-breakpoint "dape" nil t)
 #+end_src
-** REPL programming for all languages
+** TODO REPL programming for all languages
+If the cli program not found, it cause major mode can’t load.
 #+begin_src emacs-lisp
-  (eat/pkg repl-driven-development)
+(eat/pkg repl-driven-development)
 
-  (with-eval-after-load 'go-mode
-    (repl-driven-development [C-x C-g] "yaegi"))
+
+;; (with-eval-after-load 'go-mode
+;;   (repl-driven-development [C-x C-g] "yaegi"))
 #+end_src
 * Tools
 ** Visual Fill Column
