@@ -607,12 +607,12 @@ No tab will created if the command is cancelled."
         (tab-bar-close-tab)))))
 
 (with-eval-after-load 'tab-bar
-  (setq
-   tab-bar-tab-hints t
-   tab-bar-close-button-show nil
-   tab-bar-format '(tab-bar-tabs tab-bar-separator)
-   tab-bar-border nil
-   tab-bar-tab-name-format-function 'eat/tab-bar-tab-name-format-function)
+  ;; (setq
+  ;;  tab-bar-tab-hints t
+  ;;  tab-bar-close-button-show nil
+  ;;  tab-bar-format '(tab-bar-tabs tab-bar-separator)
+  ;;  tab-bar-border nil
+  ;;  tab-bar-tab-name-format-function 'eat/tab-bar-tab-name-format-function)
 
   ;; NOTE do not bind `tab-bar-switch-to-prev-tab' and
   ;; `tab-bar-switch-to-next-tab' to M-[ or M-], it will make emacs
@@ -1752,44 +1752,53 @@ Only work for orderless for now.
 - free ret, popup will no longer interrupt typing
 
 #+begin_src emacs-lisp
-  (eat/pkg company)
+(eat/pkg company)
 
-  (add-hook 'prog-mode-hook 'company-mode)
+(add-hook 'prog-mode-hook 'company-mode)
 
-  (defun my-company-capf--candidates (func &rest args)
-    "Try default completion styles."
-    (let ((completion-styles '(basic partial-completion)))
-      (apply func args)))
-  (advice-add 'company-capf--candidates :around 'my-company-capf--candidates)
+(defun my-company-capf--candidates (func &rest args)
+  "Try default completion styles."
+  (let ((completion-styles '(basic partial-completion)))
+    (apply func args)))
+(advice-add 'company-capf--candidates :around 'my-company-capf--candidates)
 
-  (setq company-idle-delay 0.2) ;; time for snippet expand
-  (setq company-require-match nil)
-  (setq company-minimum-prefix-length 3)
-  (setq company-tooltip-width-grow-only t)
-  (setq company-tooltip-align-annotations t)
-  (setq company-dabbrev-other-buffers nil)
-  (setq company-dabbrev-ignore-case nil)
-  (setq company-dabbrev-downcase nil)
-  (setq company-dabbrev-code-ignore-case nil)
-  (setq company-dabbrev-code-everywhere t)
-  (setq company-tempo-expand t)
-  (setq company-files-exclusions '(".git/" ".DS_Store"))
-  (setq company-format-margin-function nil)
-  (setq company-backends '((company-capf :with company-tempo)
-                           company-files
-                           (company-dabbrev-code company-keywords)
-                           company-dabbrev))
+(setq company-idle-delay 0.2) ;; time for snippet expand
+(setq company-require-match nil)
+(setq company-minimum-prefix-length 2)
+(setq company-tooltip-width-grow-only t)
+(setq company-tooltip-align-annotations t)
+(setq company-dabbrev-other-buffers nil)
+(setq company-dabbrev-ignore-case nil)
+(setq company-dabbrev-downcase nil)
+(setq company-dabbrev-code-ignore-case nil)
+(setq company-dabbrev-code-everywhere t)
+(setq company-tempo-expand t)
+(setq company-files-exclusions '(".git/" ".DS_Store"))
+(setq company-format-margin-function nil)
+(setq company-frontends '(company-pseudo-tooltip-frontend  ; always show candidates in overlay tooltip
+                          company-echo-metadata-frontend)  ; show selected candidate docs in echo area
+      company-backends '(company-capf
+                         company-files
+                         (company-dabbrev-code company-keywords)
+                         company-dabbrev))
 
-  (with-eval-after-load "company"
-    (define-key company-active-map [tab] 'company-complete)
-    (define-key company-active-map (kbd "TAB") 'company-complete)
-    (define-key company-mode-map [remap completion-at-point] 'company-complete)
-    (define-key company-active-map (kbd "C-s") 'company-filter-candidates)
-    ;; Free SPC and RET, popup will no longer interrupt typing.
-    (define-key company-active-map [escape] nil)
-    (define-key company-active-map [return] nil)
-    (define-key company-active-map (kbd "RET") nil)
-    (define-key company-active-map (kbd "SPC") nil))
+(with-eval-after-load "company"
+  (define-key company-active-map [tab] 'company-complete-selection)
+  (define-key company-active-map (kbd "TAB") 'company-complete-selection)
+  (define-key company-mode-map [remap completion-at-point] 'company-complete-selection)
+  (define-key company-active-map (kbd "C-s") 'company-filter-candidates)
+  ;; Free SPC and RET, popup will no longer interrupt typing.
+  (define-key company-active-map [escape] nil)
+  (define-key company-active-map [return] nil)
+  (define-key company-active-map (kbd "RET") nil)
+  (define-key company-active-map (kbd "SPC") nil))
+
+(eat/pkg company-box)
+
+(setq company-box-enable-icon nil)
+
+(when (display-graphic-p)
+  (add-hook 'company-mode-hook 'company-box-mode))
 #+end_src
 ** yasnippet
 #+begin_src elisp
@@ -3231,7 +3240,7 @@ Run =docker pull zevlg/telega-server:latest=
 (when (eat/modulep '+telega)
   (eat/pkg telega)
   (setq
-   ;; telega-use-docker t
+   telega-use-docker (if (executable-find "docker") t nil)
    telega-server-libs-prefix "/usr"
    telega-chat-fill-column 75
    telega-translate-to-language-by-default "zh"

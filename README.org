@@ -15,3 +15,6 @@ Set deepl auth key for translator:
 #+begin_src emacs-lisp
 (setq gts-deepl-auth-key "your key")
 #+end_src
+
+** TODO
+- Make rime and telega work under nixos
