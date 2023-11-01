@@ -1680,21 +1680,33 @@ Better scroll on picture in GUI
 (add-hook 'conf-mode-hook #'undo-hl-mode)
 #+end_src
 
-** TODO Chinese Input                                                 :deps:
-If you install emacs and librime with nix(replace to your own path):
-#+begin_src elisp
-(setq rime-emacs-module-header-root "/nix/store/ayyiild8rxw94z0gj15w1bwnsaqpaix3-emacs-git-20230128.0/include")
-(setq rime-librime-root "/nix/store/g5g449j7c9h0v5f6sp4jbl3w9k4ays8p-librime-1.7.3")
-#+end_src
-Then ~rime-compile-module~.
+** rime for Chinese Input
+If install emacs with nix:
+Set =rime-emacs-module-header-root= to =emacs/include=.
+set =rime-librime-root= to =librime=.
+
+If you get error like:
+#+begin_example
+Debugger entered--Lisp error: (wrong-type-argument stringp nil)
+  rime--load-dynamic-module()
+  rime-activate("rime")
+  activate-input-method("rime")
+  toggle-input-method(nil 1)
+  funcall-interactively(toggle-input-method nil 1)
+  command-execute(toggle-input-method)
+#+end_example
+Check =rime-share-data-dir(eg //usr/share/rime-data)= and =rime-user-data-dir (eg ~/.config/emacs/rime)=.
+https://github.com/DogLooksGood/emacs-rime/issues/79#issuecomment-609560097
 
 #+begin_src elisp
 ;; curl -L -O https://github.com/rime/librime/releases/download/1.7.2/rime-1.7.2-osx.zip
 ;; unzip rime-1.7.2-osx.zip -d ~/.config/emacs/librime
 ;; rm -rf rime-1.7.2-osx.zip
 (eat/pkg rime)
-(when eat/macp
-  (setq rime-librime-root (expand-file-name "librime/dist" user-emacs-directory)))
+
+(if eat/macp
+    (setq rime-librime-root (expand-file-name "librime/dist" user-emacs-directory))
+  (setq  rime-share-data-dir "~/.local/share/fcitx5/rime"))
 (setq
  rime-disable-predicates '(meow-normal-mode-p
                            ;; meow-motion-mode-p
@@ -1708,8 +1720,6 @@ Then ~rime-compile-module~.
  rime-cursor "|"
  rime-show-candidate 'minibuffer)
 (with-eval-after-load 'rime
-  (setq-default
-   rime-posframe-properties (list :internal-border-width 1))
   (set-face-attribute 'rime-indicator-face nil :height 0.9)
   (set-face-attribute 'rime-indicator-dim-face nil :height 0.9)
   (define-key rime-active-mode-map [tab] 'rime-inline-ascii)
