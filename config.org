@@ -527,6 +527,17 @@ Why this works under macos but not work under linux(can’t find function)?
           (when eat/macp "open")
           (when eat/linuxp "xdg-open")))
 #+end_src
+
+** funcs
+#+begin_src emacs-lisp
+(defun eat/timestamp (begin end)
+  "Convert the selected region (a timestamp in seconds) to a formatted time string."
+  (interactive "r") ; 获取当前选择的区域作为(begin, end)参数
+  (let* ((timestamp-str (buffer-substring-no-properties begin end))
+         (timestamp (string-to-number timestamp-str))
+         (formatted-time (format-time-string "%Y-%m-%d %H:%M:%S" (seconds-to-time timestamp))))
+    (message "%s" formatted-time)))
+#+end_src
 * Lib
 
 #+begin_src elisp
