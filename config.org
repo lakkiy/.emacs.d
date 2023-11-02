@@ -1683,20 +1683,7 @@ Better scroll on picture in GUI
 ** rime for Chinese Input
 If install emacs with nix:
 Set =rime-emacs-module-header-root= to =emacs/include=.
-set =rime-librime-root= to =librime=.
-
-If you get error like:
-#+begin_example
-Debugger entered--Lisp error: (wrong-type-argument stringp nil)
-  rime--load-dynamic-module()
-  rime-activate("rime")
-  activate-input-method("rime")
-  toggle-input-method(nil 1)
-  funcall-interactively(toggle-input-method nil 1)
-  command-execute(toggle-input-method)
-#+end_example
-Check =rime-share-data-dir(eg //usr/share/rime-data)= and =rime-user-data-dir (eg ~/.config/emacs/rime)=.
-https://github.com/DogLooksGood/emacs-rime/issues/79#issuecomment-609560097
+set  to =librime=.
 
 #+begin_src elisp
 ;; curl -L -O https://github.com/rime/librime/releases/download/1.7.2/rime-1.7.2-osx.zip
@@ -1725,7 +1712,6 @@ https://github.com/DogLooksGood/emacs-rime/issues/79#issuecomment-609560097
   (define-key rime-active-mode-map [tab] 'rime-inline-ascii)
   (keymap-set rime-mode-map "M-j" 'rime-force-enable))
 #+end_src
-
 *** TODO Search with regex
 Only work for orderless for now.
 
@@ -1733,6 +1719,27 @@ Only work for orderless for now.
 (unless (package-installed-p 'rime-regexp)
   (package-vc-install "https://github.com/colawithsauce/rime-regexp.el"))
 #+end_src
+
+
+*** Can’t find emacs_module.h?
+Config ==rime-emacs-module-header-root= to =emacs/include=.
+#+begin_example
+(setq rime-emacs-module-header-root
+      (file-truename
+       (concat
+        (file-name-directory
+         (directory-file-name
+          (file-truename invocation-directory)))
+        "include")))
+#+end_example
+
+*** Can’t find rime_api.h?
+Config =rime-librime-root= to =librime=.
+
+Get librime path installed with nix:
+#+begin_example
+nix eval nixpkgs#librime.outPath
+#+end_example
 
 ** TODO Symbol Overlay
 #+begin_src emacs-lisp
@@ -1783,7 +1790,7 @@ Only work for orderless for now.
     (apply func args)))
 (advice-add 'company-capf--candidates :around 'my-company-capf--candidates)
 
-(setq company-idle-delay 0.2) ;; time for snippet expand
+(setq company-idle-delay 0.1) ;; time for snippet expand
 (setq company-require-match nil)
 (setq company-minimum-prefix-length 2)
 (setq company-tooltip-width-grow-only t)
@@ -1813,11 +1820,6 @@ Only work for orderless for now.
   (define-key company-active-map [return] nil)
   (define-key company-active-map (kbd "RET") nil)
   (define-key company-active-map (kbd "SPC") nil))
-
-;; NOTE company-box will have tab-bar in childframe, so use posframe
-(eat/pkg company-posframe "https://github.com/tumashu/company-posframe")
-(when (display-graphic-p)
-  (add-hook 'company-mode-hook 'company-posframe-mode))
 #+end_src
 ** yasnippet
 #+begin_src elisp
