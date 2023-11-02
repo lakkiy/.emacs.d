@@ -1814,12 +1814,10 @@ Only work for orderless for now.
   (define-key company-active-map (kbd "RET") nil)
   (define-key company-active-map (kbd "SPC") nil))
 
-(eat/pkg company-box)
-
-(setq company-box-enable-icon nil)
-
+;; NOTE company-box will have tab-bar in childframe, so use posframe
+(eat/pkg company-posframe "https://github.com/tumashu/company-posframe")
 (when (display-graphic-p)
-  (add-hook 'company-mode-hook 'company-box-mode))
+  (add-hook 'company-mode-hook 'company-posframe-mode))
 #+end_src
 ** yasnippet
 #+begin_src elisp
