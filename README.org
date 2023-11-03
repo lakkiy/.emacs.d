@@ -1,20 +1,46 @@
-** 个人 =Emacs= 配置(WIP)
+* 个人 =Emacs= 配置(WIP)
 
 #+begin_src bash
 emacs --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "~/.config/emacs/config.org")'
 #+end_src
 
-** Note
+* Note
 
-Read path:
-#+begin_src emacs-lisp
-(add-hook 'after-init-hook #'eat/getenv-path)
-#+end_src
-
-Set deepl auth key for translator:
+** Use deepl to translate
 #+begin_src emacs-lisp
 (setq gts-deepl-auth-key "your key")
 #+end_src
 
-** TODO
-- Make rime and telega work under nixos
+* FAQ
+
+** Can’t find program in path?
+Echo $PATH to ~/.path:
+#+begin_src bash
+sh -c 'printf "%s" "$PATH"' > ~/.path
+#+end_src
+
+And =eat/getenv-path= to =after-init-hook=, eg:
+#+begin_src emacs-lisp
+;; ~/.config/emacs/custom.el
+(add-hook 'after-init-hook #'eat/getenv-path)
+#+end_src
+
+** rime, can’t find emacs_module.h?
+Set ==rime-emacs-module-header-root= to =emacs/include=, eg:
+#+begin_src emacs-lisp
+(setq rime-emacs-module-header-root
+      (file-truename
+       (concat
+        (file-name-directory
+         (directory-file-name
+          (file-truename invocation-directory)))
+        "include")))
+#+end_src
+
+** rime, can’t find rime_api.h?
+Set =rime-librime-root= to =librime=.
+
+Get librime path installed with nix:
+#+begin_src bash
+nix eval nixpkgs#librime.outPath
+#+end_src

@@ -1720,27 +1720,6 @@ Only work for orderless for now.
   (package-vc-install "https://github.com/colawithsauce/rime-regexp.el"))
 #+end_src
 
-
-*** Can’t find emacs_module.h?
-Config ==rime-emacs-module-header-root= to =emacs/include=.
-#+begin_example
-(setq rime-emacs-module-header-root
-      (file-truename
-       (concat
-        (file-name-directory
-         (directory-file-name
-          (file-truename invocation-directory)))
-        "include")))
-#+end_example
-
-*** Can’t find rime_api.h?
-Config =rime-librime-root= to =librime=.
-
-Get librime path installed with nix:
-#+begin_example
-nix eval nixpkgs#librime.outPath
-#+end_example
-
 ** TODO Symbol Overlay
 #+begin_src emacs-lisp
 (eat/pkg symbol-overlay)
@@ -2121,7 +2100,6 @@ Need a lot...
 (setq eglot-events-buffer-size 0
       eglot-sync-connect nil       ;; don't block of LSP connection attempts
       eglot-extend-to-xref t       ;; make eglot manage file out of project by `xref-find-definitions'
-      eglot-stay-out-of  '(company)
       eglot-ignored-server-capabilites
       '(:documentHighlightProvider
         :documentFormattingProvider
