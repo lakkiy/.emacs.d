@@ -2043,8 +2043,8 @@ Need a lot...
 #+begin_src elisp
 (eat/pkg lsp-bridge "https://github.com/manateelazycat/lsp-bridge")
 (eat/pkg flymake-bridge "https://github.com/liuyinz/flymake-bridge")
-(eat/pkg popon "https://codeberg.org/akib/emacs-popon.git")
-(eat/pkg acm-terminal "https://github.com/twlz0ne/acm-terminal")
+;; (eat/pkg popon "https://codeberg.org/akib/emacs-popon.git")
+;; (eat/pkg acm-terminal "https://github.com/twlz0ne/acm-terminal")
 
 (setq lsp-bridge-c-lsp-server "ccls"
       ;; install lsp server and run lsp_bridge.py on remote server
@@ -2066,9 +2066,10 @@ Need a lot...
     (define-key yas-keymap (kbd "<tab>") 'acm-complete-or-expand-yas-snippet)
     (define-key yas-keymap (kbd "TAB") 'acm-complete-or-expand-yas-snippet))
   ;; Use acm in terminal.
-  (unless (display-graphic-p)
-    (with-eval-after-load 'acm
-      (require 'acm-terminal))))
+  ;; (unless (display-graphic-p)
+  ;;   (with-eval-after-load 'acm
+  ;;     (require 'acm-terminal)))
+  )
 
 (with-eval-after-load 'lsp-bridge
   (add-hook 'lsp-bridge-mode-hook #'eat/lsp-bridge-mode-setup)
