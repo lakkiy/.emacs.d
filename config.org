@@ -1712,12 +1712,14 @@ set  to =librime=.
   (define-key rime-active-mode-map [tab] 'rime-inline-ascii)
   (keymap-set rime-mode-map "M-j" 'rime-force-enable))
 #+end_src
-*** TODO Search with regex
+*** Search with rime and regex
 Only work for orderless for now.
 
 #+begin_src elisp
 (unless (package-installed-p 'rime-regexp)
   (package-vc-install "https://github.com/colawithsauce/rime-regexp.el"))
+
+(add-hook 'after-init-hook #'rime-regexp-mode)
 #+end_src
 
 ** TODO Symbol Overlay
