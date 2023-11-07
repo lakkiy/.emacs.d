@@ -62,7 +62,6 @@ Emacs 默认使用 dynamic binding，主要影响的是变量的作用域。
 (outer-function)
 #+end_src
 
-
 ** Load custom file
 #+begin_src elisp
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
@@ -369,7 +368,7 @@ Some of hook of this packgae is too hacked, maybe drop it.
 ;; (keyboard-translate ?\C-x ?\C-t)
 #+end_src
 
-** Built-in packages
+** built-in packages
 *** recentf
 #+begin_src emacs-lisp
 (add-hook 'on-first-input-hook #'recentf-mode)
@@ -526,6 +525,41 @@ Why this works under macos but not work under linux(can’t find function)?
           (executable-find "google-chrome")
           (when eat/macp "open")
           (when eat/linuxp "xdg-open")))
+#+end_src
+
+*** isearch
+#+begin_src emacs-lisp
+(setq
+ ;; Match count next to the minibuffer prompt
+ isearch-lazy-count t
+ ;; Don't be stingy with history; default is to keep just 16 entries
+ search-ring-max 200
+ regexp-search-ring-max 200
+ ;; htighlighted all matching
+ isearch-lazy-highlight t
+ lazy-highlight-buffer t
+ ;; show search count, TODO not work in isearch-mb-mode
+ lazy-count-prefix-format nil
+ lazy-count-suffix-format " [%s/%s]"
+ ;; Record isearch in minibuffer history, so C-x ESC ESC can repeat it.
+ isearch-resume-in-command-history t
+ ;; M-< and M-> move to the first/last occurrence of the current search string.
+ isearch-allow-motion t
+ isearch-motion-changes-direction t
+ ;; space matches any sequence of characters in a line.
+ isearch-regexp-lax-whitespace t
+ search-whitespace-regexp ".*?")
+
+(with-eval-after-load 'isearch
+  (define-advice isearch-occur (:after (_regexp &optional _nlines))
+    (isearch-exit)))
+
+(keymap-global-set "C-s" #'isearch-forward-regexp)
+(keymap-global-set "C-r" #'isearch-backward-regexp)
+(keymap-set isearch-mode-map "C-c C-o" #'isearch-occur)
+(keymap-substitute isearch-mode-map #'isearch-delete-chac #'isearch-del-chac)
+;; TODO
+(define-key isearch-mode-map [escape] #'isearch-cancel)
 #+end_src
 
 ** funcs
@@ -856,40 +890,10 @@ https://zck.org/balance-emacs-windows
 #+end_src
 ** Isearch
 #+begin_src elisp
-(setq
- ;; Match count next to the minibuffer prompt
- isearch-lazy-count t
- ;; Don't be stingy with history; default is to keep just 16 entries
- search-ring-max 200
- regexp-search-ring-max 200
- ;; htighlighted all matching
- isearch-lazy-highlight t
- lazy-highlight-buffer t
- ;; show search count, TODO not work in isearch-mb-mode
- lazy-count-prefix-format nil
- lazy-count-suffix-format " [%s/%s]"
- ;; Record isearch in minibuffer history, so C-x ESC ESC can repeat it.
- isearch-resume-in-command-history t
- ;; M-< and M-> move to the first/last occurrence of the current search string.
- isearch-allow-motion t
- isearch-motion-changes-direction t
- ;; space matches any sequence of characters in a line.
- isearch-regexp-lax-whitespace t
- search-whitespace-regexp ".*?")
-
-(with-eval-after-load 'isearch
-  (define-advice isearch-occur (:after (_regexp &optional _nlines))
-    (isearch-exit)))
-
-(keymap-global-set "C-s" #'isearch-forward-regexp)
-(keymap-global-set "C-r" #'isearch-backward-regexp)
-(keymap-set isearch-mode-map "C-c C-o" #'isearch-occur)
-(keymap-substitute isearch-mode-map #'isearch-delete-chac #'isearch-del-chac)
-;; TODO
-(define-key isearch-mode-map [escape] #'isearch-cancel)
-
 (eat/pkg isearch-mb)
+
 (add-hook 'isearch-mode-hook #'isearch-mb-mode)
+
 (with-eval-after-load 'isearch-mb
   (define-advice isearch-mb--update-prompt (:around (fn &rest _) show-case-fold-info)
     "Show case fold info in the prompt."
@@ -1755,7 +1759,8 @@ Only work for orderless for now.
         avy-style 'pre))
 #+end_src
 * Completion
-** company
+** company for in buffer completion
+
 - use C-p/C-n to select prev/next
 - use tab to do complete
 - free ret, popup will no longer interrupt typing
@@ -1771,36 +1776,66 @@ Only work for orderless for now.
     (apply func args)))
 (advice-add 'company-capf--candidates :around 'my-company-capf--candidates)
 
-(setq company-idle-delay 0.1) ;; time for snippet expand
-(setq company-require-match nil)
-(setq company-minimum-prefix-length 2)
-(setq company-tooltip-width-grow-only t)
-(setq company-tooltip-align-annotations t)
-(setq company-dabbrev-other-buffers nil)
-(setq company-dabbrev-ignore-case nil)
-(setq company-dabbrev-downcase nil)
-(setq company-dabbrev-code-ignore-case nil)
-(setq company-dabbrev-code-everywhere t)
-(setq company-tempo-expand t)
-(setq company-files-exclusions '(".git/" ".DS_Store"))
-(setq company-format-margin-function nil)
-(setq company-frontends '(company-pseudo-tooltip-frontend  ; always show candidates in overlay tooltip
-                          company-echo-metadata-frontend)  ; show selected candidate docs in echo area
-      company-backends '(company-capf
+(setq company-minimum-prefix-length 2
+      company-idle-delay 0.1 ;; time for snippet expand
+      company-require-match nil)
+
+;; Frontends
+;; don't need preview frontends with copilot
+;; use C-h to show doc(maybe use eldoc-box) instead echo- frontend
+;; so only config tooltip frontend
+(setq company-frontends '(company-pseudo-tooltip-frontend)
+      company-tooltip-align-annotations t
+      ;; no matter if a tooltip is shown above or below point, the
+      ;; candidates are always listed starting near point.
+      company-tooltip-flip-when-above t
+      company-tooltip-width-grow-only t
+      ;; icon in front of a candidate, make it looks like Atom
+      company-format-margin-function #'company-text-icons-margin
+      company-text-icons-add-background t)
+
+;; Backends
+(setq company-backends '(company-capf
                          company-files
-                         (company-dabbrev-code company-keywords)
-                         company-dabbrev))
+                         (;;searching for completion candidates inside the contents of the open buffer(s)
+                          company-dabbrev-code
+                          ;; provides completions from programming language keywords
+                          company-keywords)
+                         company-dabbrev)
+      company-files-exclusions '(".git/" ".DS_Store")
+      ;; search from the buffers with the same majar mode
+      company-dabbrev-other-buffers t
+      company-dabbrev-ignore-case nil
+      company-dabbrev-downcase nil
+      company-dabbrev-code-ignore-case nil
+      company-dabbrev-code-everywhere t)
 
 (with-eval-after-load "company"
-  (define-key company-active-map [tab] 'company-complete-selection)
-  (define-key company-active-map (kbd "TAB") 'company-complete-selection)
-  (define-key company-mode-map [remap completion-at-point] 'company-complete-selection)
-  (define-key company-active-map (kbd "C-s") 'company-filter-candidates)
-  ;; Free SPC and RET, popup will no longer interrupt typing.
-  (define-key company-active-map [escape] nil)
-  (define-key company-active-map [return] nil)
-  (define-key company-active-map (kbd "RET") nil)
-  (define-key company-active-map (kbd "SPC") nil))
+  ;; use tab to do complete and free ret
+  (bind company-active-map
+        [tab] #'company-complete-selection
+        "TAB" #'company-complete-selection
+        [remap completion-at-point] #'company-complete-selection
+        "C-s" #'company-filter-candidates
+        ;; Free SPC and RET, popup will no longer interrupt typing.
+        [escape] nil
+        [return] nil
+        "RET" nil
+        "SPC" nil))
+#+end_src
+** company-tabnine
+#+begin_src emacs-lisp
+(eat/pkg company-tabnine)
+
+(autoload #'company-tabnine-install-binary "company-tabnine" nil t)
+
+(when (file-directory-p "~/.TabNine/")
+  (add-hook 'prog-mode-hook
+            #'(lambda ()
+                ;; keep the candidates organized in accordance with
+                ;; the grouped backends order
+                (setq-local company-backends
+                            '((company-capf company-tabnine :separate))))))
 #+end_src
 ** yasnippet
 #+begin_src elisp
@@ -1811,28 +1846,28 @@ Only work for orderless for now.
     (yas-reload-all)))
 #+end_src
 
-** tabnine
-#+begin_src emacs-lisp
-(eat/pkg company-tabnine)
-(autoload #'company-tabnine-install-binary "company-tabnine" nil t)
-(when (file-directory-p "~/.TabNine/")
-  (add-to-list 'company-backends #'company-tabnine t))
-#+end_src
 ** copilot
 
 #+begin_src emacs-lisp
 (eat/pkg copilot "https://github.com/zerolfx/copilot.el")
 
-(add-hook 'prog-mode-hook 'copilot-mode)
+;; disable warning about didn't found mode-specific indentation offest
+(setq copilot-indent-warning-suppress t)
+
+(when (executable-find "node")
+  (add-hook 'prog-mode-hook 'copilot-mode))
 
 (with-eval-after-load 'copilot
   (add-to-list 'copilot-major-mode-alist '("go" . "go"))
   (add-to-list 'copilot-major-mode-alist '("go-ts" . "go"))
-  (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion)
-  (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion)
-  (define-key copilot-completion-map (kbd "M-L") 'copilot-clear-overlay)
-  (define-key copilot-completion-map (kbd "M-N") 'copilot-next-completion)
-  (define-key copilot-completion-map (kbd "M-P") 'copilot-previous-completion)
+  (bind copilot-completion-map
+        "C-g" #'copilot-clear-overlay
+        "C-f" #'copilot-accept-completion
+        "C-e" #'copilot-accept-completion-by-line
+        "M-f" #'copilot-accept-completion-by-word
+        "M-p" #'copilot-previous-completion
+        "M-n" #'copilot-next-completion)
+  ;; only enable copilot in meow insert mode
   (with-eval-after-load 'meow
     (add-to-list 'copilot-enable-predicates 'meow-insert-mode-p)))
 #+end_src
@@ -2103,6 +2138,7 @@ Need a lot...
 (setq eglot-events-buffer-size 0
       eglot-sync-connect nil       ;; don't block of LSP connection attempts
       eglot-extend-to-xref t       ;; make eglot manage file out of project by `xref-find-definitions'
+      eglot-stay-out-of '(company) ;; I will set up company myself for specific backends
       eglot-ignored-server-capabilites
       '(:documentHighlightProvider
         :documentFormattingProvider
