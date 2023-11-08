@@ -886,6 +886,8 @@ https://zck.org/balance-emacs-windows
 #+end_src
 ** Auto-save
 #+begin_src elisp
+;; most of time I will do save manually
+(setq auto-save-visited-interval 10)
 (add-hook 'on-first-file-hook #'auto-save-visited-mode)
 #+end_src
 ** Isearch
@@ -1788,7 +1790,6 @@ Only work for orderless for now.
       company-tooltip-align-annotations t
       ;; no matter if a tooltip is shown above or below point, the
       ;; candidates are always listed starting near point.
-      company-tooltip-flip-when-above t
       company-tooltip-width-grow-only t
       ;; icon in front of a candidate, make it looks like Atom
       company-format-margin-function #'company-text-icons-margin
