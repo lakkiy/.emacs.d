@@ -1,7 +1,7 @@
 #+STARTUP: fold
 #+PROPERTY: header-args :tangle init.el :mkdirp yes
 
-* Basic
+* Core
 ** Early init
 #+begin_src elisp :tangle early-init.el
 (setq frame-inhibit-implied-resize t
@@ -68,86 +68,313 @@ Emacs 默认使用 dynamic binding，主要影响的是变量的作用域。
 (when (and (file-exists-p custom-file) (file-readable-p custom-file))
   (load custom-file :no-error :no-message))
 #+end_src
-** Package manager
+
+** Def
 #+begin_src emacs-lisp
-(setq package-archives '(("gnu"          . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-			             ("nongnu"       . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
-			             ("melpa-stable" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/stable-melpa/")
-                         ("melpa"        . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/"))
-      package-archive-priorities '(("gnu"          . 9)
-                                   ("nongnu"       . 8)
-                                   ("melpa-stable" . 7)
-                                   ("melpa"        . 6))
-      package-quickstart t)
-(package-activate-all)
+(defconst eat/macp (eq system-type 'darwin))
+(defconst eat/linuxp (eq system-type 'gnu/linux))
+(defconst eat/winp (eq system-type 'windows-nt))
 
-(defmacro eat/pkg (package &optional vc)
-  `(unless (package-installed-p ',package)
-     (unless (memq ',package package-archive-contents)
-       (package-refresh-contents))
-     (if ,vc (package-vc-install ,vc)
-       (package-install ',package))))
+(defvar eat/user-full-name "Liu Bo")
+(defvar eat/user-mail-address "liubolovelife@gmail.com")
 
-(eat/pkg elpa-mirror)
-(setq elpamr-default-output-directory "~/Sync/myelpa")
+(defvar eat/module-list `(+icon +blog +telega +note-taking))
+(defvar eat/module--hash-table
+  ((lambda ()
+     (setq hash--table (make-hash-table))
+     (dolist (m eat/module-list)
+       (puthash m t hash--table))
+     hash--table)))
+(defun eat/modulep (module)
+  (gethash module eat/module--hash-table))
+#+end_src
+** Some useful functions
+*** Delete things(don’t send to kill ring
+#+begin_src emacs-lisp
+(defun eat/delete-to-the-begining ()
+  (interactive)
+  (delete-region (point-min) (point)))
+
+(defun eat/delete-to-the-end ()
+  (interactive)
+  (delete-region (point) (point-max)))
+
+(defun eat/delete-whole-buffer ()
+  (interactive)
+  (delete-region (point-min) (point-max)))
+
+(defun eat/delete-this-file ()
+  "Delete the current file, and kill the buffer."
+  (interactive)
+  (unless (buffer-file-name)
+    (error "No file is currently being edited"))
+  (when (yes-or-no-p (format "Really delete '%s'?"
+                             (file-name-nondirectory buffer-file-name)))
+    (delete-file (buffer-file-name))
+    (kill-this-buffer)))
+#+end_src
+*** Convert timestamp
+#+begin_src emacs-lisp
+(defun eat/timestamp (begin end)
+  "Convert the selected region (a timestamp in seconds) to a formatted time string."
+  (interactive "r")
+  (let* ((timestamp-str (buffer-substring-no-properties begin end))
+         (timestamp (string-to-number timestamp-str))
+         (formatted-time (format-time-string "%Y-%m-%d %H:%M:%S" (seconds-to-time timestamp))))
+    (message "%s" formatted-time)))
+#+end_src
+*** Adjust opacity
+#+begin_src emacs-lisp
+(defun eat/adjust-opacity (frame incr)
+  "Adjust the background opacity of FRAME by increment INCR."
+  (unless (display-graphic-p frame)
+    (error "Cannot adjust opacity of this frame"))
+  (let* ((oldalpha (or (frame-parameter frame 'alpha-background) 100))
+         (oldalpha (if (listp oldalpha) (car oldalpha) oldalpha))
+         (newalpha (+ incr oldalpha)))
+    (when (and (<= frame-alpha-lower-limit newalpha) (>= 100 newalpha))
+      (modify-frame-parameters frame (list (cons 'alpha-background newalpha))))))
+(global-set-key (kbd "M-C-8") (lambda () (interactive) (eat/adjust-opacity nil -2)))
+(global-set-key (kbd "M-C-9") (lambda () (interactive) (eat/adjust-opacity nil 2)))
+(global-set-key (kbd "M-C-7") (lambda () (interactive) (modify-frame-parameters nil `((alpha-background . 100)))))
+#+end_src
+*** Window
+#+begin_src emacs-lisp
+;; When splitting window, show (other-buffer) in the new window
+
+(defun split-window-func-with-other-buffer (split-function)
+  (lambda (&optional arg)
+    "Split this window and switch to the new window unless ARG is provided."
+    (interactive "P")
+    (funcall split-function)
+    (let ((target-window (next-window)))
+      (set-window-buffer target-window (other-buffer))
+      (unless arg
+        (select-window target-window)))))
+
+(keymap-global-set "C-x 2" (split-window-func-with-other-buffer 'split-window-vertically))
+(keymap-global-set "C-x 3" (split-window-func-with-other-buffer 'split-window-horizontally))
+
+(defun sanityinc/toggle-delete-other-windows ()
+  "Delete other windows in frame if any, or restore previous window config."
+  (interactive)
+  (if (and winner-mode
+           (equal (selected-window) (next-window)))
+      (winner-undo)
+    (delete-other-windows)))
+
+(keymap-global-set "C-x 1" 'sanityinc/toggle-delete-other-windows)
+
+(defun split-window-horizontally-instead ()
+  "Kill any other windows and re-split such that the current window is on the top half of the frame."
+  (interactive)
+  (let ((other-buffer (and (next-window) (window-buffer (next-window)))))
+    (delete-other-windows)
+    (split-window-horizontally)
+    (when other-buffer
+      (set-window-buffer (next-window) other-buffer))))
+
+(defun split-window-vertically-instead ()
+  "Kill any other windows and re-split such that the current window is on the left half of the frame."
+  (interactive)
+  (let ((other-buffer (and (next-window) (window-buffer (next-window)))))
+    (delete-other-windows)
+    (split-window-vertically)
+    (when other-buffer
+      (set-window-buffer (next-window) other-buffer))))
+
+(keymap-global-set "C-x |" 'split-window-horizontally-instead)
+(keymap-global-set "C-x _" 'split-window-vertically-instead)
+#+end_src
+*** Load PATH
+#+begin_src elisp
+;;; Setup PATH
+;; https://emacs-china.org/t/emacs-mac-port-profile/2895/29?u=rua
+;; NOTE: When PATH is changed, run the following command
+;; $ sh -c 'printf "%s" "$PATH"' > ~/.path
+;; then add this to custom.el
+;; (add-hook 'after-init-hook #'eat/getenv-path)
+(defun eat/getenv-path()
+  (interactive)
+  (condition-case err
+      (let ((path (with-temp-buffer
+                    (insert-file-contents-literally "~/.path")
+                    (buffer-string))))
+        (setenv "PATH" path)
+        (setq exec-path (append (parse-colon-path path) (list exec-directory))))
+    (error (warn "%s" (error-message-string err)))))
+
+(if (file-exists-p "~/.path")
+    (add-hook 'after-init-hook #'eat/getenv-path)
+  (message "%s" "Didn't find path file, run '$ sh -c 'printf \"%s\" \"$PATH\"' > ~/.path' in your terminal and then M-x eat/getenv-path or restart emacs."))
 #+end_src
 
-** Key binding
+*** Misc
 #+begin_src emacs-lisp
-(eat/pkg bind)
+(defun get-string-from-file (filePath)
+  "Return file content as string."
+  (with-temp-buffer
+    (insert-file-contents filePath)
+    (buffer-string)))
 
-;; bind `describe-keymap', added in emacs 28
-(keymap-global-set "C-h C-k" #'describe-keymap)
+(defun eat/quit ()
+  "Delete current window switch to prevous buffer."
+  (interactive)
+  (if (> (seq-length (window-list (selected-frame))) 1)
+      (delete-window)
+    (previous-buffer)))
+
+;; http://emacsredux.com/blog/2013/05/22/smarter-navigation-to-the-beginning-of-a-line/
+(defun smarter-move-beginning-of-line (arg)
+  "Move point back to indentation of beginning of line.
+
+Move point to the first non-whitespace character on this line.
+If point is already there, move to the beginning of the line.
+Effectively toggle between the first non-whitespace character and
+the beginning of the line.
+
+If ARG is not nil or 1, move forward ARG - 1 lines first.  If
+point reaches the beginning or end of the buffer, stop there."
+  (interactive "^p")
+  (setq arg (or arg 1))
+
+  ;; Move lines first
+  (when (/= arg 1)
+    (let ((line-move-visual nil))
+      (forward-line (1- arg))))
+
+  (let ((orig-point (point)))
+    (back-to-indentation)
+    (when (= orig-point (point))
+      (move-beginning-of-line 1))))
+(global-set-key [remap move-beginning-of-line] #'smarter-move-beginning-of-line)
+#+end_src
+** Speed up startup time
+*** Custom hook
+#+begin_src emacs-lisp
+;; Hooks split from doom-emacs
+(defvar on-first-input-hook nil
+  "Transient hooks run before the first user input.")
+(put 'on-first-input-hook 'permanent-local t)
+
+(defvar on-first-file-hook nil
+  "Transient hooks run before the first interactively opened file.")
+(put 'on-first-file-hook 'permanent-local t)
+
+(defvar on-first-buffer-hook nil
+  "Transient hooks run before the first interactively opened buffer.")
+(put 'on-first-buffer-hook 'permanent-local t)
+
+(defvar on-init-ui-hook nil
+  "List of hooks to run when the UI has been initialized.")
+
+(defun on-run-hook-on (hook-var trigger-hooks)
+  "Configure HOOK-VAR to be invoked exactly once when any of the TRIGGER-HOOKS
+are invoked *after* Emacs has initialized (to reduce false positives). Once
+HOOK-VAR is triggered, it is reset to nil.
+
+HOOK-VAR is a quoted hook.
+TRIGGER-HOOK is a list of quoted hooks and/or sharp-quoted functions."
+  (dolist (hook trigger-hooks)
+    (let ((fn (intern (format "%s-init-on-%s-h" hook-var hook))))
+      (fset
+       fn (lambda (&rest _)
+            ;; Only trigger this after Emacs has initialized.
+            (when (and after-init-time
+                       (or (daemonp)
+                           ;; In some cases, hooks may be lexically unset to
+                           ;; inhibit them during expensive batch operations on
+                           ;; buffers (such as when processing buffers
+                           ;; internally). In these cases we should assume this
+                           ;; hook wasn't invoked interactively.
+                           (and (boundp hook)
+                                (symbol-value hook))))
+              (run-hooks hook-var)
+              (set hook-var nil))))
+      (cond ((daemonp)
+             ;; In a daemon session we don't need all these lazy loading
+             ;; shenanigans. Just load everything immediately.
+             (add-hook 'after-init-hook fn 'append))
+            ((eq hook 'find-file-hook)
+             ;; Advise `after-find-file' instead of using `find-file-hook'
+             ;; because the latter is triggered too late (after the file has
+             ;; opened and modes are all set up).
+             (advice-add 'after-find-file :before fn '((depth . -101))))
+            ((add-hook hook fn -101)))
+      fn)))
+
+(defun on-init-ui-h (&optional _)
+  "Initialize user interface by applying its hooks.
+
+These should be done as late as possible, as to avoid/minimize prematurely
+triggering hooks during startup."
+  (run-hooks 'on-init-ui-hook)
+
+  ;; Add trigger hooks to `on-first-buffer-hook'.
+  (on-run-hook-on 'on-first-buffer-hook '(window-buffer-change-functions server-visit-hook))
+
+  ;; Only execute this function once.
+  (remove-hook 'window-buffer-change-functions #'on-init-ui-h))
+
+;; Initialize UI as late as possible. `window-buffer-change-functions' runs
+;; once, when the scratch/dashboard buffer is first displayed.
+(add-hook 'window-buffer-change-functions #'on-init-ui-h -100)
+
+(unless noninteractive
+  (on-run-hook-on 'on-first-buffer-hook '(find-file-hook on-switch-buffer-hook))
+  (on-run-hook-on 'on-first-file-hook   '(find-file-hook dired-initial-position-hook))
+  (on-run-hook-on 'on-first-input-hook  '(pre-command-hook)))
+#+end_src
+*** Show startup time
+#+begin_src emacs-lisp
+(defun eat/show-startup-time ()
+  "Print startup time."
+  (message
+   "Emacs loaded in %s with %d garbage collections."
+   (format
+    "%.2f seconds"
+    (float-time
+     (time-subtract after-init-time before-init-time)))
+   gcs-done))
+(add-hook 'emacs-startup-hook #'eat/show-startup-time)
+#+end_src
+*** Misc
+#+begin_src emacs-lisp
+;; Don't pass case-insensitive to `auto-mode-alist'
+(setq auto-mode-case-fold nil)
+
+;; file-remote-p relies on an entry in file-name-handler-alist
+;; (autoloaded by tramp.el) to detect remote paths, which causes tramp
+;; to be loaded.
+;; sets file-name-handler-alist to nil at startup for a noteable boost
+;; in startup performance and restore after startup or tramp won't
+;; loaded and project won't remember remote projects.
+(unless (or (daemonp) noninteractive init-file-debug)
+  ;; Suppress file handlers operations at startup
+  ;; `file-name-handler-alist' is consulted on each call to `require' and `load'
+  (let ((old-value file-name-handler-alist))
+    (setq file-name-handler-alist nil)
+    (set-default-toplevel-value 'file-name-handler-alist file-name-handler-alist)
+    (add-hook 'emacs-startup-hook
+              (lambda ()
+                "Recover file name handlers."
+                (setq file-name-handler-alist
+                      (delete-dups (append file-name-handler-alist old-value))))
+              101)))
+
+;; Don't ping things that look like domain names.
+(setq ffap-machine-p-known 'reject)
+#+end_src
+** Better default
+*** Config
+#+begin_src emacs-lisp
+(keymap-global-set "C-h K" #'describe-keymap)
 ;; this will stuck emacs
 (keymap-global-unset "C-h h")
 
 (when (display-graphic-p)
   (global-unset-key (kbd "C-z"))
   (global-unset-key (kbd "C-x C-z")))
-#+end_src
-** Hook
-#+begin_src elisp
-(defun eat/hook (hook function)
-  "Add hooks FUNCTION to HOOK.
-If FUNCTION is a list, then add all FUNCTION hooks to HOOK.
-If HOOK is a list, then add all FUNCTION hooks to HOOK."
-  (cond
-   ((and (listp hook) (listp function))
-    (dolist (h hook)
-      (dolist (f function)
-        (add-hook h f))))
-   ((listp hook)
-    (dolist (h hook)
-      (add-hook h function)))
-   ((listp function)
-    (dolist (f function)
-      (add-hook hook f)))
-   (t
-    (add-hook hook function))))
-
-;; Disable cursor blink
-(add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
-#+end_src
-** Variables
-#+begin_src elisp
-(defvar eat/user-full-name "Liu Bo")
-(defvar eat/user-mail-address "liubolovelife@gmail.com")
-
-(defconst eat/macp (eq system-type 'darwin)
-  "Are we running on a Mac system?")
-
-(defconst eat/linuxp (eq system-type 'gnu/linux)
-  "Are we running on a GNU/Linux system?")
-
-(defconst eat/winp (eq system-type 'windows-nt)
-  "Are we running on a Windows system?")
-
-;; Don't ping things that look like domain names.
-(setq ffap-machine-p-known 'reject)
-
-(setq dired-mouse-drag-files t
-      mouse-drag-and-drop-region t
-      mouse-drag-and-drop-region-cross-program t)
 
 ;; Contrary to what many Emacs users have in their configs, you don't need
 ;; more than this to make UTF-8 the default coding system:
@@ -215,112 +442,27 @@ If HOOK is a list, then add all FUNCTION hooks to HOOK."
   ;; https://github.com/Genivia/ugrep#using-ugrep-within-emacs
   (setq-default grep-template "ugrep -0Iinr -e <R>"))
 
-
 ;; coding-system
 (prefer-coding-system 'utf-8)
 (setq-default buffer-file-coding-system 'utf-8)
+
+(add-hook 'on-first-file-hook #'global-goto-address-mode)
+(add-hook 'on-first-file-hook #'global-auto-revert-mode)
+(add-hook 'on-first-file-hook #'save-place-mode)
+(add-hook 'on-first-file-hook #'global-so-long-mode)
+
+(setq
+ completion-styles '(basic partial-completion)
+ completion-category-overrides '((file (styles basic partial-completion)))
+ completion-cycle-threshold t
+ minibuffer-depth-indicate-mode t
+ minibuffer-eldef-shorten-default t
+ minibuffer-electric-default-mode t)
+;; Quit that fucking minibuffer!
+(keymap-set minibuffer-local-map "C-g" #'keyboard-quit)
 #+end_src
-** Module
-#+begin_src emacs-lisp
-(defvar eat/module-list
-  `(
-    ;; +icon
-    ;; +blog
-    ;; +telega
-    ;; +note-taking
-    ))
-
-(defvar eat/module--hash-table
-  ((lambda ()
-     (setq hash--table (make-hash-table))
-     (dolist (m eat/module-list)
-       (puthash m t hash--table))
-     hash--table)))
-
-(defun eat/modulep (module)
-  (gethash module eat/module--hash-table))
-#+end_src
-** Optimization
-*** TODO on.el
-Some of hook of this packgae is too hacked, maybe drop it.
-#+begin_src emacs-lisp
-(eat/pkg on "https://gitlab.com/ajgrf/on.el")
-(require 'on)
-#+end_src
-
-*** garbage collection
-#+begin_src elisp
-(eat/pkg gcmh)
-(add-hook 'after-init-hook #'gcmh-mode)
-(setq gcmh-idle-delay 5
-      gcmh-high-cons-threshold #x6400000)
-
-;; GC automatically while unfocusing the frame
-(add-function :after after-focus-change-function
-              (lambda ()
-                (unless (frame-focus-state)
-                  (garbage-collect))))
-#+end_src
-
-*** Show start up time
-#+begin_src elisp
-(defun eat/show-startup-time ()
-  "Print startup time."
-  (message
-   "Emacs loaded in %s with %d garbage collections."
-   (format
-    "%.2f seconds"
-    (float-time
-     (time-subtract after-init-time before-init-time)))
-   gcs-done))
-(add-hook 'emacs-startup-hook #'eat/show-startup-time)
-#+end_src
-
-*** misc
-#+begin_src emacs-lisp
-;; Don't pass case-insensitive to `auto-mode-alist'
-(setq auto-mode-case-fold nil)
-
-;; file-remote-p relies on an entry in file-name-handler-alist
-;; (autoloaded by tramp.el) to detect remote paths, which causes tramp
-;; to be loaded.
-;; sets file-name-handler-alist to nil at startup for a noteable boost
-;; in startup performance and restore after startup or tramp won't
-;; loaded and project won't remember remote projects.
-(unless (or (daemonp) noninteractive init-file-debug)
-  ;; Suppress file handlers operations at startup
-  ;; `file-name-handler-alist' is consulted on each call to `require' and `load'
-  (let ((old-value file-name-handler-alist))
-    (setq file-name-handler-alist nil)
-    (set-default-toplevel-value 'file-name-handler-alist file-name-handler-alist)
-    (add-hook 'emacs-startup-hook
-              (lambda ()
-                "Recover file name handlers."
-                (setq file-name-handler-alist
-                      (delete-dups (append file-name-handler-alist old-value))))
-              101)))
-#+end_src
-
-** PATH
-#+begin_src elisp
-;;; Setup PATH
-;; https://emacs-china.org/t/emacs-mac-port-profile/2895/29?u=rua
-;; NOTE: When PATH is changed, run the following command
-;; $ sh -c 'printf "%s" "$PATH"' > ~/.path
-;; then add this to custom.el
-;; (add-hook 'after-init-hook #'eat/getenv-path)
-(defun eat/getenv-path()
-  (interactive)
-  (condition-case err
-      (let ((path (with-temp-buffer
-                    (insert-file-contents-literally "~/.path")
-                    (buffer-string))))
-        (setenv "PATH" path)
-        (setq exec-path (append (parse-colon-path path) (list exec-directory))))
-    (error (warn "%s" (error-message-string err)))))
-#+end_src
-
-** MacOS
+*** Large file
+*** MacOS
 #+begin_src elisp
 (when eat/macp
   (add-hook 'after-init-hook #'eat/getenv-path)
@@ -347,7 +489,7 @@ Some of hook of this packgae is too hacked, maybe drop it.
   (set-frame-parameter nil 'fullscreen 'maximized))
 #+end_src
 
-** Linux
+*** Linux
 #+begin_src elisp
 (when eat/linuxp
   (setq x-underline-at-descent-line t)
@@ -360,15 +502,55 @@ Some of hook of this packgae is too hacked, maybe drop it.
   (when (boundp 'x-gtk-use-system-tooltips)
     (setq x-gtk-use-system-tooltips nil)))
 #+end_src
+** Built-in packages
+*** package
+#+begin_src emacs-lisp
+(setq package-archives '(("gnu"          . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+			             ("nongnu"       . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
+                         ("melpa"        . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/"))
+      package-quickstart t)
+(package-activate-all)
 
-** Dvorak
-#+begin_src elisp
-;; Make “C-t” act like “C-x”, so it's easier to type on Dvorak layout
-;; (keyboard-translate ?\C-t ?\C-x)
-;; (keyboard-translate ?\C-x ?\C-t)
+(defmacro eat/pkg (package &optional vc)
+  `(unless (package-installed-p ',package)
+     (unless (memq ',package package-archive-contents)
+       (package-refresh-contents))
+     (if ,vc (package-vc-install ,vc)
+       (package-install ',package))))
 #+end_src
-
-** built-in packages
+*** auto save
+#+begin_src emacs-lisp
+;; most of time I will do save manually
+(setq auto-save-visited-interval 10)
+(add-hook 'on-first-file-hook #'auto-save-visited-mode)
+#+end_src
+*** dired
+#+begin_src emacs-lisp
+(setq dired-mouse-drag-files t
+      mouse-drag-and-drop-region t
+      mouse-drag-and-drop-region-cross-program t)
+#+end_src
+*** blink cursor
+#+begin_src emacs-lisp
+(add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
+#+end_src
+*** line number
+#+begin_src emacs-lisp
+(setq display-line-numbers-width 3)
+#+end_src
+*** whitespace
+#+begin_src emacs-lisp
+(add-hook 'prog-mode-hook #'whitespace-mode)
+(add-hook 'conf-mode-hook #'whitespace-mode)
+(setq whitespace-style '(face trailing))
+#+end_src
+*** savehist
+#+begin_src emacs-lisp
+;;; savehist
+(add-hook 'after-init-hook #'savehist-mode)
+;; Restore histories and registers after saving
+(setq history-length 1000)
+#+end_src
 *** recentf
 #+begin_src emacs-lisp
 (add-hook 'on-first-input-hook #'recentf-mode)
@@ -394,6 +576,11 @@ Some of hook of this packgae is too hacked, maybe drop it.
         ("Wikipedia" . [simple-query "wikipedia.org" "wikipedia.org/wiki/" #1#])))
 #+end_src
 
+*** winner
+#+begin_src emacs-lisp
+(add-hook 'on-first-buffer-hook #'winner-mode)
+(setq winner-dont-bind-my-keys t)
+#+end_src
 *** repeat
 #+begin_src emacs-lisp
 (setq repeat-mode t
@@ -403,6 +590,7 @@ Some of hook of this packgae is too hacked, maybe drop it.
 #+end_src
 
 *** context-menu
+
 #+begin_src emacs-lisp
 (add-hook 'on-init-ui-hook #'context-menu-mode)
 #+end_src
@@ -414,19 +602,12 @@ Some of hook of this packgae is too hacked, maybe drop it.
   (setq eww-retrieve-command '("readable")))
 #+end_src
 
-*** vc project xref tramp
-
-**** vc
+*** vc
 #+begin_src emacs-lisp
-;; Enought for me
 (setq-default vc-handled-backends '(Git))
 #+end_src
 
-**** project
-TODOs:
-- Add a function to clear all remote projects.
-- Add project manually via M-x.
-
+*** project
 #+begin_src elisp
 (with-eval-after-load 'project
   ;; go to the end of buffer after `project-compile'
@@ -457,7 +638,7 @@ TODOs:
                                         "README.md")))
 #+end_src
 
-**** xref
+*** xref
 Must set before consult.
 Use control-left-click to jump to defintions.
 Need ugrep installed(check external program).
@@ -479,7 +660,7 @@ Set cursor pos to mouse pos if they are not in same pos.
       xref-history-storage 'xref-window-local-history)
 #+end_src
 
-**** tramp
+*** tramp
 #+begin_src elisp
 (setq
  remote-file-name-inhibit-locks t
@@ -510,19 +691,10 @@ Set cursor pos to mouse pos if they are not in same pos.
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 #+end_src
 
-*** TODO help shortdoc
-Why this works under macos but not work under linux(can’t find function)?
-#+begin_src emacs-lisp
-;; (add-hook 'help-fns-describe-function-functions #'shortdoc-help-fns-examples-function)
-#+end_src
-
 *** browse-url
 #+begin_src emacs-lisp
 (setq browse-url-generic-program
       (or (executable-find "firefox")
-          (executable-find "chromium")
-          (executable-find "google-chrome-stable")
-          (executable-find "google-chrome")
           (when eat/macp "open")
           (when eat/linuxp "xdg-open")))
 #+end_src
@@ -560,27 +732,245 @@ Why this works under macos but not work under linux(can’t find function)?
 (keymap-substitute isearch-mode-map #'isearch-delete-chac #'isearch-del-chac)
 ;; TODO
 (define-key isearch-mode-map [escape] #'isearch-cancel)
+
+;; GC automatically while unfocusing the frame
+(add-function :after after-focus-change-function
+              (lambda ()
+                (unless (frame-focus-state)
+                  (garbage-collect))))
+#+end_src
+*** ediff
+#+begin_src elisp
+(defvar local-ediff-saved-window-conf nil)
+(defun eat/ediff-save-window-conf ()
+  (setq local-ediff-saved-window-conf (current-window-configuration)))
+
+(defun eat/ediff-restore-window-conf ()
+  (when (window-configuration-p local-ediff-saved-window-conf)
+    (set-window-configuration local-ediff-saved-window-conf)))
+
+(setq ediff-window-setup-function #'ediff-setup-windows-plain
+      ediff-highlight-all-diffs t
+      ediff-split-window-function 'split-window-horizontally
+      ediff-merge-split-window-function 'split-window-horizontally)
+(with-eval-after-load 'ediff
+  ;; Restore window config after quitting ediff
+  (add-hook 'ediff-before-setup-hook #'eat/ediff-save-window-conf)
+  (add-hook 'ediff-quit-hook #'eat/ediff-restore-window-conf))
+#+end_src
+*** hl-line
+#+begin_src emacs-lisp
+(setq hl-line-sticky-flag nil)
+
+;; (when (display-graphic-p)
+;;   (add-hook 'prog-mode-hook #'hl-line-mode)
+;;   (add-hook 'conf-mode-hook #'hl-line-mode))
+
+(defun eat/hl-line-setup ()
+  "Disable `hl-line-mode' if region is active."
+  (when (and (bound-and-true-p hl-line-mode)
+             (region-active-p))
+    (hl-line-unhighlight)))
+
+(with-eval-after-load 'hl-line
+  (add-hook 'post-command-hook #'eat/hl-line-setup))
 #+end_src
 
-** funcs
-#+begin_src emacs-lisp
-(defun eat/timestamp (begin end)
-  "Convert the selected region (a timestamp in seconds) to a formatted time string."
-  (interactive "r") ; 获取当前选择的区域作为(begin, end)参数
-  (let* ((timestamp-str (buffer-substring-no-properties begin end))
-         (timestamp (string-to-number timestamp-str))
-         (formatted-time (format-time-string "%Y-%m-%d %H:%M:%S" (seconds-to-time timestamp))))
-    (message "%s" formatted-time)))
+*** pulse
+#+begin_src elisp
+(custom-set-faces
+ '(pulse-highlight-start-face ((t (:inherit region))))
+ '(pulse-highlight-face ((t (:inherit region)))))
+
+(defun eat/pulse-momentary-line (&rest _)
+  "Pulse the current line."
+  (pulse-momentary-highlight-one-line (point)))
+
+(defun eat/pulse-momentary (&rest _)
+  "Pulse the region or the current line."
+  (if (fboundp 'xref-pulse-momentarily)
+      (xref-pulse-momentarily)
+    (eat/pulse-momentary-line)))
+
+(defun eat/recenter-and-pulse(&rest _)
+  "Recenter and pulse the region or the current line."
+  (recenter)
+  (eat/pulse-momentary))
+
+(defun eat/recenter-and-pulse-line (&rest _)
+  "Recenter and pulse the current line."
+  (recenter)
+  (eat/pulse-momentary-line))
+
+(dolist (cmd '(recenter-top-bottom
+               other-window windmove-do-window-select
+               pager-page-down pager-page-up))
+  (advice-add cmd :after #'eat/pulse-momentary-line))
+
+(dolist (cmd '(pop-to-mark-command
+               pop-global-mark
+               compile-goto-error
+               goto-last-change))
+  (advice-add cmd :after #'eat/recenter-and-pulse))
+
+(add-hook 'imenu-after-jump-hook #'eat/recenter-and-pulse)
+(add-hook 'isearch-update-post-hook #'eat/recenter-and-pulse)
+
+(add-hook 'bookmark-after-jump-hook #'eat/recenter-and-pulse-line)
+(add-hook 'next-error #'eat/recenter-and-pulse-line)
 #+end_src
-* Lib
+
+*** outline
+#+begin_src emacs-lisp
+(setq outline-minor-mode-cycle t
+      outline-minor-mode-highlight t)
+#+end_src
+
+*** simple
+#+begin_src emacs-lisp
+(add-hook 'before-save-hook #'delete-trailing-whitespace)
+(setq visual-line-fringe-indicators '(nil nil)
+      ;; List only applicable commands.
+      read-extended-command-predicate #'command-completion-default-include-p
+      fill-column 72)
+#+end_src
+*** subword
+#+begin_src elisp
+(add-hook 'prog-mode-hook #'subword-mode)
+#+end_src
+*** elec-pair
+#+begin_src elisp
+(add-hook 'prog-mode-hook #'electric-pair-local-mode)
+(setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
+#+end_src
+*** paren
+#+begin_src elisp
+(setq show-paren-when-point-in-periphery t
+      show-paren-context-when-offscreen 'overlay
+      show-paren-when-point-inside-paren t
+      show-paren-context-when-offscreen t)
+#+end_src
+*** smerge
+#+begin_src elisp
+(add-hook 'find-file-hook #'(lambda ()
+                              (save-excursion
+                                (goto-char (point-min))
+                                (when (re-search-forward "^<<<<<<< " nil t)
+                                  (smerge-mode 1)))))
+
+(with-eval-after-load 'smerge-mode
+  (bind smerge-mode-map
+        "C-c r" #'smerge-refine
+        "C-c c" #'smerge-keep-current
+        "C-c a" #'smerge-keep-all
+        "C-c n" #'smerge-next
+        "C-c p" #'smerge-prev
+        "C-c l" #'smerge-keep-lower
+        "C-c u" #'smerge-keep-upper))
+#+end_src
+*** eldoc
+#+begin_src elisp
+(setq eldoc-idle-delay 1)
+#+end_src
+*** autofill
+#+begin_src elisp
+(add-hook 'prog-mode-hook
+          #'(lambda ()
+              (setq-local comment-auto-fill-only-comments t)
+              (turn-on-auto-fill)))
+#+end_src
+*** TODO hideshow
+- Seems have error message.
+- And to context-menu-mode.
+#+begin_src elisp
+(add-hook 'prog-mode-hook #'hs-minor-mode)
+
+;; FIXME
+(defconst hideshow-folded-face '((t (:inherit 'font-lock-comment-face :box t))))
+
+(defface hideshow-border-face
+  '((((background light))
+     :background "rosy brown" :extend t)
+    (t
+     :background "sandy brown" :extend t))
+  "Face used for hideshow fringe."
+  :group 'hideshow)
+
+(define-fringe-bitmap 'hideshow-folded-fringe
+  (vector #b00000000
+          #b00000000
+          #b00000000
+          #b11000011
+          #b11100111
+          #b01111110
+          #b00111100
+          #b00011000))
+
+(defun hideshow-folded-overlay-fn (ov)
+  "Display a folded region indicator with the number of folded lines."
+  (when (eq 'code (overlay-get ov 'hs))
+    (let* ((nlines (count-lines (overlay-start ov) (overlay-end ov)))
+           (info (format " (%d)..." nlines)))
+      ;; fringe indicator
+      (overlay-put ov 'before-string (propertize " "
+                                                 'display '(left-fringe hideshow-folded-fringe
+                                                                        hideshow-border-face)))
+      ;; folding indicator
+      (overlay-put ov 'display (propertize info 'face hideshow-folded-face)))))
+
+(setq hs-set-up-overlay #'hideshow-folded-overlay-fn)
+#+end_src
+*** flymake
 
 #+begin_src elisp
+(add-hook 'prog-mode-hook #'flymake-mode)
+(add-hook 'emacs-lisp-mode-hook #'(lambda ()
+                                    (flymake-mode -1)))
+
+(setq flymake-diagnostic-functions nil
+      ;; flymake-show-diagnostics-at-end-of-line t
+      ;; 过低的延时在使用 tramp 编辑文件时会导致 eglot 报错不准确
+      flymake-no-changes-timeout 0.5)
+
+(defvar sekiro-flymake-mode-line-format `(:eval (sekiro-flymake-mode-line-format)))
+(put 'sekiro-flymake-mode-line-format 'risky-local-variable t)
+(defun sekiro-flymake-mode-line-format ()
+  (let* ((counter (string-to-number
+                   (nth 1
+                        (cadr
+                         (flymake--mode-line-counter :error t)))))
+         (sekiro-flymake (when (> counter 0)
+                           'compilation-error)))
+    (propertize
+     "危"
+     'face
+     sekiro-flymake)))
+
+(with-eval-after-load 'flymake
+  (add-to-list 'mode-line-misc-info
+               `(flymake-mode (" [" sekiro-flymake-mode-line-format "] "))))
+#+end_src
+** Next version
+#+begin_src emacs-lisp
+(when (>= emacs-major-version 30)
+  (add-to-list 'help-fns-describe-function-functions #'shortdoc-help-fns-examples-function))
+#+end_src
+* lib
+#+begin_src emacs-lisp
+(eat/pkg bind)
+(eat/pkg elpa-mirror)
+(setq elpamr-default-output-directory "~/Sync/myelpa")
+
 (eat/pkg fullframe)
 (eat/pkg hide-mode-line)
 (eat/pkg pinyinlib)
 (autoload #'pinyinlib-build-regexp-string "pinyinlib")
-#+end_src
 
+(eat/pkg gcmh)
+(add-hook 'after-init-hook #'gcmh-mode)
+(setq gcmh-idle-delay 5
+      gcmh-high-cons-threshold #x6400000)
+#+end_src
 * TODO Frame
 
 Some config need these hooks to work in emacsclient, like code or theme.
@@ -612,15 +1002,6 @@ Selectively runs either `eat/after-make-console-frame-hooks' or
 #+end_src
 
 * Window
-** Helper funcs
-#+begin_src emacs-lisp
-(defun eat/quit ()
-  "Delete current window switch to prevous buffer."
-  (interactive)
-  (if (> (seq-length (window-list (selected-frame))) 1)
-      (delete-window)
-    (previous-buffer)))
-#+end_src
 ** TODO tab-bar
 #+begin_src elisp
 (defun eat/tab-bar-tab-name-format-function (tab i)
@@ -667,61 +1048,6 @@ No tab will created if the command is cancelled."
   (keymap-set tab-prefix-map "l" #'eat/tab-bar-switch-project))
 #+end_src
 
-** Change Default Behavior of Split Window
-#+begin_src elisp
-;; When splitting window, show (other-buffer) in the new window
-
-(defun split-window-func-with-other-buffer (split-function)
-  (lambda (&optional arg)
-    "Split this window and switch to the new window unless ARG is provided."
-    (interactive "P")
-    (funcall split-function)
-    (let ((target-window (next-window)))
-      (set-window-buffer target-window (other-buffer))
-      (unless arg
-        (select-window target-window)))))
-
-(keymap-global-set "C-x 2" (split-window-func-with-other-buffer 'split-window-vertically))
-(keymap-global-set "C-x 3" (split-window-func-with-other-buffer 'split-window-horizontally))
-
-(defun sanityinc/toggle-delete-other-windows ()
-  "Delete other windows in frame if any, or restore previous window config."
-  (interactive)
-  (if (and winner-mode
-           (equal (selected-window) (next-window)))
-      (winner-undo)
-    (delete-other-windows)))
-
-(keymap-global-set "C-x 1" 'sanityinc/toggle-delete-other-windows)
-#+end_src
-** Rearrange Split Winows
-#+begin_src elisp
-(defun split-window-horizontally-instead ()
-  "Kill any other windows and re-split such that the current window is on the top half of the frame."
-  (interactive)
-  (let ((other-buffer (and (next-window) (window-buffer (next-window)))))
-    (delete-other-windows)
-    (split-window-horizontally)
-    (when other-buffer
-      (set-window-buffer (next-window) other-buffer))))
-
-(defun split-window-vertically-instead ()
-  "Kill any other windows and re-split such that the current window is on the left half of the frame."
-  (interactive)
-  (let ((other-buffer (and (next-window) (window-buffer (next-window)))))
-    (delete-other-windows)
-    (split-window-vertically)
-    (when other-buffer
-      (set-window-buffer (next-window) other-buffer))))
-
-(keymap-global-set "C-x |" 'split-window-horizontally-instead)
-(keymap-global-set "C-x _" 'split-window-vertically-instead)
-#+end_src
-** winner
-#+begin_src elisp
-(add-hook 'on-first-buffer-hook #'winner-mode)
-(setq winner-dont-bind-my-keys t)
-#+end_src
 ** ace-window
 #+begin_src elisp
 (eat/pkg ace-window)
@@ -797,50 +1123,11 @@ No tab will created if the command is cancelled."
 #+begin_src elisp
 (eat/pkg switchy-window)
 
-(eat/hook 'on-first-file-hook #'switchy-window-minor-mode)
+(add-hook 'on-first-file-hook #'switchy-window-minor-mode)
 
 ;; (keymap-set switchy-window-minor-mode-map "<remap> <other-window>" #'switchy-window)
 #+end_src
-** auto balance
-https://zck.org/balance-emacs-windows
-#+begin_src emacs-lisp
-;; (seq-doseq (fn (list #'split-window #'delete-window))
-;;   (advice-add fn
-;;               :after
-;;               #'(lambda (&rest args) (balance-windows))))
-#+end_src
-
 * Buffer
-** Functions
-#+begin_src emacs-lisp
-(defun eat/delete-to-the-begining ()
-  (interactive)
-  (delete-region (point-min) (point)))
-
-(defun eat/delete-to-the-end ()
-  (interactive)
-  (delete-region (point) (point-max)))
-
-(defun eat/delete-whole-buffer ()
-  (interactive)
-  (delete-region (point-min) (point-max)))
-
-(defun eat/delete-this-file ()
-  "Delete the current file, and kill the buffer."
-  (interactive)
-  (unless (buffer-file-name)
-    (error "No file is currently being edited"))
-  (when (yes-or-no-p (format "Really delete '%s'?"
-                             (file-name-nondirectory buffer-file-name)))
-    (delete-file (buffer-file-name))
-    (kill-this-buffer)))
-
-(defun get-string-from-file (filePath)
-  "Return file content as string."
-  (with-temp-buffer
-    (insert-file-contents filePath)
-    (buffer-string)))
-#+end_src
 ** Ibuffer
 #+begin_src elisp
 (eat/pkg ibuffer-vc)
@@ -884,12 +1171,6 @@ https://zck.org/balance-emacs-windows
   (unless (eq ibuffer-sorting-mode 'filename/process)
     (ibuffer-do-sort-by-filename/process)))
 #+end_src
-** Auto-save
-#+begin_src elisp
-;; most of time I will do save manually
-(setq auto-save-visited-interval 10)
-(add-hook 'on-first-file-hook #'auto-save-visited-mode)
-#+end_src
 ** Isearch
 #+begin_src elisp
 (eat/pkg isearch-mb)
@@ -909,40 +1190,7 @@ https://zck.org/balance-emacs-windows
       (funcall fn _))))
 #+end_src
 
-** Misc
-#+begin_src elisp
-(setq display-line-numbers-width 3)
-
-;;; whitespace
-(add-hook 'prog-mode-hook #'whitespace-mode)
-(add-hook 'hook #'whitespace-mode)
-(setq whitespace-style '(face trailing))
-
-;;; savehist
-(add-hook 'after-init-hook #'savehist-mode)
-;; Restore histories and registers after saving
-(setq history-length 1000)
-
-(eat/hook 'on-first-file-hook '(global-goto-address-mode
-                                global-auto-revert-mode
-                                save-place-mode
-                                global-so-long-mode))
-#+end_src
-
-* Minibuffer
-#+begin_src elisp
-(setq
- completion-styles '(basic partial-completion)
- completion-category-overrides '((file (styles basic partial-completion)))
- completion-cycle-threshold t
- minibuffer-depth-indicate-mode t
- minibuffer-eldef-shorten-default t
- minibuffer-electric-default-mode t)
-;; Quit that fucking minibuffer!
-(keymap-set minibuffer-local-map "C-g" #'keyboard-quit)
-#+end_src
-
-** Vertico
+* Vertico
 #+begin_src elisp
 ;;; vertico
 (eat/pkg vertico)
@@ -966,11 +1214,29 @@ https://zck.org/balance-emacs-windows
 
 (setq vertico-resize nil
       vertico-count 17)
-
-;;; marginalia
+#+end_src
+** marginalia
+#+begin_src emacs-lisp
 (eat/pkg marginalia)
 (add-hook 'after-init-hook #'marginalia-mode)
+#+end_src
+** orderless
+#+begin_src emacs-lisp
+(eat/pkg orderless)
 
+(defun sanityinc/use-orderless-in-minibuffer ()
+  (setq-local completion-styles '(substring orderless)))
+
+(add-hook 'minibuffer-setup-hook #'sanityinc/use-orderless-in-minibuffer)
+
+(with-eval-after-load 'orderless
+  (defun completion--regex-pinyin (str)
+    (orderless-regexp (pinyinlib-build-regexp-string str)))
+  (add-to-list 'orderless-matching-styles 'completion--regex-pinyin))
+#+end_src
+
+** consult
+#+begin_src emacs-lisp
 ;;; consult
 (eat/pkg consult)
 (eat/pkg consult-todo "https://github.com/liuyinz/consult-todo")
@@ -1006,45 +1272,8 @@ https://zck.org/balance-emacs-windows
   (consult-customize consult-ripgrep consult-git-grep consult-grep
                      consult-bookmark consult-recent-file consult-xref
                      :preview-key nil))
-
-;;; orderless
-(eat/pkg orderless)
-
-(defun sanityinc/use-orderless-in-minibuffer ()
-  (setq-local completion-styles '(substring orderless)))
-
-(add-hook 'minibuffer-setup-hook #'sanityinc/use-orderless-in-minibuffer)
-
-(with-eval-after-load 'orderless
-  (defun completion--regex-pinyin (str)
-    (orderless-regexp (pinyinlib-build-regexp-string str)))
-  (add-to-list 'orderless-matching-styles 'completion--regex-pinyin))
-
-;;; embark
-(eat/pkg embark)
-(eat/pkg embark-consult)
-
-(with-eval-after-load 'vertico
-  (keymap-set vertico-map "C-c C-o" #'embark-export)
-  (keymap-set vertico-map "C-c C-c" #'embark-act))
-
-(with-eval-after-load 'embark
-  (keymap-set embark-meta-map "<escape>" #'keyboard-escape-quit))
-
-(with-eval-after-load 'embark
-  ;; Hide the mode line of the Embark live/completions buffers
-  (add-to-list 'display-buffer-alist
-               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                 nil
-                 (window-parameters (mode-line-format . none))))
-  (with-eval-after-load 'consult
-    (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode)))
-
-;;; consult-yasnippet
-(eat/pkg consult-yasnippet)
 ;;; consult-dir
 (eat/pkg consult-dir)
-
 (global-set-key [remap list-directory] #'consult-dir)
 (with-eval-after-load 'vertico
   (keymap-set vertico-map "C-x C-d" #'consult-dir)
@@ -1052,6 +1281,27 @@ https://zck.org/balance-emacs-windows
 
 ;;; consult-eglot
 (eat/pkg consult-eglot)
+#+end_src
+
+** embark
+#+begin_src emacs-lisp
+(eat/pkg embark)
+(eat/pkg embark-consult)
+
+(bind (global-map
+       "C-." #'embark-act)
+      (minibuffer-local-map
+       "C-c C-o" #'embark-export))
+
+(with-eval-after-load 'embark
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none))))
+
+  (with-eval-after-load 'consult
+    (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode)))
 #+end_src
 
 * UI
@@ -1113,12 +1363,11 @@ https://zck.org/balance-emacs-windows
           (throw 'foo t))))
     font-installed))
 
-(defvar eat/fonts-default        '("DejaVu Sans Mono" "Monaco" "Cascadia Code" "Menlo" "Source Code Pro"))
+(defvar eat/fonts-default        '("Monaco" "Cascadia Code" "Menlo" "Source Code Pro"))
 (defvar eat/fonts-variable-pitch '("Bookerly" "Cardo" "Times New Roman" "DejaVu Sans"))
 (defvar eat/fonts-cjk            '("LXGW WenKai" "WenQuanYi Micro Hei" "Microsoft Yahei"))
-(defvar eat/fonts-unicode        '("Symbols Nerd Font" "Apple Color Emoji"))
+(defvar eat/fonts-unicode        '("Symbola"))
 (defvar eat/fonts-emoji          '("Apple Color Emoji" "Segoe UI Symbol" "Noto Color Emoji"))
-
 (defvar eat/font-size-default   13)
 (defvar eat/font-default        (font-installed-p eat/fonts-default))
 (defvar eat/font-variable-pitch (font-installed-p eat/fonts-variable-pitch))
@@ -1127,9 +1376,9 @@ https://zck.org/balance-emacs-windows
 (defvar eat/font-emoji          (font-installed-p eat/fonts-emoji))
 
 (defvar eat/font-rescale-alist
-  `((,eat/font-cjk     . 0.95)
-    (,eat/font-emoji   . 0.80)
-    (,eat/font-unicode . 0.80))
+  `((,eat/font-cjk     . 0.85)
+    (,eat/font-emoji   . 0.85)
+    (,eat/font-unicode . 0.85))
   "A list of font names that should be rescaled.")
 
 (defun eat/rescale-font ()
@@ -1231,6 +1480,12 @@ https://zck.org/balance-emacs-windows
 (add-hook 'load-theme-hook #'eat/setup-mode-line-font)
 
 (eat/pkg gruber-darker-theme)
+
+(eat/pkg nano-theme "https://github.com/404cn/nano-theme.el")
+(add-to-list 'custom-theme-load-path (expand-file-name "elpa/nano-theme" user-emacs-directory))
+
+(eat/pkg carbon-theme "https://github.com/DogLooksGood/carbon-theme")
+(add-to-list 'custom-theme-load-path (expand-file-name "elpa/carbon-theme" user-emacs-directory))
 #+end_src
 ** solaire mode
 
@@ -1240,21 +1495,6 @@ https://zck.org/balance-emacs-windows
 (add-hook 'after-init-hook #'solaire-global-mode)
 #+end_src
 
-** Adjust opacity
-#+begin_src emacs-lisp
-(defun eat/adjust-opacity (frame incr)
-  "Adjust the background opacity of FRAME by increment INCR."
-  (unless (display-graphic-p frame)
-    (error "Cannot adjust opacity of this frame"))
-  (let* ((oldalpha (or (frame-parameter frame 'alpha-background) 100))
-         (oldalpha (if (listp oldalpha) (car oldalpha) oldalpha))
-         (newalpha (+ incr oldalpha)))
-    (when (and (<= frame-alpha-lower-limit newalpha) (>= 100 newalpha))
-      (modify-frame-parameters frame (list (cons 'alpha-background newalpha))))))
-(global-set-key (kbd "M-C-8") (lambda () (interactive) (eat/adjust-opacity nil -2)))
-(global-set-key (kbd "M-C-9") (lambda () (interactive) (eat/adjust-opacity nil 2)))
-(global-set-key (kbd "M-C-7") (lambda () (interactive) (modify-frame-parameters nil `((alpha-background . 100)))))
-#+end_src
 ** Text Scale
 #+begin_src elisp
 (eat/pkg default-text-scale)
@@ -1271,10 +1511,9 @@ https://zck.org/balance-emacs-windows
 #+begin_src emacs-lisp
 (eat/pkg indent-bars "https://github.com/jdtsmith/indent-bars.git")
 
-(eat/hook '(python-base-mode-hook
-            yaml-mode-hook
-            yaml-ts-mode-hook)
-          #'indent-bars-mode)
+(add-hook 'python-base-mode-hook #'indent-bars-mode)
+(add-hook 'yaml-mode-hook #'indent-bars-mode)
+(add-hook 'yaml-ts-mode-hook #'indent-bars-mode)
 
 (setq
  indent-bars-color '(highlight :face-bg t :blend 0.15)
@@ -1296,130 +1535,6 @@ https://zck.org/balance-emacs-windows
 				                         parenthesized_expression subscript)))
 #+end_src
 * Editing
-** Functions
-#+begin_src emacs-lisp
-;; http://emacsredux.com/blog/2013/05/22/smarter-navigation-to-the-beginning-of-a-line/
-(defun smarter-move-beginning-of-line (arg)
-  "Move point back to indentation of beginning of line.
-
-Move point to the first non-whitespace character on this line.
-If point is already there, move to the beginning of the line.
-Effectively toggle between the first non-whitespace character and
-the beginning of the line.
-
-If ARG is not nil or 1, move forward ARG - 1 lines first.  If
-point reaches the beginning or end of the buffer, stop there."
-  (interactive "^p")
-  (setq arg (or arg 1))
-
-  ;; Move lines first
-  (when (/= arg 1)
-    (let ((line-move-visual nil))
-      (forward-line (1- arg))))
-
-  (let ((orig-point (point)))
-    (back-to-indentation)
-    (when (= orig-point (point))
-      (move-beginning-of-line 1))))
-(global-set-key [remap move-beginning-of-line] #'smarter-move-beginning-of-line)
-#+end_src
-** Built In Tools
-*** Ediff
-#+begin_src elisp
-(defvar local-ediff-saved-window-conf nil)
-(defun eat/ediff-save-window-conf ()
-  (setq local-ediff-saved-window-conf (current-window-configuration)))
-
-(defun eat/ediff-restore-window-conf ()
-  (when (window-configuration-p local-ediff-saved-window-conf)
-    (set-window-configuration local-ediff-saved-window-conf)))
-
-(setq ediff-window-setup-function #'ediff-setup-windows-plain
-      ediff-highlight-all-diffs t
-      ediff-split-window-function 'split-window-horizontally
-      ediff-merge-split-window-function 'split-window-horizontally)
-(with-eval-after-load 'ediff
-  ;; Restore window config after quitting ediff
-  (add-hook 'ediff-before-setup-hook #'eat/ediff-save-window-conf)
-  (add-hook 'ediff-quit-hook #'eat/ediff-restore-window-conf))
-#+end_src
-*** Hl Line
-#+begin_src emacs-lisp
-(setq hl-line-sticky-flag nil)
-;; (when (display-graphic-p)
-;;   (add-hook 'prog-mode-hook #'hl-line-mode)
-;;   (add-hook 'conf-mode-hook #'hl-line-mode))
-(with-eval-after-load 'hl-line
-  (add-hook 'post-command-hook #'(lambda ()
-                                   "When `hl-line-mode' is enable, unhighlight if region is active."
-                                   (when (and (bound-and-true-p hl-line-mode)
-                                              (region-active-p))
-                                     (hl-line-unhighlight)))))
-#+end_src
-
-*** Pulse
-#+begin_src elisp
-(custom-set-faces
- '(pulse-highlight-start-face ((t (:inherit region))))
- '(pulse-highlight-face ((t (:inherit region)))))
-
-(defun eat/pulse-momentary-line (&rest _)
-  "Pulse the current line."
-  (pulse-momentary-highlight-one-line (point)))
-
-(defun eat/pulse-momentary (&rest _)
-  "Pulse the region or the current line."
-  (if (fboundp 'xref-pulse-momentarily)
-      (xref-pulse-momentarily)
-    (eat/pulse-momentary-line)))
-
-(defun eat/recenter-and-pulse(&rest _)
-  "Recenter and pulse the region or the current line."
-  (recenter)
-  (eat/pulse-momentary))
-
-(defun eat/recenter-and-pulse-line (&rest _)
-  "Recenter and pulse the current line."
-  (recenter)
-  (eat/pulse-momentary-line))
-
-(dolist (cmd '(recenter-top-bottom
-               other-window windmove-do-window-select
-               pager-page-down pager-page-up))
-  (advice-add cmd :after #'eat/pulse-momentary-line))
-
-(dolist (cmd '(pop-to-mark-command
-               pop-global-mark
-               compile-goto-error
-               goto-last-change))
-  (advice-add cmd :after #'eat/recenter-and-pulse))
-
-(add-hook 'imenu-after-jump-hook #'eat/recenter-and-pulse)
-(add-hook 'isearch-update-post-hook #'eat/recenter-and-pulse)
-
-(add-hook 'bookmark-after-jump-hook #'eat/recenter-and-pulse-line)
-(add-hook 'next-error #'eat/recenter-and-pulse-line)
-#+end_src
-
-*** Outline
-#+begin_src emacs-lisp
-(setq outline-minor-mode-cycle t
-      outline-minor-mode-highlight t)
-#+end_src
-
-*** Simple
-#+begin_src emacs-lisp
-(add-hook 'before-save-hook #'delete-trailing-whitespace)
-(setq visual-line-fringe-indicators '(nil nil)
-      ;; List only applicable commands.
-      read-extended-command-predicate #'command-completion-default-include-p
-      fill-column 72)
-#+end_src
-
-*** Subword
-#+begin_src elisp
-(add-hook 'prog-mode-hook #'subword-mode)
-#+end_src
 ** Meow
 *** Setup
 #+begin_src elisp
@@ -1656,7 +1771,7 @@ point reaches the beginning or end of the buffer, stop there."
 (meow-setup-indicator)
 (meow-global-mode 1)
 #+end_src
-** Anzu
+** TODO Anzu(use isearch + embark to replace this
 #+begin_src elisp
 (eat/pkg anzu)
 (global-set-key [remap query-replace] #'anzu-query-replace)
@@ -1666,11 +1781,6 @@ point reaches the beginning or end of the buffer, stop there."
 #+begin_src emacs-lisp
 (eat/pkg separedit)
 (keymap-global-set "C-c '" #'separedit)
-#+end_src
-** Iscroll
-Better scroll on picture in GUI
-#+begin_src emacs-lisp
-(eat/pkg iscroll)
 #+end_src
 
 ** Undo
@@ -1725,17 +1835,20 @@ Only work for orderless for now.
 (unless (package-installed-p 'rime-regexp)
   (package-vc-install "https://github.com/colawithsauce/rime-regexp.el"))
 
-(add-hook 'after-init-hook #'rime-regexp-mode)
+(with-eval-after-load "rime"
+  (rime-regexp-mode))
 #+end_src
 
-** TODO Symbol Overlay
+** TODO Symbol Overlay(use isearch + embark + highlight)
 #+begin_src emacs-lisp
 (eat/pkg symbol-overlay)
  #+end_src
 ** Hl Todo
 #+begin_src emacs-lisp
 (eat/pkg hl-todo)
-(eat/hook '(dired-mode-hook prog-mode-hook conf-mode-hook) #'hl-todo-mode)
+(add-hook 'dired-mode-hook #'hl-todo-mode)
+(add-hook 'prog-mode-hook #'hl-todo-mode)
+(add-hook 'conf-mode-hook #'hl-todo-mode)
 #+end_src
 ** Ligature
 #+begin_src emacs-lisp
@@ -1824,31 +1937,17 @@ Only work for orderless for now.
         "RET" nil
         "SPC" nil))
 #+end_src
-** tabnine
-#+begin_src emacs-lisp
-(eat/pkg tabnine)
-
-(autoload #'tabnine-install-binary "tabnine" nil t)
-(autoload #'tabnine-start-process "tabnine" nil t)
-
-(when (file-directory-p "~/.TabNine/")
-  ;; TODO some package(like eglot) will rewrite completion-at-point-functions
-  ;; (add-to-list 'completion-at-point-functions #'tabnine-completion-at-point)
-  ;; (add-hook 'kill-emacs-hook #'tabnine-kill-process)
-  ;; (add-hook 'prog-mode-hook #'tabnine-start-process)
-  ;; (with-eval-after-load "meow"
-  ;;   (add-to-list 'tabnine-enable-predicates #'meow-insert-mode-p))
-  )
-#+end_src
 ** yasnippet
 #+begin_src elisp
 (eat/pkg yasnippet)
-(eat/hook '(prog-mode-hook conf-mode-hook) #'yas-minor-mode)
+
+(add-hook 'prog-mode-hook #'yas-minor-mode)
+(add-hook 'conf-mode-hook #'yas-minor-mode)
+
 (with-eval-after-load 'yasnippet
   (let ((inhibit-message t))
     (yas-reload-all)))
 #+end_src
-
 ** copilot
 
 #+begin_src emacs-lisp
@@ -1877,98 +1976,6 @@ Only work for orderless for now.
 
 * Programming
 ** Tools
-*** Pair
-**** elec-pair
-#+begin_src elisp
-(add-hook 'prog-mode-hook #'electric-pair-local-mode)
-(setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
-#+end_src
-**** paren
-#+begin_src elisp
-(setq show-paren-when-point-in-periphery t
-      show-paren-context-when-offscreen 'overlay
-      show-paren-when-point-inside-paren t
-      show-paren-context-when-offscreen t)
-#+end_src
-*** Smerge
-#+begin_src elisp
-(add-hook 'find-file-hook #'(lambda ()
-                              (save-excursion
-                                (goto-char (point-min))
-                                (when (re-search-forward "^<<<<<<< " nil t)
-                                  (smerge-mode 1)))))
-
-(with-eval-after-load 'smerge-mode
-  (bind smerge-mode-map
-        "C-c r" #'smerge-refine
-        "C-c c" #'smerge-keep-current
-        "C-c a" #'smerge-keep-all
-        "C-c n" #'smerge-next
-        "C-c p" #'smerge-prev
-        "C-c l" #'smerge-keep-lower
-        "C-c u" #'smerge-keep-upper))
-#+end_src
-*** Eldoc
-#+begin_src elisp
-(setq eldoc-idle-delay 1)
-#+end_src
-*** Newcomment
-Set this localy in prog mode, or auto fill mode will not work since
-there’s no comment in some mode.
-
-#+begin_src elisp
-;; FIXME eat/hook
-;; (eat/hook 'prog-mode-hook
-;;           #'(lambda ()
-;;               (setq-local comment-auto-fill-only-comments t)
-;;               (turn-on-auto-fill)
-;;               ))
-(add-hook 'prog-mode-hook
-          #'(lambda ()
-              (setq-local comment-auto-fill-only-comments t)
-              (turn-on-auto-fill)))
-#+end_src
-*** TODO Hideshow
-- Seems have error message.
-- And to context-menu-mode.
-#+begin_src elisp
-(add-hook 'prog-mode-hook #'hs-minor-mode)
-
-;; FIXME
-(defconst hideshow-folded-face '((t (:inherit 'font-lock-comment-face :box t))))
-
-(defface hideshow-border-face
-  '((((background light))
-     :background "rosy brown" :extend t)
-    (t
-     :background "sandy brown" :extend t))
-  "Face used for hideshow fringe."
-  :group 'hideshow)
-
-(define-fringe-bitmap 'hideshow-folded-fringe
-  (vector #b00000000
-          #b00000000
-          #b00000000
-          #b11000011
-          #b11100111
-          #b01111110
-          #b00111100
-          #b00011000))
-
-(defun hideshow-folded-overlay-fn (ov)
-  "Display a folded region indicator with the number of folded lines."
-  (when (eq 'code (overlay-get ov 'hs))
-    (let* ((nlines (count-lines (overlay-start ov) (overlay-end ov)))
-           (info (format " (%d)..." nlines)))
-      ;; fringe indicator
-      (overlay-put ov 'before-string (propertize " "
-                                                 'display '(left-fringe hideshow-folded-fringe
-                                                                        hideshow-border-face)))
-      ;; folding indicator
-      (overlay-put ov 'display (propertize info 'face hideshow-folded-face)))))
-
-(setq hs-set-up-overlay #'hideshow-folded-overlay-fn)
-#+end_src
 *** Devdocs
 #+begin_src elisp
 (eat/pkg devdocs)
@@ -1985,18 +1992,16 @@ there’s no comment in some mode.
   (setq-local header-line-format nil)
   (face-remap-add-relative 'default :height 0.8))
 
-(eat/hook 'imenu-list-major-mode-hook #'eat/imenu-list-setup)
+(add-hook 'imenu-list-major-mode-hook #'eat/imenu-list-setup)
 #+end_src
 *** Paredit
 #+begin_src emacs-lisp
 (eat/pkg paredit)
 
-(eat/hook
- '(emacs-lisp-mode-hook
-   lisp-interaction-mode-hook
-   scheme-mode-hook
-   lisp-mode-hook)
- #'paredit-mode)
+(add-hook 'emacs-lisp-mode-hook #'paredit-mode)
+(add-hook 'lisp-interaction-mode-hook #'paredit-mode)
+(add-hook 'scheme-mode-hook #'paredit-mode)
+(add-hook 'lisp-mode-hook #'paredit-mode)
 #+end_src
 *** Puni
 #+begin_src emacs-lisp
@@ -2043,37 +2048,6 @@ there’s no comment in some mode.
 #+begin_src emacs-lisp
 (eat/pkg clue "https://github.com/AmaiKinono/clue")
 #+end_src
-*** TODO Flymake
-Cause redisplay error under linux with go project.
-
-#+begin_src elisp
-(add-hook 'prog-mode-hook #'flymake-mode)
-(add-hook 'emacs-lisp-mode-hook #'(lambda ()
-                                    (flymake-mode -1)))
-
-(setq flymake-diagnostic-functions nil
-      ;; flymake-show-diagnostics-at-end-of-line t
-      ;; 过低的延时在使用 tramp 编辑文件时会导致 eglot 报错不准确
-      flymake-no-changes-timeout 0.5)
-
-(defvar sekiro-flymake-mode-line-format `(:eval (sekiro-flymake-mode-line-format)))
-(put 'sekiro-flymake-mode-line-format 'risky-local-variable t)
-(defun sekiro-flymake-mode-line-format ()
-  (let* ((counter (string-to-number
-                   (nth 1
-                        (cadr
-                         (flymake--mode-line-counter :error t)))))
-         (sekiro-flymake (when (> counter 0)
-                           'compilation-error)))
-    (propertize
-     "危"
-     'face
-     sekiro-flymake)))
-
-(with-eval-after-load 'flymake
-  (add-to-list 'mode-line-misc-info
-               `(flymake-mode (" [" sekiro-flymake-mode-line-format "] "))))
-#+end_src
 ** Lsp
 *** lsp-bridge                                                       :deps:
 Need a lot...
@@ -2092,15 +2066,10 @@ Need a lot...
 
 (defun eat/lsp-bridge-mode-setup ()
   (interactive)
-  ;; Add sub dirs to load path.
-  (if (file-directory-p (expand-file-name "elpa/lsp-bridge" user-emacs-directory))
-      (add-to-list 'load-path (expand-file-name "elpa/lsp-bridge" user-emacs-directory)))
   (flymake-bridge-setup)
   ;; Disable corfu since lsp-bridge use acm.
   (ignore-errors
-    (corfu-mode -1)
-    (company-mode -1)
-    (company-box-mode -1))
+    (company-mode -1))
   ;; Use tab to jump to next field but do complete when there's acm complete.
   (with-eval-after-load 'yasnippet
     (define-key yas-keymap (kbd "<tab>") 'acm-complete-or-expand-yas-snippet)
@@ -2147,6 +2116,8 @@ Need a lot...
         :documentFormattingProvider
         :documentRangeFormattingProvider))
 
+;; TODO config :stubPath for python's lsp server
+;; https://www.reddit.com/r/emacs/comments/17ry3vr/comment/k8p6j36/?context=3
 (setq-default eglot-workspace-configuration
               '((:gopls
                  (:ui.completion.usePlaceholders . t)
@@ -2155,7 +2126,7 @@ Need a lot...
                  (:build.buildFlags . ["-tags" "wireinject"]))))
 
 (when (executable-find "ltex-ls")
-  (eat/hook 'message-mode-hook #'eglot-ensure))
+  (add-hook 'message-mode-hook #'eglot-ensure))
 
 (with-eval-after-load 'eglot
   (bind eglot-mode-map
@@ -2190,7 +2161,7 @@ Need a lot...
   ;; $ mkdir -p ~/.cache/gtags/
   (keymap-global-set "C-x c P" #'citre-ace-peek-references)
   (setq citre-default-create-tags-file-location 'global-cache
-        ;; citre-use-project-root-when-creating-tags t
+        citre-use-project-root-when-creating-tags t
         citre-prompt-language-for-ctags-command t
         citre-auto-enable-citre-mode-modes '(prog-mode))
   (with-eval-after-load 'cc-mode (require 'citre-lang-c))
@@ -2204,28 +2175,16 @@ Need a lot...
 
 (with-eval-after-load 'citre-peek
   (keymap-set citre-peek-keymap "M-l r" 'citre-peek-through-references))
-
-(defun eat/citre-enable ()
-  (interactive)
-  (citre-mode 1)
-  (add-hook 'find-file-hook #'citre-auto-enable-citre-mode))
-
-(defun eat/citre-disable ()
-  (interactive)
-  (citre-mode 0)
-  (remove-hook 'find-file-hook #'citre-auto-enable-citre-mode))
 #+end_src
 ** Lang
 *** Lisp
 #+begin_src elisp
 (eat/pkg aggressive-indent)
 
-(eat/hook
- '(emacs-lisp-mode-hook
-   lisp-interaction-mode-hook
-   scheme-mode-hook
-   lisp-mode-hook)
- #'aggressive-indent-mode)
+(add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
+(add-hook 'lisp-interaction-mode-hook #'aggressive-indent-mode)
+(add-hook 'scheme-mode-hook #'aggressive-indent-mode)
+(add-hook 'lisp-mode-hook #'aggressive-indent-mode)
 #+end_src
 *** Go
 #+begin_src emacs-lisp
@@ -2271,17 +2230,6 @@ Need a lot...
       gofmt-show-errors nil)
 (add-hook 'go-test-mode-hook #'visual-line-mode)
 
-
-;; Flymake-go-staticcheck
-(defun eat/flymake-go-staticcheck-enable ()
-  "Enable flymake-go-staticcheck for all go buffer.
-Call `flymake-go-staticcheck-enable' interactive will only
-enable this in current buffer, add to `go-mode-hook' to make
-it enable on all go buffer."
-  (interactive)
-  (flymake-go-staticcheck-enable)
-  (add-hook 'go-mode-hook #'flymake-go-staticcheck-enable))
-
 ;; Go-test
 (setq go-test-verbose t
       ;; Do not cache test result.
@@ -2307,7 +2255,7 @@ Install =rnix-lsp= and =nixfmt=.
 (eat/pkg cider)
 (eat/pkg clj-refactor)
 
-(eat/hook 'clojure-mode-hook #'puni-mode)
+(add-hook 'clojure-mode-hook #'puni-mode)
 
 (setq cider-repl-display-help-banner nil)
 
@@ -2370,10 +2318,16 @@ Also check:
 (setq
  ;; 没有在 tree-sitter 组织下的 parser
  treesit-language-source-alist
- '((gomod . ("https://github.com/camdencheek/tree-sitter-gomod.git"))))
+ '((gomod . ("https://github.com/camdencheek/tree-sitter-gomod.git"))
+   (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))))
 #+end_src
 
-*** go
+*** TODO go
+
+Why treesit-check-indent still use 8 as indent offset as I alreay set
+go-ts-mode-indent-offset to 4?
+And electric-indent-mode make enter after ) } indent 8 space too.
+
 #+begin_src emacs-lisp
 (with-eval-after-load 'go-ts-mode
   (require 'go-mode)
@@ -2466,14 +2420,9 @@ This command only works in a tree-sitter major mode."
 
 (autoload #'dape-toggle-breakpoint "dape" nil t)
 #+end_src
-** TODO REPL programming for all languages
-If the cli program not found, it cause major mode can’t load.
+** drepl
 #+begin_src emacs-lisp
-(eat/pkg repl-driven-development)
-
-
-;; (with-eval-after-load 'go-mode
-;;   (repl-driven-development [C-x C-g] "yaegi"))
+(eat/pkg drepl)
 #+end_src
 * Tools
 ** Visual Fill Column
@@ -2592,8 +2541,24 @@ Set cookie manually:
 
 (add-to-list 'auto-mode-alist '("\\.d2" . d2-mode))
 #+end_src
+** direnv
+#+begin_src emacs-lisp
+(eat/pkg envrc)
+
+(add-hook 'after-init-hook #'envrc-global-mode)
+#+end_src
+** pastebin service
+#+begin_src emacs-lisp
+(eat/pkg webpaste)
+
+(setq webpaste-paste-confirmation t
+      webpaste-add-to-killring t
+      webpaste-provider-priority '("paste.mozilla.org")
+      webpaste-open-in-browser nil)
+#+end_src
 ** AI
 *** Bing Chat
+
 - Install the cookie editor extension for [[https://microsoftedge.microsoft.com/addons/detail/cookieeditor/neaplmfkghagebokkhpjpoebhdledlfi][Egde]]
 - Go to bing.com
 - Open the extension
@@ -2616,40 +2581,19 @@ For openai, set api key in auth file:
 (autoload #'aichat-openai-assistant "aichat-openai.el" nil t)
 #+end_src
 *** gptel
-Set ~gptel-api-key~.
+
+Custome =gptel-backend= as you need.
 
 #+begin_src emacs-lisp
 (eat/pkg gptel)
 
+;; store gpt key in ~/.authinfo
+;; machine api.openai.com login apikey password TOKEN
 (setq gptel-default-mode 'org-mode)
 
-(setq gptel-api-key (auth-source-pick-first-password :host "api.openai.com"))
+(add-hook 'gptel-mode-hook #'visual-fill-column-mode)
 #+end_src
 
-*** gpt-commit
-#+begin_src emacs-lisp
-(eat/pkg gpt-commit)
-
-(autoload 'gpt-commit-message "gpt-commit" nil t)
-
-(setq gpt-commit-openai-key
-      (auth-source-pick-first-password :host "api.openai.com"))
-#+end_src
-** direnv
-#+begin_src emacs-lisp
-(eat/pkg envrc)
-
-(add-hook 'after-init-hook #'envrc-global-mode)
-#+end_src
-** pastebin service
-#+begin_src emacs-lisp
-(eat/pkg webpaste)
-
-(setq webpaste-paste-confirmation t
-      webpaste-add-to-killring t
-      webpaste-provider-priority '("paste.mozilla.org")
-      webpaste-open-in-browser nil)
-#+end_src
 * Markup Languages
 ** Align table
 #+begin_src elisp
@@ -2975,7 +2919,6 @@ This is a variadic `cl-pushnew'."
 (eat/pkg git-modes)
 (eat/pkg magit)
 
-(add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell)
 (add-hook 'magit-diff-visit-file #'my-recenter-and-pulse-line)
 
 (with-eval-after-load 'magit
@@ -2993,7 +2936,8 @@ This is a variadic `cl-pushnew'."
 #+begin_src emacs-lisp
 (eat/pkg diff-hl)
 
-(eat/hook '(prog-mode-hook conf-mode-hook ) #'diff-hl-mode)
+(add-hook 'prog-mode-hook #'diff-hl-mode)
+(add-hook 'conf-mode-hook #'diff-hl-mode)
 (add-hook 'dired-mode-hook #'diff-hl-dired-mode)
 
 (setq diff-hl-draw-borders nil)
@@ -3081,7 +3025,8 @@ Use eat under linux and macos, use eshell under windows.
 
 (setq eat-kill-buffer-on-exit t)
 
-(eat/hook 'eshell-load-hook '(eat-eshell-mode eat-eshell-visual-command-mode))
+(add-hook 'eshell-load-hook 'eat-eshell-mode)
+(add-hook 'eshell-load-hook 'eat-eshell-visual-command-mode)
 
 ;; Quick editing in `describe-variable'
 (with-eval-after-load 'help-fns
@@ -3255,7 +3200,8 @@ Run =docker pull zevlg/telega-server:latest=
 (when (eat/modulep '+telega)
   (eat/pkg telega)
   (setq
-   telega-use-docker (if (executable-find "docker") t nil)
+   telega-avatar-workaround-gaps-for '(return t)
+   telega-use-docker (executable-find "docker")
    telega-server-libs-prefix "/usr"
    telega-chat-fill-column 75
    telega-translate-to-language-by-default "zh"
@@ -3269,25 +3215,8 @@ Run =docker pull zevlg/telega-server:latest=
                                       :symbol ""
                                       :replace "\\1\\2...")))
 
-  (defun eat/telega-root-setup ()
-    ;; (eat/fixed-pitch-setup) ;; FIXME
-    (hl-line-mode 1))
-  (add-hook 'telega-root-mode-hook 'eat/telega-root-setup)
-
-  (defun eat/telega-chat-setup ()
-    ;; (make-variable-buffer-local 'face-font-rescale-alist)
-    ;; (add-to-list 'face-font-rescale-alist `(,eat/font-chinese . 0.9))
-    ;; (add-to-list 'face-font-rescale-alist `(,eat/font-emoji . 0.8))
-    (require 'yasnippet)
-    (yas-minor-mode-on)
-    (visual-line-mode)
-    (hl-line-mode))
-  (add-hook 'telega-chat-mode-hook #'eat/telega-chat-setup)
-
-  (defun lg-telega-chat-update (chat)
-    (with-telega-root-buffer
-      (hl-line-highlight)))
-  (add-hook 'telega-chat-update-hook 'lg-telega-chat-update)
+  (add-hook 'telega-root-mode-hook 'hl-line-mode)
+  (add-hook 'telega-chat-mode-hook 'company-mode)
 
   (with-eval-after-load 'telega
     (add-hook 'telega-load-hook #'telega-notifications-mode)
@@ -3360,7 +3289,6 @@ Need =xapian-core=.
               (setq imenu-generic-expression
                     '((nil "^[[:space:]]*\\(message\\|service\\|enum\\)[[:space:]]+\\([[:alnum:]]+\\)" 2))))))
 #+end_src
-
 * Site Lisp
 ** Load Path
 #+begin_src elisp
@@ -3370,145 +3298,10 @@ Need =xapian-core=.
 ** Form Feed
 #+begin_src elisp
 (autoload #'form-feed-mode "form-feed")
-(eat/hook '(emacs-lisp-mode-hook text-mode-hook special-mode-hook) #'form-feed-mode)
-#+end_src
 
-*** Source
-#+begin_src elisp :tangle site-lisp/form-feed.el
-;;; form-feed.el --- Display ^L glyphs as horizontal lines
-
-;; Copyright (C) 2014 Vasilij Schneidermann <mail@vasilij.de>
-
-;; Author: Vasilij Schneidermann <mail@vasilij.de>
-;; Maintainer: Yuan Fu <casouri@gmail.com>
-;; URL: https://depp.brause.cc/form-feed
-;; Keywords: faces
-;; Version: 0.2.3
-
-;; This file is NOT part of GNU Emacs.
-
-;; This file is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 3, or (at your option)
-;; any later version.
-
-;; This file is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-;; GNU General Public License for more details.
-
-;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING. If not, write to
-;; the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-;; Boston, MA 02111-1307, USA.
-
-;;; Commentary:
-
-;; This minor mode displays page delimiters which usually appear as ^L
-;; glyphs on a single line as horizontal lines spanning the entire
-;; window.  It is suitable for inclusion into mode hooks and is
-;; intended to be used that way.  The following snippet would enable
-;; it for Emacs Lisp files for instance:
-;;
-;;     (add-hook 'emacs-lisp-mode-hook 'form-feed-mode)
-
-;;; Note:
-;;
-;; Yuan: I removed a bunch of functions and variables and changed
-;; font-lock to jit-lock.
-
-
-;;; Code:
-
-
-;;; variables
-
-(defgroup form-feed nil
-  "Turn ^L glyphs into horizontal lines."
-  :prefix "form-feed-"
-  :group 'faces)
-
-(defface form-feed-line
-  '((((type graphic)
-      (background light)) :strike-through "black")
-    (((type graphic)
-      (background dark)) :strike-through "white")
-    (((type tty)) :inherit font-lock-comment-face :underline t))
-  "Face for form-feed-mode lines."
-  :group 'form-feed)
-
-(defcustom form-feed-line-width t
-  "Width of the form feed line.
-It may be one of the following values:
-
-t: Full width.
-
-floating point number: Ratio of full width.  A value of 0.5 would
-use half the width.
-
-positive integer number: Width as measured in columns.  A value
-of 80 would use a 80 characters wide line.
-
-negative integer number: Full width minus specified number of
-columns.  A value of -1 would leave the last column empty."
-  :type '(choice (const :tag "Full width" t)
-                 (float :tag "Ratio")
-                 (integer :tag "Columns"))
-  :group 'form-feed)
-
-(defvar form-feed--line-width
-  (cond
-   ((integerp form-feed-line-width)
-    (if (>= form-feed-line-width 0)
-        form-feed-line-width
-      `(- text ,(abs form-feed-line-width))))
-   ((floatp form-feed-line-width)
-    `(,form-feed-line-width . text))
-   (t 'text)))
-
-(defvar form-feed--font-lock-keywords
-  ;; NOTE see (info "(elisp) Search-based fontification") and the
-  ;; `(MATCHER . SUBEXP-HIGHLIGHTER)' section
-  `((,page-delimiter 0 form-feed--font-lock-face t)))
-
-(defcustom form-feed-lighter " ^L"
-  "Lighter for `form-feed-mode'."
-  :type 'string
-  :group 'form-feed
-  :risky t)
-
-
-;;; Functions
-
-(defun form-feed-fontify (beg end)
-  "Fonfity page breaks at beginning of line between BEG and END."
-  (goto-char beg)
-  (while (re-search-forward "^" end t)
-    (put-text-property (match-beginning 0) (match-end 0)
-                       'font-lock-face 'form-feed-line)
-    (put-text-property (match-beginning 0) (match-end 0)
-                       'display `(space :width ,form-feed--line-width))))
-
-;;;###autoload
-(define-minor-mode form-feed-mode
-  "Toggle form-feed-mode.
-
-This minor mode displays page delimiters which usually appear as ^L
-glyphs on a single line as horizontal lines spanning the entire
-window."
-  :lighter form-feed-lighter
-  (if form-feed-mode
-      (jit-lock-register #'form-feed-fontify)
-    (jit-lock-unregister #'form-feed-fontify))
-  (jit-lock-refontify))
-
-(provide 'form-feed)
-;;; form-feed.el ends here
-#+end_src
-
-** Dired Toggle Sudo
-#+begin_src elisp
-(eat/pkg dired-toggle-sudo)
+(add-hook 'emacs-lisp-mode-hook #'form-feed-mode)
+(add-hook 'text-mode-hook #'form-feed-mode)
+(add-hook 'special-mode-hook #'form-feed-mode)
 #+end_src
 
 ** Color Outline
@@ -3517,771 +3310,11 @@ window."
 (add-hook 'prog-mode-hook #'color-outline-mode)
 #+end_src
 
-*** Source
-#+begin_src elisp :tangle site-lisp/color-outline.el
-;;; color-outline.el --- Outline w/ color      -*- lexical-binding: t; -*-
-
-;; Author: Yuan Fu <casouri@gmail.com>
-
-;; This file is NOT part of GNU Emacs
-
-;;; Commentary:
-;;
-;; This package is a basic version of outshine.el, it provides a quick
-;; and easy way of setting up headline patterns and integration with
-;; outline commands, highlighting of headlines and imenu support.
-;;
-;; Usage:
-;;
-;; M-x color-outline-mode RET
-;;
-;; Header level is determined by the number of comment characters.
-;; The first level header starts from 3 comment characters.
-;; For example, in ‘emacs-lisp-mode’:
-;;
-;;     ;;; Header 1
-;;     ;;;; Header 2
-;;     ;;;;; Header 3
-;;
-;; In ‘python-mode’:
-;;
-;;     ### Header 1
-;;     #### Header 2
-;;     ##### Header 3
-;;
-;; To toggle each header, use outline commands.
-;;
-;; Ideally, ‘comment-start’ defined by major modes are enough for
-;; setting up color-outline, however, sometimes ‘comment-char’ is not
-;; sufficient. Then you can add support for new major modes by
-;;
-;;     (color-outline-define-header MODE COMMENT-CHAR COMMENT-BEGIN)
-;;
-;; For example, COMMENT-CHAR for ‘python-mode’ is “#”. It can be more
-;; than one character. COMMENT-BEGIN is the (possibly empty) beginning
-;; of the header. For example, in OCaml, comments are (* ... *). Then
-;; COMMENT-BEGIN is “(” and COMMENT-CHAR is “*”.
-;;
-;; Instead of using ‘color-outline-define-header’, you can also modify
-;; ‘color-outline-comment-char-alist’ directly.
-;;
-;; If you want buffer-local setting for color-outline, you can add a
-;; file-local variable ‘color-outline-local-comment-char’.
-;;
-;; Color-outline looks for comment char settings in the following order:
-;; 1. Buffer-local ‘color-outline-local-comment-char’
-;; 2. ‘color-outline-comment-char-alist’
-;; 3. ‘comment-start’ defined by the major mode.
-
-;;; Code:
-;;
-
-(require 'cl-lib)
-(require 'subr-x)
-(require 'rx)
-
-(defgroup color-outline
-  '((color-outline-comment-char-alist custom-variable)
-    (color-outline-disable-list custom-variable)
-    (color-outline-face-list custom-variable))
-  "Easy programming mode outline with visual highlight."
-  :group 'outline)
-
-(defcustom color-outline-comment-char-alist
-  '((c-mode "*" "/")
-    (c++-mode "*" "/")
-    (python-mode "#")
-    (javascript-mode "/")
-    (css-mode "*" "/")
-    (tuareg-mode "*" "(")
-    (shell-script-mode "#")
-    (web-mode "-" "<!")
-    (sh-mode "#"))
-  "Stores custom comment character for each major mode.
-An alist of (MAJOR-MODE . (COMMENT-CHAR COMMENT-BEGIN))
-or (MAJOR-MODE . (COMMENT-CHAR)). For other major modes,
-‘comment-start’ is enough."
-  :type '(alist :key-type symbol
-                :value-type sexp)
-  :group 'color-outline)
-
-(defcustom color-outline-disable-list '(org-mode outline-mode)
-  "Color-outline mode is not enabled in these modes."
-  :type '(repeat symbol)
-  :group 'color-outline)
-
-(defcustom color-outline-face-list
-  '(outline-1 outline-2 outline-3 outline-4)
-  "Face for each level."
-  :type '(repeat symbol)
-  :group 'color-outline)
-
-(defvar-local color-outline-local-comment-char nil
-  "Overriding buffer local setting for color-outline comment char.
-This value takes the same form as the values in alist
-‘color-outline-comment-char-alist’. I.e., a list (COMMENT-CHAR
-COMMENT-BEGIN).")
-
-(defvar-local color-outline--keywords nil
-  "We store font-lock keywords in this variable.
-This is used to remove font-lock rules when ‘color-outline-mode’
-is turned off.")
-
-(defvar-local color-outline--imenu-expression nil
-  "We store imenu expressions in this variable.
-This is used to remove imenu expressions when ‘color-outline-mode’
-is turned off.")
-
-(defun color-outline--create-pattern (comment-char comment-begin)
-  "Return the header pattern for major mode MODE.
-COMMENT-CHAR (string) is the comment character of this mode.
-COMMENT-BEGIN is string pattern starting a comment.
-The result pattern is
-
-<COMMENT-START><COMMENT-CHAR>{3}<COMMENT-CHAR>*<SPACE><ANYCHAR>*
-
-The first group is the second group of COMMENT-CHARS, the second
-group is <ANYCHAR>*.
-
-Return a plist
-
-    (:outline PATTERN :font-lock PATTERN-LIST)
-
-where PATTERN is suitable for `outline-regepx', PATTERN-LIST is suitable
-for `font-lock-add-keywords' (a list of specs)."
-  (let* ((header-level (length color-outline-face-list))
-         (outline-re (rx-to-string `(seq ,comment-begin
-                                         (= 3 ,comment-char)
-                                         (group (* ,comment-char))
-                                         " "
-                                         (group (* (not (any ?\t ?\n)))))))
-         (re-list (cl-loop
-                   for level from 0 to (1- header-level)
-                   collect
-                   (rx-to-string `(seq bol
-                                       ,comment-begin
-                                       (= 3 ,comment-char)
-                                       (= ,level ,comment-char)
-                                       " "
-                                       (* (not (any ?\t ?\n)))))))
-         (font-lock-list (cl-loop for re in re-list
-                                  for face in color-outline-face-list
-                                  collect `(,re (0 ',face t t)))))
-    (list :outline outline-re :font-lock font-lock-list)))
-
-(defun color-outline-define-header (mode comment-char comment-begin)
-  "Define the header pattern for major mode MODE.
-COMMENT-CHAR (char) is the comment character of this mode.
-COMMENT-BEGIN is string pattern starting a comment."
-  (setf (alist-get mode color-outline-comment-char-alist)
-        (color-outline--create-pattern comment-char comment-begin)))
-
-(define-minor-mode color-outline-mode
-  "Color outline."
-  :lighter "Co"
-  (if (and color-outline-mode
-           (not (apply #'derived-mode-p color-outline-disable-list)))
-      (if-let* ((rule (or color-outline-local-comment-char
-                          (alist-get major-mode
-                                     color-outline-comment-char-alist)
-                          (list comment-start "")))
-                (comment-char (or (car rule) comment-start))
-                (comment-begin (or (cadr rule) ""))
-                (config (color-outline--create-pattern
-                         comment-char comment-begin))
-                (outline-re (plist-get config :outline))
-                (imenu-expression `("Section" ,outline-re 2))
-                (font-lock-keyword-list (plist-get config :font-lock)))
-          (progn (setq-local outline-regexp outline-re)
-                 (setq-local outline-level
-                             (lambda () (1+ (/ (length (match-string 1))
-                                               (length comment-char)))))
-                 (setq-local imenu-generic-expression
-                             (cons imenu-expression
-                                   imenu-generic-expression))
-                 (when (not (bound-and-true-p
-                             outline-minor-mode-highlight))
-                   (font-lock-add-keywords nil font-lock-keyword-list))
-                 (setq color-outline--keywords font-lock-keyword-list)
-                 (setq color-outline--imenu-expression imenu-expression)
-                 (outline-minor-mode))
-        ;; Don’t error in major mode hooks.
-        (message "No color-outline pattern configured for %s"
-                 major-mode))
-    (kill-local-variable 'outline-regexp)
-    (kill-local-variable 'outline-level)
-    (font-lock-remove-keywords nil color-outline--keywords)
-    (setq-local imenu-generic-expression
-                (remove color-outline--imenu-expression
-                        imenu-generic-expression))
-    (outline-minor-mode -1))
-  (jit-lock-refontify))
-
-(provide 'color-outline)
-
-;;; color-outline.el ends here
-#+end_src
-
 ** iimg
-*** config
 #+begin_src elisp
 (autoload #'iimg-enable "iimg")
 (add-hook 'text-mode-hook #'iimg-enable)
 (setq iimg-prune-slices-p nil)
-#+end_src
-
-*** Source
-#+begin_src elisp :tangle site-lisp/iimg.el
-;;; iimg.el --- Inline image      -*- lexical-binding: t; -*-
-
-;; Author: Yuan Fu <casouri@gmail.com>
-
-;;; This file is NOT part of GNU Emacs
-
-;;; Commentary:
-;;
-;; This package provides three functionalities:
-;;  1. Embedding images into text files by encoding them to base64
-;;     strings.
-;;  2. Rendering embedded images.
-;;  3. Controlling the size of the displayed image.
-;;
-;; Why embed the image? This way everything is in a single file and I
-;; feel safe.
-;;
-;; Update: embedding the image in the text brings problems in indexing
-;; the text, the best alternative is to embed the image data in a
-;; separate supplement file “current-file-name.iimg”. If you want to
-;; insert a image and store the data in the supplement file, answer yes
-;; when asked when inserting the image.
-;;
-;;;; To enable:
-;;
-;;     M-x iimg-enable RET
-;;
-;;;; To insert an image:
-;;
-;; Drag and drop the image or use `iimg-insert'. Iimg will prompt for
-;; a caption/name for the image. If you don’t enter anything, iimg
-;; generates a unique string as the fallback.
-;;
-;; When you insert an image, the image appears at point is just a
-;; link, the actual base64 data is appended at the end of the file (or
-;; in the supplement file). I separate link and data because that way
-;; readers incapable of rendering inline images can still view the
-;; rest of the document without problems.
-;;
-;;;; To resize an image:
-;;
-;; Type s on an image or use `iimg-resize'. In the minibuffer, type in
-;; the specification in the format of “SIDE UNIT AMOUNT”.
-;;
-;; SIDE can be width or height.
-;; UNIT can be char or pixel.
-;; AMOUNT can be a float or a integer.
-;;
-;; For example, “width char 40” means 40 characters wide. If AMOUNT is
-;; a floating point number like 0.5, it is interpreted as a percentage
-;; to the width/height of the window and UNIT is ignored.
-;;
-;; The default size is (width char 70).
-;;
-;;;; To toggle thumbnail display:
-;;
-;; Type t on an image or use `iimg-toggle-thumbnail'.
-;;
-;;;; To delete an image or image data
-;;
-;; To protect the image data, iimg marks them read-only, to delete
-;; the data, press D on the data.
-;;
-;;;; To render an image across multiple lines:
-;;
-;; Type m on an image or use `iimg-toggle-multi-line'.
-;;
-;; When an image is displayed across multiple lines, scrolling is much
-;; smoother. However, this doesn't work well when image size is set to
-;; n percent of the window width/height: if you change the window
-;; width/height, the number of lines needed for the image changes, but
-;; iimg doesn't update its "image lines" automatically.
-;;
-;; Another way to get smooth scrolling over images is to use
-;; iscroll.el. In that case you don't need to make the image
-;; multi-line.
-
-;;; Developer
-;;
-;; IIMG-DATA := ({iimg-data (:name STRING :data STRING)})
-;; IIMG-LINK := ({iimg-link (:name STRING :thumbnail BOOL :size SIZE)})
-;; SIZE  := (SIDE UNIT NUMBER)
-;; SIDE  := width | height
-;; UNIT  := char | pixel
-;;
-;; How does iimg work:
-;;  1. Scan through the file for iimg data, load images into
-;;     `iimg--data-alist'.
-;;  2. In jit-lock, render iimg links to images.
-;;  3. When inserting a new image, update `iimg--data-alist',
-;;     insert the data at the end of the file, and insert the link
-;;     at point.
-;;
-;; `iimg--data-alist' is always up to date: any image in the file are
-;; in the alist.
-;;
-;; Why text property instead of overlay: text property seems to be
-;; faster (when scrolling, etc).
-
-;;; Code:
-;;
-;; For `with-buffer-modified-unmodified'.
-(require 'bookmark)
-
-;;; Variables
-
-(defvar-local iimg--data-alist nil
-  "An alist of (NAME . IMAGE-DATA).
-NAME (string) is the name of the image.
-IMAGE-DATA is the image binary data.")
-
-(defvar iimg-multi-line t
-  "Render image in multiple lines.")
-
-(defvar iimg-prune-slices-p t
-  "If non-nil, iims prunes image slices when save.")
-
-(defvar iimg--data-regexp (rx (seq "({iimg-data "
-                                   (group (+? anything))
-                                   "})"))
-  "Regular expression for inline image data.
-The first group is the plist containing data.")
-
-(defvar iimg--link-regexp
-  (rx (seq "({iimg-link " (group (+? anything)) "})"
-           (group (* "\n---"))))
-  "Regular expression for inline image link.
-The first group is the plist containing data. The second group
-contains the slices.")
-
-(defsubst iimg--format-data (plist)
-  "Return formatted iimg data.
-PLIST is the plist part of the link, should be a plist."
-  (format "({iimg-data %s})" (prin1-to-string plist)))
-
-(defun iimg--format-link (plist)
-  "Return formatted iimg link.
-PLIST is the plist part of the link, should be a plist.
-The image must already be in `iimg--data-alist'."
-  (let* ((img (iimg--image-from-props plist))
-         (multi-line (plist-get plist :multi-line))
-         (row-count (ceiling (/ (cdr (image-size img t))
-                                (frame-char-height)))))
-    (format "({iimg-link %s})%s"
-            (prin1-to-string plist)
-            (if multi-line
-                (with-temp-buffer
-                  (dotimes (_ (1- row-count))
-                    (insert "\n---"))
-                  (buffer-string))
-              ""))))
-
-(defvar iimg--link-keymap
-  (let ((map (make-sparse-keymap)))
-    (define-key map "t" #'iimg-toggle-thumbnail)
-    (define-key map "s" #'iimg-resize)
-    (define-key map "d" #'iimg-delete-image-at-point)
-    (define-key map "m" #'iimg-toggle-multi-line)
-    map)
-  "Keymap used on images.")
-
-(defvar iimg--data-keymap
-  (let ((map (make-sparse-keymap)))
-    (define-key map "D" #'iimg-delete-data-at-point)
-    map)
-  "Keymap used on image data.")
-
-;;; Loading and rendering
-
-
-(defun iimg--image-from-props (props)
-  "Given plist PROPS, return an image spec."
-  (let* ((name (plist-get props :name))
-         (thumbnail (plist-get props :thumbnail))
-         (size (plist-get props :size))
-         (size-spec (if thumbnail
-                        ;; TODO This thumbnail size should work in most
-                        ;; cases, but can be improved.
-                        (iimg--calculate-size '(width char 30))
-                      (iimg--calculate-size (or size '(width char 1.0))))))
-    ;; Below `iimg--data-of' calls `iimg--load-image' which does
-    ;; regexp search. I added `save-match-data' in `iimg--load-image'.
-    (or (apply #'create-image (iimg--data-of name) nil t size-spec)
-        (error "failed to create image"))))
-
-(defun iimg--fontify-1 (beg end display)
-  "Add overlay to text between BEG and END with DISPLAY property."
-  (put-text-property beg end 'display display)
-  (put-text-property beg end 'keymap iimg--link-keymap)
-  (put-text-property beg end 'iimg t)
-  (put-text-property beg end 'rear-nonstick '(display keymap iimg)))
-
-(defun iimg--fontify (beg end)
-  "Fontify embedded image links between BEG and END."
-  (dolist (ov (overlays-in beg end))
-    (if (overlay-get ov 'iimg)
-        (delete-overlay ov)))
-  ;; Fontify link.
-  (goto-char beg)
-  (while (and (re-search-forward iimg--link-regexp nil t)
-              (< (match-beginning 0) end))
-    ;; PROPS includes :name, :thumbnail, :size
-    (let* ((props (read (match-string-no-properties 1)))
-           (image (iimg--image-from-props props))
-           (multi-line (plist-get props :multi-line))
-           (name (plist-get props :name))
-           (inhibit-read-only t))
-      (cond
-       ((not (display-graphic-p))
-        ;; In terminal.
-        (put-text-property
-         (match-beginning 0) (match-end 0)
-         'display (format "[iimg link of %s]" name)))
-       ((not multi-line)
-        ;; Render the image on a single line.
-        (iimg--fontify-1 (match-beginning 0) (match-end 0) image))
-       (t
-        ;; Render the image across multiple lines. We assume the
-        ;; number of placeholder lines in the buffer is correct.
-        (save-excursion
-          (let* ((slice-height (frame-char-height))
-                 (image-width (car (image-size image t)))
-                 (x 0) (y 0))
-            (goto-char (match-beginning 0))
-            (while (< (point) (match-end 0))
-              (let ((beg (line-beginning-position))
-                    (end (line-end-position)))
-                (iimg--fontify-1
-                 beg end (list (list 'slice x y image-width slice-height)
-                               image))
-                (put-text-property end (1+ end) 'line-height t)
-                (setq y (+ y slice-height)))
-              (forward-line))))))
-      (put-text-property (match-beginning 0) (match-end 0)
-                         'read-only t)
-      ;; This allows inserting after the image.
-      (put-text-property (match-beginning 0) (match-end 0)
-                         'rear-nonsticky
-                         '(read-only display iimg keymap))))
-  (cons 'jit-lock-response (cons beg end)))
-
-(defun iimg--calculate-size (size)
-  "Translate SIZE to an size that `create-image' recognizes.
-IOW, (:width NUMBER) or (:height NUMBER), where NUMBER is in
-pixels.
-Calculation is done based on the current window."
-  (pcase-let*
-      ((`(,side ,unit ,amount) size)
-       ;; Pixel width/height of a character.
-       (char-pixel-len (pcase side
-                         ('width (frame-char-width))
-                         ('height (frame-char-height))
-                         (_ (signal 'iimg-invalid-size size))))
-       ;; Pixel wdith/height of the window
-       (window-len (pcase side
-                     ('width (window-width nil t))
-                     ('height (window-height nil t))
-                     (_ (signal 'iimg-invalid-size size))))
-       ;; Pixel width/height of a character or pixel.
-       (unit-len (pcase unit
-                   ('char char-pixel-len)
-                   ('pixel 1)
-                   (_ (signal 'iimg-invalid-size size))))
-       (len (pcase amount
-              ;; This much char or pixels.
-              ((pred integerp) (floor (* amount unit-len)))
-              ;; This percent of the window width/height.
-              ((pred floatp) (floor (* amount window-len)))
-              (_ (signal 'iimg-invalid-size size)))))
-
-    (pcase side
-      ('width (list :width len))
-      ('height (list :height len)))))
-
-(defun iimg--load-image-data (beg end)
-  "Load iimg data from BEG to END.
-Look for iimg-data’s and store them into an alist, then return it."
-  ;; This could be called from within `iimg--fontify', and we
-  ;; don’t want to mess up its match data.
-  (save-match-data
-    (save-excursion
-      (goto-char beg)
-      (let (alist)
-        (while (re-search-forward iimg--data-regexp end t)
-          (let* ((beg (match-beginning 1))
-                 (end (match-end 1))
-                 (props (read (buffer-substring-no-properties beg end)))
-                 (name (plist-get props :name))
-                 (base64-string (plist-get props :data))
-                 (image-data (base64-decode-string base64-string)))
-            (push (cons name image-data) alist)
-            ;; We fontify data here because data are usually to long
-            ;; to be handled correctly by jit-lock.
-            (with-silent-modifications
-              (let ((beg (match-beginning 0))
-                    (end (match-end 0)))
-                (put-text-property
-                 beg end 'display (format "[iimg data of %s]" name))
-                (put-text-property beg end 'read-only t)
-                ;; This allows inserting after the data.
-                (put-text-property beg end 'rear-nonsticky
-                                   '(read-only display))
-                (put-text-property beg end 'keymap iimg--data-keymap)
-                (put-text-property beg end 'iimg t)))))
-        alist))))
-
-(defun iimg--supplement-file (&optional create)
-  "Return the supplement-file if it exists, nil if not.
-If CREATE non-nil, create the file when it doesn’t exist."
-  (let ((supplement-file (concat (file-name-nondirectory
-                                  (buffer-file-name))
-                                 ".iimg")))
-    (if (and create (not (file-exists-p supplement-file)))
-        (with-temp-buffer
-          (write-file supplement-file)))
-    (if (file-exists-p supplement-file)
-        supplement-file
-      nil)))
-
-(defun iimg--data-of (name)
-  "Get the image data of NAME (string)."
-  (when (not iimg--data-alist)
-    (setq iimg--data-alist
-          (append (iimg--load-image-data (point-min) (point-max))
-                  (if-let ((file (iimg--supplement-file)))
-                      (with-temp-buffer
-                        (insert-file-contents file nil nil nil t)
-                        (iimg--load-image-data
-                         (point-min) (point-max)))))))
-  (alist-get name iimg--data-alist nil nil #'equal))
-
-(defun iimg--replenish-slices ()
-  "Re-slice images.
-We don't save the slices under a link, so we need to add them back."
-  (save-excursion
-    (with-buffer-modified-unmodified
-     (goto-char (point-min))
-     (while (re-search-forward iimg--link-regexp nil t)
-       (when-let* ((props (read (buffer-substring-no-properties
-                                 (match-beginning 1) (match-end 1))))
-                   (multi-line (plist-get props :multi-line))
-                   (inhibit-read-only t))
-         (replace-match (iimg--format-link props)))))))
-
-(defun iimg--prune-slices ()
-  "Remove slices under a link before saving to a file."
-  (save-excursion
-    (let ((this-buffer (current-buffer))
-          (this-file (buffer-file-name))
-          (inhibit-read-only t))
-      (with-temp-buffer
-        (insert-buffer-substring this-buffer)
-        (goto-char (point-min))
-        (while (re-search-forward iimg--link-regexp nil t)
-          (when-let ((beg (match-beginning 2))
-                     (end (match-end 2)))
-            (delete-region beg end)))
-        (write-region (point-min) (point-max) this-file))
-      (clear-visited-file-modtime)
-      (set-buffer-modified-p nil)
-      t)))
-
-;;; Inserting and modifying
-
-(defun iimg-insert (file name separate-file)
-  "Insert FILE at point as an inline image.
-NAME is the name of the image, THUMBNAIL determines whether to
-display the image as a thumbnail, SIZE determines the size of the
-image. See Commentary for the format of NAME, THUMBNAIL, and SIZE.
-
-If SEPARATE-FILE non-nil, insert image data in a separate file
-that appends .iimg extension to the current buffer’s filename."
-  (interactive
-   (list (expand-file-name (read-file-name "Image: "))
-         (let ((name (read-string "Caption/name for the image: ")))
-           (if (equal name "")
-               (format-time-string "%s")
-             name))
-         (y-or-n-p "Insert in separate file? ")))
-  (let* ((data (with-temp-buffer
-                 (insert-file-contents-literally file nil nil nil t)
-                 (base64-encode-region (point-min) (point-max))
-                 ;; TODO Check for max image file size?
-                 (buffer-string)))
-         (data-string (iimg--format-data (list :name name :data data)))
-         iimg-alist
-         (insert-fn
-          (lambda ()
-            ;; Insert data.
-            (save-excursion
-              (goto-char (point-max))
-              (when (text-property-any
-                     (max (point-min) (1- (point))) (point) 'read-only t)
-                (goto-char
-                 (previous-single-char-property-change
-                  (point) 'read-only)))
-              (let ((beg (point)))
-                (insert "\n" data-string "\n")
-                (setq iimg-alist (iimg--load-image-data beg (point))))))))
-    (if separate-file
-        (let ((supp-file (iimg--supplement-file t)))
-          (with-temp-buffer
-            (insert-file-contents supp-file nil nil nil t)
-            (funcall insert-fn)
-            (write-file supp-file)))
-      (funcall insert-fn))
-    (setq iimg--data-alist (append iimg-alist iimg--data-alist))
-    ;; Insert link. We insert link after loading image data.
-    (insert (iimg--format-link
-             (list :name name :size '(width pixel 0.6)
-                   :ext (file-name-extension file))))))
-
-(defun iimg--search-link-at-point (&optional datap)
-  "Search for iimg link at point.
-If found, set match data accordingly and return t, if not, return nil.
-
-If DATAP non-nil, search for image data instead."
-  (catch 'found
-    (save-excursion
-      (let ((pos (point)))
-        (beginning-of-line)
-        ;; First search in current line.
-        (while (and (<= (point) pos)
-                    (re-search-forward
-                     (if datap iimg--data-regexp iimg--link-regexp)
-                     nil t))
-          (if (<= (match-beginning 0) pos (match-end 0))
-              (throw 'found t)))
-        ;; Next search by search backward.
-        (goto-char pos)
-        (if (and (search-backward
-                  (if datap "({iimg-data" "({iimg-link")
-                  nil t)
-                 (re-search-forward
-                  (if datap iimg--data-regexp iimg--link-regexp)
-                  nil t)
-                 (<= (match-beginning 0) pos (match-end 0)))
-            (throw 'found t))))))
-
-(defun iimg--link-at-point ()
-  "Return the data (plist) of the iimg link at point.
-Return nil if not found."
-  (if (iimg--search-link-at-point)
-      (read (match-string 1))
-    nil))
-
-(defun iimg--set-link-at-point-refresh (props)
-  "Set iimg link at point to PROPS, if there is any link.
-Also refresh the image at point."
-  (when (iimg--search-link-at-point)
-    (save-excursion
-      (let ((beg (match-beginning 0))
-            (inhibit-read-only t))
-        (goto-char beg)
-        (delete-region beg (match-end 0))
-        (insert (iimg--format-link props))
-        (iimg--fontify beg (point))))))
-
-(defun iimg-resize ()
-  "Resize the inline image at point."
-  (interactive)
-  (if-let ((img-props (iimg--link-at-point)))
-      (let ((size (read
-                   (format "(%s)"
-                           (read-string
-                            "width/height char/pixel amount: ")))))
-        (setq img-props (plist-put img-props :size size))
-        (iimg--set-link-at-point-refresh img-props))
-    (user-error "There is no image at point")))
-
-(defun iimg-toggle-thumbnail ()
-  "Toggle thumbnail display for the image at point."
-  (interactive)
-  (if-let ((img-props (iimg--link-at-point)))
-      (progn (setq img-props
-                   (plist-put img-props :thumbnail
-                              (not (plist-get img-props :thumbnail))))
-             (iimg--set-link-at-point-refresh img-props))
-    (user-error "There is no image at point")))
-
-(defun iimg-toggle-multi-line ()
-  "Toggle multi-line display for the image at point."
-  (interactive)
-  (if-let ((img-props (iimg--link-at-point)))
-      (progn (setq img-props
-                   (plist-put img-props :multi-line
-                              (not (plist-get img-props :multi-line))))
-             (iimg--set-link-at-point-refresh img-props))
-    (user-error "There is no image at point")))
-
-(defun iimg-delete-image-at-point ()
-  "Delete the image at point."
-  (interactive)
-  (if (iimg--search-link-at-point)
-      (let ((inhibit-read-only t))
-        (delete-region (match-beginning 0) (match-end 0)))
-    (user-error "There is no image at point")))
-
-(defun iimg-delete-data-at-point ()
-  "Delete the image data at point."
-  (interactive)
-  (if (iimg--search-link-at-point t)
-      (let ((inhibit-read-only t))
-        (delete-region (match-beginning 0) (match-end 0)))
-    (user-error "There is no image data at point")))
-
-(defun iimg-export ()
-  "Export image at point."
-  (interactive)
-  (if-let ((img-props (iimg--link-at-point)))
-      (let ((path (concat (read-file-name "Export to (w/o extension): ")
-                          (or (plist-get img-props :ext) ".png")))
-            (data (iimg--data-of (plist-get img-props :name))))
-        (when (file-exists-p path)
-          (user-error "File exists, can’t export to it"))
-        (when (not (file-writable-p path))
-          (user-error "File not wraiteble, can’t export to it"))
-        (with-temp-file path
-          (insert data))
-        (message "Exported to %s" path))
-    (user-error "There is no image at point")))
-
-;;; Entry
-
-(defun iimg-enable ()
-  "Enable iimg."
-  (jit-lock-register #'iimg--fontify)
-  (setq-local dnd-protocol-alist
-              (cons '("^file:" . iimg-dnd-open-file)
-                    dnd-protocol-alist))
-  (when iimg-prune-slices-p
-    (add-hook 'write-file-functions #'iimg--prune-slices 90 t))
-  (iimg--replenish-slices))
-
-;;; Drag and drop
-
-(defun iimg-dnd-open-file (uri _action)
-  "Drag-and-drop handler for iimg. URI is the file path."
-  (let ((file (dnd-get-local-file-name uri t)))
-    (if (and file (file-readable-p file))
-        (iimg-insert
-         file (let ((name (read-string "Caption/name for the image: ")))
-                (if (equal name "")
-                    (format-time-string "%s")
-                  name))
-         (y-or-n-p "Insert in separate file? ")))))
-
-(provide 'iimg)
-
-;;; iimg.el ends here
 #+end_src
 ** bklink
 #+begin_src elisp
@@ -4293,1539 +3326,6 @@ Also refresh the image at point."
       bklink-prune-summary-p nil)
 #+end_src
 
-*** Source
-#+begin_src elisp :tangle site-lisp/bklink.el
-;;; bklink.el --- Poor man's back-link      -*- lexical-binding: t; -*-
-
-;; Author: Yuan Fu <casouri@gmail.com>
-
-;;; This file is NOT part of GNU Emacs
-
-;;; Commentary:
-;;
-;; In org-roam, you can show back links -- a list of files that
-;; contains a link to the current file. The idea is nice but I have
-;; different idea on how to implement it. Hence this package.
-;;
-;; Some assumptions about the files that contains bklink:
-;;
-;;  1. All the files are in the same directory. So we can use filename
-;;     to uniquely identify files.
-;;  2. There is no sub-directories.
-;;  3. There aren’t a ton of files. We use grep to search for links,
-;;     no caching.
-;;
-;; Advantages:
-;;
-;;  1. Filename as link, no id, no database.
-;;  2. Works for multiple directories without configuration, it’s just
-;;     that files can only link to files in the same directory.
-;;  3. Works for any file format.
-;;
-;; To use with Deft:
-;;
-;;     (add-hook 'deft-open-file-hook #'bklink-minor-mode)
-;;     (setq deft-use-filter-string-for-filename t)
-;;
-;; To use with Xeft:
-;;
-;;     (add-hook 'xeft-find-file-hook #'bklink-minor-mode)
-;;
-;; Or use dir-local variable.
-;;
-;; Usage:
-;;
-;; Link format is [[bklink:filename.ext]]. Extension is optional.
-;; Links are displayed as [filename] with ‘link’ face.
-;;
-;; Insert a link to another file or edit a link:
-;;
-;;     M-x bklink-insert RET
-;;
-;; Show back-links:
-;;
-;;     M-x bklink-summary-mode RET
-;;
-;; Rename all links to the current file:
-;;
-;;     M-x bklink-rename new-name RET
-;;
-;; And then manually rename the current file.
-;;
-;; Notes:
-;;
-;; - If a link doesn’t have extension, bklink appends “.txt” to it
-;;   when searching for the corresponding file.
-;; - If a link points to non-exist file, bklink doesn’t create
-;;   that file. Instead, bklink creates a buffer, and you can show
-;;   back-links to it without creating that file.
-;; - When ‘bklink-show-back-link-on-start’ is non-nil, back-link
-;;   summary is shown on startup.
-;; - When ‘bklink-use-form-feed’ is non-nil, bklink uses form-feed
-;;   character to delineate back-link summary.
-;; - Using id instead of title as filenames is a dumb idea. Tried it,
-;;   didn’t work well.
-
-;;; Code:
-
-(require 'cl-lib)
-;; For `with-buffer-modified-unmodified'.
-(require 'bookmark)
-(require 'browse-url)
-
-;;; Customize
-
-(defvar bklink-use-form-feed t
-  "If non-nil, use form-feed instead of dashes.")
-
-(defvar bklink-show-back-link-on-start t
-  "If non-nil, show back-links when `bklink-minor-mode' starts.")
-
-(defvar bklink-more-match nil
-  "If non-nil, bklink includes more matches in the back-link summary.
-
-Besides explicitly links, we also include text that matches the
-title but isn't a link.
-
-For example, for Emacs.txt, we match not only [[bklink:Emacs.txt]],
-but also Emacs.")
-
-(defvar bklink-summary-read-only-p t
-  "If non-nil, bklink marks the summary read-only.")
-
-(defvar bklink-prune-summary-p t
-  "If non-nil, summary is not saved to disk.")
-
-;;; Backstage
-
-(defvar bklink-regexp (rx (seq (group "[[bklink:")
-                               (group (+? (not (any "/"))))
-                               (group (? (or ".txt" ".org" ".md")))
-                               (group "]]")))
-  "Regular expression that matches a bklink.
-
-Group 1 is opening delimiter.
-Group 2 is base filename.
-Group 3 is filename extension (if exists).
-Group 4 is ending delimiter.
-
-Change this variable and
-`bklink--format-link' to change link format.")
-
-(defsubst bklink--format-link (file)
-  "Format FILE into a bklink. Basically [[bklink:FILE]]."
-  (format "[[bklink:%s]]" file))
-
-(defun bklink--get-file-list (file)
-  "Return a list of files that’s in the same project with FILE.
-Ignore dotfiles and directories."
-  (cl-remove-if (lambda (f) (or (string-prefix-p "." f)
-                                (file-directory-p f)))
-                ;; FILE could be a file-less buffer.
-                (directory-files (or (file-name-directory file)
-                                     default-directory))))
-
-(defun bklink--search-at-point ()
-  "Search for links at point and set match data accordingly.
-Return t if found, nil otherwise. See `bklink--regepx' for
-groups."
-  (save-excursion
-    (catch 'found
-      (let ((p (point)))
-        (beginning-of-line)
-        (while (re-search-forward bklink-regexp (line-end-position) t)
-          (if (<= (match-beginning 0) p (match-end 0))
-              (throw 'found t)))))))
-
-(defun bklink--file-at-point ()
-  "Return the filename of the link at point.
-Return nil if not found."
-  (bklink--search-at-point)
-  (buffer-substring-no-properties (match-beginning 2) (match-end 3)))
-
-(defun bklink--set-file-at-point (name)
-  "Set the file name of the link at point to NAME.
-Do nothing if there is no link at point."
-  (bklink--search-at-point)
-  (save-excursion
-    (goto-char (match-beginning 2))
-    (delete-region (match-beginning 2) (match-end 3))
-    (insert name)))
-
-;;;; Link button
-
-(define-button-type 'bklink
-  'action #'bklink-follow-link
-  'filename nil
-  'follow-link t
-  'use-window nil
-  'help-echo "Jump to file")
-
-;; Please the byte compiler.
-(defvar bklink-minor-mode)
-(defun bklink-follow-link (button)
-  "Jump to the file that BUTTON represents.
-If the file doesn't exist, create a buffer."
-  (with-demoted-errors "Error when following the link: %s"
-    (let* ((file (button-get button 'filename))
-           (fullname (if (file-name-extension file)
-                         file
-                       (concat file ".txt"))))
-      (if (file-exists-p fullname)
-          (find-file fullname)
-        (switch-to-buffer (get-buffer-create fullname))
-        (when (eq (point) 1)
-          (insert (file-name-base file) "\n\n"))))
-    (when (eq major-mode 'fundamental-mode)
-      (text-mode))
-    (unless bklink-minor-mode
-      (bklink-minor-mode))))
-
-(define-button-type 'bklink-url
-  'action #'bklink-browse-url
-  'url nil
-  'follow-link t
-  'help-echo "Open URL")
-
-(defun bklink-browse-url (button)
-  "Open URL in BUTTON."
-  (browse-url (button-get button 'url)))
-
-;;;; Highlight links
-
-(defvar bklink-summary-mode)
-
-;;;###autoload
-(define-minor-mode bklink-minor-mode
-  "Recognizes bklinks."
-  :lighter ""
-  :keymap (make-sparse-keymap)
-  (if bklink-minor-mode
-      (progn
-        (jit-lock-register #'bklink-fontify)
-        (jit-lock-register #'bklink-fontify-url)
-        (when bklink-prune-summary-p
-          (add-hook 'write-file-functions
-                    #'bklink--write-file-function 90 t))
-        ;; (add-hook 'fill-nobreak-predicate #'bklink--nobreak-p 90 t)
-        (if (and bklink-show-back-link-on-start
-                 (not bklink-summary-mode))
-            (bklink-summary-mode)))
-    (jit-lock-unregister #'bklink-fontify)
-    (jit-lock-unregister #'bklink-fontify-url)
-    ;; (remove-hook 'fill-nobreak-predicate #'bklink--nobreak-p t)
-    (with-silent-modifications
-      (put-text-property (point-min) (point-max) 'display nil)))
-  (jit-lock-refontify))
-
-(defun bklink-fontify (beg end)
-  "Highlight bklinks between BEG and END."
-  (goto-char beg)
-  (while (and (not (derived-mode-p 'org-mode))
-              (re-search-forward bklink-regexp nil t)
-              (< (point) end))
-    (let* ((inhibit-read-only t)
-           (filename (concat
-                      (match-string-no-properties 2)
-                      (or (match-string-no-properties 3)
-                          ""))))
-      ;; Hide opening and closing delimiters and file extension.
-      (with-silent-modifications
-        ;; (put-text-property (match-beginning 0) (match-end 0)
-        ;;                    'bklink-no-break t)
-        (add-text-properties
-         (match-beginning 1) (match-end 1)
-         '(display "[" font-lock-face shadow face shadow))
-        (add-text-properties
-         (match-beginning 4) (match-end 4)
-         '(display "]" font-lock-face shadow face shadow))
-        (when (match-beginning 3)
-          (put-text-property (match-beginning 3)
-                             (match-end 3) 'invisible t))
-        (put-text-property (match-beginning 0) (match-end 0)
-                           'rear-nonsticky t)
-        ;; Highlight link.
-        (make-text-button (match-end 1)
-                          (match-beginning 4)
-                          :type 'bklink
-                          'filename filename)))))
-
-(defun bklink-fontify-url (beg end)
-  "Add clickable buttons to URLs between BEG and END.
-Everything that matches `browse-url-button-regexp' will be made
-clickable and will use `browse-url' to open the URLs in question."
-  ;; Change face to font-lock-face.
-  (goto-char beg)
-  (while (and (not (derived-mode-p 'org-mode 'markdown-mode))
-              (re-search-forward browse-url-button-regexp end t))
-    (make-text-button (match-beginning 0)
-                      (match-end 0)
-                      :type 'bklink-url
-                      'url (match-string-no-properties 0))))
-
-;; (defun bklink--nobreak-p ()
-;;   "Return non-nil if shouldn't break at point."
-;;   (text-property-any
-;;    (max (1- (point)) (point-min)) (point) 'bklink-no-break t))
-
-;;;; Back-link summary
-
-(defvar bklink--back-link-regexp
-  (rx (seq "\n" (or "\x0C" (= 70 "-")) "\n"
-           ;; Non-greedy is important: otherwise we risk of
-           ;; regexp stack overflow. That happened for buffers
-           ;; when iimg data.
-           (+? digit) " linked reference" (? "s") (+? anything)
-           (or "\x0C" (= 70 "-")) "\n"))
-  "Regular expression that matches the beginning of a summary.")
-
-(defun bklink--prune-back-link-summary ()
-  "Remove back-links before save."
-  (goto-char (point-min))
-  (let ((inhibit-read-only t))
-    ;; Remove summary.
-    (when (re-search-forward bklink--back-link-regexp nil t)
-      (delete-region (match-beginning 0) (match-end 0)))))
-
-(defun bklink--insert-back-link-summary (files buffer this-file)
-  "Append back-link summary to BUFFER.
-FILES is a list of filenames that contains the link.
-THIS-FILE is the filename we are inserting summary into."
-  (with-current-buffer buffer
-    (save-excursion
-      (with-buffer-modified-unmodified
-       (bklink--prune-back-link-summary)
-       (goto-char (point-max))
-       (let* ((summary-start (point))
-              (this-link (bklink--format-link this-file))
-              (this-link-re
-               (replace-regexp-in-string
-                " " "[ \n]*" (regexp-quote this-link)))
-              ;; A list of (FILE . SUMMARY). The grep search didn't
-              ;; match against the complete link and we need to filter
-              ;; out the false-positives here.
-              (summary-list
-               (mapcar
-                (lambda (file)
-                  (if (not (equal file this-file))
-                      (with-temp-buffer
-                        (insert-file-contents file nil nil nil t)
-                        (goto-char (point-min))
-                        (if (re-search-forward this-link-re nil t)
-                            (let ((summary
-                                   (or (string-trim
-                                        (thing-at-point 'line))
-                                       "(No summary)")))
-                              (cons file summary))))))
-                files))
-              (summary-list (remove nil summary-list))
-              (inhibit-read-only t))
-         ;; Insert separator.
-         (insert "\n"
-                 (if bklink-use-form-feed "\x0C" (make-string 70 ?-))
-                 "\n"
-                 (format "%d linked reference%s:\n"
-                         (length summary-list)
-                         ;; Plural when more than one.
-                         (if (eq (length summary-list) 1) "" "s")))
-         (dolist (summary summary-list)
-           (insert "\n")
-           ;; Insert file link.
-           (insert (bklink--format-link (car summary)) ":\n")
-           ;; Insert surrounding sentence. We only get the first
-           ;; sentence. Don’t fill the paragraph, filling might break
-           ;; the layout of the original text.
-           (let ((beg (point)))
-             (insert (cdr summary))
-             (indent-rigidly beg (point) 2))
-           (insert "\n"))
-         (insert (if bklink-use-form-feed "\x0C" (make-string 70 ?-)))
-         (put-text-property summary-start (point)
-                            'read-only bklink-summary-read-only-p)
-         ;; Add an non-read-only newline so the user and other
-         ;; commands can append text at the end of the file.
-         (insert "\n")
-         (bklink-fontify summary-start (point)))))))
-
-(defun bklink--write-file-function ()
-  "Write to file without the back-links."
-  (save-excursion
-    (let ((this-buffer (current-buffer))
-          (this-file (buffer-file-name)))
-      (with-temp-buffer
-        (insert-buffer-substring this-buffer)
-        (bklink--prune-back-link-summary)
-        (write-region (point-min) (point-max) this-file))
-      (clear-visited-file-modtime)
-      (set-buffer-modified-p nil)
-      t)))
-
-;;;; Retrieve back-links
-
-(defun bklink--get-linked-files (file callback)
-  "Call CALLBACK with a list of filenames that has a link to FILE."
-  (let* ((name (generate-new-buffer-name " *bklink grep*"))
-         (process (apply
-                   #'start-process
-                   name name "grep" "-ilF"
-                   ;; The link could span multiple lines (because of
-                   ;; filling), so we only search for the part before
-                   ;; first space as a preliminary filter. We later do
-                   ;; an accurate search in
-                   ;; `bklink--insert-back-link-summary'.
-                   (car (split-string
-                         (if bklink-more-match
-                             (file-name-base file)
-                           (bklink--format-link
-                            (file-name-nondirectory file)))))
-                   (bklink--get-file-list file)))
-         ;; When the grep process finishes, we parse the result files
-         ;; and call CALLBACK with them.
-         (sentinal
-          (lambda (process event)
-            (if (string-match-p (rx (or "finished" "exited"))
-                                event)
-                (if-let ((buf (process-buffer process)))
-                    (unwind-protect
-                        (with-current-buffer buf
-                          (let ((files (split-string
-                                        (buffer-string) "\n")))
-                            (funcall callback
-                                     (mapcar #'file-name-nondirectory
-                                             (remove "" files)))))
-                      (kill-buffer buf))
-                  (error "Bklink’s grep process’ buffer is killed"))
-              (error "Bklink’s grep process failed with signal: %s"
-                     event)))))
-    (set-process-sentinel process sentinal)))
-
-;;; Orglink
-
-;;;###autoload
-(with-eval-after-load 'org
-  (org-link-set-parameters
-   "bklink"
-   :follow #'org-link-open-as-file
-   :export (lambda (path _desc _backend _info)
-             path)
-   :store #'ignore))
-
-;;; Userland
-
-;;;###autoload
-(defun bklink-insert ()
-  "Insert a link to a file.
-If point not on a link, insert a new link, if already on a link,
-edit the link."
-  (interactive)
-  (if (bklink--search-at-point)
-      (let ((file (completing-read
-                   "New file: "
-                   (mapcar #'file-name-base
-                           (bklink--get-file-list (buffer-file-name)))
-                   nil nil (bklink--file-at-point))))
-        (bklink--set-file-at-point file))
-    (let* ((file (completing-read
-                  "File: "
-                  (mapcar #'file-name-nondirectory
-                          (bklink--get-file-list (buffer-file-name))))))
-      (insert (bklink--format-link file))))
-  (bklink-minor-mode))
-
-;;;###autoload
-(define-minor-mode bklink-summary-mode
-  "Toggle display of back-links summary at the end of a buffer.
-The back-links are links to the files that has a link to this file."
-  :lighter ""
-  (unless (executable-find "grep")
-    (user-error "Displaying back-link needs grep but we cannot find it"))
-  (unless bklink-minor-mode
-    (user-error "Bklink-minor-mode is not on"))
-  (if bklink-summary-mode
-      ;; The buffer could be not having a file.
-      (if-let ((file (or (buffer-file-name) (buffer-name)))
-               (buffer (current-buffer)))
-          ;; Fire a sub-process to retrieve back-links.
-          (bklink--get-linked-files
-           file (lambda (file-list)
-                  (bklink--insert-back-link-summary
-                   file-list buffer (file-name-nondirectory file))))
-        (user-error "This buffer is not associated with any file"))
-    (with-buffer-modified-unmodified
-     (save-excursion
-       (bklink--prune-back-link-summary)))))
-
-;;;###autoload
-(defun bklink-rename (new-name)
-  "Rename current file to NEW-NAME.
-Rename bklinks that points to the current file point to NEW-NAME.
-This command only rename links, you need to manually rename the
-current file."
-  ;; We run grep to find files that contain the old link, save them to
-  ;; /tmp/bklink-rename, and use emacs to replace old links with new
-  ;; links in each file. I can’t believe there is no painless way to
-  ;; replace literal strings in sed.
-  (interactive
-   (let ((name (file-name-nondirectory (buffer-file-name))))
-     (list (completing-read
-            (format "Rename %s to: " name) nil nil name))))
-  (unless (executable-find "grep")
-    (user-error "Rename needs grep but we cannot find it"))
-  (unless (executable-find "emacs")
-    (user-error "Rename needs Emacs in PATH but we cannot find it"))
-  (when (file-exists-p new-name)
-    (user-error "Cannot rename to %s, this file already exists" new-name))
-  (when (yes-or-no-p (format "Replace %s to %s?"
-                             (file-name-nondirectory
-                              (buffer-file-name))
-                             new-name))
-    (let* ((old-link (bklink--format-link (file-name-nondirectory
-                                           (buffer-file-name))))
-           (new-link (bklink--format-link new-name))
-           (tmp-file (concat "/tmp/bklink-rename-"
-                             (format-time-string "%s")))
-           (command
-            (concat
-             (format "grep -ilF '%s' %s > %s"
-                     (car (split-string old-link))
-                     default-directory tmp-file)
-             (format "; emacs --batch -l '%s'"
-                     (find-library-name "bklink"))
-             (format
-              " --eval '(bklink--process-rename \"%s\" \"%s\" \"%s\")'"
-              old-link new-link tmp-file))))
-      (start-process-shell-command
-       "bklink rename" " *bklink rename*" command)
-      (message "Replacing %s with %s in the background"
-               old-link new-link))))
-
-(defun bklink--process-rename (old-link new-link path-file)
-  "Replace OLD-LINK with NEW-LINK.
-The files to replace are in PATH-FILE"
-  (with-temp-buffer
-    (insert-file-contents path-file)
-    (dolist (file (split-string (buffer-string) "\n"))
-      (with-temp-buffer
-        (insert-file-contents file)
-        (goto-char (point-min))
-        (let ((link-re (string-join
-                        (mapcar #'regexp-quote
-                                (split-string old-link))
-                        "[ \n]*")))
-          (while (re-search-forward link-re nil t)
-            (replace-match new-link)))
-        (write-file file)))))
-
-(defun bklink--upgrade ()
-  (goto-char (point-min))
-  (while (re-search-forward (rx (group "[[bklink:")
-                                (group (+ anychar))
-                                (group "]]"))
-                            nil t)
-    (replace-match "]]" nil nil nil 3)
-    (replace-match "[[bklink:" nil nil nil 1)))
-
-(defun bklink--upgrade-all ()
-  (with-temp-buffer
-    (dolist (file (directory-files default-directory))
-      (ignore-errors
-        (when (and (file-regular-p file)
-                   (not (equal (file-name-extension file) "iimg")))
-          (erase-buffer)
-          (insert-file-contents-literally file)
-          (bklink--upgrade)
-          (write-region (point-min) (point-max) file))))))
-
-(provide 'bklink)
-
-;;; bklink.el ends here
-#+end_src
-
-** flique
-*** Source
-#+begin_src elisp :tangle site-lisp/flique.el
-;;; flique.el --- File cliques  -*- lexical-binding: t; -*-
-
-;; Author: Yuan Fu <casouri@gmail.com>
-
-;;; This file is NOT part of GNU Emacs
-
-;;; Commentary:
-;;
-;; This package complements bklink.el. With this package, you can
-;; easily group related note files into cliques and go back and
-;; forth within the clique.
-;;
-;; To start, create a file "index.flique" under the directory where
-;; all the notes are. Each line is a filename. Consecutive lines define
-;; a clique. Separate cliques by empty lines. For example,
-;;
-;; file1.txt
-;; file2.txt
-;;
-;; file3.txt
-;; file4.txt
-;;
-;; defines two cliques, file1 and 2, and file3 and 4.
-;;
-;; Then, you can go back and forth by
-;;
-;;  - ‘flique-forward’
-;;  - ‘flique-backward’
-;;
-;; If a line in the index file contains a file that doesn’t exist,
-;; flique just ignores that.
-
-;;; Code:
-
-(defun flique--index ()
-  "Return the index buffer."
-  (with-current-buffer (get-buffer-create " *flique index*")
-    (when (file-exists-p "index.flique")
-      (insert-file-contents "index.flique" nil nil nil t))
-    (current-buffer)))
-
-(defun flique-append-to-index (file)
-  "Add FILE to the end of the index file.
-Only add if FILE is not already in the index file."
-  (with-current-buffer (flique--index)
-    (goto-char (point-min))
-    ;; Unless already exists...
-    (unless (re-search-forward
-             (concat "^" (regexp-quote
-                          (file-name-nondirectory file))
-                     "$")
-             nil t)
-      ;; ...append to the end.
-      (goto-char (point-max))
-      (unless (looking-back "\n" 1)
-        (insert "\n"))
-      (insert (file-name-nondirectory file))
-      ;; If we use ‘write-file’, this buffer is associated with
-      ;; index.flique. (Changes from *flique index* to index.flique.)
-      (write-region (point-min) (point-max) "index.flique"))))
-
-(defun flique--next-file (filename step)
-  "Return the next file of FILENAME. FILENAME cannot be a path.
-STEP can be either 1 or -1, 1 for going forward, -1 for going
-backward."
-  (with-current-buffer (flique--index)
-    (goto-char (point-min))
-    (when (and (re-search-forward
-                (concat "^" (regexp-quote filename) "$") nil t)
-               (eq 0 (forward-line step)))
-      (let ((next (buffer-substring
-                   (line-beginning-position)
-                   (line-end-position))))
-        (unless (equal next "")
-          next)))))
-
-(defun flique-forward ()
-  "Go forward in the clique."
-  (interactive)
-  (let ((next (flique--next-file
-               (file-name-nondirectory (buffer-file-name))
-               1)))
-    (when (and next (file-exists-p next))
-      (find-file next)
-      (flique-show-navigation))))
-
-(defun flique-backward ()
-  "Go backward in the clique."
-  (interactive)
-  (let ((next (flique--next-file
-               (file-name-nondirectory (buffer-file-name))
-               -1)))
-    (when (and next (file-exists-p next))
-      (find-file next)
-      (flique-show-navigation))))
-
-(defun flique-show-navigation ()
-  "Display a navigation bar in header-line."
-  (let* ((filename (file-name-nondirectory (buffer-file-name)))
-         (prev (flique--next-file filename -1))
-         (next (flique--next-file filename 1)))
-    (when (or prev next)
-      (setq header-line-format
-            (propertize
-             (concat
-              (if (and prev (file-exists-p prev))
-                  (concat "← " (file-name-base prev))
-                ":-O")
-              (propertize "\t" 'display `(space :width ,tab-width))
-              (if (and next (file-exists-p next))
-                  (concat (file-name-base next) " →")
-                ":-D")
-              (propertize " " 'display '(raise 0.3))
-              (propertize " " 'display '(raise -0.2)))
-             'face '(:height 130))))))
-
-(defun flique-list ()
-  "Show the current file in the flique index file."
-  (interactive)
-  (let ((filename (file-name-nondirectory (buffer-file-name))))
-    (find-file "index.flique")
-    (goto-char (point-min))
-    (re-search-forward (concat "^" (regexp-quote filename) "$") nil t)
-    (beginning-of-line)))
-
-(define-derived-mode flique-mode fundamental-mode
-  "Flique"
-  "Editing flique index files."
-  (setq outline-regexp (rx "*"))
-  (outline-minor-mode))
-
-(add-to-list 'auto-mode-alist '("\\.flique\\'" . flique-mode))
-
-(provide 'flique)
-
-;;; flique.el ends here
-#+end_src
-
-** Themes
-*** util
-#+begin_src emacs-lisp :tangle site-lisp/theme-util.el
-;;; theme-util.el --- Theme tools      -*- lexical-binding: t; -*-
-
-;; Author: Yuan Fu <casouri@gmail.cam>
-
-;;; This file is NOT part of GNU Emacs
-
-;;; Commentary:
-;;
-
-;;; Code:
-;;
-
-(require 'seq)
-(require 'cl-lib)
-
-;;; Define theme
-
-(defun theme-util-deffaces (&rest face-list)
-  "FACE-LIST is a list of (FACE DOC)."
-  (dolist (face face-list)
-    (face-spec-set face '((t . (:inherit default)))
-                   'face-defface-spec)))
-
-(defun theme-util-set-faces (name spec)
-  "Define theme of NAME with SPEC on DISPLAY.
-SPEC is as in ‘theme-util-make-face-spec’."
-  (declare (indent 1))
-  (apply #'custom-theme-set-faces
-         name
-         (mapcar #'theme-util-make-face-spec
-                 spec)))
-
-(defun theme-util-make-face-spec (spec)
-  "Convert SPEC into actual spec used in ‘custom-theme-set-faces’.
-
-SPEC is a list
-
-    \(FACE (INHERIT FOREGROUND BACKGROUND UNDERLINE WEIGHT SLANT)
-          REST-ATTR DISPLAY)
-
-REST-ATTR is a plist (:key :value ...). DISPLAY is the same as in
-`defface'.
-
-For example,
-\(default nil \"white\" \"black\" nil 'bold nil (:height 10))."
-  (let* ((face (nth 0 spec))
-         (attr (nth 1 spec))
-         (rest-attr (nth 2 spec))
-         (display (nth 3 spec))
-         (inherit (nth 0 attr))
-         (fg (nth 1 attr))
-         (bg (nth 2 attr))
-         (underline (nth 3 attr))
-         (weight (nth 4 attr))
-         (slant (nth 5 attr)))
-    `(,face ((,(or display t)
-              . ,(remove
-                  nil
-                  (append (if inherit (list :inherit inherit))
-                          (if fg (list :foreground fg))
-                          (if bg (list :background bg))
-                          (if underline (list :underline underline))
-                          (if weight (list :weight weight))
-                          (if slant (list :slant slant))
-                          rest-attr)))))))
-
-;;; Inspect theme
-
-(when (featurep 'hierarchy)
-  (defun theme-util-top-level-face-to-kill-ring (regexp)
-    (interactive "sRegexp: ")
-    (kill-new
-     (string-join
-      (mapcar
-       (lambda (face)
-         (format "(%s :inherit 'default)\n" face))
-       (sort (seq-filter (lambda (face)
-                           (and (string-match regexp (face-name face))
-                                (not (face-attribute face :inherit nil 'default))))
-                         (face-list))
-             (lambda (f1 f2)
-               (string-lessp (face-name f1) (face-name f2))))))))
-
-  (defun theme-util-show-face-tree (&optional regexp)
-    (interactive)
-    (switch-to-buffer
-     (let ((tree (hierarchy-new))
-           (parent-fn
-            (lambda (face)
-              (let ((parent-face (if (eq face 'root-face)
-                                     nil ;; the root has no parent
-                                   (or (face-attribute face :inherit nil 'default)
-                                       'root-face ))))
-                (cond ((facep parent-face) parent-face)
-                      ((null parent-face) nil)
-                      (t 'root-face)))))
-           (face-list (seq-filter (lambda (face)
-                                    (if (not regexp)
-                                        t
-                                      (string-match regexp (face-name face))))
-                                  (face-list))))
-       (hierarchy-add-trees tree face-list parent-fn)
-       (hierarchy-tree-display tree (lambda (face _) (insert (format "%s" face)))))))
-  )
-;;; Color util
-
-(defvar theme-util-color-distance-fn
-  (lambda (c1 c2)
-    (let ((r1 (nth 0 c1))
-          (g1 (nth 1 c1))
-          (b1 (nth 2 c1))
-          (r2 (nth 0 c2))
-          (g2 (nth 1 c2))
-          (b2 (nth 2 c2)))
-      (+ (expt (- r1 r2) 2)
-         (expt (- g1 g2) 2)
-         (expt (- b1 b2) 2))))
-  "Function that returns the distance between color1 and color2.
-Should take two colors and return a number. There is no
-specification on the range of the returned number as long as
-greater number implies greater distance. Each color is like (R G
-B) where R, G, B are number.
-
-More on https://en.wikipedia.org/wiki/Color_difference")
-
-(defun theme-util-color-distance (color1 color2)
-  "Return the distance between COLOR1 and COLOR2.
-COLOR’s are in the form of ”#RRGGBB”."
-  (funcall theme-util-color-distance-fn
-           (theme-util-color-str-to-list color1)
-           (theme-util-color-str-to-list color2)))
-
-(defun theme-util-color-str-to-list (color)
-  "Convert COLOR in ”#RRGGBB” format to (R G B)."
-  (list (string-to-number (substring color 1 3) 16)
-        (string-to-number (substring color 3 5) 16)
-        (string-to-number (substring color 5 7) 16)))
-
-(defun theme-util-color-list-to-str (color)
-  "Convert COLOR in (R G B) format to ”#RRGGBB”."
-  (format "#%.2x%.2x%.2x" (nth 0 color) (nth 1 color) (nth 2 color)))
-
-(defun theme-util--closest-color-in-list (color color-list)
-  "Return the color closest to COLOR from COLOR-LIST."
-  (let (closest-color
-        (min-distance 1.0e+INF))
-    (dolist (a-color color-list)
-      (let ((new-dist (theme-util-color-distance color a-color)))
-        (when (< new-dist min-distance)
-          (setq min-distance new-dist
-                closest-color a-color))))
-    closest-color))
-
-(defun theme-util-closest-8-bit-color (color)
-  "Return the closest 8 bit color to COLOR."
-  (theme-util-closest-color-in-list color theme-util--8-bit-color-list))
-
-(defun theme-util-closest-4-bit-color (color)
-  "Return the closest 4 bit color to COLOR."
-  (theme-util-closest-color-in-list color theme-util--4-bit-color-list))
-
-(defun theme-util-color-overlay (color-base color-above alpha)
-  "Return a color made of COLOR-ABOVE with alpha ALPHA placed above COLOR-BASE.
-Both COLOR’S are like ”#RRGGBB”, ALPHA is a float between 0 and 1."
-  (theme-util-color-list-to-str
-   (cl-labels ((comp (base above alpha)
-                 (+ (* base (- 1 alpha)) (* above alpha)))
-               (bound (color) (cond ((> color 255) 255)
-                                    ((< color 0) 0)
-                                    (t color))))
-     (let* ((color-base (theme-util-color-str-to-list color-base))
-            (color-above (theme-util-color-str-to-list color-above)))
-       (cl-loop for base in color-base
-                for above in color-above
-                collect (bound (comp base above alpha)))))))
-
-(defun theme-util-adjust-brightness (color brightness)
-  "Adjust the BRIGHTNESS of COLOR.
-Basically minmax(0, R/G/B * brightness, 255).
-COLOR is like ”#RRGGBB”."
-  (theme-util-color-list-to-str
-   (mapcar (lambda (channel) (min 255 (* brightness channel)))
-           (theme-util-color-str-to-list color))))
-
-(defun theme-util-darken (color degree)
-  "Darken COLOR by DEGREE (float between 0 and 1)."
-  (theme-util-color-overlay color "#000000" degree))
-
-(defun theme-util-brighten (color degree)
-  "Brighten COLOR by DEGREE (float between 0 and 1)."
-  (theme-util-color-overlay color "#ffffff" degree))
-
-(defvar theme-util--8-bit-color-list
-  '("#000000"
-    "#800000"
-    "#008000"
-    "#808000"
-    "#000080"
-    "#800080"
-    "#008080"
-    "#c0c0c0"
-    "#808080"
-    "#ff0000"
-    "#00ff00"
-    "#ffff00"
-    "#0000ff"
-    "#ff00ff"
-    "#00ffff"
-    "#ffffff"
-    "#000000"
-    "#00005f"
-    "#000087"
-    "#0000af"
-    "#0000d7"
-    "#0000ff"
-    "#005f00"
-    "#005f5f"
-    "#005f87"
-    "#005faf"
-    "#005fd7"
-    "#005fff"
-    "#008700"
-    "#00875f"
-    "#008787"
-    "#0087af"
-    "#0087d7"
-    "#0087ff"
-    "#00af00"
-    "#00af5f"
-    "#00af87"
-    "#00afaf"
-    "#00afd7"
-    "#00afff"
-    "#00d700"
-    "#00d75f"
-    "#00d787"
-    "#00d7af"
-    "#00d7d7"
-    "#00d7ff"
-    "#00ff00"
-    "#00ff5f"
-    "#00ff87"
-    "#00ffaf"
-    "#00ffd7"
-    "#00ffff"
-    "#5f0000"
-    "#5f005f"
-    "#5f0087"
-    "#5f00af"
-    "#5f00d7"
-    "#5f00ff"
-    "#5f5f00"
-    "#5f5f5f"
-    "#5f5f87"
-    "#5f5faf"
-    "#5f5fd7"
-    "#5f5fff"
-    "#5f8700"
-    "#5f875f"
-    "#5f8787"
-    "#5f87af"
-    "#5f87d7"
-    "#5f87ff"
-    "#5faf00"
-    "#5faf5f"
-    "#5faf87"
-    "#5fafaf"
-    "#5fafd7"
-    "#5fafff"
-    "#5fd700"
-    "#5fd75f"
-    "#5fd787"
-    "#5fd7af"
-    "#5fd7d7"
-    "#5fd7ff"
-    "#5fff00"
-    "#5fff5f"
-    "#5fff87"
-    "#5fffaf"
-    "#5fffd7"
-    "#5fffff"
-    "#870000"
-    "#87005f"
-    "#870087"
-    "#8700af"
-    "#8700d7"
-    "#8700ff"
-    "#875f00"
-    "#875f5f"
-    "#875f87"
-    "#875faf"
-    "#875fd7"
-    "#875fff"
-    "#878700"
-    "#87875f"
-    "#878787"
-    "#8787af"
-    "#8787d7"
-    "#8787ff"
-    "#87af00"
-    "#87af5f"
-    "#87af87"
-    "#87afaf"
-    "#87afd7"
-    "#87afff"
-    "#87d700"
-    "#87d75f"
-    "#87d787"
-    "#87d7af"
-    "#87d7d7"
-    "#87d7ff"
-    "#87ff00"
-    "#87ff5f"
-    "#87ff87"
-    "#87ffaf"
-    "#87ffd7"
-    "#87ffff"
-    "#af0000"
-    "#af005f"
-    "#af0087"
-    "#af00af"
-    "#af00d7"
-    "#af00ff"
-    "#af5f00"
-    "#af5f5f"
-    "#af5f87"
-    "#af5faf"
-    "#af5fd7"
-    "#af5fff"
-    "#af8700"
-    "#af875f"
-    "#af8787"
-    "#af87af"
-    "#af87d7"
-    "#af87ff"
-    "#afaf00"
-    "#afaf5f"
-    "#afaf87"
-    "#afafaf"
-    "#afafd7"
-    "#afafff"
-    "#afd700"
-    "#afd75f"
-    "#afd787"
-    "#afd7af"
-    "#afd7d7"
-    "#afd7ff"
-    "#afff00"
-    "#afff5f"
-    "#afff87"
-    "#afffaf"
-    "#afffd7"
-    "#afffff"
-    "#d70000"
-    "#d7005f"
-    "#d70087"
-    "#d700af"
-    "#d700d7"
-    "#d700ff"
-    "#d75f00"
-    "#d75f5f"
-    "#d75f87"
-    "#d75faf"
-    "#d75fd7"
-    "#d75fff"
-    "#d78700"
-    "#d7875f"
-    "#d78787"
-    "#d787af"
-    "#d787d7"
-    "#d787ff"
-    "#d7af00"
-    "#d7af5f"
-    "#d7af87"
-    "#d7afaf"
-    "#d7afd7"
-    "#d7afff"
-    "#d7d700"
-    "#d7d75f"
-    "#d7d787"
-    "#d7d7af"
-    "#d7d7d7"
-    "#d7d7ff"
-    "#d7ff00"
-    "#d7ff5f"
-    "#d7ff87"
-    "#d7ffaf"
-    "#d7ffd7"
-    "#d7ffff"
-    "#ff0000"
-    "#ff005f"
-    "#ff0087"
-    "#ff00af"
-    "#ff00d7"
-    "#ff00ff"
-    "#ff5f00"
-    "#ff5f5f"
-    "#ff5f87"
-    "#ff5faf"
-    "#ff5fd7"
-    "#ff5fff"
-    "#ff8700"
-    "#ff875f"
-    "#ff8787"
-    "#ff87af"
-    "#ff87d7"
-    "#ff87ff"
-    "#ffaf00"
-    "#ffaf5f"
-    "#ffaf87"
-    "#ffafaf"
-    "#ffafd7"
-    "#ffafff"
-    "#ffd700"
-    "#ffd75f"
-    "#ffd787"
-    "#ffd7af"
-    "#ffd7d7"
-    "#ffd7ff"
-    "#ffff00"
-    "#ffff5f"
-    "#ffff87"
-    "#ffffaf"
-    "#ffffd7"
-    "#ffffff"
-    "#080808"
-    "#121212"
-    "#1c1c1c"
-    "#262626"
-    "#303030"
-    "#3a3a3a"
-    "#444444"
-    "#4e4e4e"
-    "#585858"
-    "#606060"
-    "#666666"
-    "#767676"
-    "#808080"
-    "#8a8a8a"
-    "#949494"
-    "#9e9e9e"
-    "#a8a8a8"
-    "#b2b2b2"
-    "#bcbcbc"
-    "#c6c6c6"
-    "#d0d0d0"
-    "#dadada"
-    "#e4e4e4"
-    "#eeeeee"))
-
-(defvar theme-util--4-bit-color-list
-  '("#000000"
-    "#0000FF"
-    "#00FF00"
-    "#00FFFF"
-    "#000080"
-    "#008000"
-    "#008080"
-    "#800000"
-    "#800080"
-    "#808000"
-    "#808080"
-    "#C0C0C0"
-    "#FF0000"
-    "#FF00FF"
-    "#FFFF00"
-    "#FFFFFF"))
-
-(provide 'theme-util)
-
-;;; theme-util.el ends here
-#+end_src
-*** pale
-#+begin_src emacs-lisp :tangle themes/pale-theme.el
-;;; pale-theme.el --- Light theme      -*- lexical-binding: t; -*-
-
-;; Author: Yuan Fu <casouri@gmail.com>
-
-;;; This file is NOT part of GNU Emacs
-
-;;; Commentary:
-;;
-;; A quieter theme with ink-on-paper feel. It uses more bold, italic,
-;; and gray for contrast in place of different colors.
-
-;;; Code:
-
-(require 'theme-util)
-
-(deftheme pale
-  "Pale theme.")
-
-(theme-util-deffaces
- 'magit-heading-selection
- 'magit-heading-highlight)
-
-;; (FACE INHERIT FOREGROUND BACKGROUND UNDERLINE WEIGHT SLANT REST-ATTR)
-(theme-util-set-faces 'pale
-  (cl-flet ((darken #'theme-util-darken)
-            (brighten #'theme-util-brighten)
-            (overlay #'theme-util-color-overlay))
-    (let* ((bg "#ffffff")
-           (bg-tooltip "gray92")
-           (bg-block "gray90")
-           (bg-region "gray85")
-
-           (fg  "#000000")
-           (fg-weak "#9a9ea2")
-
-           (hl-weak bg-tooltip)
-           (hl-normal "#F5F573")
-           (hl-strong "#e8e800")
-
-           ;; Colors indented for foreground are less pronounced.
-           (hl-fg "#8C6E14")
-           (red-fg "DarkRed")
-           (blue-fg "#122DC2")
-           (green-fg "#007345")
-
-           ;; Warning and error are brighter to catch attention.x
-           (warning "#DA7A48")
-           (err     "#E04E49")
-           (ok      "#489446")
-
-           ;; Note that this is not a cons cell.
-           (tty       '((type nil)))
-           ;; Pre-defined templates.
-           (bold '(nil nil nil nil semi-bold))
-           (underline '(nil nil nil t))
-           (italic '(nil nil nil nil nil italic))
-           (light '(nil nil nil nil semi-light)))
-;;; Builtin faces
-      `((default     (nil ,fg ,bg))
-        (region      (nil nil ,bg-region))
-        (highlight   (nil nil ,hl-strong))
-        (cursor      (nil "white" "black"))
-        (match       (nil ,ok nil nil bold))
-        (error       (nil ,err))
-        (warning     (nil ,warning))
-        (success     (nil ,ok))
-        (tooltip     (nil nil ,bg-tooltip))
-        (fringe      ())
-        (shadow      (nil ,fg-weak))
-        (vertical-border (nil ,bg-tooltip ,bg-tooltip) nil ,tty)
-        (link        (nil nil ,hl-weak))
-        (link-visited (link))
-        (bold ,bold)
-        (underline ,underline)
-        (italic ,italic)
-
-        (vertical-border     (nil nil "black"))
-        (minibuffer-prompt   ,bold)
-        (isearch             (nil nil ,hl-strong))
-        (lazy-highlight      (nil nil ,hl-strong))
-        (isearch-fail        (error))
-        (show-paren-match    ,bold)
-        (trailing-whitespace (nil nil ,err))
-
-        (widget-field        (nil nil ,bg-block))
-        (widget-inactive     (nil ,fg-weak))
-
-        ;; See also builtin-config.el (Customize) where I increase line
-        ;; spacing and change font.
-        (custom-button
-         (nil nil ,bg-tooltip)
-         (:box (:line-width 3 :color ,bg-tooltip)))
-        (custom-button-mouse
-         (custom-button nil ,hl-strong)
-         (:box (:line-width 3 :color ,hl-strong)))
-        (custom-button-pressed
-         (custom-button nil ,bg-region)
-         (:box (:line-width 3 :color ,bg-region)))
-
-        (custom-changed        ,bold)
-        (custom-comment-tag    (font-lock-comment-face))
-        (custom-documentation  ())
-        (custom-variable-tag   ,italic)
-        (custom-face-tag       (custom-variable-tag))
-        (custom-group-subtitle (custom-variable-tag))
-        (custom-group-tag      (nil))
-        (custom-invalid        (nil ,err))
-        (custom-modified       (nil ,warning))
-        (custom-rogue          (nil ,warning))
-        (custom-set            (nil ,ok))
-        (custom-state          ())
-        (custom-themed         (nil ,ok))
-
-        (font-lock-builtin-face              ,italic)
-        (font-lock-comment-face              (nil ,fg-weak))
-        (font-lock-comment-delimiter-face    (font-lock-comment-face))
-        (font-lock-doc-face                  (shadow))
-        (font-lock-constant-face             ,italic)
-        (font-lock-keyword-face              (nil ,red-fg))
-        (font-lock-string-face               ())
-        ;; (font-lock-type-face                 (nil ,hl-fg))
-        ;; (font-lock-type-face                 (nil ,blue-fg))
-        (font-lock-type-face                 (nil ,green-fg))
-        (font-lock-variable-name-face        ,bold)
-        (font-lock-function-name-face        ,bold)
-        (font-lock-warning-face              (error))
-        (font-lock-negation-char-face        (warning))
-        (font-lock-preprocessor-face         ())
-        (font-lock-preprocessor-char-face    ())
-        (font-lock-regexp-grouping-backslash ,bold)
-        (font-lock-regexp-grouping-construct ,bold)
-
-        (sh-quoted-exec (nil ,red-fg))
-
-        (mode-line (nil nil ,bg-tooltip))
-        (mode-line-inactive (mode-line nil ,bg-block))
-        (header-line (mode-line) (:height 150))
-
-        (tab-bar (mode-line nil ,bg) (:height 160))
-        (tab-bar-tab (tab-bar nil ,bg))
-        (tab-bar-tab-inactive (tab-bar nil ,bg-block))
-        (tab-bar-tab-group-current (tab-bar-tab nil nil nil bold))
-        (tab-bar-tab-group-inactive (tab-bar-tab-inactive))
-        (tab-bar-tab-ungrouped (tab-bar-tab-inactive))
-
-        (completions-common-part (shadow))
-        (completions-first-difference (bold))
-
-;;; Packages
-
-        (flyspell-duplicate () (:underline
-                                (:style wave :color ,hl-fg)))
-        (flyspell-incorrect () (:underline
-                                (:style wave :color ,hl-fg)))
-
-        (company-tooltip                     (tooltip))
-        (company-tooltip-annotation          (company-tooltip))
-        (company-tooltip-annotation-selection (company-tooltip-selection))
-        (company-tooltip-common ((company-tooltip bold)))
-        (company-tooltip-common-selection ((company-selection bold)))
-        (company-tooltip-mouse ((company-tooltip underline)))
-        (company-tooltip-selection (company-tooltip nil ,hl-strong))
-        (company-scrollbar-bg                (company-tooltip))
-        (company-scrollbar-fg                (company-tooltip nil ,bg-region))
-        (company-preview                     (shadow))
-        (company-preview-common              (company-preview))
-        (company-preview-search              (company-preview))
-
-        (corfu-default (tooltip))
-        (corfu-current (completions-highlight))
-        (corfu-border  (nil nil ,fg-weak))
-
-        (orderless-match-face-0 (shadow))
-        (orderless-match-face-1 (orderless-match-face-0))
-        (orderless-match-face-2 (orderless-match-face-0))
-        (orderless-match-face-3 (orderless-match-face-0))
-
-        (magit-heading-highlight (nil nil ,bg-tooltip) (:extend t))
-        (magit-heading-selection (nil nil ,bg-block) (:extend t))
-
-        (magit-section-heading           ,bold)
-        (magit-section-highlight         (magit-heading-highlight))
-        (magit-section-heading-selection (magit-heading-selection))
-        (magit-section-secondary-heading
-         (magit-section-heading nil nil nil light))
-
-        (magit-diff-file-heading           ,bold)
-        (magit-diff-file-heading-highlight (magit-heading-highlight))
-        (magit-diff-file-heading-selection (magit-heading-selection))
-
-        (magit-diff-hunk-heading           ,italic)
-        (magit-diff-hunk-heading-highlight (magit-heading-highlight))
-        (magit-diff-hunk-heading-selection (magit-heading-selection))
-        ;; selected hunk region
-        (magit-diff-hunk-region            (region))
-        ;; this also determines the hunk region boundary
-        (magit-diff-lines-heading          (nil ,bg ,err))
-        (magit-diff-revision-summary       ,bold)
-
-        (magit-bisect-bad        (error))
-        (magit-bisect-good       (success))
-        (magit-bisect-skip       (warning))
-        (magit-blame-date        (nil ,hl-fg))
-        (magit-blame-heading     (magit-heading-highlight))
-        (magit-branch-current    (nil ,red-fg))
-        (magit-branch-local      ,bold)
-        (magit-branch-remote     ,bold)
-        (magit-cherry-equivalent (success))
-        (magit-cherry-unmatched  (error))
-        (magit-tag               (nil ,hl-fg))
-        (magit-filename          ())
-
-        (magit-diff-added            (nil ,ok ,(overlay bg ok 0.1)))
-        (magit-diff-added-highlight  (nil ,ok ,(overlay bg ok 0.2)))
-        (diff-refine-added           (nil ,ok "#99ff99"))
-
-        (magit-diff-removed          (nil ,err ,(overlay bg err 0.1)))
-        (magit-diff-removed-highlight (nil ,err ,(overlay bg err 0.2)))
-        (diff-refine-removed         (nil ,err "#ffaaaa"))
-
-        (magit-diff-base           (nil ,warning ,(overlay bg warning 0.1)))
-        (magit-diff-base-highlight (nil ,warning ,(overlay bg warning 0.2)))
-
-        (magit-diff-context           (default))
-        (magit-diff-context-highlight (nil ,fg ,bg-block))
-
-        (magit-diffstat-added            (nil ,ok))
-        (magit-diffstat-removed          (nil ,err))
-        (magit-dimmed                    (shadow))
-        (magit-hash                      (nil ,hl-fg))
-        (magit-header-line               ,bold)
-        (magit-log-author                (default))
-        (magit-log-date                  (default))
-        (magit-log-graph                 (default))
-        (magit-process-ng                (error))
-        (magit-process-ok                (success))
-        ;; (magit-reflog-amend              (nil ,violet2))
-        ;; (magit-reflog-checkout           (nil ,blue1))
-        ;; (magit-reflog-cherry-pick        (nil ,green))
-        ;; (magit-reflog-commit             (nil ,green))
-        ;; (magit-reflog-merge              (nil ,green))
-        ;; (magit-reflog-other              (nil ,blue1))
-        ;; (magit-reflog-rebase             (nil ,violet2))
-        ;; (magit-reflog-remote             (nil ,blue1))
-        ;; (magit-reflog-reset              (error))
-        ;; (magit-refname                   (nil ,fg-weak))
-        ;; (magit-sequence-drop             (nil ,red))
-        ;; (magit-sequence-head             (nil ,blue1))
-        ;; (magit-sequence-part             (nil ,orange))
-        ;; (magit-sequence-stop             (nil ,green))
-        ;; (magit-signature-bad             (error))
-        ;; (magit-signature-error           (error))
-        ;; (magit-signature-expired         (nil ,orange))
-        ;; (magit-signature-good            (success))
-        ;; (magit-signature-revoked         (nil ,orange))
-        ;; (magit-signature-untrusted       (nil ,orange))
-
-        (rainbow-delimiters-unmatched-face (nil ,err))
-        (rainbow-delimiters-mismatched-face
-         (rainbow-delimiters-unmatched-face))
-
-        (smerge-lower   (magit-diff-added))
-        (smerge-upper   (magit-diff-removed))
-        (smerge-base    (magit-diff-base))
-        (smerge-markers (nil nil nil nil bold))
-
-        (which-key-key-face                   (nil nil ,hl-strong))
-        (which-key-group-description-face     ())
-        (which-key-command-description-face   ())
-        (which-key-local-map-description-face ())
-
-        (hl-paren-face (nil "red" nil nil bold))
-
-        (info-title-1 (info-title-2) (:height 1.3))
-        (info-title-2 (info-title-4) (:height 1.2))
-        (info-title-3 (info-title-4))
-        (info-title-4 (variable-pitch))
-        (outline-1 (info-title-1))
-        (outline-2 (info-title-2))
-        (outline-3 (info-title-3))
-        (outline-4 (info-title-4))
-        (outline-5 (outline-4))
-        (outline-6 (outline-4))
-        (outline-7 (outline-4))
-        (outline-8 (outlint-4))
-
-        (org-level-1 (info-title-1))
-        (org-level-2 (info-title-2))
-        (org-level-3 (info-title-3))
-        (org-level-4 (info-title-4))
-        (org-document-title (info-title-1))
-        (org-meta-line (shadow nil nil nil nil italic))
-        (org-document-info (org-meta-line))
-        (org-document-info-keyword (org-meta-line))
-
-        (org-verbatim         (fixed-pitch))
-        (org-code             (org-verbatim))
-        (org-block            (org-verbatim nil ,bg-block) (:extend t))
-        (org-block-begin-line ((org-block org-meta-line)))
-        (org-block-end-line   ((org-block org-meta-line)))
-        (org-formula          (fixed-pitch))
-        (org-quote            (org-block))
-
-        (org-table             (nil))
-        (org-todo              (highlight))
-        (org-time-grid         (nil ,hl-fg))
-        (org-upcoming-deadline (nil ,err))
-
-        (helpful-heading (info-title-3))
-
-        (ghelp-entry-title (info-title-2))
-
-        (diff-hl-change (nil ,warning ,(overlay bg warning 0.1)))
-
-        (line-number              ((fixed-pitch)))
-        (line-number-current-line (nil nil ,bg-block))
-        (line-number-major-tick   (line-number))
-        (line-number-minor-tick   (line-number))
-
-        (rime-default-face (tooltip) (:height 150))
-        (rime-highlight-candidate-face ((bold rime-default-face)))
-        (rime-code-face (rime-default-face))
-
-        (selectrum-prescient-primary-highlight (nil nil ,hl-normal))
-        (selectrum-prescient-secondary-highlight (nil nil ,hl-normal))
-
-        (consult-bookmark (consult-buffer))
-        (consult-file (consult-file))
-
-        (erc-notice-face (nil ,red-fg)) ; Get rid of bold.
-        (erc-timestamp-face (nil ,ok)) ; Use darker green.
-        (erc-current-nic-face (nil ,red-fg)) ; Use darker blue.
-
-        (dictionary-word-definition-face (variable-pitch))
-        (dictionary-word-entry-face (variable-pitch nil nil nil bold))
-        (dictionary-reference-face ((variable-pitch link)))
-
-        (gnus-summary-normal-unread (variable-pitch))
-        (gnus-summary-normal-read
-         (gnus-summary-normal-unread ,ok))
-        (gnus-summary-normal-undownloaded
-         (gnus-summary-normal-unread ,red-fg))
-        (gnus-summary-normal-ticked
-         (gnus-summary-normal-unread ,hl-fg))
-        (gnus-summary-normal-ancient
-         (gnus-summary-normal-unread ,blue-fg))
-
-        (debbugs-gnu-new (nil ,err))
-        (debbugs-gnu-handled (nil ,ok))
-        (debbugs-gnu-tagged (nil ,err))
-        ))))
-
-(provide-theme 'pale)
-
-;;; pale-theme.el ends here
-#+end_src
-
-*** nano
-#+begin_src emacs-lisp
-(eat/pkg nano-theme "https://github.com/404cn/nano-theme.el")
-(add-to-list 'custom-theme-load-path (expand-file-name "elpa/nano-theme" user-emacs-directory))
-#+end_src
-*** carbon
-#+begin_src emacs-lisp
-(eat/pkg carbon-theme "https://github.com/DogLooksGood/carbon-theme")
-(add-to-list 'custom-theme-load-path (expand-file-name "elpa/carbon-theme" user-emacs-directory))
-#+end_src
 * Trash
 ** Corfu
 #+begin_src elisp :tangle trash.el
