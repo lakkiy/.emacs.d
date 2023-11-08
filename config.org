@@ -1823,19 +1823,21 @@ Only work for orderless for now.
         "RET" nil
         "SPC" nil))
 #+end_src
-** company-tabnine
+** tabnine
 #+begin_src emacs-lisp
-(eat/pkg company-tabnine)
+(eat/pkg tabnine)
 
-(autoload #'company-tabnine-install-binary "company-tabnine" nil t)
+(autoload #'tabnine-install-binary "tabnine" nil t)
+(autoload #'tabnine-start-process "tabnine" nil t)
 
 (when (file-directory-p "~/.TabNine/")
-  (add-hook 'prog-mode-hook
-            #'(lambda ()
-                ;; keep the candidates organized in accordance with
-                ;; the grouped backends order
-                (setq-local company-backends
-                            '((company-capf company-tabnine :separate))))))
+  ;; TODO some package(like eglot) will rewrite completion-at-point-functions
+  ;; (add-to-list 'completion-at-point-functions #'tabnine-completion-at-point)
+  ;; (add-hook 'kill-emacs-hook #'tabnine-kill-process)
+  ;; (add-hook 'prog-mode-hook #'tabnine-start-process)
+  ;; (with-eval-after-load "meow"
+  ;;   (add-to-list 'tabnine-enable-predicates #'meow-insert-mode-p))
+  )
 #+end_src
 ** yasnippet
 #+begin_src elisp
