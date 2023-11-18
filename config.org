@@ -1833,10 +1833,6 @@ Only work for orderless for now.
   (rime-regexp-mode))
 #+end_src
 
-** TODO Symbol Overlay(use isearch + embark + highlight)
-#+begin_src emacs-lisp
-(eat/pkg symbol-overlay)
- #+end_src
 ** Hl Todo
 #+begin_src emacs-lisp
 (eat/pkg hl-todo)
