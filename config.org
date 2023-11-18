@@ -1771,12 +1771,6 @@ No tab will created if the command is cancelled."
 (meow-setup-indicator)
 (meow-global-mode 1)
 #+end_src
-** TODO Anzu(use isearch + embark to replace this
-#+begin_src elisp
-(eat/pkg anzu)
-(global-set-key [remap query-replace] #'anzu-query-replace)
-(global-set-key [remap query-replace-regexp] #'anzu-query-replace-regexp)
-#+end_src
 ** Separedit
 #+begin_src emacs-lisp
 (eat/pkg separedit)
