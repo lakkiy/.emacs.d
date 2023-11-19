@@ -511,12 +511,17 @@ triggering hooks during startup."
       package-quickstart t)
 (package-activate-all)
 
+(defvar eat/all-packages (if (daemonp) t nil))
+
 (defmacro eat/pkg (package &optional vc)
   `(unless (package-installed-p ',package)
      (unless (memq ',package package-archive-contents)
        (package-refresh-contents))
      (if ,vc (package-vc-install ,vc)
-       (package-install ',package))))
+       (package-install ',package)))
+  `(when eat/all-packages
+     (message "require: %s" ',package)
+     (require ',package)))
 #+end_src
 *** auto save
 #+begin_src emacs-lisp
