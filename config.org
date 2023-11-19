@@ -3191,7 +3191,7 @@ Run =docker pull zevlg/telega-server:latest=
   (eat/pkg telega)
   (setq
    telega-avatar-workaround-gaps-for '(return t)
-   telega-use-docker (executable-find "docker")
+   telega-use-docker (if (executable-find "docker") t nil)
    telega-server-libs-prefix "/usr"
    telega-chat-fill-column 75
    telega-translate-to-language-by-default "zh"
