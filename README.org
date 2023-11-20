@@ -4,6 +4,13 @@
 emacs --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "~/.config/emacs/config.org")'
 #+end_src
 
+* Dep
+
+** Optional
+- =aspell=: 拼写检查
+- =delta=
+- =direnv=
+
 * Note
 
 ** Use deepl to translate

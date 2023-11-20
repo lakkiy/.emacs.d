@@ -2,22 +2,32 @@
 #+PROPERTY: header-args :tangle init.el :mkdirp yes
 
 * Early init
-#+begin_src elisp :tangle early-init.el
+
+early-init.el is run before init.el,
+- before package initialization, and
+- before UI initialization
+
+Defer garbage collection further back in the startup process.
+#+begin_src emacs-lisp :tangle early-init.el
 ;;; early-init.el -*- lexical-binding: t; -*-
-
-;; early-init.el is run before init.el,
-;; - before package initialization, and
-;; - before UI initialization
-
-;; Defer garbage collection further back in the startup process
 (setq gc-cons-threshold most-positive-fixnum)
+#+end_src
 
-;; In Emacs 27+, package initialization occurs before `user-init-file' is
-;; loaded, but after `early-init-file'.
+In Emacs 27+, package initialization occurs before =user-init-file= is
+loaded, but after =early-init-file=.
+#+begin_src emacs-lisp :tangle early-init.el
 (setq package-enable-at-startup nil
       package-quickstart nil
       load-prefer-newer t)
+#+end_src
 
+=file-remote-p= relies on an entry in =file-name-handler-alist=
+(autoloaded by tramp.el) to detect remote paths, which causes tramp
+to be loaded.
+Set =file-name-handler-alist= to nil at startup for a noteable boost
+in startup performance and restore after startup or tramp won't
+loaded and project.el won't remember remote projects.
+#+begin_src emacs-lisp :tangle early-init.el
 (unless (or (daemonp) noninteractive)
   (let ((old-file-name-handler-alist file-name-handler-alist))
     ;; `file-name-handler-alist' is consulted on each `require', `load' and
@@ -44,91 +54,46 @@
               (setq-default inhibit-redisplay nil
                             inhibit-message nil)
               (redisplay))))
+#+end_src
 
-;; Prevent the glimpse of un-styled Emacs by disabling these UI elements early.
+Prevent the glimpse of un-styled Emacs by disabling these UI elements early.
+#+begin_src emacs-lisp :tangle early-init.el
 (push '(menu-bar-lines . 0) default-frame-alist)
 (push '(tool-bar-lines . 0) default-frame-alist)
 (push '(vertical-scroll-bars) default-frame-alist)
+#+end_src
 
-(setq frame-inhibit-implied-resize t)
-
-;; Disable native compilation.
+Disable native compilation.
+#+begin_src emacs-lisp :tangle early-init.el
 (setq  native-comp-jit-compilation nil)
 #+end_src
 
+
+#+begin_src elisp :tangle early-init.el
+(setq frame-inhibit-implied-resize t)
+#+end_src
+
 * Core
-** Enable lexical binding
-#+begin_src emacs-lisp
-;;; -*- lexical-binding: t -*-
-#+end_src
-
-Emacs 默认使用 dynamic binding，主要影响的是变量的作用域。
-
-在默认的 dynamic binding 下变量的作用域是基于函数调用栈的，变量被修改
-后会影响到整个函数调用链上。
-
-在开启 lexcial binding 后变量的作用域是基于代码块的结构的，更符合通常
-的编程语言中的作用域规则，变量的作用域被限制在定义它的代码块内，不会泄
-露到外部代码块。
-
-例如对于如下代码，在未开始 lexcial binding 时输出为：
-#+RESULTS:
-: Outer: x is 10
-: Inner: x is 20
-: Outer: x is 20
-当调用 =inner-function= 中内部引用 =x= 时，会查找外部调用堆栈中的 =x= ，既
-=outer-function= 中的 =x= ，值为 =10= 。
-
-而当开启 lexcial binding 时输出的结果为：
-: Outer: x is 10
-: Inner: x is 20
-: Outer: x is 10
-当调用 =inner-function= 中内部引用 =x= 时，它只会看到自己的局部变量 =x= ，值
-为 =20= ，而不会改变外部函数 =outer-function= 中的 =x= 的值，仍为 =10= 。
-
-#+begin_src emacs-lisp :tangle no
-;;; -*- lexical-binding: t -*-
-
-(defun outer-function ()
-  (let ((x 10))
-    (message "Outer: x is %d" x)
-    (inner-function)
-    (message "Outer: x is %d" x)))
-
-(defun inner-function ()
-  (let ((x 20))
-    (message "Inner: x is %d" x)))
-
-(outer-function)
-#+end_src
-
-** Load custom file
+** custom
 #+begin_src elisp
+;;; -*- lexical-binding: t -*-
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (and (file-exists-p custom-file) (file-readable-p custom-file))
   (load custom-file :no-error :no-message))
 #+end_src
 
-** Def
+** const
 #+begin_src emacs-lisp
 (defconst eat/macp (eq system-type 'darwin))
 (defconst eat/linuxp (eq system-type 'gnu/linux))
 (defconst eat/winp (eq system-type 'windows-nt))
+(defconst my/executable-find-ugrep (executable-find "ugrep"))
+(defconst my/executable-find-rg (executable-find "rg"))
 
 (defvar eat/user-full-name "Liu Bo")
 (defvar eat/user-mail-address "liubolovelife@gmail.com")
-
-(defvar eat/module-list `(+icon +blog +telega +note-taking))
-(defvar eat/module--hash-table
-  ((lambda ()
-     (setq hash--table (make-hash-table))
-     (dolist (m eat/module-list)
-       (puthash m t hash--table))
-     hash--table)))
-(defun eat/modulep (module)
-  (gethash module eat/module--hash-table))
 #+end_src
-** Some useful functions
+** funcs
 *** Delete things(don’t send to kill ring
 #+begin_src emacs-lisp
 (defun eat/delete-to-the-begining ()
@@ -397,25 +362,6 @@ triggering hooks during startup."
 ;; Don't pass case-insensitive to `auto-mode-alist'
 (setq auto-mode-case-fold nil)
 
-;; file-remote-p relies on an entry in file-name-handler-alist
-;; (autoloaded by tramp.el) to detect remote paths, which causes tramp
-;; to be loaded.
-;; sets file-name-handler-alist to nil at startup for a noteable boost
-;; in startup performance and restore after startup or tramp won't
-;; loaded and project won't remember remote projects.
-(unless (or (daemonp) noninteractive init-file-debug)
-  ;; Suppress file handlers operations at startup
-  ;; `file-name-handler-alist' is consulted on each call to `require' and `load'
-  (let ((old-value file-name-handler-alist))
-    (setq file-name-handler-alist nil)
-    (set-default-toplevel-value 'file-name-handler-alist file-name-handler-alist)
-    (add-hook 'emacs-startup-hook
-              (lambda ()
-                "Recover file name handlers."
-                (setq file-name-handler-alist
-                      (delete-dups (append file-name-handler-alist old-value))))
-              101)))
-
 ;; Don't ping things that look like domain names.
 (setq ffap-machine-p-known 'reject)
 #+end_src
@@ -454,6 +400,11 @@ triggering hooks during startup."
 #+end_src
 *** Config
 #+begin_src emacs-lisp
+(setq browse-url-generic-program
+      (or (executable-find "firefox")
+          (when eat/macp "open")
+          (when eat/linuxp "xdg-open")))
+
 ;; Do not show cursor in nonselected windows
 (setq-default cursor-in-non-selected-windows nil)
 
@@ -632,14 +583,35 @@ Selectively runs either `after-make-console-frame-hooks' or
   (global-unset-key (kbd "C-x C-z")))
 #+end_src
 *** UIxUX
+*** Disable lock and back file, enable auto save
+#+begin_src emacs-lisp
+;; Disable default auto backup and save file
+(setq-default
+ create-lockfiles nil                               ; Don't create lockfiles
+ make-backup-files nil                              ; Disable auto save and backup
+ auto-save-default nil
+ auto-save-list-file-prefix nil)
 
+;; most of time I will do save manually
+(setq auto-save-visited-interval 10)
+(add-hook 'on-first-file-hook #'auto-save-visited-mode)
+#+end_src
+*** Delete whitespace after save
+#+begin_src emacs-lisp
+(add-hook 'before-save-hook #'delete-trailing-whitespace)
+#+end_src
 ** Font
-#+begin_src elisp
-(defun eat/fixed-pitch-setup ()
-  (interactive)
-  (setq buffer-face-mode-face '(:family "Sarasa Gothic SC"))
-  (buffer-face-mode +1))
-
+*** fonts
+#+begin_src emacs-lisp
+(defvar eat/fonts-default        '("Monaco" "Cascadia Code" "Menlo" "Source Code Pro"))
+(defvar eat/fonts-variable-pitch '("Bookerly" "Cardo" "Times New Roman" "DejaVu Sans"))
+(defvar eat/fonts-cjk            '("LXGW WenKai" "WenQuanYi Micro Hei" "Microsoft Yahei"))
+(defvar eat/fonts-unicode        '("Symbola"))
+(defvar eat/fonts-emoji          '("Apple Color Emoji" "Segoe UI Symbol" "Noto Color Emoji"))
+(defvar eat/font-size-default   13)
+#+end_src
+*** setup
+#+begin_src emacs-lisp
 (defun font-installed-p (font-list)
   (let ((font-installed nil))
     (catch 'foo
@@ -649,40 +621,36 @@ Selectively runs either `after-make-console-frame-hooks' or
           (throw 'foo t))))
     font-installed))
 
-(defvar eat/fonts-default        '("Monaco" "Cascadia Code" "Menlo" "Source Code Pro"))
-(defvar eat/fonts-variable-pitch '("Bookerly" "Cardo" "Times New Roman" "DejaVu Sans"))
-(defvar eat/fonts-cjk            '("LXGW WenKai" "WenQuanYi Micro Hei" "Microsoft Yahei"))
-(defvar eat/fonts-unicode        '("Symbola"))
-(defvar eat/fonts-emoji          '("Apple Color Emoji" "Segoe UI Symbol" "Noto Color Emoji"))
-(defvar eat/font-size-default   13)
 (defvar eat/font-default        (font-installed-p eat/fonts-default))
 (defvar eat/font-variable-pitch (font-installed-p eat/fonts-variable-pitch))
 (defvar eat/font-cjk            (font-installed-p eat/fonts-cjk))
 (defvar eat/font-unicode        (font-installed-p eat/fonts-unicode))
 (defvar eat/font-emoji          (font-installed-p eat/fonts-emoji))
 
-(defun eat/setup-mode-line-font ()
-  (set-face-attribute 'mode-line nil :inherit 'variable-pitch)
-  (set-face-attribute 'mode-line-inactive nil :inherit 'variable-pitch))
+  (defun eat/setup-mode-line-font ()
+    (set-face-attribute 'mode-line nil :inherit 'variable-pitch)
+    (set-face-attribute 'mode-line-inactive nil :inherit 'variable-pitch))
 
-(defun eat/setup-font ()
-  (set-face-attribute 'default nil :height (* 10 eat/font-size-default))
-  (when eat/font-default
-    (set-face-attribute 'default     nil :family eat/font-default)
-    (set-face-attribute 'fixed-pitch nil :font eat/font-default))
-  (when eat/font-variable-pitch
-    (set-face-font 'variable-pitch eat/font-variable-pitch))
-  (when eat/font-unicode
-    (set-fontset-font t 'unicode eat/font-unicode))
-  (when eat/font-emoji
-    (set-fontset-font t 'emoji   eat/font-emoji))
-  (when eat/font-cjk
-    (set-fontset-font t 'kana     eat/font-cjk)
-    (set-fontset-font t 'han      eat/font-cjk)
-    (set-fontset-font t 'cjk-misc eat/font-cjk))
-  (eat/setup-mode-line-font))
-(add-hook 'after-make-window-system-frame-hooks #'eat/setup-font)
-
+  (defun eat/setup-font ()
+    (set-face-attribute 'default nil :height (* 10 eat/font-size-default))
+    (when eat/font-default
+      (set-face-attribute 'default     nil :family eat/font-default)
+      (set-face-attribute 'fixed-pitch nil :font eat/font-default))
+    (when eat/font-variable-pitch
+      (set-face-font 'variable-pitch eat/font-variable-pitch))
+    (when eat/font-unicode
+      (set-fontset-font t 'unicode eat/font-unicode))
+    (when eat/font-emoji
+      (set-fontset-font t 'emoji   eat/font-emoji))
+    (when eat/font-cjk
+      (set-fontset-font t 'kana     eat/font-cjk)
+      (set-fontset-font t 'han      eat/font-cjk)
+      (set-fontset-font t 'cjk-misc eat/font-cjk))
+    (eat/setup-mode-line-font))
+  (add-hook 'after-make-window-system-frame-hooks #'eat/setup-font)
+#+end_src
+*** rescale
+#+begin_src emacs-lisp
 (defvar eat/font-rescale-alist
   `((,eat/font-cjk     . 0.95)
     (,eat/font-emoji   . 0.9)
@@ -695,8 +663,15 @@ Selectively runs either `after-make-console-frame-hooks' or
     (when (car setting)
       (setf (alist-get (car setting)
                        face-font-rescale-alist nil nil #'equal)
-		    (cdr setting)))))
+            (cdr setting)))))
 (add-hook 'after-make-window-system-frame-hooks #'eat/rescale-font)
+#+end_src
+*** utils
+#+begin_src emacs-lisp
+(defun eat/fixed-pitch-setup ()
+  (interactive)
+  (setq buffer-face-mode-face '(:family "Sarasa Gothic SC"))
+  (buffer-face-mode +1))
 #+end_src
 ** Theme
 #+begin_src emacs-lisp
@@ -724,24 +699,35 @@ Selectively runs either `after-make-console-frame-hooks' or
 (add-hook 'load-theme-hook #'eat/setup-mode-line-font)
 #+end_src
 ** Built-in packages
+*** package.el
+#+begin_src emacs-lisp
+(setq package-archives '(("gnu"    . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+			             ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
+                         ("melpa"  . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/"))
+      package-quickstart t)
+(package-activate-all)
+
+(defmacro eat/pkg (package &optional vc)
+  `(unless (package-installed-p ',package)
+     (unless (memq ',package package-archive-contents)
+       (package-refresh-contents))
+     (if ,vc (package-vc-install ,vc)
+       (package-install ',package))))
+#+end_src
 *** grep
 #+begin_src emacs-lisp
-(when (executable-find "ugrep")
-  ;; https://github.com/Genivia/ugrep#using-ugrep-within-emacs
-  (setq-default grep-template "ugrep -0Iinr -e <R>"))
-#+end_src
-*** auto save
-#+begin_src emacs-lisp
-;; Disable default auto backup and save file
-(setq-default
- create-lockfiles nil                               ; Don't create lockfiles
- make-backup-files nil                              ; Disable auto save and backup
- auto-save-default nil
- auto-save-list-file-prefix nil)
-
-;; most of time I will do save manually
-(setq auto-save-visited-interval 10)
-(add-hook 'on-first-file-hook #'auto-save-visited-mode)
+  (autoload 'grep-apply-setting "grep")
+  (cond
+   (my/executable-find-ugrep
+    (grep-apply-setting 'grep-command "ugrep -0In -e ")
+    (grep-apply-setting 'grep-template "ugrep -0In -e <R> <D>")
+    (grep-apply-setting 'grep-find-command '("ugrep -0Inr -e ''" . 30))
+    (grep-apply-setting 'grep-find-template "ugrep <C> -0Inr -e <R> <D>"))
+   (my/executable-find-rg
+    (grep-apply-setting 'grep-command "rg --null -nH --no-heading -e ")
+    (grep-apply-setting 'grep-template "rg --null --no-heading -g '!*/' -e <R> <D>")
+    (grep-apply-setting 'grep-find-command '("rg --null -nH --no-heading -e ''" . 38))
+    (grep-apply-setting 'grep-find-template "rg --null -nH --no-heading -e <R> <D>")))
 #+end_src
 *** dired
 #+begin_src emacs-lisp
@@ -827,7 +813,6 @@ Selectively runs either `after-make-console-frame-hooks' or
 *** xref
 Must set before consult.
 Use control-left-click to jump to defintions.
-Need ugrep installed(check external program).
 
 Set cursor pos to mouse pos if they are not in same pos.
 #+begin_src elisp
@@ -838,37 +823,75 @@ Set cursor pos to mouse pos if they are not in same pos.
 (keymap-global-set "C-<mouse-1>" #'xref-find-definitions-at-mouse)
 
 (setq xref-prompt-for-identifier nil
-      ;; Commands such as `project-find-regexp' that rely on Xref can now leverage the power of ugrep.
-      xref-search-program 'ugrep
       xref-show-xrefs-function #'xref-show-definitions-completing-read
       xref-show-definitions-function #'xref-show-definitions-completing-read
       ;; fix massed xref cross multiple project
       xref-history-storage 'xref-window-local-history)
+
+;; Commands such as `project-find-regexp' that rely on Xref can now
+;; leverage the power of ugrep or ripgrep.
+(cond (my/executable-find-ugrep (setq xref-search-program 'ugrep))
+      (my/executable-find-rg (setq xref-search-program 'rg)))
 #+end_src
 
 *** tramp
+
+Custom =vc-igrone-dir-regexp= will make porject don’t regconize and save
+remote project, and eglot also don’t work under project.
+
+If it’s still feel slow, try =direct-async-process=:
+#+begin_example
+(add-to-list 'tramp-connection-properties
+             (list "/ssh:" "direct-async-process" t))
+;; or
+(add-to-list 'tramp-connection-properties
+             (list (regexp-quote "/ssh:user@host:")
+                   "direct-async-process" t))
+#+end_example
+However it has some [[https://www.gnu.org/software/tramp/#Improving-performance-of-asynchronous-remote-processes-1][limitations]], the most importent is it does not use
+tramp-remote-path, so the process may can’t find remote programs.
+
+
 #+begin_src elisp
 (setq
- remote-file-name-inhibit-locks t
- tramp-verbose 1 ;; only show error message
- tramp-completion-reread-directory-timeout nil ;;  speed up complete
- tramp-auto-save-directory temporary-file-directory
- ;; Always use file cache when using tramp
+ tramp-terminal-type "tramp"
+ ;; Set remote-file-name-inhibit-cache to nil if remote files are not
+ ;; independently updated outside TRAMP’s control. That cache cleanup
+ ;; will be necessary if the remote directories or files are updated
+ ;; independent of TRAMP.
  remote-file-name-inhibit-cache nil
+ ;;  Disable file locks. Set remote-file-name-inhibit-locks to t if
+ ;;  you know that different Emacs sessions are not modifying the same
+ ;;  remote file.
+ remote-file-name-inhibit-locks t
+ ;; Disable excessive traces.
+ tramp-verbose 0
  ;; C-x C-f /ssh:
  tramp-default-method "ssh"
- ;; NOTE this will make project didn't regconize and save remote
- ;; project, and eglot also didn't work under project, only works for
- ;; single buffer
- ;; vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
- ;;                              vc-ignore-dir-regexp
- ;;                              tramp-file-name-regexp)
+ ;; Bypass TRAMP’s handling of the ControlMaster options, and use your
+ ;; own settings in ~/.ssh/config
+ tramp-use-connection-share nil
+ ;;  speed up complete
+ tramp-completion-reread-directory-timeout nil
+ tramp-auto-save-directory temporary-file-directory
  )
 
-(defun eat/reopen-file-with-sudo ()
+(defun sudo-find-file (file)
+  "Open FILE as root."
+  (interactive "FOpen file as root: ")
+  (when (file-writable-p file)
+    (user-error "File is user writeable, aborting sudo"))
+  (find-file (if (file-remote-p file)
+                 (concat "/" (file-remote-p file 'method) ":"
+                         (file-remote-p file 'user) "@" (file-remote-p file 'host)
+                         "|sudo:root@"
+                         (file-remote-p file 'host) ":" (file-remote-p file 'localname))
+               (concat "/sudo:root@localhost:" file))))
+(defun sudo-this-file ()
+  "Open the current file as root."
   (interactive)
-  (find-alternate-file (format "/sudo::%s" (buffer-file-name))))
-(keymap-global-set "C-x C-z" #'eat/reopen-file-with-sudo)
+  (sudo-find-file (file-truename buffer-file-name)))
+(keymap-global-set "C-x C-z" #'sudo-this-file)
 
 (with-eval-after-load 'tramp
   ;; ‘Private Directories’ are the settings of the $PATH environment,
@@ -877,15 +900,27 @@ Set cursor pos to mouse pos if they are not in same pos.
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 #+end_src
 
-*** browse-url
-#+begin_src emacs-lisp
-(setq browse-url-generic-program
-      (or (executable-find "firefox")
-          (when eat/macp "open")
-          (when eat/linuxp "xdg-open")))
-#+end_src
-
 *** isearch
+The problem of the default query-replace UI is when you accidently
+press a key that's not in query-replace-map, the session is
+terminated. This makes it feel fragile.
+
+Here's an advice fixing it. When you press a non query-replace-map
+key, it opens the help info.
+
+#+begin_src emacs-lisp
+(define-advice perform-replace (:around (fn &rest args) dont-exit-on-anykey)
+  "Don't exit replace for anykey that's not in `query-replace-map'."
+  (cl-letf* ((lookup-key-orig
+              (symbol-function 'lookup-key))
+             ((symbol-function 'lookup-key)
+              (lambda (map key &optional accept-default)
+                (or (apply lookup-key-orig map key accept-default)
+                    (when (eq map query-replace-map) 'help)))))
+    (apply fn args)))
+#+end_src
+Stole from https://github.com/astoff/isearch-mb/wiki
+
 #+begin_src emacs-lisp
 (setq
  ;; Match count next to the minibuffer prompt
@@ -906,10 +941,87 @@ Set cursor pos to mouse pos if they are not in same pos.
 
 (keymap-global-set "C-s" #'isearch-forward-regexp)
 (keymap-global-set "C-r" #'isearch-backward-regexp)
-(keymap-set isearch-mode-map "C-c C-o" #'isearch-occur)
-(define-key isearch-mode-map [escape] #'isearch-cancel)
-;; DEL during isearch should edit the search string, not jump back to the previous result
-(keymap-substitute isearch-mode-map #'isearch-delete-chac #'isearch-del-chac)
+
+(with-eval-after-load "isearch"
+  (define-advice isearch-occur (:after (_regexp &optional _nlines))
+    "Exit isearch after calling."
+    (isearch-exit))
+
+  (keymap-set isearch-mode-map "C-c C-o" #'isearch-occur)
+  ;; DEL during isearch should edit the search string, not jump back
+  ;; to the previous result
+  (keymap-substitute isearch-mode-map #'isearch-delete-chac #'isearch-del-chac)
+
+  ;; steal from
+  ;; http://yummymelon.com/devnull/improving-emacs-isearch-usability-with-transient.html
+  (transient-define-prefix my/isearch-menu ()
+    "isearch Menu"
+    [["Edit Search String"
+      ("e"
+       "Edit the search string (recursive)"
+       isearch-edit-string
+       :transient nil)
+      ("w"
+       "Pull next word or character word from buffer"
+       isearch-yank-word-or-char
+       :transient nil)
+      ("s"
+       "Pull next symbol or character from buffer"
+       isearch-yank-symbol-or-char
+       :transient nil)
+      ("l"
+       "Pull rest of line from buffer"
+       isearch-yank-line
+       :transient nil)
+      ("y"
+       "Pull string from kill ring"
+       isearch-yank-kill
+       :transient nil)
+      ("t"
+       "Pull thing from buffer"
+       isearch-forward-thing-at-point
+       :transient nil)]
+
+     ["Replace"
+      ("q"
+       "Start ‘query-replace’"
+       isearch-query-replace
+       :if-nil buffer-read-only
+       :transient nil)
+      ("x"
+       "Start ‘query-replace-regexp’"
+       isearch-query-replace-regexp
+       :if-nil buffer-read-only
+       :transient nil)]]
+
+    [["Toggle"
+      ("X"
+       "Toggle regexp searching"
+       isearch-toggle-regexp
+       :transient nil)
+      ("S"
+       "Toggle symbol searching"
+       isearch-toggle-symbol
+       :transient nil)
+      ("W"
+       "Toggle word searching"
+       isearch-toggle-word
+       :transient nil)
+      ("F"
+       "Toggle case fold"
+       isearch-toggle-case-fold
+       :transient nil)
+      ("L"
+       "Toggle lax whitespace"
+       isearch-toggle-lax-whitespace
+       :transient nil)]
+
+     ["Misc"
+      ("o"
+       "occur"
+       isearch-occur
+       :transient nil)]])
+  (keymap-set isearch-mode-map "C-h C-h" #'my/isearch-menu))
 #+end_src
 *** ediff
 #+begin_src elisp
@@ -994,7 +1106,6 @@ Set cursor pos to mouse pos if they are not in same pos.
 
 *** simple
 #+begin_src emacs-lisp
-(add-hook 'before-save-hook #'delete-trailing-whitespace)
 (setq visual-line-fringe-indicators '(nil nil)
       ;; List only applicable commands.
       read-extended-command-predicate #'command-completion-default-include-p
@@ -1057,7 +1168,6 @@ Set cursor pos to mouse pos if they are not in same pos.
 (setq hs-set-up-overlay #'hideshow-folded-overlay-fn)
 #+end_src
 *** flymake
-
 #+begin_src elisp
 (add-hook 'prog-mode-hook #'flymake-mode)
 (add-hook 'emacs-lisp-mode-hook #'(lambda ()
@@ -1091,11 +1201,12 @@ Set cursor pos to mouse pos if they are not in same pos.
             (add-hook 'eldoc-documentation-functions 'flymake-eldoc-function nil t)))
 #+end_src
 *** tab-bar
+NOTE do not bind =tab-bar-switch-to-prev-tab= and
+=tab-bar-switch-to-next-tab= to =M-[= or =M-]=, it will make emacs have some
+bug to auto insert characters after you type everytime.
+
 #+begin_src emacs-lisp
 (with-eval-after-load 'tab-bar
-  ;; NOTE do not bind `tab-bar-switch-to-prev-tab' and
-  ;; `tab-bar-switch-to-next-tab' to M-[ or M-], it will make emacs
-  ;; have some bug to auto insert characters after you type everytime
   (keymap-set tab-prefix-map "." #'tab-bar-switch-to-recent-tab)
   (keymap-set tab-prefix-map "," #'tab-bar-rename-tab)
   (keymap-set tab-prefix-map "l" #'eat/tab-bar-switch-project))
@@ -1104,35 +1215,6 @@ Set cursor pos to mouse pos if they are not in same pos.
 #+begin_src emacs-lisp
 (fset 'list-buffers 'ibuffer)
 (setq-default ibuffer-show-empty-filter-groups nil)
-(keymap-global-set "C-x B" 'ibuffer)
-;; Modify the default ibuffer-formats (toggle with `)
-(setq ibuffer-formats
-      '((mark modified read-only vc-status-mini " "
-              (name 22 22 :left :elide)
-              " "
-              (size-h 9 -1 :right)
-              " "
-              (mode 12 12 :left :elide)
-              " "
-              vc-relative-file)
-        (mark modified read-only vc-status-mini " "
-              (name 22 22 :left :elide)
-              " "
-              (size-h 9 -1 :right)
-              " "
-              (mode 14 14 :left :elide)
-              " "
-              (vc-status 12 12 :left)
-              " "
-              vc-relative-file)))
-
-(with-eval-after-load 'ibuffer
-  (setq ibuffer-filter-group-name-face 'font-lock-doc-face)
-  ;; Use human readable Size column instead of original one
-  (define-ibuffer-column size-h
-    (:name "Size" :inline t)
-    (file-size-human-readable (buffer-size))))
-
 #+end_src
 *** eglot
 #+begin_src emacs-lisp
@@ -1164,7 +1246,7 @@ Set cursor pos to mouse pos if they are not in same pos.
   (add-to-list 'eglot-server-programs '(markdown-mode . ("ltex-ls")))
   (add-to-list 'eglot-server-programs '(message-mode . ("ltex-ls"))))
 #+end_src
-*** Tree-sitter
+*** treesit
 1. Install =tree-sitter= on system.
 2. Build emacs with tree sitter =--with-tree-sitter=.
 3. Install language definitions to =/usr/local/lib= or =~/.config/emacs/tree-sitter= or =treesit-extra-load-path=.
@@ -1181,14 +1263,13 @@ Also check:
  ;; 没有在 tree-sitter 组织下的 parser
  treesit-language-source-alist
  '((gomod . ("https://github.com/camdencheek/tree-sitter-gomod.git"))
-   (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))))
+   (yaml . ("https://github.com/ikatyang/tree-sitter-yaml")))
+ go-ts-mode-indent-offset 4)
 
 (with-eval-after-load 'go-ts-mode
   (require 'go-mode)
 
-  (setq go-ts-mode-hook go-mode-hook
-        go-ts-mode-indent-offset 4)
-
+  (setq go-ts-mode-hook go-mode-hook)
   (set-keymap-parent go-ts-mode-map go-mode-map))
 
 (when (treesit-available-p)
@@ -1198,6 +1279,159 @@ Also check:
   (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
   (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-ts-mode))
   (add-to-list 'auto-mode-alist '("\\.toml\\'" . toml-ts-mode)))
+#+end_src
+*** newsticker
+#+begin_src emacs-lisp
+(keymap-global-set "C-x W" #'newsticker-show-news)
+
+(setq newsticker-url-list
+      '(("Planet Emacslife" "https://planet.emacslife.com/atom.xml")
+        ("Mastering Emacs" "http://www.masteringemacs.org/feed/")
+        ("Oremacs" "https://oremacs.com/atom.xml")
+        ("EmacsCast" "https://pinecast.com/feed/emacscast")
+        ("Emacs TIL" "https://emacstil.com/feed.xml")
+        ("Emacs Reddit" "https://www.reddit.com/r/emacs.rss")))
+#+end_src
+*** ispell
+#+begin_src emacs-lisp
+(setq ispell-program-name "aspell"
+      ispell-extra-args '( "-W" "3" "--sug-mode=ultra" "--lang=en_US"
+                           ;; run-together allows compound words
+                           ;; like "viewport".
+                           "--run-together"))
+#+end_src
+*** gnus
+#+begin_src elisp
+;;; gnus
+(setq
+ gnus-use-cache t
+ gnus-use-scoring nil
+ gnus-suppress-duplicates t
+ gnus-novice-user nil
+ gnus-expert-user t
+ gnus-interactive-exit 'quiet
+ gnus-inhibit-startup-message t
+ gnus-select-method '(nnnil "")
+ gnus-secondary-select-methods
+ `((nntp "gmane" (nntp-address "news.gmane.io"))
+   (nntp "nntp.lore.kernel.org")
+   (nnimap "Gmail"
+           (nnimap-user ,eat/user-mail-address)
+           (nnimap-inbox "INBOX")
+           (nnimap-address "imap.gmail.com")
+           (nnimap-stream ssl)
+           (nnimap-expunge 'never)
+           ;; @see http://www.gnu.org/software/emacs/manual/html_node/gnus/Expiring-Mail.html
+           ;; press 'E' to expire email
+           (nnmail-expiry-target "nnimap+Gmail:[Gmail]/Trash")
+           (nnmail-expiry-wait 90)))
+ ;; Startup functions
+ gnus-save-killed-list nil
+ gnus-check-new-newsgroups nil
+ ;; No other newsreader is used.
+ gnus-save-newsrc-file nil
+ gnus-read-newsrc-file nil
+ gnus-subscribe-newsgroup-method 'gnus-subscribe-interactively
+ ;; Emacs 28 introduces a unified query lang
+ gnus-search-use-parsed-queries t
+ ;; Article mode for Gnus
+ gnus-visible-headers (rx line-start (or "From"
+                                         "Subject"
+                                         "Mail-Followup-To"
+                                         "Date"
+                                         "To"
+                                         "Cc"
+                                         "Newsgroups"
+                                         "User-Agent"
+                                         "X-Mailer"
+                                         "X-Newsreader")
+                          ":")
+ gnus-article-sort-functions '((not gnus-article-sort-by-number)
+                               (not gnus-article-sort-by-date))
+ gnus-article-browse-delete-temp t
+ ;; Display more MINE stuff
+ gnus-mime-display-multipart-related-as-mixed t
+ ;; Asynchronous support for Gnus
+ gnus-asynchronous t
+ gnus-use-header-prefetch t
+ ;; Cache interface for Gnus
+ gnus-cache-enter-articles '(ticked dormant unread)
+ gnus-cache-remove-articles '(read)
+ gnus-cacheable-groups "^\\(nntp\\|nnimap\\)")
+
+;; Group
+(setq
+ ;;          indentation ------------.
+ ;;  #      process mark ----------. |
+ ;;                level --------. | |
+ ;;           subscribed ------. | | |
+ ;;  %          new mail ----. | | | |
+ ;;  *   marked articles --. | | | | |
+ ;;                        | | | | | |  Ticked    New     Unread  open-status Group
+ gnus-group-line-format "%M%m%S%L%p%P %1(%7i%) %3(%7U%) %3(%7y%) %4(%B%-45G%) %d\n"
+ gnus-group-sort-function '(gnus-group-sort-by-level gnus-group-sort-by-alphabet))
+
+(add-hook 'gnus-group-mode-hook #'gnus-topic-mode)
+
+;; Summary
+(setq
+ ;; Pretty marks
+ gnus-sum-thread-tree-root            "┌ "
+ gnus-sum-thread-tree-false-root      "◌ "
+ gnus-sum-thread-tree-single-indent   "◎ "
+ gnus-sum-thread-tree-vertical        "│"
+ gnus-sum-thread-tree-indent          "  "
+ gnus-sum-thread-tree-leaf-with-other "├─►"
+ gnus-sum-thread-tree-single-leaf     "╰─►"
+ gnus-summary-line-format "%U%R %3d %[%-23,23f%] %B %s\n"
+ ;; Threads!  I hate reading un-threaded email -- especially mailing
+ ;; lists.  This helps a ton!
+ gnus-summary-make-false-root 'adopt
+ gnus-simplify-subject-functions '(gnus-simplify-subject-re gnus-simplify-whitespace)
+ gnus-summary-thread-gathering-function 'gnus-gather-threads-by-subject
+ ;; Filling in threads
+ ;; 2 old articles are enough for memory
+ gnus-fetch-old-headers 2
+ gnus-fetch-old-ephemeral-headers 2
+ gnus-build-sparse-threads 'some
+ ;; More threading
+ gnus-show-threads t
+ gnus-thread-indent-level 2
+ gnus-thread-hide-subtree nil
+ ;; Sorting
+ gnus-thread-sort-functions '(gnus-thread-sort-by-most-recent-date)
+ gnus-subthread-sort-functions '(gnus-thread-sort-by-date)
+ ;; Viewing
+ gnus-view-pseudos 'automatic
+ gnus-view-pseudos-separately t
+ gnus-view-pseudo-asynchronously t
+ ;; No auto select
+ gnus-auto-select-first nil
+ gnus-auto-select-next nil
+ gnus-paging-select-next nil)
+
+(add-hook 'gnus-select-group-hook #'gnus-group-set-timestamp)
+(add-hook 'gnus-summary-mode-hook #'hl-line-mode)
+
+;;; message
+(setq message-kill-buffer-on-exit t
+      message-mail-alias-type 'ecomplete
+      ;; Personal Information
+      user-full-name eat/user-full-name
+      user-mail-address eat/user-mail-address
+      message-signature user-full-name
+      smtpmail-smtp-user user-mail-address
+      ;; Send email through SMTP
+      send-mail-function #'smtpmail-send-it
+      message-send-mail-function #'message-use-send-mail-function
+      smtpmail-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-service 587)
+(defun eat/message-mode-setup ()
+  (auto-fill-mode)
+  (when (executable-find "ltex-ls")
+    (eglot-ensure)))
+(add-hook 'message-mode-hook #'eat/message-mode-setup)
+
 #+end_src
 
 *** misc
@@ -1262,55 +1496,130 @@ Also check:
   (add-to-list 'help-fns-describe-function-functions #'shortdoc-help-fns-examples-function))
 #+end_src
 * Libs
+** fullframe
 #+begin_src emacs-lisp
-(setq package-archives '(("gnu"    . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-			             ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
-                         ("melpa"  . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/"))
-      package-quickstart t)
-(package-activate-all)
-
-(defmacro eat/pkg (package &optional vc)
-  `(unless (package-installed-p ',package)
-     (unless (memq ',package package-archive-contents)
-       (package-refresh-contents))
-     (if ,vc (package-vc-install ,vc)
-       (package-install ',package))))
-
 (eat/pkg fullframe)
+#+end_src
+** hide-mode-line
+#+begin_src emacs-lisp
 (eat/pkg hide-mode-line)
+#+end_src
+** bind
+#+begin_src emacs-lisp
 (eat/pkg bind)
+#+end_src
+** elpa-mirror
+#+begin_src emacs-lisp
 (eat/pkg elpa-mirror)
-(eat/pkg pinyinlib)
-(eat/pkg orderless)
-
-;;; elpa-mirror
 (setq elpamr-default-output-directory "~/Sync/myelpa")
+#+end_src
+** Better built in
+*** project-x
+Recognize any directory with a .project file as a project.
+Save and restore project files and window configurations across sessions.
 
-;;; pinyinlib
-(autoload #'pinyinlib-build-regexp-string "pinyinlib")
-
-;;; orderless
-(defun sanityinc/use-orderless-in-minibuffer ()
-  (setq-local completion-styles '(substring orderless)))
-(add-hook 'minibuffer-setup-hook #'sanityinc/use-orderless-in-minibuffer)
-
-(with-eval-after-load 'orderless
-  (defun completion--regex-pinyin (str)
-    (orderless-regexp (pinyinlib-build-regexp-string str)))
-  (add-to-list 'orderless-matching-styles 'completion--regex-pinyin))
-
-;; Recognize any directory with a .project file as a project.
-;; Save and restore project files and window configurations across sessions.
+#+begin_src emacs-lisp
 (eat/pkg project-x "https://github.com/karthink/project-x")
-
 (with-eval-after-load 'project
   (project-x-mode 1))
 #+end_src
-* Window
+*** ibuffer-vc
 #+begin_src elisp
+;; Modify the default ibuffer-formats (toggle with `)
+(setq ibuffer-formats
+      '((mark modified read-only vc-status-mini " "
+              (name 22 22 :left :elide)
+              " "
+              (size-h 9 -1 :right)
+              " "
+              (mode 12 12 :left :elide)
+              " "
+              vc-relative-file)
+        (mark modified read-only vc-status-mini " "
+              (name 22 22 :left :elide)
+              " "
+              (size-h 9 -1 :right)
+              " "
+              (mode 14 14 :left :elide)
+              " "
+              (vc-status 12 12 :left)
+              " "
+              vc-relative-file)))
+
+(with-eval-after-load 'ibuffer
+  (setq ibuffer-filter-group-name-face 'font-lock-doc-face)
+  ;; Use human readable Size column instead of original one
+  (define-ibuffer-column size-h
+    (:name "Size" :inline t)
+    (file-size-human-readable (buffer-size)))
+
+  (with-eval-after-load 'fullframe
+    (fullframe ibuffer ibuffer-quit)))
+
+(eat/pkg ibuffer-vc)
+
+(defun ibuffer-set-up-preferred-filters ()
+  (ibuffer-vc-set-filter-groups-by-vc-root)
+  (unless (eq ibuffer-sorting-mode 'filename/process)
+    (ibuffer-do-sort-by-filename/process)))
+;; Ibuffer-vc
+(add-hook 'ibuffer-hook #'ibuffer-set-up-preferred-filters)
+#+end_src
+*** isearch-mb
+#+begin_src emacs-lisp
+(eat/pkg isearch-mb)
+(add-hook 'isearch-mode-hook #'isearch-mb-mode)
+
+(define-advice isearch-mb--update-prompt (:around (fn &rest args) show-case-fold-info)
+  "Show case fold info in the prompt."
+  (cl-letf* ((isearch--describe-regexp-mode-orig
+              (symbol-function 'isearch--describe-regexp-mode))
+             ((symbol-function 'isearch--describe-regexp-mode)
+              (lambda (regexp-function &optional space-before)
+                (concat (if isearch-case-fold-search "[Case Fold] " "")
+                        (funcall isearch--describe-regexp-mode-orig
+                                 regexp-function space-before)))))
+    (apply fn args)))
+
+(with-eval-after-load "isearch-mb"
+  (bind isearch-mb-minibuffer-map
+        "C-h C-h" #'my/isearch-menu
+        "C-c C-o" #'isearch-occur))
+#+end_src
+*** eldoc-box
+#+begin_src emacs-lisp
+(eat/pkg eldoc-box)
+(setq eldoc-box-only-multi-line t)
+(add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode)
+#+end_src
+*** w3m, read html mail
+#+begin_src emacs-lisp
+(eat/pkg w3m)
+(setq mm-text-html-renderer 'w3m)
+#+end_src
+*** comint-mime
+A special command, =mimecat=, is provided to display content. Again,
+this works for images, HTML, LaTeX snippets, etc.
+
+#+begin_src emacs-lisp
+(eat/pkg comint-mime)
+
+(add-hook 'shell-mode-hook 'comint-mime-setup)
+(add-hook 'inferior-python-mode-hook 'comint-mime-setup)
+
+(when (executable-find "ipython3")
+  (setq python-shell-interpreter "ipython3"
+        python-shell-interpreter-args "--simple-prompt --classic"))
+#+end_src
+
+* Window
+** window-numbering
+#+begin_src emacs-lisp
 (eat/pkg window-numbering)
 (add-hook 'after-init-hook #'window-numbering-mode)
-
+#+end_src
+** ace-window
+#+begin_src emacs-lisp
 (eat/pkg ace-window)
 
 (keymap-global-set "M-o" 'ace-window)
@@ -1335,7 +1644,9 @@ Also check:
   (dolist (cmd '(ace-window
                  aw--select-window))
     (advice-add cmd :after #'eat/pulse-momentary-line)))
-
+#+end_src
+** popper
+#+begin_src emacs-lisp
 (eat/pkg popper)
 
 (add-hook 'on-first-buffer-hook #'popper-mode)
@@ -1372,145 +1683,63 @@ Also check:
      (floor (frame-height) 3)))
   (setq popper-window-height #'my-popper-fit-window-height))
 #+end_src
-* Buffer
-#+begin_src elisp
-(with-eval-after-load 'ibuffer
-  (with-eval-after-load 'fullframe
-    (fullframe ibuffer ibuffer-quit)))
-
-(eat/pkg ibuffer-vc)
-
-(defun ibuffer-set-up-preferred-filters ()
-  (ibuffer-vc-set-filter-groups-by-vc-root)
-  (unless (eq ibuffer-sorting-mode 'filename/process)
-    (ibuffer-do-sort-by-filename/process)))
-;; Ibuffer-vc
-(add-hook 'ibuffer-hook #'ibuffer-set-up-preferred-filters)
-#+end_src
-* Minibuffer
-#+begin_src elisp
-(eat/pkg isearch-mb)
-(add-hook 'isearch-mode-hook #'isearch-mb-mode)
-
-(define-advice isearch-mb--update-prompt (:around (fn &rest args) show-case-fold-info)
-  "Show case fold info in the prompt."
-  (cl-letf* ((isearch--describe-regexp-mode-orig
-              (symbol-function 'isearch--describe-regexp-mode))
-             ((symbol-function 'isearch--describe-regexp-mode)
-              (lambda (regexp-function &optional space-before)
-                (concat (if isearch-case-fold-search "[Case Fold] " "")
-                        (funcall isearch--describe-regexp-mode-orig
-                                 regexp-function space-before)))))
-    (apply fn args)))
-
-;;; vertico
-(eat/pkg vertico)
-
-(add-hook 'after-init-hook #'vertico-mode)
-(add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
-
-(setq vertico-resize nil
-      vertico-count 17)
-
-(with-eval-after-load 'vertico
-  (bind vertico-map
-        "DEL" #'vertico-directory-delete-char
-        "RET" #'vertico-directory-enter
-        "M-DEL" #'vertico-directory-delete-word))
-
-(eat/pkg marginalia)
-(add-hook 'after-init-hook #'marginalia-mode)
-
-(eat/pkg embark)
-(eat/pkg embark-consult)
-
-(bind (global-map
-       "C-." #'embark-act)
-      (minibuffer-local-map
-       "C-c C-o" #'embark-export))
-
-(with-eval-after-load 'embark
-  ;; Hide the mode line of the Embark live/completions buffers
-  (add-to-list 'display-buffer-alist
-               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                 nil
-                 (window-parameters (mode-line-format . none))))
-
-  (with-eval-after-load 'consult
-    (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode)))
-#+end_src
 * UI
+** nerd-icons
 #+begin_src emacs-lisp
-(eat/pkg almost-mono-themes)
-(eat/pkg gruber-darker-theme)
-(eat/pkg standard-themes)
-(eat/pkg kaolin-themes)
-(eat/pkg spacemacs-theme)
+;; run `nerd-icons-install-fonts'
+(eat/pkg nerd-icons)
 
-(eat/pkg doom-themes)
-(setq doom-ayu-dark-comment-bg t
-      doom-ayu-dark-brighter-comments t
-      doom-ayu-dark-brighter-modeline t)
+;; ttf-nerd-fonts-symbols-1000-em-mono
+(eat/pkg nerd-icons-ibuffer)
+(add-hook 'ibuffer-mode-hook #'nerd-icons-ibuffer-mode)
 
+(eat/pkg nerd-icons-completion)
+(add-hook 'minibuffer-setup-hook #'nerd-icons-completion-mode)
+#+end_src
+** breadcrumb
+#+begin_src emacs-lisp
 (eat/pkg breadcrumb)
 (setq-default frame-title-format
               '((:eval (breadcrumb-project-crumbs))
                 (:eval (and imenu--index-alist
                             (concat "  ◊  " (breadcrumb-imenu-crumbs))))))
-
-(eat/pkg visual-fill-column)
-(add-hook 'visual-fill-column-mode-hook #'visual-line-mode)
-(setq visual-fill-column-center-text t)
-
-
-(eat/pkg ligature)
-(add-hook 'prog-mode-hook #'(lambda () (ligature-mode t)))
-(autoload #'global-ligature-mode "ligature")
-(with-eval-after-load 'ligature
-  ;; https://htmlpreview.github.io/?https://github.com/kiliman/operator-mono-lig/blob/master/images/preview/normal/index.html
-  (ligature-set-ligatures 'prog-mode
-                          '("&&" "||" "|>" ":=" "==" "===" "==>" "=>"
-                            "=<<" "!=" "!==" ">=" ">=>" ">>=" "->" "--"
-                            "-->" "<|" "<=" "<==" "<=>" "<=<" "<!--" "<-"
-                            "<->" "<--" "</" "+=" "++" "??" "/>" "__" "WWW")))
-
-
-(eat/pkg hl-todo)
-(add-hook 'dired-mode-hook #'hl-todo-mode)
-(add-hook 'prog-mode-hook #'hl-todo-mode)
-(add-hook 'conf-mode-hook #'hl-todo-mode)
-
-;;; eldoc-box
-(eat/pkg eldoc-box)
-(setq eldoc-box-only-multi-line t)
-(add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode)
-
-(add-hook 'after-init-hook 'minions-mode)
-
+#+end_src
+** default-text-scale
+#+begin_src emacs-lisp
 (eat/pkg default-text-scale)
 (bind global-map
       "C-x C-=" #'default-text-scale-increase
       "C-x C--" #'default-text-scale-decrease)
-
+#+end_src
+** solaire-mode
+#+begin_src emacs-lisp
 (eat/pkg solaire-mode)
-(add-hook 'after-init-hook #'solaire-global-mode)
-
-;;; auto dark
+(add-hook 'load-theme-hook #'(lambda () (solaire-global-mode +1)))
+#+end_src
+** auto-dark
+#+begin_src emacs-lisp
 (eat/pkg auto-dark)
 (autoload #'auto-dark-mode "auto-dark")
 (add-hook 'after-make-window-system-frame-hooks #'auto-dark-mode)
+#+end_src
 
-;;; theme load path
-(eat/pkg nano-theme "https://github.com/mrunhap/nano-theme.el")
-(eat/pkg carbon-theme "https://github.com/DogLooksGood/carbon-theme")
-(eat/pkg paperlike-theme "https://github.com/DogLooksGood/paperlike-theme")
-(add-to-list 'custom-theme-load-path (expand-file-name "elpa/nano-theme" user-emacs-directory))
-(add-to-list 'custom-theme-load-path (expand-file-name "elpa/carbon-theme" user-emacs-directory))
-(add-to-list 'custom-theme-load-path (expand-file-name "elpa/paperlike-theme" user-emacs-directory))
-
-;;; mode-line
+** visual-fill-column
+#+begin_src emacs-lisp
+(eat/pkg visual-fill-column)
+(add-hook 'visual-fill-column-mode-hook #'visual-line-mode)
+(setq visual-fill-column-center-text t)
+#+end_src
+** hl-todo
+#+begin_src emacs-lisp
+(eat/pkg hl-todo)
+(add-hook 'dired-mode-hook #'hl-todo-mode)
+(add-hook 'prog-mode-hook #'hl-todo-mode)
+(add-hook 'conf-mode-hook #'hl-todo-mode)
+#+end_src
+** mode-line
+#+begin_src emacs-lisp
 (eat/pkg minions)
-
+(add-hook 'after-init-hook 'minions-mode)
 (defun luna-mode-line-with-padding (text)
   "Return TEXT with padding on the left.
 The padding pushes TEXT to the right edge of the mode-line."
@@ -1544,8 +1773,8 @@ The padding pushes TEXT to the right edge of the mode-line."
                 `(,fringe
                   (:eval (if (window-dedicated-p) "🚷" ""))
                   (:eval (if buffer-read-only "🔒" ""))
-                  (:eval (meow-indicator))
-                  (:eval (rime-lighter))
+                  (:eval (when (featurep 'meow) (meow-indicator)))
+                  (:eval (when (featurep 'rime) (rime-lighter)))
                   (:propertize "%[%b%]" face (:weight semi-bold))
                   (:eval (luna-mode-line-coding-system))
                   ,spaces
@@ -1567,7 +1796,36 @@ The padding pushes TEXT to the right edge of the mode-line."
 
 (setq-default header-line-format nil)
 #+end_src
-* Editing
+** fontifi-patch, fontifying patch diffs in mail
+#+begin_src emacs-lisp
+(eat/pkg fontify-patch "https://github.com/whame/fontify-patch")
+
+(add-hook 'gnus-part-display-hook 'fontify-patch-buffer)
+#+end_src
+
+** themes
+#+begin_src emacs-lisp
+  (eat/pkg almost-mono-themes)
+  (eat/pkg gruber-darker-theme)
+  (eat/pkg standard-themes)
+  (eat/pkg kaolin-themes)
+  (eat/pkg spacemacs-theme)
+
+  (eat/pkg doom-themes)
+  (setq doom-themes-padded-modeline t
+        eat/theme 'doom-vibrant)
+  (with-eval-after-load "doom-themes"
+    (doom-themes-visual-bell-config)
+    (doom-themes-org-config))
+
+  (eat/pkg nano-theme "https://github.com/mrunhap/nano-theme.el")
+  (eat/pkg carbon-theme "https://github.com/DogLooksGood/carbon-theme")
+  (eat/pkg paperlike-theme "https://github.com/DogLooksGood/paperlike-theme")
+  (add-to-list 'custom-theme-load-path (expand-file-name "elpa/nano-theme" user-emacs-directory))
+  (add-to-list 'custom-theme-load-path (expand-file-name "elpa/carbon-theme" user-emacs-directory))
+  (add-to-list 'custom-theme-load-path (expand-file-name "elpa/paperlike-theme" user-emacs-directory))
+#+end_src
+* Edit
 ** Meow
 *** Setup
 #+begin_src elisp
@@ -1799,20 +2057,20 @@ The padding pushes TEXT to the right edge of the mode-line."
 (meow-setup-dvorak)
 (meow-global-mode 1)
 #+end_src
-** Separedit
+** separedit
 #+begin_src emacs-lisp
 (eat/pkg separedit)
 (keymap-global-set "C-c '" #'separedit)
 #+end_src
 
-** Undo
+** vundo
 #+begin_src emacs-lisp
 (eat/pkg vundo)
 (eat/pkg undo-hl "https://github.com/casouri/undo-hl.git")
 (add-hook 'prog-mode-hook #'undo-hl-mode)
 (add-hook 'conf-mode-hook #'undo-hl-mode)
 #+end_src
-** rime for Chinese Input
+** rime
 If install emacs with nix:
 Set =rime-emacs-module-header-root= to =emacs/include=.
 set  to =librime=.
@@ -1844,7 +2102,7 @@ set  to =librime=.
   (define-key rime-active-mode-map [tab] 'rime-inline-ascii)
   (keymap-set rime-mode-map "M-j" 'rime-force-enable))
 #+end_src
-*** Search with rime and regex
+*** rime-regexp
 Only work for orderless for now.
 
 #+begin_src elisp
@@ -1853,21 +2111,16 @@ Only work for orderless for now.
   (rime-regexp-mode))
 #+end_src
 
-** Avy
+** jit-spell
+jit-spell relies on the =ispell= library to pick a spell checking
+program and dictionaries.
 
-#+begin_src elisp
-(eat/pkg avy)
-(with-eval-after-load 'avy
-  (setq avy-background t
-        avy-style 'pre))
-#+end_src
-** urgrep
-#+begin_src elisp
-(eat/pkg wgrep)
-(eat/pkg urgrep)
+#+begin_src emacs-lisp
+(eat/pkg jit-spell)
 
-(with-eval-after-load 'urgrep
-  (require 'urgrep-wgrep))
+(when (executable-find "aspell")
+  (add-hook 'text-mode-hook 'jit-spell-mode)
+  (add-hook 'prog-mode-hook 'jit-spell-mode))
 #+end_src
 
 * Completion
@@ -1877,11 +2130,10 @@ Only work for orderless for now.
 (eat/pkg consult-dir)
 (eat/pkg consult-eglot)
 
-(setq
- consult-narrow-key             "<"
- consult-preview-key            "M-."
- xref-show-xrefs-function       #'consult-xref
- xref-show-definitions-function #'consult-xref)
+(setq consult-narrow-key             "<"
+      consult-preview-key            "M-."
+      xref-show-xrefs-function       #'consult-xref
+      xref-show-definitions-function #'consult-xref)
 
 (bind global-map
       "M-l"            #'consult-line
@@ -1892,7 +2144,8 @@ Only work for orderless for now.
       [remap switch-to-buffer-other-tab    ] #'consult-buffer-other-tab
       [remap switch-to-buffer-other-frame  ] #'consult-buffer-other-frame
       [remap project-switch-to-buffer      ] #'consult-project-buffer
-      [remap project-find-regexp           ] #'consult-ripgrep
+      [remap project-find-regexp           ] (cond (my/executable-find-rg #'consult-ripgrep)
+                                                   (t #'consult-git-grep))
       [remap bookmark-jump                 ] #'consult-bookmark
       [remap recentf-open-files            ] #'consult-recent-file
       ;; M-g for go to things
@@ -1994,8 +2247,9 @@ Only work for orderless for now.
 #+begin_src emacs-lisp
 (eat/pkg copilot "https://github.com/zerolfx/copilot.el")
 
-;; disable warning about didn't found mode-specific indentation offest
-(setq copilot-indent-warning-suppress t)
+;; 由于 `lisp-indent-offset' 的默认值是 nil，在编辑 elisp 时每敲一个字
+;; 符都会跳出一个 warning，将其默认值设置为 t 以永不显示这个 warning
+(setq-default copilot--indent-warning-printed-p t)
 
 (when (executable-find "node")
   (add-hook 'prog-mode-hook 'copilot-mode))
@@ -2014,314 +2268,66 @@ Only work for orderless for now.
   (with-eval-after-load 'meow
     (add-to-list 'copilot-enable-predicates 'meow-insert-mode-p)))
 #+end_src
-* Programming
-** Tools
-*** direnv
+** vertico
 #+begin_src emacs-lisp
-(eat/pkg envrc)
+(eat/pkg vertico)
 
-(add-hook 'after-init-hook #'envrc-global-mode)
+(add-hook 'after-init-hook #'vertico-mode)
+(add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
+
+(setq vertico-resize nil
+      vertico-count 17)
+
+(with-eval-after-load 'vertico
+  (bind vertico-map
+        "DEL" #'vertico-directory-delete-char
+        "RET" #'vertico-directory-enter
+        "M-DEL" #'vertico-directory-delete-word))
 #+end_src
-*** Restclient
+** marginalia
 #+begin_src emacs-lisp
-(eat/pkg restclient)
+(eat/pkg marginalia)
+(add-hook 'after-init-hook #'marginalia-mode)
 #+end_src
-
-*** Paredit
+** orderless
 #+begin_src emacs-lisp
-(eat/pkg paredit)
+(eat/pkg orderless)
 
-(add-hook 'emacs-lisp-mode-hook #'paredit-mode)
-(add-hook 'lisp-interaction-mode-hook #'paredit-mode)
-(add-hook 'scheme-mode-hook #'paredit-mode)
-(add-hook 'lisp-mode-hook #'paredit-mode)
+(defun sanityinc/use-orderless-in-minibuffer ()
+  (setq-local completion-styles '(substring orderless)))
+(add-hook 'minibuffer-setup-hook #'sanityinc/use-orderless-in-minibuffer)
 #+end_src
-*** Puni
+** embark
 #+begin_src emacs-lisp
-(eat/pkg puni)
-;; (:with-hook (emacs-lisp-mode-hook scheme-mode-hook clojure-mode-hook)
-;;   (:hook puni-mode))
-;; (:bind
-;;  "M-r" 'puni-splice
-;;  "C-(" 'puni-slurp-backward
-;;  "C-)" 'puni-slurp-forward
-;;  "C-{" 'puni-barf-backward
-;;  "C-}" 'puni-barf-forward)
-#+end_src
-*** Apheleia
-#+begin_src elisp
-(eat/pkg apheleia)
+(eat/pkg embark)
+(eat/pkg embark-consult)
 
-(setq apheleia-remote-algorithm 'local)
+(bind (global-map
+       "C-." #'embark-act)
+      (minibuffer-local-map
+       "C-c C-o" #'embark-export))
 
-(add-hook 'go-mode-hook #'apheleia-mode)
+(with-eval-after-load 'embark
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none))))
 
-(with-eval-after-load 'apheleia
-  (push '(go-ts-mode . gofmt) apheleia-mode-alist)
-  (setf (alist-get 'gofmt apheleia-formatters)
-        '("goimports")))
-#+end_src
-*** indent bars
-#+begin_src emacs-lisp
-(eat/pkg indent-bars "https://github.com/jdtsmith/indent-bars.git")
-
-(add-hook 'python-base-mode-hook #'indent-bars-mode)
-(add-hook 'yaml-mode-hook #'indent-bars-mode)
-(add-hook 'yaml-ts-mode-hook #'indent-bars-mode)
-
-(setq
- indent-bars-color '(highlight :face-bg t :blend 0.15)
- indent-bars-pattern "."
- indent-bars-width-frac 0.1
- indent-bars-pad-frac 0.1
- indent-bars-zigzag nil
- indent-bars-color-by-depth nil
- indent-bars-display-on-blank-lines nil)
-
-(setq indent-bars-treesit-support (treesit-available-p)
-      ;; indent-bars-prefer-character "│"
-      indent-bars-highlight-current-depth '(:face default :blend 0.3)
-      ;; https://github.com/jdtsmith/indent-bars#configuring-tree-sitter
-      indent-bars-treesit-ignore-blank-lines-types '("module")
-      indent-bars-treesit-wrap '((python argument_list parameters
-				                         list list_comprehension
-				                         dictionary dictionary_comprehension
-				                         parenthesized_expression subscript)))
-#+end_src
-
-** lsp-bridge
-#+begin_src elisp
-(eat/pkg lsp-bridge "https://github.com/manateelazycat/lsp-bridge")
-(eat/pkg flymake-bridge "https://github.com/liuyinz/flymake-bridge")
-
-(setq lsp-bridge-c-lsp-server "ccls"
-      acm-enable-tabnine nil
-      ;; install lsp server and run lsp_bridge.py on remote server
-      lsp-bridge-enable-with-tramp t)
-
-(defun eat/lsp-bridge-mode-setup ()
-  (interactive)
-  (flymake-bridge-setup)
-  ;; Disable corfu since lsp-bridge use acm.
-  (ignore-errors
-    (company-mode -1))
-  ;; Use tab to jump to next field but do complete when there's acm complete.
-  (with-eval-after-load 'yasnippet
-    (define-key yas-keymap (kbd "<tab>") 'acm-complete-or-expand-yas-snippet)
-    (define-key yas-keymap (kbd "TAB") 'acm-complete-or-expand-yas-snippet)))
-
-(with-eval-after-load 'lsp-bridge
-  (add-hook 'lsp-bridge-mode-hook #'eat/lsp-bridge-mode-setup)
-
-  (bind
-   (lsp-bridge-mode-map
-    "M-."     #'lsp-bridge-find-def
-    "C-x 4 ." #'lsp-bridge-find-def-other-window
-    "M-,"     #'lsp-bridge-find-def-return
-    "M-?"     #'lsp-bridge-find-references
-    "M-'"     #'lsp-bridge-find-impl
-    "C-c r"   #'lsp-bridge-rename
-    "M-RET"   #'lsp-bridge-code-action)
-   (lsp-bridge-ref-mode-map
-    "j" nil
-    "k" nil
-    "h" nil
-    "l" nil
-    "p" #'lsp-bridge-ref-jump-prev-file
-    "h" #'lsp-bridge-ref-jump-prev-keyword
-    "t" #'lsp-bridge-ref-jump-next-keyword
-    "n" #'lsp-bridge-ref-jump-next-file)))
-#+end_src
-
-#+begin_src elisp
-(eat/pkg eglot-hierarchy "https://github.com/dolmens/eglot-hierarchy")
-#+end_src
-** Citre
-#+begin_src elisp
-(eat/pkg citre)
-
-(keymap-global-set "C-x c j" #'citre-jump)
-(keymap-global-set "C-x c u" #'citre-update-this-tags-file)
-(keymap-global-set "C-x c p" #'citre-peek)
-(keymap-global-set "C-x c U" #'citre-global-update-database)
-(keymap-global-set "C-x c r" #'citre-jump-to-reference)
-
-(with-eval-after-load 'citre
-  (keymap-global-set "C-x c J" #'citre-jump-back)
-  ;; NOTE
-  ;; Notice that GTAGSOBJDIRPREFIX must exist for gtags to use it. So you need to run:
-  ;; $ mkdir -p ~/.cache/gtags/
-  (keymap-global-set "C-x c P" #'citre-ace-peek-references)
-  (setq citre-default-create-tags-file-location 'global-cache
-        citre-use-project-root-when-creating-tags t
-        citre-prompt-language-for-ctags-command t
-        citre-auto-enable-citre-mode-modes '(prog-mode))
-  (with-eval-after-load 'cc-mode (require 'citre-lang-c))
-  (with-eval-after-load 'dired (require 'citre-lang-fileref))
-  (with-eval-after-load 'verilog-mode (require 'citre-lang-verilog)))
-
-(with-eval-after-load 'citre-global
-  (setenv "GTAGSOBJDIRPREFIX" (concat (getenv "HOME") "/.cache/gtags"))
-  (setenv "GTAGSCONF" (concat (getenv "HOME") "/.globalrc"))
-  (setenv "GTAGSLABEL" "native-pygments"))
-
-(with-eval-after-load 'citre-peek
-  (keymap-set citre-peek-keymap "M-l r" 'citre-peek-through-references))
-#+end_src
-** Lang
-*** Lisp
-#+begin_src elisp
-(eat/pkg aggressive-indent)
-
-(add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
-(add-hook 'lisp-interaction-mode-hook #'aggressive-indent-mode)
-(add-hook 'scheme-mode-hook #'aggressive-indent-mode)
-(add-hook 'lisp-mode-hook #'aggressive-indent-mode)
-#+end_src
-*** Go
-#+begin_src emacs-lisp
-(eat/pkg go-mode)
-(eat/pkg flymake-go-staticcheck)
-(eat/pkg go-gen-test)
-(eat/pkg go-tag)
-(eat/pkg go-dlv)
-(eat/pkg go-fill-struct)
-(eat/pkg go-impl)
-(eat/pkg gotest)
-
-;; Install or update tools
-(defvar go--tools '("golang.org/x/tools/gopls"
-                    "golang.org/x/tools/cmd/goimports"
-                    "honnef.co/go/tools/cmd/staticcheck"
-                    "github.com/go-delve/delve/cmd/dlv"
-                    "github.com/zmb3/gogetdoc"
-                    "github.com/josharian/impl"
-                    "github.com/cweill/gotests/..."
-                    "github.com/fatih/gomodifytags"
-                    "github.com/davidrjenni/reftools/cmd/fillstruct"
-                    "github.com/rogpeppe/godef"
-                    "github.com/traefik/yaegi/cmd/yaegi")
-  "All necessary go tools.")
-
-(defun go-update-tools ()
-  "Install or update go tools."
-  (interactive)
-  (unless (executable-find "go")
-    (user-error "Unable to find `go' in `exec-path'!"))
-
-  (message "Installing go tools...")
-  (dolist (pkg go--tools)
-    (set-process-sentinel
-     (start-process "go-tools" "*Go Tools*" "go" "install" "-v" "-x" (concat pkg "@latest"))
-     (lambda (proc _)
-       (let ((status (process-exit-status proc)))
-         (if (= 0 status)
-             (message "Installed %s" pkg)
-           (message "Failed to install %s: %d" pkg status)))))))
-(setq gofmt-command "goimports"
-      gofmt-show-errors nil)
-(add-hook 'go-test-mode-hook #'visual-line-mode)
-
-;; Go-test
-(setq go-test-verbose t
-      ;; Do not cache test result.
-      go-test-args "-count=1")
-;; Go-tag
-(setq go-tag-args (list "-transform" "camelcase"))
-;; Bind
-(with-eval-after-load 'go-mode
-  (keymap-set go-mode-map "C-c t g" #'go-gen-test-dwim)
-  (keymap-set go-mode-map "C-c t t" #'go-test-current-test)
-  (keymap-set go-mode-map "C-c t a" #'go-tag-add)
-  (keymap-set go-mode-map "C-c t r" #'go-tag-remove))
-#+end_src
-*** Nix
-Install =rnix-lsp= and =nixfmt=.
-#+begin_src emacs-lisp
-(eat/pkg nix-mode)
-#+end_src
-
-*** Clojure
-#+begin_src elisp
-(eat/pkg clojure-mode)
-(eat/pkg cider)
-(eat/pkg clj-refactor)
-
-(add-hook 'clojure-mode-hook #'puni-mode)
-
-(setq cider-repl-display-help-banner nil)
-
-(with-eval-after-load 'clojure-mode
-  ;; better indentation for compojure
-  ;; https://github.com/weavejester/compojure/wiki/Emacs-indentation
-  (define-clojure-indent
-   (defroutes 'defun)
-   (GET 2)
-   (POST 2)
-   (PUT 2)
-   (DELETE 2)
-   (HEAD 2)
-   (ANY 2)
-   (OPTIONS 2)
-   (PATCH 2)
-   (rfn 2)
-   (let-routes 1)
-   (context 2)))
-#+end_src
-*** C
-#+begin_src elisp
-(setq c-default-style "linux"
-      c-basic-offset 4)
-#+end_src
-*** Python
-#+begin_src elisp
-(setq python-indent-offset 4
-      python-shell-completion-native-enable nil
-      python-indent-guess-indent-offset nil)
-
-
-(eat/pkg pet)
-;; Emacs 29+
-;; This will turn on `pet-mode' on `python-mode' and `python-ts-mode'
-(add-hook 'python-base-mode-hook 'pet-mode -10)
-#+end_src
-*** Sql
-#+begin_src elisp
-(setq sql-mysql-login-params '(user password server database port))
-#+end_src
-*** Javascript
-#+begin_src emacs-lisp
-;; NOTE js-ts-mode and tsx-ts-mode have bug to stuck emacs
-(setq-default js-indent-level 2)
-#+end_src
-** dape DAP Debugger
-#+begin_src emacs-lisp
-(eat/pkg dape)
-(autoload #'dape-toggle-breakpoint "dape" nil t)
-#+end_src
-** drepl
-#+begin_src emacs-lisp
-(eat/pkg drepl)
+  (with-eval-after-load 'consult
+    (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode)))
 #+end_src
 * Tools
-** Translate
+** translate
 #+begin_src elisp
+(eat/pkg fanyi)
 (eat/pkg go-translate)
 
-(setq gts-translate-list '(("en" "zh")))
-
-(eat/pkg fanyi)
-
+;; TODO read from authinfo
 (defvar gts-deepl-auth-key nil
   "Free auto key to access deepl api.")
 
-(defun eat/translate ()
-  (interactive)
-  (if (use-region-p)
-      (gts-do-translate)
-    (fanyi-dwim2)))
-
-(keymap-global-set "C-c y" #'eat/translate)
+(setq gts-translate-list '(("en" "zh")))
 
 (with-eval-after-load 'go-translate
   (setq gts-default-translator
@@ -2339,16 +2345,23 @@ Install =rnix-lsp= and =nixfmt=.
          :render
          (gts-buffer-render))))
 
+(defun eat/translate ()
+  (interactive)
+  (if (use-region-p)
+      (gts-do-translate)
+    (fanyi-dwim2)))
+(keymap-global-set "C-c y" #'eat/translate)
+
+
 (defun eat/context-translate (menu click)
   "My context MENU to translate text."
   (define-key-after menu [dictionary-lookup]
     '(menu-item "Translate" eat/translate))
   menu)
-
 ;; hook into context menu
 (add-hook 'context-menu-functions #'eat/context-translate)
 #+end_src
-** Ghelp
+** ghelp
 #+begin_src elisp
 (eat/pkg ghelp "https://github.com/casouri/ghelp.git")
 
@@ -2383,10 +2396,9 @@ Install =rnix-lsp= and =nixfmt=.
       webpaste-add-to-killring t
       webpaste-provider-priority '("paste.mozilla.org")
       webpaste-open-in-browser nil)
-
 #+end_src
 ** AI
-*** Bing Chat
+*** aichat, use bind ai
 
 - Install the cookie editor extension for [[https://microsoftedge.microsoft.com/addons/detail/cookieeditor/neaplmfkghagebokkhpjpoebhdledlfi][Egde]]
 - Go to bing.com
@@ -2422,23 +2434,396 @@ Custome =gptel-backend= as you need.
 
 (add-hook 'gptel-mode-hook #'visual-fill-column-mode)
 #+end_src
-** Editor browser text
+** atomic-chrome, edit browser text with emacs
 #+begin_src emacs-lisp
 ;; https://ghosttext.fregante.com/welcome/
 (eat/pkg atomic-chrome)
 (setq atomic-chrome-buffer-open-style 'frame)
 (add-hook 'after-init-hook #'atomic-chrome-start-server)
-
-;; TODO `after-make-window-system-frame-hooks' will change emacs after
-;; GhostText edit
 #+end_src
-** Epub reader
+** nov, epub reader
 #+begin_src emacs-lisp
 (eat/pkg nov)
 #+end_src
+** pdf-tools, pdf reader
+#+begin_src emacs-lisp
+(eat/pkg pdf-tools)
 
+(autoload #'pdf-view-mode "pdf-tools")
+(add-to-list 'auto-mode-alist '("\\.pdf\\'" . pdf-view-mode))
+
+(setq-default pdf-view-display-size 'fit-page)
+;; Enable hiDPI support, but at the cost of memory! See politza/pdf-tools#51
+(setq pdf-view-use-scaling t
+      pdf-view-use-imagemagick nil)
+
+(with-eval-after-load "pdf-tools"
+  (pdf-tools-install-noverify)
+  (bind pdf-view-mode-map
+        [remap scroll-up-command] #'pdf-view-scroll-up-or-next-page
+        [remap scroll-down-command] #'pdf-view-scroll-down-or-previous-page))
+#+end_src
+** xeft, search notes
+Need =xapian-core=.
+
+#+begin_src elisp
+(eat/pkg xeft)
+(setq xeft-directory "~/Dropbox/org/roam"
+      xeft-default-extension "org"
+      xeft-database "~/.xeft/db")
+(with-eval-after-load 'xeft
+  (require 'flique)
+  (add-hook 'xeft-find-file-hook #'bklink-minor-mode)
+  (add-hook 'bklink-minor-mode-hook #'auto-fill-mode))
+#+end_src
+** wgrep
+#+begin_src emacs-lisp
+(eat/pkg wgrep)
+(setq wgrep-change-readonly-file t)
+(add-hook #'grep-setup-hook #'wgrep-setup)
+#+end_src
+
+** urgrep
+#+begin_src elisp
+(eat/pkg urgrep)
+
+(with-eval-after-load 'urgrep
+  (require 'urgrep-wgrep))
+#+end_src
+** avy
+#+begin_src elisp
+(eat/pkg avy)
+(with-eval-after-load 'avy
+  (setq avy-background t
+        avy-style 'pre))
+#+end_src
+
+* Programming
+** Tools
+*** direnv
+#+begin_src emacs-lisp
+(eat/pkg envrc)
+(add-hook 'after-init-hook #'envrc-global-mode)
+#+end_src
+*** restclient
+#+begin_src emacs-lisp
+(eat/pkg restclient)
+
+(add-to-list 'auto-mode-alist '("\\.rest\\'" . restclient-mode))
+
+(defun restclient-buffer ()
+  "Work with `rest' in the *restclient* buffer."
+  (interactive)
+  (with-current-buffer (get-buffer-create "*restclient*")
+    (restclient-mode)
+    (pop-to-buffer (current-buffer))))
+#+end_src
+
+*** paredit
+#+begin_src emacs-lisp
+(eat/pkg paredit)
+
+(add-hook 'emacs-lisp-mode-hook #'paredit-mode)
+(add-hook 'lisp-interaction-mode-hook #'paredit-mode)
+(add-hook 'scheme-mode-hook #'paredit-mode)
+(add-hook 'lisp-mode-hook #'paredit-mode)
+#+end_src
+*** puni
+#+begin_src emacs-lisp
+(eat/pkg puni)
+;; (:with-hook (emacs-lisp-mode-hook scheme-mode-hook clojure-mode-hook)
+;;   (:hook puni-mode))
+;; (:bind
+;;  "M-r" 'puni-splice
+;;  "C-(" 'puni-slurp-backward
+;;  "C-)" 'puni-slurp-forward
+;;  "C-{" 'puni-barf-backward
+;;  "C-}" 'puni-barf-forward)
+#+end_src
+*** apheleia, run formatter
+#+begin_src elisp
+(eat/pkg apheleia)
+
+(setq apheleia-remote-algorithm 'local)
+
+(add-hook 'go-mode-hook #'apheleia-mode)
+
+(with-eval-after-load 'apheleia
+  (when (executable-find "goimports")
+    (push '(go-ts-mode . gofmt) apheleia-mode-alist)
+    (setf (alist-get 'gofmt apheleia-formatters)
+          '("goimports"))))
+#+end_src
+*** indent-bars
+#+begin_src emacs-lisp
+(eat/pkg indent-bars "https://github.com/jdtsmith/indent-bars.git")
+
+(add-hook 'python-base-mode-hook #'indent-bars-mode)
+(add-hook 'yaml-mode-hook #'indent-bars-mode)
+(add-hook 'yaml-ts-mode-hook #'indent-bars-mode)
+
+(setq
+ indent-bars-color '(highlight :face-bg t :blend 0.15)
+ indent-bars-pattern "."
+ indent-bars-width-frac 0.1
+ indent-bars-pad-frac 0.1
+ indent-bars-zigzag nil
+ indent-bars-color-by-depth nil
+ indent-bars-display-on-blank-lines nil)
+
+(setq indent-bars-treesit-support (treesit-available-p)
+      ;; indent-bars-prefer-character "│"
+      indent-bars-highlight-current-depth '(:face default :blend 0.3)
+      ;; https://github.com/jdtsmith/indent-bars#configuring-tree-sitter
+      indent-bars-treesit-ignore-blank-lines-types '("module")
+      indent-bars-treesit-wrap '((python argument_list parameters
+				                         list list_comprehension
+				                         dictionary dictionary_comprehension
+				                         parenthesized_expression subscript)))
+#+end_src
+*** diff-hl
+#+begin_src emacs-lisp
+(eat/pkg diff-hl)
+
+(add-hook 'prog-mode-hook #'diff-hl-mode)
+(add-hook 'conf-mode-hook #'diff-hl-mode)
+(add-hook 'dired-mode-hook #'diff-hl-dired-mode)
+
+(setq diff-hl-draw-borders nil)
+
+(with-eval-after-load 'diff-hl
+  (add-hook 'magit-pre-refresh-hook #'diff-hl-magit-pre-refresh)
+  (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh)
+  ;; Highlight on-the-fly
+  (diff-hl-flydiff-mode 1)
+  (unless (display-graphic-p)
+    ;; Fall back to the display margin since the fringe is unavailable in tty
+    (diff-hl-margin-mode 1)
+    ;; Avoid restoring `diff-hl-margin-mode'
+    (with-eval-after-load 'desktop
+      (add-to-list 'desktop-minor-mode-table
+                   '(diff-hl-margin-mode nil)))))
+#+end_src
+*** devdocs.el
+#+begin_src emacs-lisp
+(eat/pkg devdocs)
+(bind global-map "C-h D" #'devdocs-lookup)
+#+end_src
+*** drepl
+#+begin_src emacs-lisp
+(eat/pkg drepl)
+#+end_src
+
+** lsp-bridge
+#+begin_src elisp
+(eat/pkg lsp-bridge "https://github.com/manateelazycat/lsp-bridge")
+(eat/pkg flymake-bridge "https://github.com/liuyinz/flymake-bridge")
+
+(setq lsp-bridge-c-lsp-server "ccls"
+      acm-enable-tabnine nil
+      ;; install lsp server and run lsp_bridge.py on remote server
+      lsp-bridge-enable-with-tramp t)
+
+(defun my/lsp-bridge-mode-setup ()
+  (interactive)
+  (flymake-bridge-setup)
+  ;; Disable corfu since lsp-bridge use acm.
+  (ignore-errors
+    (company-mode -1))
+  ;; Use tab to jump to next field but do complete when there's acm complete.
+  (with-eval-after-load 'yasnippet
+    (define-key yas-keymap (kbd "<tab>") 'acm-complete-or-expand-yas-snippet)
+    (define-key yas-keymap (kbd "TAB") 'acm-complete-or-expand-yas-snippet)))
+
+(with-eval-after-load 'lsp-bridge
+  (add-hook 'lsp-bridge-mode-hook #'my/lsp-bridge-mode-setup)
+
+  (bind
+   (lsp-bridge-mode-map
+    "M-."     #'lsp-bridge-find-def
+    "C-x 4 ." #'lsp-bridge-find-def-other-window
+    "M-,"     #'lsp-bridge-find-def-return
+    "M-?"     #'lsp-bridge-find-references
+    "M-'"     #'lsp-bridge-find-impl
+    "C-c r"   #'lsp-bridge-rename
+    "M-RET"   #'lsp-bridge-code-action)
+   (lsp-bridge-ref-mode-map
+    "j" nil
+    "k" nil
+    "h" nil
+    "l" nil
+    "p" #'lsp-bridge-ref-jump-prev-file
+    "h" #'lsp-bridge-ref-jump-prev-keyword
+    "t" #'lsp-bridge-ref-jump-next-keyword
+    "n" #'lsp-bridge-ref-jump-next-file)))
+#+end_src
+
+#+begin_src elisp
+(eat/pkg eglot-hierarchy "https://github.com/dolmens/eglot-hierarchy")
+#+end_src
+** citre
+#+begin_src elisp
+(eat/pkg citre)
+
+(keymap-global-set "C-x c j" #'citre-jump)
+(keymap-global-set "C-x c u" #'citre-update-this-tags-file)
+(keymap-global-set "C-x c p" #'citre-peek)
+(keymap-global-set "C-x c U" #'citre-global-update-database)
+(keymap-global-set "C-x c r" #'citre-jump-to-reference)
+
+(with-eval-after-load 'citre
+  (keymap-global-set "C-x c J" #'citre-jump-back)
+  ;; NOTE
+  ;; Notice that GTAGSOBJDIRPREFIX must exist for gtags to use it. So you need to run:
+  ;; $ mkdir -p ~/.cache/gtags/
+  (keymap-global-set "C-x c P" #'citre-ace-peek-references)
+  (setq citre-default-create-tags-file-location 'global-cache
+        citre-use-project-root-when-creating-tags t
+        citre-prompt-language-for-ctags-command t
+        citre-auto-enable-citre-mode-modes '(prog-mode))
+  (with-eval-after-load 'cc-mode (require 'citre-lang-c))
+  (with-eval-after-load 'dired (require 'citre-lang-fileref))
+  (with-eval-after-load 'verilog-mode (require 'citre-lang-verilog)))
+
+(with-eval-after-load 'citre-global
+  (setenv "GTAGSOBJDIRPREFIX" (concat (getenv "HOME") "/.cache/gtags"))
+  (setenv "GTAGSCONF" (concat (getenv "HOME") "/.globalrc"))
+  (setenv "GTAGSLABEL" "native-pygments"))
+
+(with-eval-after-load 'citre-peek
+  (keymap-set citre-peek-keymap "M-l r" 'citre-peek-through-references))
+#+end_src
+** Lang
+*** lisp
+#+begin_src elisp
+(eat/pkg aggressive-indent)
+
+(add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
+(add-hook 'lisp-interaction-mode-hook #'aggressive-indent-mode)
+(add-hook 'scheme-mode-hook #'aggressive-indent-mode)
+(add-hook 'lisp-mode-hook #'aggressive-indent-mode)
+#+end_src
+*** go
+#+begin_src emacs-lisp
+(eat/pkg go-mode)
+(eat/pkg flymake-go-staticcheck)
+(eat/pkg go-gen-test)
+(eat/pkg go-tag)
+(eat/pkg go-dlv)
+(eat/pkg go-fill-struct)
+(eat/pkg go-impl)
+(eat/pkg gotest)
+
+;; Install or update tools
+(defvar go--tools '("golang.org/x/tools/gopls"
+                    "golang.org/x/tools/cmd/goimports"
+                    "honnef.co/go/tools/cmd/staticcheck"
+                    "github.com/go-delve/delve/cmd/dlv"
+                    "github.com/zmb3/gogetdoc"
+                    "github.com/josharian/impl"
+                    "github.com/cweill/gotests/..."
+                    "github.com/fatih/gomodifytags"
+                    "github.com/davidrjenni/reftools/cmd/fillstruct"
+                    "github.com/rogpeppe/godef")
+  "All necessary go tools.")
+
+(defun go-update-tools ()
+  "Install or update go tools."
+  (interactive)
+  (unless (executable-find "go")
+    (user-error "Unable to find `go' in `exec-path'!"))
+
+  (message "Installing go tools...")
+  (dolist (pkg go--tools)
+    (set-process-sentinel
+     (start-process "go-tools" "*Go Tools*" "go" "install" "-v" "-x" (concat pkg "@latest"))
+     (lambda (proc _)
+       (let ((status (process-exit-status proc)))
+         (if (= 0 status)
+             (message "Installed %s" pkg)
+           (message "Failed to install %s: %d" pkg status)))))))
+(setq gofmt-command "goimports"
+      gofmt-show-errors nil)
+(add-hook 'go-test-mode-hook #'visual-line-mode)
+
+;; Go-test
+(setq go-test-verbose t
+      ;; Do not cache test result.
+      go-test-args "-count=1")
+;; Go-tag
+(setq go-tag-args (list "-transform" "camelcase"))
+;; Bind
+(with-eval-after-load 'go-mode
+  (bind go-mode-map
+        "C-c t g" #'go-gen-test-dwim
+        "C-c t t" #'go-test-current-test
+        "C-c t a" #'go-tag-add
+        "C-c t r" #'go-tag-remove))
+#+end_src
+*** nix
+Install =rnix-lsp= and =nixfmt=.
+#+begin_src emacs-lisp
+(eat/pkg nix-mode)
+#+end_src
+
+*** clojure
+#+begin_src elisp
+(eat/pkg clojure-mode)
+(eat/pkg cider)
+(eat/pkg clj-refactor)
+
+(add-hook 'clojure-mode-hook #'puni-mode)
+
+(setq cider-repl-display-help-banner nil)
+
+(with-eval-after-load 'clojure-mode
+  ;; better indentation for compojure
+  ;; https://github.com/weavejester/compojure/wiki/Emacs-indentation
+  (define-clojure-indent
+   (defroutes 'defun)
+   (GET 2)
+   (POST 2)
+   (PUT 2)
+   (DELETE 2)
+   (HEAD 2)
+   (ANY 2)
+   (OPTIONS 2)
+   (PATCH 2)
+   (rfn 2)
+   (let-routes 1)
+   (context 2)))
+#+end_src
+*** c
+#+begin_src elisp
+(setq c-default-style "linux"
+      c-basic-offset 4)
+#+end_src
+*** python
+#+begin_src elisp
+(setq python-indent-offset 4
+      python-shell-completion-native-enable nil
+      python-indent-guess-indent-offset nil)
+
+(eat/pkg pet)
+;; This will turn on `pet-mode' on `python-mode' and `python-ts-mode'
+(add-hook 'python-base-mode-hook 'pet-mode -10)
+#+end_src
+*** sql
+#+begin_src elisp
+(setq sql-mysql-login-params '(user password server database port))
+#+end_src
+*** javascript
+#+begin_src emacs-lisp
+;; NOTE js-ts-mode and tsx-ts-mode have bug to stuck emacs
+(setq-default js-indent-level 2)
+#+end_src
+** dape, DAP Debugger
+#+begin_src emacs-lisp
+(eat/pkg dape)
+(autoload #'dape-toggle-breakpoint "dape" nil t)
+#+end_src
 * Markup Languages
-** Align table
+** valign
 #+begin_src elisp
 (eat/pkg valign)
 (setq valign-fancy-bar t)
@@ -2447,7 +2832,7 @@ Custome =gptel-backend= as you need.
   (add-hook 'markdown-mode-hook #'valign-mode))
 #+end_src
 
-** Org
+** org
 *** config
 #+begin_src elisp
 (defun eat/org-mode-setup ()
@@ -2523,7 +2908,7 @@ Custome =gptel-backend= as you need.
   (add-to-list 'org-structure-template-alist '("go" . "src go")))
 #+end_src
 
-*** Copture
+*** org-capture
 #+begin_src elisp
 (keymap-global-set "C-c c" 'org-capture)
 
@@ -2542,7 +2927,7 @@ Custome =gptel-backend= as you need.
          "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)))
 #+end_src
 
-*** Agenda
+*** org-agenda
 #+begin_src elisp
 (setq org-agenda-files (list org-directory)
       org-agenda-prefix-format '((agenda . " %i %-12:c%?-12t% s")
@@ -2558,26 +2943,28 @@ Custome =gptel-backend= as you need.
 #+end_src
 
 *** UI
-**** Chinese inline format
+**** zero width space for CJK inline format
+没有=零宽=空格
+有​=零宽=​空格
 #+begin_src emacs-lisp
 (defun eat/insert-zero-width-space ()
   (interactive)
-  (insert-char ?\u200B)) ;; code for ZERO WIDTH SPACE
+  (insert-char ?\u200B))
 (keymap-global-set "C-x 8 0" #'eat/insert-zero-width-space)
 #+end_src
 
-**** Auto hide/display emphasis
+**** org-appear
 #+begin_src emacs-lisp
 (eat/pkg org-appear)
 (setq org-hide-emphasis-markers t)
 (add-hook 'org-mode-hook #'org-appear-mode)
 #+end_src
 
-**** Use variable pitch font
+**** org-variable-pitch
 #+begin_src emacs-lisp
 (eat/pkg org-variable-pitch)
 #+end_src
-**** Org Modern
+**** org-modern
 #+begin_src emacs-lisp
 (eat/pkg org-modern)
 (eat/pkg org-modern-indent "https://github.com/jdtsmith/org-modern-indent")
@@ -2595,15 +2982,14 @@ Custome =gptel-backend= as you need.
 (add-hook 'org-mode-hook 'eat/setup-org-modern)
 (add-hook 'org-mode-hook 'org-modern-indent-mode 90)
 #+end_src
-*** Export
-**** Html
-
-***** Syntax highlighting
+*** export
+**** html
+***** syntax highlighting
 #+begin_src emacs-lisp
 (eat/pkg htmlize)
 #+end_src
 
-***** Embed resources
+***** embed resources
 For now use ~pandoc --embed-resources --standalone~.
 
 #+begin_src emacs-lisp
@@ -2617,13 +3003,13 @@ Need pandoc installed."
     (find-file to)))
 #+end_src
 
-**** Markdown
+**** markdown
 #+begin_src emacs-lisp
 (eat/pkg ox-gfm)
 (with-eval-after-load 'org
   (add-to-list 'org-export-backends 'md))
 #+end_src
-*** Writing
+*** writing
 **** Table of content
 #+begin_src elisp
 (eat/pkg toc-org)
@@ -2693,8 +3079,26 @@ This is a variadic `cl-pushnew'."
     (kill-local-variable 'line-spacing)
     (kill-local-variable 'cursor-type)))
 #+end_src
+*** blog
+#+begin_src elisp
+(eat/pkg org-static-blog)
+(setq org-static-blog-publish-title "mrunhap's blog"
+      org-static-blog-publish-url "https://mrunhap.github.io/"
+      org-static-blog-publish-directory "~/p/blog/"
+      org-static-blog-posts-directory "~/p/blog/posts/"
+      org-static-blog-drafts-directory "~/p/blog/drafts/"
+      org-static-blog-enable-tags t
+      org-static-blog-use-preview t
+      org-static-blog-preview-ellipsis ""
+      org-export-with-toc nil
+      org-export-with-section-numbers nil)
+(with-eval-after-load 'org-static-blog
+  (setq org-static-blog-page-header (get-string-from-file "~/p/blog/static/header.html")
+        org-static-blog-page-preamble (get-string-from-file "~/p/blog/static/preamble.html")
+        org-static-blog-page-postamble (get-string-from-file "~/p/blog/static/postamble.html")))
+#+end_src
 
-** Markdown
+** markdown
 #+begin_src emacs-lisp
 (eat/pkg markdown-mode)
 (eat/pkg markdown-toc)
@@ -2713,7 +3117,7 @@ This is a variadic `cl-pushnew'."
     (eglot-ensure)))
 (add-hook 'markdown-mode-hook 'eat/markdown-mode-setup)
 #+end_src
-** LaTeX
+** latex
 #+begin_src emacs-lisp
 (defun eat/latex-mode-setup ()
   (when (executable-find "digestif")
@@ -2726,11 +3130,9 @@ This is a variadic `cl-pushnew'."
 (eat/pkg typst-ts-mode "https://git.sr.ht/~meow_king/typst-ts-mode")
 #+end_src
 * Application
-** Magit
+** magit
 #+begin_src emacs-lisp
-(eat/pkg git-modes)
 (eat/pkg magit)
-
 (add-hook 'magit-diff-visit-file #'my-recenter-and-pulse-line)
 
 (with-eval-after-load 'magit
@@ -2746,39 +3148,16 @@ This is a variadic `cl-pushnew'."
   (setq-default magit-diff-refine-hunk t))
 
 (eat/pkg magit-delta)
-(add-hook 'magit-mode-hook #'magit-delta-mode)
-
-(eat/pkg diff-hl)
-
-(add-hook 'prog-mode-hook #'diff-hl-mode)
-(add-hook 'conf-mode-hook #'diff-hl-mode)
-(add-hook 'dired-mode-hook #'diff-hl-dired-mode)
-
-(setq diff-hl-draw-borders nil)
-
-(with-eval-after-load 'diff-hl
-  (add-hook 'magit-pre-refresh-hook #'diff-hl-magit-pre-refresh)
-  (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh)
-  ;; Highlight on-the-fly
-  (diff-hl-flydiff-mode 1)
-  (unless (display-graphic-p)
-    ;; Fall back to the display margin since the fringe is unavailable in tty
-    (diff-hl-margin-mode 1)
-    ;; Avoid restoring `diff-hl-margin-mode'
-    (with-eval-after-load 'desktop
-      (add-to-list 'desktop-minor-mode-table
-                   '(diff-hl-margin-mode nil)))))
+(when (executable-find "delta")
+  (add-hook 'magit-mode-hook #'magit-delta-mode))
 #+end_src
-** File Manager
+** dirvish
 #+begin_src elisp
 (eat/pkg dirvish)
 
 (add-hook 'after-init-hook #'dirvish-override-dired-mode)
 
-(setq dirvish-attributes '(vc-state subtree-state))
-
-(when (eat/modulep '+icon)
-  (add-to-list 'dirvish-attributes 'nerd-icons))
+(setq dirvish-attributes '(vc-state subtree-state nerd-icons))
 
 (keymap-global-set "C-c f" #'dirvish-fd)
 (keymap-global-set "<f1>" #'dirvish-side)
@@ -2808,7 +3187,7 @@ This is a variadic `cl-pushnew'."
         "<mouse-3>" #'dired-mouse-find-file))
 #+end_src
 
-** Terminal
+** eat
 Use eat under linux and macos, use eshell under windows.
 #+begin_src elisp
 (eat/pkg eat)
@@ -2828,260 +3207,68 @@ Use eat under linux and macos, use eshell under windows.
 (add-hook 'eshell-load-hook 'eat-eshell-visual-command-mode)
 #+end_src
 
-** gnus, Mail, News
-#+begin_src elisp
-;;; gnus
-(setq
- gnus-use-cache t
- gnus-use-scoring nil
- gnus-suppress-duplicates t
- gnus-novice-user nil
- gnus-expert-user t
- gnus-interactive-exit 'quiet
- gnus-inhibit-startup-message t
- gnus-select-method '(nnnil "")
- gnus-secondary-select-methods
- `((nntp "gmane" (nntp-address "news.gmane.io"))
-   (nntp "nntp.lore.kernel.org")
-   (nnimap "Gmail"
-           (nnimap-user ,eat/user-mail-address)
-           (nnimap-inbox "INBOX")
-           (nnimap-address "imap.gmail.com")
-           (nnimap-stream ssl)
-           (nnimap-expunge 'never)
-           ;; @see http://www.gnu.org/software/emacs/manual/html_node/gnus/Expiring-Mail.html
-           ;; press 'E' to expire email
-           (nnmail-expiry-target "nnimap+Gmail:[Gmail]/Trash")
-           (nnmail-expiry-wait 90)))
- ;; Startup functions
- gnus-save-killed-list nil
- gnus-check-new-newsgroups nil
- ;; No other newsreader is used.
- gnus-save-newsrc-file nil
- gnus-read-newsrc-file nil
- gnus-subscribe-newsgroup-method 'gnus-subscribe-interactively
- ;; Emacs 28 introduces a unified query lang
- gnus-search-use-parsed-queries t
- ;; Article mode for Gnus
- gnus-visible-headers (rx line-start (or "From"
-                                         "Subject"
-                                         "Mail-Followup-To"
-                                         "Date"
-                                         "To"
-                                         "Cc"
-                                         "Newsgroups"
-                                         "User-Agent"
-                                         "X-Mailer"
-                                         "X-Newsreader")
-                          ":")
- gnus-article-sort-functions '((not gnus-article-sort-by-number)
-                               (not gnus-article-sort-by-date))
- gnus-article-browse-delete-temp t
- ;; Display more MINE stuff
- gnus-mime-display-multipart-related-as-mixed t
- ;; Asynchronous support for Gnus
- gnus-asynchronous t
- gnus-use-header-prefetch t
- ;; Cache interface for Gnus
- gnus-cache-enter-articles '(ticked dormant unread)
- gnus-cache-remove-articles '(read)
- gnus-cacheable-groups "^\\(nntp\\|nnimap\\)")
-
-;; Group
-(setq
- ;;          indentation ------------.
- ;;  #      process mark ----------. |
- ;;                level --------. | |
- ;;           subscribed ------. | | |
- ;;  %          new mail ----. | | | |
- ;;  *   marked articles --. | | | | |
- ;;                        | | | | | |  Ticked    New     Unread  open-status Group
- gnus-group-line-format "%M%m%S%L%p%P %1(%7i%) %3(%7U%) %3(%7y%) %4(%B%-45G%) %d\n"
- gnus-group-sort-function '(gnus-group-sort-by-level gnus-group-sort-by-alphabet))
-
-(add-hook 'gnus-group-mode-hook #'gnus-topic-mode)
-
-;; Summary
-(setq
- ;; Pretty marks
- gnus-sum-thread-tree-root            "┌ "
- gnus-sum-thread-tree-false-root      "◌ "
- gnus-sum-thread-tree-single-indent   "◎ "
- gnus-sum-thread-tree-vertical        "│"
- gnus-sum-thread-tree-indent          "  "
- gnus-sum-thread-tree-leaf-with-other "├─►"
- gnus-sum-thread-tree-single-leaf     "╰─►"
- gnus-summary-line-format "%U%R %3d %[%-23,23f%] %B %s\n"
- ;; Threads!  I hate reading un-threaded email -- especially mailing
- ;; lists.  This helps a ton!
- gnus-summary-make-false-root 'adopt
- gnus-simplify-subject-functions '(gnus-simplify-subject-re gnus-simplify-whitespace)
- gnus-summary-thread-gathering-function 'gnus-gather-threads-by-subject
- ;; Filling in threads
- ;; 2 old articles are enough for memory
- gnus-fetch-old-headers 2
- gnus-fetch-old-ephemeral-headers 2
- gnus-build-sparse-threads 'some
- ;; More threading
- gnus-show-threads t
- gnus-thread-indent-level 2
- gnus-thread-hide-subtree nil
- ;; Sorting
- gnus-thread-sort-functions '(gnus-thread-sort-by-most-recent-date)
- gnus-subthread-sort-functions '(gnus-thread-sort-by-date)
- ;; Viewing
- gnus-view-pseudos 'automatic
- gnus-view-pseudos-separately t
- gnus-view-pseudo-asynchronously t
- ;; No auto select
- gnus-auto-select-first nil
- gnus-auto-select-next nil
- gnus-paging-select-next nil)
-
-(add-hook 'gnus-select-group-hook #'gnus-group-set-timestamp)
-(add-hook 'gnus-summary-mode-hook #'hl-line-mode)
-
-;;; message
-(setq message-kill-buffer-on-exit t
-      message-mail-alias-type 'ecomplete
-      ;; Personal Information
-      user-full-name eat/user-full-name
-      user-mail-address eat/user-mail-address
-      message-signature user-full-name
-      smtpmail-smtp-user user-mail-address
-      ;; Send email through SMTP
-      send-mail-function #'smtpmail-send-it
-      message-send-mail-function #'message-use-send-mail-function
-      smtpmail-smtp-server "smtp.gmail.com"
-      smtpmail-smtp-service 587)
-(defun eat/message-mode-setup ()
-  (auto-fill-mode)
-  (when (executable-find "ltex-ls")
-    (eglot-ensure)))
-(add-hook 'message-mode-hook #'eat/message-mode-setup)
-
-;; read html mail
-(eat/pkg w3m)
-(setq mm-text-html-renderer 'w3m)
-#+end_src
-
-*** fontify patch
-#+begin_src emacs-lisp
-(eat/pkg fontify-patch "https://github.com/whame/fontify-patch")
-
-(add-hook 'gnus-part-display-hook 'fontify-patch-buffer)
-#+end_src
-
-** k8s
+** kubel
 #+begin_src emacs-lisp
 (eat/pkg kubel)
 #+end_src
 
-* Module
-** Icon
-#+begin_src elisp
-(when (eat/modulep '+icon)
-  ;; run `nerd-icons-install-fonts'
-  (eat/pkg nerd-icons)
-
-  ;; ttf-nerd-fonts-symbols-1000-em-mono
-  (eat/pkg nerd-icons-ibuffer)
-  (add-hook 'ibuffer-mode-hook #'nerd-icons-ibuffer-mode)
-
-  (eat/pkg nerd-icons-completion)
-  (add-hook 'minibuffer-setup-hook #'nerd-icons-completion-mode)
-  )
-#+end_src
-** Telega
+** telega
 Need =telegram-tdlib=.
 Run =docker pull zevlg/telega-server:latest=
 
 #+begin_src elisp
-(when (eat/modulep '+telega)
-  (eat/pkg telega)
-  (setq
-   telega-avatar-workaround-gaps-for '(return t)
-   telega-use-docker (if (executable-find "docker") t nil)
-   telega-server-libs-prefix "/usr"
-   telega-chat-fill-column 75
-   telega-translate-to-language-by-default "zh"
-   ;; send code in markdown format
-   telega-chat-input-markups '("markdown2" "org")
-   ;; use completing instead default ido
-   telega-completing-read-function completing-read-function
-   ;; 省略消息中过长的 url
-   telega-url-shorten-regexps (list `(too-long-link
-                                      :regexp "^\\(https?://\\)\\(.\\{55\\}\\).*?$"
-                                      :symbol ""
-                                      :replace "\\1\\2...")))
+(eat/pkg telega)
+(setq
+ telega-avatar-workaround-gaps-for '(return t)
+ telega-use-docker (if (executable-find "docker") t nil)
+ telega-server-libs-prefix "/usr"
+ telega-chat-fill-column 75
+ telega-translate-to-language-by-default "zh"
+ ;; send code in markdown format
+ telega-chat-input-markups '("markdown2" "org")
+ ;; use completing instead default ido
+ telega-completing-read-function completing-read-function
+ ;; 省略消息中过长的 url
+ telega-url-shorten-regexps (list `(too-long-link
+                                    :regexp "^\\(https?://\\)\\(.\\{55\\}\\).*?$"
+                                    :symbol ""
+                                    :replace "\\1\\2...")))
 
-  (add-hook 'telega-root-mode-hook 'hl-line-mode)
-  (add-hook 'telega-chat-mode-hook 'company-mode)
+(add-hook 'telega-root-mode-hook 'hl-line-mode)
+(add-hook 'telega-chat-mode-hook 'company-mode)
 
-  (with-eval-after-load 'telega
-    (add-hook 'telega-load-hook #'telega-notifications-mode)
-    (add-hook 'telega-load-hook #'telega-appindicator-mode)
+(with-eval-after-load 'telega
+  (add-hook 'telega-load-hook #'telega-notifications-mode)
+  (add-hook 'telega-load-hook #'telega-appindicator-mode)
 
-    (setq telega-chat-input-format "›"
-          telega-animation-play-inline nil
-          telega-video-play-inline nil
-          ;; make sticker larger to read
-          telega-sticker-size '(10 . 24)
-          ;; change reply symbol
-          telega-symbol-reply "↫"
-          ;; set date format for old messages
-          telega-old-date-format "%Y/%M/%D")
+  (setq telega-chat-input-format "›"
+        telega-animation-play-inline nil
+        telega-video-play-inline nil
+        ;; make sticker larger to read
+        telega-sticker-size '(10 . 24)
+        ;; change reply symbol
+        telega-symbol-reply "↫"
+        ;; set date format for old messages
+        telega-old-date-format "%Y/%M/%D")
 
-    ;; syntax highlighting in telega code
-    (require 'telega-mnz)
-    (global-telega-mnz-mode 1)))
+  ;; syntax highlighting in telega code
+  (require 'telega-mnz)
+  (global-telega-mnz-mode 1))
 #+end_src
 
-** Blog (org-static-blog)
-#+begin_src elisp
-(when (eat/modulep '+blog)
-  (eat/pkg org-static-blog)
-  (setq org-static-blog-publish-title "mrunhap's blog"
-        org-static-blog-publish-url "https://mrunhap.github.io/"
-        org-static-blog-publish-directory "~/p/blog/"
-        org-static-blog-posts-directory "~/p/blog/posts/"
-        org-static-blog-drafts-directory "~/p/blog/drafts/"
-        org-static-blog-enable-tags t
-        org-static-blog-use-preview t
-        org-static-blog-preview-ellipsis ""
-        org-export-with-toc nil
-        org-export-with-section-numbers nil)
-  (with-eval-after-load 'org-static-blog
-    (setq org-static-blog-page-header (get-string-from-file "~/p/blog/static/header.html")
-          org-static-blog-page-preamble (get-string-from-file "~/p/blog/static/preamble.html")
-          org-static-blog-page-postamble (get-string-from-file "~/p/blog/static/postamble.html"))))
-#+end_src
-
-** Note Taking (xeft)
-Need =xapian-core=.
-
-#+begin_src elisp
-(when (eat/modulep '+note-taking)
-  (eat/pkg xeft)
-  (setq xeft-directory "~/Dropbox/org/roam"
-        xeft-default-extension "org"
-        xeft-database "~/.xeft/db")
-  (with-eval-after-load 'xeft
-    (require 'flique)
-    (add-hook 'xeft-find-file-hook #'bklink-minor-mode)
-    (add-hook 'bklink-minor-mode-hook #'auto-fill-mode)))
-#+end_src
 * Modes
-#+begin_src elisp
-(eat/pkg protobuf-mode)
+** csv-mode
+#+begin_src emacs-lisp
 (eat/pkg csv-mode)
 
-(add-hook 'csv-mode-hook
-          #'(lambda ()
-              (setq-local auto-hscroll-mode t)))
+(defun my/csv-mode-setup ()
+  (setq-local auto-hscroll-mode t))
+(add-hook 'csv-mode-hook #'my/csv-mode-setup)
+#+end_src
 
-(add-to-list 'auto-mode-alist
-             (cons "/.dockerignore\\'" 'gitignore-mode))
+** protobuf-mode
+#+begin_src emacs-lisp
+(eat/pkg protobuf-mode)
 
 (with-eval-after-load "protobuf-mode"
   (add-hook 'protobuf-mode-hook
@@ -3089,13 +3276,19 @@ Need =xapian-core=.
               (setq imenu-generic-expression
                     '((nil "^[[:space:]]*\\(message\\|service\\|enum\\)[[:space:]]+\\([[:alnum:]]+\\)" 2))))))
 #+end_src
+** git-mode
+#+begin_src emacs-lisp
+(eat/pkg git-modes)
+(add-to-list 'auto-mode-alist
+             (cons "/.dockerignore\\'" 'gitignore-mode))
+#+end_src
 * Site Lisp
 ** Load Path
 #+begin_src elisp
 (add-to-list 'load-path (expand-file-name "site-lisp" user-emacs-directory))
 (add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))
 #+end_src
-** Form Feed
+** form-feed
 #+begin_src elisp
 (autoload #'form-feed-mode "form-feed")
 
@@ -3104,7 +3297,7 @@ Need =xapian-core=.
 (add-hook 'special-mode-hook #'form-feed-mode)
 #+end_src
 
-** Color Outline
+** color-outline
 #+begin_src elisp
 (autoload #'color-outline-mode "color-outline")
 (add-hook 'prog-mode-hook #'color-outline-mode)
@@ -3117,6 +3310,7 @@ Need =xapian-core=.
 (setq iimg-prune-slices-p nil)
 #+end_src
 ** bklink
+
 #+begin_src elisp
 (autoload #'bklink-minor-mode "bklink")
 (with-eval-after-load 'bklink
@@ -3124,4 +3318,15 @@ Need =xapian-core=.
   (keymap-set bklink-minor-mode-map "C-c i" #'bklink-insert))
 (setq bklink-summary-read-only-p nil
       bklink-prune-summary-p nil)
+#+end_src
+** dired+
+#+begin_src emacs-lisp
+(autoload 'dired-toggle-mark-click "dired+" nil t)
+(autoload 'dired-copy "dired+" nil t)
+(autoload 'dired-paste "dired+" nil t)
+(autoload 'dired-move "dired+" nil t)
+
+(with-eval-after-load "dired"
+  (bind dired-mode-map
+        "<s-mouse-1>" #'dired-toggle-mark-click))
 #+end_src

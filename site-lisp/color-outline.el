@@ -69,13 +69,19 @@
 (defcustom color-outline-comment-char-alist
   '((c-mode "*" "/")
     (c++-mode "*" "/")
+    (c-ts-mode "*" "/")
+    (c++-ts-mode "*" "/")
     (python-mode "#")
+    (python-ts-mode "#")
     (javascript-mode "/")
+    (javascript-ts-mode "/")
     (css-mode "*" "/")
+    (css-ts-mode "*" "/")
     (tuareg-mode "*" "(")
     (shell-script-mode "#")
     (web-mode "-" "<!")
-    (sh-mode "#"))
+    (sh-mode "#")
+    (rust-ts-mode "*" "// "))
   "Stores custom comment character for each major mode.
 An alist of (MAJOR-MODE . (COMMENT-CHAR COMMENT-BEGIN))
 or (MAJOR-MODE . (COMMENT-CHAR)). For other major modes,
@@ -199,3 +205,4 @@ COMMENT-BEGIN is string pattern starting a comment."
 (provide 'color-outline)
 
 ;;; color-outline.el ends here
+
