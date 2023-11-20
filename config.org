@@ -1,22 +1,62 @@
 #+STARTUP: fold
 #+PROPERTY: header-args :tangle init.el :mkdirp yes
 
-* Core
-** Early init
+* Early init
 #+begin_src elisp :tangle early-init.el
-(setq frame-inhibit-implied-resize t
-      package-enable-at-startup nil
-      message-log-max 16384
-      gc-cons-threshold most-positive-fixnum
-      gc-cons-percentage 0.6
-      default-frame-alist '((scroll-bar-mode . 0)
-                            (vertical-scroll-bars . nil)
-                            ;; (undecorated . t)
-                            (menu-bar-lines . 0)
-                            (tool-bar-lines . 0))
-      ;; disable native compilation
-      native-comp-jit-compilation nil)
+;;; early-init.el -*- lexical-binding: t; -*-
+
+;; early-init.el is run before init.el,
+;; - before package initialization, and
+;; - before UI initialization
+
+;; Defer garbage collection further back in the startup process
+(setq gc-cons-threshold most-positive-fixnum)
+
+;; In Emacs 27+, package initialization occurs before `user-init-file' is
+;; loaded, but after `early-init-file'.
+(setq package-enable-at-startup nil
+      package-quickstart nil
+      load-prefer-newer t)
+
+(unless (or (daemonp) noninteractive)
+  (let ((old-file-name-handler-alist file-name-handler-alist))
+    ;; `file-name-handler-alist' is consulted on each `require', `load' and
+    ;; various path/io functions. You get a minor speed up by unsetting this.
+    ;; Some warning, however: this could cause problems on builds of Emacs where
+    ;; its site lisp files aren't byte-compiled and we're forced to load the
+    ;; *.el.gz files (e.g. on Alpine).
+    (setq-default file-name-handler-alist nil)
+    ;; ...but restore `file-name-handler-alist' later, because it is needed for
+    ;; handling encrypted or compressed files, among other things.
+    (defun my/reset-file-handler-alist ()
+      (setq file-name-handler-alist
+            ;; Merge instead of overwrite because there may have bene changes to
+            ;; `file-name-handler-alist' since startup we want to preserve.
+            (delete-dups (append file-name-handler-alist
+                                 old-file-name-handler-alist))))
+    (add-hook 'emacs-startup-hook #'my/reset-file-handler-alist 101))
+
+  ;; 别他妈闪来闪去的了好不好啊
+  (setq-default inhibit-redisplay t
+                inhibit-message t)
+  (add-hook 'window-setup-hook
+            (lambda ()
+              (setq-default inhibit-redisplay nil
+                            inhibit-message nil)
+              (redisplay))))
+
+;; Prevent the glimpse of un-styled Emacs by disabling these UI elements early.
+(push '(menu-bar-lines . 0) default-frame-alist)
+(push '(tool-bar-lines . 0) default-frame-alist)
+(push '(vertical-scroll-bars) default-frame-alist)
+
+(setq frame-inhibit-implied-resize t)
+
+;; Disable native compilation.
+(setq  native-comp-jit-compilation nil)
 #+end_src
+
+* Core
 ** Enable lexical binding
 #+begin_src emacs-lisp
 ;;; -*- lexical-binding: t -*-
@@ -138,54 +178,6 @@ Emacs 默认使用 dynamic binding，主要影响的是变量的作用域。
 (global-set-key (kbd "M-C-9") (lambda () (interactive) (eat/adjust-opacity nil 2)))
 (global-set-key (kbd "M-C-7") (lambda () (interactive) (modify-frame-parameters nil `((alpha-background . 100)))))
 #+end_src
-*** Window
-#+begin_src emacs-lisp
-;; When splitting window, show (other-buffer) in the new window
-
-(defun split-window-func-with-other-buffer (split-function)
-  (lambda (&optional arg)
-    "Split this window and switch to the new window unless ARG is provided."
-    (interactive "P")
-    (funcall split-function)
-    (let ((target-window (next-window)))
-      (set-window-buffer target-window (other-buffer))
-      (unless arg
-        (select-window target-window)))))
-
-(keymap-global-set "C-x 2" (split-window-func-with-other-buffer 'split-window-vertically))
-(keymap-global-set "C-x 3" (split-window-func-with-other-buffer 'split-window-horizontally))
-
-(defun sanityinc/toggle-delete-other-windows ()
-  "Delete other windows in frame if any, or restore previous window config."
-  (interactive)
-  (if (and winner-mode
-           (equal (selected-window) (next-window)))
-      (winner-undo)
-    (delete-other-windows)))
-
-(keymap-global-set "C-x 1" 'sanityinc/toggle-delete-other-windows)
-
-(defun split-window-horizontally-instead ()
-  "Kill any other windows and re-split such that the current window is on the top half of the frame."
-  (interactive)
-  (let ((other-buffer (and (next-window) (window-buffer (next-window)))))
-    (delete-other-windows)
-    (split-window-horizontally)
-    (when other-buffer
-      (set-window-buffer (next-window) other-buffer))))
-
-(defun split-window-vertically-instead ()
-  "Kill any other windows and re-split such that the current window is on the left half of the frame."
-  (interactive)
-  (let ((other-buffer (and (next-window) (window-buffer (next-window)))))
-    (delete-other-windows)
-    (split-window-vertically)
-    (when other-buffer
-      (set-window-buffer (next-window) other-buffer))))
-
-(keymap-global-set "C-x |" 'split-window-horizontally-instead)
-(keymap-global-set "C-x _" 'split-window-vertically-instead)
-#+end_src
 *** Load PATH
 #+begin_src elisp
 ;;; Setup PATH
@@ -249,7 +241,69 @@ point reaches the beginning or end of the buffer, stop there."
       (move-beginning-of-line 1))))
 (global-set-key [remap move-beginning-of-line] #'smarter-move-beginning-of-line)
 #+end_src
-** Speed up startup time
+*** Window
+#+begin_src emacs-lisp
+;; When splitting window, show (other-buffer) in the new window
+
+(defun split-window-func-with-other-buffer (split-function)
+  (lambda (&optional arg)
+    "Split this window and switch to the new window unless ARG is provided."
+    (interactive "P")
+    (funcall split-function)
+    (let ((target-window (next-window)))
+      (set-window-buffer target-window (other-buffer))
+      (unless arg
+        (select-window target-window)))))
+
+(keymap-global-set "C-x 2" (split-window-func-with-other-buffer 'split-window-vertically))
+(keymap-global-set "C-x 3" (split-window-func-with-other-buffer 'split-window-horizontally))
+
+(defun sanityinc/toggle-delete-other-windows ()
+  "Delete other windows in frame if any, or restore previous window config."
+  (interactive)
+  (if (and winner-mode
+           (equal (selected-window) (next-window)))
+      (winner-undo)
+    (delete-other-windows)))
+
+(keymap-global-set "C-x 1" 'sanityinc/toggle-delete-other-windows)
+
+(defun split-window-horizontally-instead ()
+  "Kill any other windows and re-split such that the current window is on the top half of the frame."
+  (interactive)
+  (let ((other-buffer (and (next-window) (window-buffer (next-window)))))
+    (delete-other-windows)
+    (split-window-horizontally)
+    (when other-buffer
+      (set-window-buffer (next-window) other-buffer))))
+
+(defun split-window-vertically-instead ()
+  "Kill any other windows and re-split such that the current window is on the left half of the frame."
+  (interactive)
+  (let ((other-buffer (and (next-window) (window-buffer (next-window)))))
+    (delete-other-windows)
+    (split-window-vertically)
+    (when other-buffer
+      (set-window-buffer (next-window) other-buffer))))
+
+(keymap-global-set "C-x |" 'split-window-horizontally-instead)
+(keymap-global-set "C-x _" 'split-window-vertically-instead)
+#+end_src
+** Performance
+*** Garbge collection
+#+begin_src emacs-lisp
+(let ((normal-gc-cons-threshold (* 20 1024 1024))
+      (init-gc-cons-threshold (* 128 1024 1024)))
+  (setq gc-cons-threshold init-gc-cons-threshold)
+  (add-hook 'emacs-startup-hook
+            (lambda () (setq gc-cons-threshold normal-gc-cons-threshold))))
+
+;; GC automatically while unfocusing the frame
+(add-function :after after-focus-change-function
+              (lambda ()
+                (unless (frame-focus-state)
+                  (garbage-collect))))
+#+end_src
 *** Custom hook
 #+begin_src emacs-lisp
 ;; Hooks split from doom-emacs
@@ -365,59 +419,49 @@ triggering hooks during startup."
 ;; Don't ping things that look like domain names.
 (setq ffap-machine-p-known 'reject)
 #+end_src
-** Better default
-*** Config
+*** Process tuning
 #+begin_src emacs-lisp
-(keymap-global-set "C-h K" #'describe-keymap)
-;; this will stuck emacs
-(keymap-global-unset "C-h h")
+(setq read-process-output-max (* 4 1024 1024))
+(setq process-adaptive-read-buffering nil)
+#+end_src
+*** Long line
+#+begin_src emacs-lisp
+(add-hook 'on-first-file-hook #'global-so-long-mode)
 
-(when (display-graphic-p)
-  (global-unset-key (kbd "C-z"))
-  (global-unset-key (kbd "C-x C-z")))
+;; https://emacs-china.org/t/topic/25811/9?u=rua
+(setq-default bidi-display-reordering 'left-to-right)
+(setq bidi-inhibit-bpa t
+      long-line-threshold 1000
+      large-hscroll-threshold 1000
+      syntax-wholeline-max 1000)
+#+end_src
 
-;; Contrary to what many Emacs users have in their configs, you don't need
-;; more than this to make UTF-8 the default coding system:
-(set-language-environment "UTF-8")
-
-;; Do not show cursor in nonselected windows
-(setq-default cursor-in-non-selected-windows nil)
-
+** Better default
+*** Disable startup screen/message
+#+begin_src emacs-lisp
 ;; Suppress GUI features and more
 (setq inhibit-splash-screen t ;; 这个和 `inhibit-startup-screen' 有什么区别吗
       inhibit-x-resources t
       inhibit-default-init t
       inhibit-startup-screen t
       inhibit-startup-message t
-      inhibit-startup-buffer-menu t)
-
-(setq redisplay-skip-fontification-on-input t)
-
-;; Pixelwise resize
-(setq ;; window-resize-pixelwise nil ;; NOTE this cause lsp-bridge-ref buffer didn't show
- frame-resize-pixelwise t)
+      inhibit-startup-buffer-menu t
+      initial-scratch-message (concat ";; Happy hacking, " user-login-name " - Emacs ♥ you!\n\n"))
 
 ;; Shut up!
 (defun display-startup-echo-area-message()
   (message nil))
+#+end_src
+*** Config
+#+begin_src emacs-lisp
+;; Do not show cursor in nonselected windows
+(setq-default cursor-in-non-selected-windows nil)
 
-;; indent with whitespace by default
-(setq-default
- tab-width 4
- indent-tabs-mode nil)
-
-;; Disable default auto backup and save file
-(setq-default
- create-lockfiles nil                               ; Don't create lockfiles
- make-backup-files nil                              ; Disable auto save and backup
- auto-save-default nil
- auto-save-list-file-prefix nil)
+(setq redisplay-skip-fontification-on-input t)
 
 (setq
- initial-scratch-message (concat ";; Happy hacking, " user-login-name " - Emacs ♥ you!\n\n")
  initial-major-mode 'fundamental-mode               ; Don't use prog-mode an stratup
  ring-bell-function 'ignore
- read-process-output-max (* 4 1024 1024)
  suggest-key-bindings nil                           ; Disable "You can run the command balabala..."
  word-wrap-by-category t                            ; Emacs 之光！
  use-short-answers t                                ; yse-or-no -> y-or-n
@@ -429,27 +473,12 @@ triggering hooks during startup."
  inhibit-compacting-font-caches t                   ; Don’t compact font caches during GC.
  require-final-newline t                            ; add final newline
  visible-cursor t
- bidi-inhibit-bpa t                                 ; Improve long line display performance
- bidi-paragraph-direction 'left-to-right
  echo-keystrokes 0.01                               ; don't wait for keystrokes display
  warning-suppress-log-types '((comp))               ; Don't display compile warnings
  truncate-partial-width-windows 65                  ; Don't truncate lines in a window narrower than 65 chars.
  vc-follow-symlinks t                               ; always follow link
  server-client-instructions nil                     ; no client startup messages
  )
-
-(when (executable-find "ugrep")
-  ;; https://github.com/Genivia/ugrep#using-ugrep-within-emacs
-  (setq-default grep-template "ugrep -0Iinr -e <R>"))
-
-;; coding-system
-(prefer-coding-system 'utf-8)
-(setq-default buffer-file-coding-system 'utf-8)
-
-(add-hook 'on-first-file-hook #'global-goto-address-mode)
-(add-hook 'on-first-file-hook #'global-auto-revert-mode)
-(add-hook 'on-first-file-hook #'save-place-mode)
-(add-hook 'on-first-file-hook #'global-so-long-mode)
 
 (setq
  completion-styles '(basic partial-completion)
@@ -460,13 +489,41 @@ triggering hooks during startup."
  minibuffer-electric-default-mode t)
 ;; Quit that fucking minibuffer!
 (keymap-set minibuffer-local-map "C-g" #'keyboard-quit)
+
+(setq help-enable-variable-value-editing t)
 #+end_src
-*** Large file
+*** Frame hooks
+
+Some ui and font config need to add to these hooks to make it works under emacsclient.
+
+#+begin_src elisp
+(defvar after-make-console-frame-hooks '()
+  "Hooks to run after creating a new TTY frame")
+(defvar after-make-window-system-frame-hooks '()
+  "Hooks to run after creating a new window-system frame")
+
+(defun run-after-make-frame-hooks (frame)
+  "Run configured hooks in response to the newly-created FRAME.
+Selectively runs either `after-make-console-frame-hooks' or
+`after-make-window-system-frame-hooks'"
+  (with-selected-frame frame
+    (run-hooks (if window-system
+                   'after-make-window-system-frame-hooks
+                 'after-make-console-frame-hooks))))
+
+(add-hook 'after-make-frame-functions 'run-after-make-frame-hooks)
+
+(defconst sanityinc/initial-frame (selected-frame)
+  "The frame (if any) active during Emacs initialization.")
+
+(add-hook 'after-init-hook
+          (lambda () (when sanityinc/initial-frame
+                       (run-after-make-frame-hooks sanityinc/initial-frame))))
+#+end_src
+
 *** MacOS
 #+begin_src elisp
 (when eat/macp
-  (add-hook 'after-init-hook #'eat/getenv-path)
-
   (setq mac-option-modifier 'meta
         mac-command-modifier 'super)
   (global-set-key [(super a)] #'mark-whole-buffer)
@@ -484,77 +541,224 @@ triggering hooks during startup."
         ns-use-thin-smoothing t
         ;; Don't open a file in a new frame
         ns-pop-up-frames nil)
-  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-  (add-to-list 'default-frame-alist '(ns-appearance . dark))
   (set-frame-parameter nil 'fullscreen 'maximized))
 #+end_src
 
 *** Linux
 #+begin_src elisp
-(when eat/linuxp
-  (setq x-underline-at-descent-line t)
-  (setq-default
-   ;; Don't use Fcitx5 in Emacs in PGTK build
-   pgtk-use-im-context-on-new-connection nil
-   x-gtk-resize-child-frames nil)
+(setq-default
+ x-underline-at-descent-line t
+ ;; Don't use Fcitx5 in Emacs in PGTK build.
+ pgtk-use-im-context-on-new-connection nil
+ ;; Avoid breakage of childframes.
+ x-gtk-resize-child-frames 'resize-mode
+ ;; Don't use GTK+ tooltip.
+ x-gtk-use-system-tooltips nil)
+#+end_src
 
-  ;; Don't use GTK+ tooltip
-  (when (boundp 'x-gtk-use-system-tooltips)
-    (setq x-gtk-use-system-tooltips nil)))
+*** Suppress GUI features
+
+#+begin_src emacs-lisp
+(setq use-file-dialog nil)
+(setq use-dialog-box nil)
+(setq inhibit-startup-screen t)
+#+end_src
+
+*** Use four spaces instead of tab
+#+begin_src emacs-lisp
+;; indent with whitespace by default
+(setq-default
+ tab-width 4
+ indent-tabs-mode nil)
+#+end_src
+*** Use utf-8 as default coding system
+#+begin_src emacs-lisp
+;; Contrary to what many Emacs users have in their configs, you don't need
+;; more than this to make UTF-8 the default coding system:
+(set-language-environment "UTF-8")
+#+end_src
+*** Window
+#+begin_src emacs-lisp
+;; Monitors are trending toward wide, rather than tall.
+(setq split-width-threshold 160)
+(setq split-height-threshold nil)
+
+(setq
+ ;; NOTE this may cause lsp-bridge-ref buffer didn't show
+ window-resize-pixelwise nil
+ frame-resize-pixelwise t)
+#+end_src
+*** Scroll
+#+begin_src emacs-lisp
+(setq hscroll-step 1
+      hscroll-margin 2
+      ;; The nano style for truncated long lines.
+      auto-hscroll-mode 'current-line
+      scroll-margin 0
+      scroll-conservatively 101
+      scroll-preserve-screen-position t
+      auto-window-vscroll nil
+      ;; Use shift + mouse wheel to scrll horizontally.
+      mouse-wheel-scroll-amount '(2 ((shift) . hscroll))
+      mouse-wheel-scroll-amount-horizontal 2)
+
+(add-hook 'after-init-hook (lambda () (pixel-scroll-precision-mode)))
+
+(setq pixel-scroll-precision-interpolate-page t)
+
+(defun +pixel-scroll-interpolate-down (&optional lines)
+  (interactive)
+  (if lines
+      (pixel-scroll-precision-interpolate (* -1 lines (pixel-line-height)))
+    (pixel-scroll-interpolate-down)))
+
+(defun +pixel-scroll-interpolate-up (&optional lines)
+  (interactive)
+  (if lines
+      (pixel-scroll-precision-interpolate (* lines (pixel-line-height))))
+  (pixel-scroll-interpolate-up))
+
+(defalias 'scroll-up-command '+pixel-scroll-interpolate-down)
+(defalias 'scroll-down-command '+pixel-scroll-interpolate-up)
+#+end_src
+*** keybinding
+#+begin_src emacs-lisp
+(keymap-global-set "C-h C-k" #'describe-keymap)
+;; this will stuck emacs
+(keymap-global-unset "C-h h")
+
+(when (display-graphic-p)
+  (global-unset-key (kbd "C-z"))
+  (global-unset-key (kbd "C-x C-z")))
+#+end_src
+*** UIxUX
+
+** Font
+#+begin_src elisp
+(defun eat/fixed-pitch-setup ()
+  (interactive)
+  (setq buffer-face-mode-face '(:family "Sarasa Gothic SC"))
+  (buffer-face-mode +1))
+
+(defun font-installed-p (font-list)
+  (let ((font-installed nil))
+    (catch 'foo
+      (dolist (font font-list)
+        (when (find-font (font-spec :name font))
+          (setq font-installed font)
+          (throw 'foo t))))
+    font-installed))
+
+(defvar eat/fonts-default        '("Monaco" "Cascadia Code" "Menlo" "Source Code Pro"))
+(defvar eat/fonts-variable-pitch '("Bookerly" "Cardo" "Times New Roman" "DejaVu Sans"))
+(defvar eat/fonts-cjk            '("LXGW WenKai" "WenQuanYi Micro Hei" "Microsoft Yahei"))
+(defvar eat/fonts-unicode        '("Symbola"))
+(defvar eat/fonts-emoji          '("Apple Color Emoji" "Segoe UI Symbol" "Noto Color Emoji"))
+(defvar eat/font-size-default   13)
+(defvar eat/font-default        (font-installed-p eat/fonts-default))
+(defvar eat/font-variable-pitch (font-installed-p eat/fonts-variable-pitch))
+(defvar eat/font-cjk            (font-installed-p eat/fonts-cjk))
+(defvar eat/font-unicode        (font-installed-p eat/fonts-unicode))
+(defvar eat/font-emoji          (font-installed-p eat/fonts-emoji))
+
+(defun eat/setup-mode-line-font ()
+  (set-face-attribute 'mode-line nil :inherit 'variable-pitch)
+  (set-face-attribute 'mode-line-inactive nil :inherit 'variable-pitch))
+
+(defun eat/setup-font ()
+  (set-face-attribute 'default nil :height (* 10 eat/font-size-default))
+  (when eat/font-default
+    (set-face-attribute 'default     nil :family eat/font-default)
+    (set-face-attribute 'fixed-pitch nil :font eat/font-default))
+  (when eat/font-variable-pitch
+    (set-face-font 'variable-pitch eat/font-variable-pitch))
+  (when eat/font-unicode
+    (set-fontset-font t 'unicode eat/font-unicode))
+  (when eat/font-emoji
+    (set-fontset-font t 'emoji   eat/font-emoji))
+  (when eat/font-cjk
+    (set-fontset-font t 'kana     eat/font-cjk)
+    (set-fontset-font t 'han      eat/font-cjk)
+    (set-fontset-font t 'cjk-misc eat/font-cjk))
+  (eat/setup-mode-line-font))
+(add-hook 'after-make-window-system-frame-hooks #'eat/setup-font)
+
+(defvar eat/font-rescale-alist
+  `((,eat/font-cjk     . 0.95)
+    (,eat/font-emoji   . 0.9)
+    (,eat/font-unicode . 0.9))
+  "A list of font names that should be rescaled.")
+
+(defun eat/rescale-font ()
+  (interactive)
+  (dolist (setting eat/font-rescale-alist)
+    (when (car setting)
+      (setf (alist-get (car setting)
+                       face-font-rescale-alist nil nil #'equal)
+		    (cdr setting)))))
+(add-hook 'after-make-window-system-frame-hooks #'eat/rescale-font)
+#+end_src
+** Theme
+#+begin_src emacs-lisp
+(defvar eat/theme 'modus-operandi
+  "Default theme.")
+
+(defvar load-theme-hook nil
+  "Hooks run after `load-theme'.")
+
+(defun eat/load-theme (f theme &optional no-confirm no-enable &rest args)
+  (interactive
+   (list
+    (intern (completing-read "Theme: "
+                             (mapcar #'symbol-name
+				                     (custom-available-themes))))))
+  (dolist (theme custom-enabled-themes)
+    (disable-theme theme))
+  (if (featurep (intern (format "%s-theme" theme)))
+      (enable-theme theme)
+    (apply f theme t no-enable args))
+  (run-hooks 'load-theme-hook))
+(advice-add 'load-theme :around #'eat/load-theme)
+
+(add-hook 'after-make-window-system-frame-hooks #'(lambda () (load-theme eat/theme)))
+(add-hook 'load-theme-hook #'eat/setup-mode-line-font)
 #+end_src
 ** Built-in packages
-*** package
+*** grep
 #+begin_src emacs-lisp
-(setq package-archives '(("gnu"          . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-			             ("nongnu"       . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
-                         ("melpa"        . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/"))
-      package-quickstart t)
-(package-activate-all)
-
-(defvar eat/all-packages (if (daemonp) t nil))
-
-(defmacro eat/pkg (package &optional vc)
-  `(unless (package-installed-p ',package)
-     (unless (memq ',package package-archive-contents)
-       (package-refresh-contents))
-     (if ,vc (package-vc-install ,vc)
-       (package-install ',package)))
-  `(when eat/all-packages
-     (message "require: %s" ',package)
-     (require ',package)))
+(when (executable-find "ugrep")
+  ;; https://github.com/Genivia/ugrep#using-ugrep-within-emacs
+  (setq-default grep-template "ugrep -0Iinr -e <R>"))
 #+end_src
 *** auto save
 #+begin_src emacs-lisp
+;; Disable default auto backup and save file
+(setq-default
+ create-lockfiles nil                               ; Don't create lockfiles
+ make-backup-files nil                              ; Disable auto save and backup
+ auto-save-default nil
+ auto-save-list-file-prefix nil)
+
 ;; most of time I will do save manually
 (setq auto-save-visited-interval 10)
 (add-hook 'on-first-file-hook #'auto-save-visited-mode)
 #+end_src
 *** dired
 #+begin_src emacs-lisp
-(setq dired-mouse-drag-files t
-      mouse-drag-and-drop-region t
+(setq mouse-drag-and-drop-region t
       mouse-drag-and-drop-region-cross-program t)
-#+end_src
-*** blink cursor
-#+begin_src emacs-lisp
-(add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
-#+end_src
-*** line number
-#+begin_src emacs-lisp
-(setq display-line-numbers-width 3)
-#+end_src
-*** whitespace
-#+begin_src emacs-lisp
-(add-hook 'prog-mode-hook #'whitespace-mode)
-(add-hook 'conf-mode-hook #'whitespace-mode)
-(setq whitespace-style '(face trailing))
-#+end_src
-*** savehist
-#+begin_src emacs-lisp
-;;; savehist
-(add-hook 'after-init-hook #'savehist-mode)
-;; Restore histories and registers after saving
-(setq history-length 1000)
+
+(setq dired-mouse-drag-files t
+      dired-dwim-target t
+      dired-kill-when-opening-new-dired-buffer t
+      dired-auto-revert-buffer t)
+
+(with-eval-after-load 'dired
+  (setq dired-listing-switches
+        "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
+  (keymap-set dired-mode-map "C-c C-p" #'wdired-change-to-wdired-mode)
+  (define-key dired-mode-map (kbd "h") #'dired-up-directory)
+  (define-key dired-mode-map [mouse-2] #'dired-find-file))
 #+end_src
 *** recentf
 #+begin_src emacs-lisp
@@ -581,35 +785,12 @@ triggering hooks during startup."
         ("Wikipedia" . [simple-query "wikipedia.org" "wikipedia.org/wiki/" #1#])))
 #+end_src
 
-*** winner
-#+begin_src emacs-lisp
-(add-hook 'on-first-buffer-hook #'winner-mode)
-(setq winner-dont-bind-my-keys t)
-#+end_src
 *** repeat
 #+begin_src emacs-lisp
 (setq repeat-mode t
       repeat-keep-prefix t
       repeat-exit-timeout 3
       repeat-exit-key (kbd "RET"))
-#+end_src
-
-*** context-menu
-
-#+begin_src emacs-lisp
-(add-hook 'on-init-ui-hook #'context-menu-mode)
-#+end_src
-
-*** eww
-#+begin_src emacs-lisp
-;; Install: npm install -g readability-cli
-(when (executable-find "readable")
-  (setq eww-retrieve-command '("readable")))
-#+end_src
-
-*** vc
-#+begin_src emacs-lisp
-(setq-default vc-handled-backends '(Git))
 #+end_src
 
 *** project
@@ -709,15 +890,11 @@ Set cursor pos to mouse pos if they are not in same pos.
 (setq
  ;; Match count next to the minibuffer prompt
  isearch-lazy-count t
+ isearch-lazy-highlight t
+ lazy-highlight-buffer t
  ;; Don't be stingy with history; default is to keep just 16 entries
  search-ring-max 200
  regexp-search-ring-max 200
- ;; htighlighted all matching
- isearch-lazy-highlight t
- lazy-highlight-buffer t
- ;; show search count, TODO not work in isearch-mb-mode
- lazy-count-prefix-format nil
- lazy-count-suffix-format " [%s/%s]"
  ;; Record isearch in minibuffer history, so C-x ESC ESC can repeat it.
  isearch-resume-in-command-history t
  ;; M-< and M-> move to the first/last occurrence of the current search string.
@@ -727,22 +904,12 @@ Set cursor pos to mouse pos if they are not in same pos.
  isearch-regexp-lax-whitespace t
  search-whitespace-regexp ".*?")
 
-(with-eval-after-load 'isearch
-  (define-advice isearch-occur (:after (_regexp &optional _nlines))
-    (isearch-exit)))
-
 (keymap-global-set "C-s" #'isearch-forward-regexp)
 (keymap-global-set "C-r" #'isearch-backward-regexp)
 (keymap-set isearch-mode-map "C-c C-o" #'isearch-occur)
-(keymap-substitute isearch-mode-map #'isearch-delete-chac #'isearch-del-chac)
-;; TODO
 (define-key isearch-mode-map [escape] #'isearch-cancel)
-
-;; GC automatically while unfocusing the frame
-(add-function :after after-focus-change-function
-              (lambda ()
-                (unless (frame-focus-state)
-                  (garbage-collect))))
+;; DEL during isearch should edit the search string, not jump back to the previous result
+(keymap-substitute isearch-mode-map #'isearch-delete-chac #'isearch-del-chac)
 #+end_src
 *** ediff
 #+begin_src elisp
@@ -825,12 +992,6 @@ Set cursor pos to mouse pos if they are not in same pos.
 (add-hook 'next-error #'eat/recenter-and-pulse-line)
 #+end_src
 
-*** outline
-#+begin_src emacs-lisp
-(setq outline-minor-mode-cycle t
-      outline-minor-mode-highlight t)
-#+end_src
-
 *** simple
 #+begin_src emacs-lisp
 (add-hook 'before-save-hook #'delete-trailing-whitespace)
@@ -838,22 +999,6 @@ Set cursor pos to mouse pos if they are not in same pos.
       ;; List only applicable commands.
       read-extended-command-predicate #'command-completion-default-include-p
       fill-column 72)
-#+end_src
-*** subword
-#+begin_src elisp
-(add-hook 'prog-mode-hook #'subword-mode)
-#+end_src
-*** elec-pair
-#+begin_src elisp
-(add-hook 'prog-mode-hook #'electric-pair-local-mode)
-(setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
-#+end_src
-*** paren
-#+begin_src elisp
-(setq show-paren-when-point-in-periphery t
-      show-paren-context-when-offscreen 'overlay
-      show-paren-when-point-inside-paren t
-      show-paren-context-when-offscreen t)
 #+end_src
 *** smerge
 #+begin_src elisp
@@ -864,27 +1009,13 @@ Set cursor pos to mouse pos if they are not in same pos.
                                   (smerge-mode 1)))))
 
 (with-eval-after-load 'smerge-mode
-  (bind smerge-mode-map
-        "C-c r" #'smerge-refine
-        "C-c c" #'smerge-keep-current
-        "C-c a" #'smerge-keep-all
-        "C-c n" #'smerge-next
-        "C-c p" #'smerge-prev
-        "C-c l" #'smerge-keep-lower
-        "C-c u" #'smerge-keep-upper))
+  (keymap-set smerge-mode-map "C-c c" #'smerge-keep-current)
+  (keymap-set smerge-mode-map "C-c a" #'smerge-smerge-keep-all)
+  (keymap-set smerge-mode-map "M-r" #'smerge-refine)
+  (keymap-set smerge-mode-map "M-n" #'smerge-next)
+  (keymap-set smerge-mode-map "M-p" #'smerge-prev))
 #+end_src
-*** eldoc
-#+begin_src elisp
-(setq eldoc-idle-delay 1)
-#+end_src
-*** autofill
-#+begin_src elisp
-(add-hook 'prog-mode-hook
-          #'(lambda ()
-              (setq-local comment-auto-fill-only-comments t)
-              (turn-on-auto-fill)))
-#+end_src
-*** TODO hideshow
+*** hideshow
 - Seems have error message.
 - And to context-menu-mode.
 #+begin_src elisp
@@ -932,10 +1063,7 @@ Set cursor pos to mouse pos if they are not in same pos.
 (add-hook 'emacs-lisp-mode-hook #'(lambda ()
                                     (flymake-mode -1)))
 
-(setq flymake-diagnostic-functions nil
-      ;; flymake-show-diagnostics-at-end-of-line t
-      ;; 过低的延时在使用 tramp 编辑文件时会导致 eglot 报错不准确
-      flymake-no-changes-timeout 0.5)
+(setq-default flymake-diagnostic-functions nil)
 
 (defvar sekiro-flymake-mode-line-format `(:eval (sekiro-flymake-mode-line-format)))
 (put 'sekiro-flymake-mode-line-format 'risky-local-variable t)
@@ -952,99 +1080,19 @@ Set cursor pos to mouse pos if they are not in same pos.
      sekiro-flymake)))
 
 (with-eval-after-load 'flymake
+  (keymap-set flymake-mode-map "M-p" #'flymake-goto-prev-error)
+  (keymap-set flymake-mode-map "M-n" #'flymake-goto-next-error)
   (add-to-list 'mode-line-misc-info
                `(flymake-mode (" [" sekiro-flymake-mode-line-format "] "))))
+
+
+(add-hook 'flymake-mode-hook
+          (lambda ()
+            (add-hook 'eldoc-documentation-functions 'flymake-eldoc-function nil t)))
 #+end_src
-** Next version
+*** tab-bar
 #+begin_src emacs-lisp
-(when (>= emacs-major-version 30)
-  (add-to-list 'help-fns-describe-function-functions #'shortdoc-help-fns-examples-function))
-#+end_src
-* lib
-#+begin_src emacs-lisp
-(eat/pkg bind)
-(eat/pkg elpa-mirror)
-(setq elpamr-default-output-directory "~/Sync/myelpa")
-
-(eat/pkg fullframe)
-(eat/pkg hide-mode-line)
-(eat/pkg pinyinlib)
-(autoload #'pinyinlib-build-regexp-string "pinyinlib")
-
-(eat/pkg gcmh)
-(add-hook 'after-init-hook #'gcmh-mode)
-(setq gcmh-idle-delay 5
-      gcmh-high-cons-threshold #x6400000)
-#+end_src
-* TODO Frame
-
-Some config need these hooks to work in emacsclient, like code or theme.
-
-#+begin_src elisp
-(defvar eat/after-make-console-frame-hooks '()
-  "Hooks to run after creating a new TTY frame")
-(defvar eat/after-make-window-system-frame-hooks '()
-  "Hooks to run after creating a new window-system frame")
-
-(defun eat/run-after-make-frame-hooks (frame)
-  "Run configured hooks in response to the newly-created FRAME.
-Selectively runs either `eat/after-make-console-frame-hooks' or
-`eat/after-make-window-system-frame-hooks'"
-  (with-selected-frame frame
-    (run-hooks (if window-system
-                   'eat/after-make-window-system-frame-hooks
-                 'eat/after-make-console-frame-hooks))))
-
-;; FIXME font and theme not work
-;; (add-hook 'server-after-make-frame-hook 'eat/run-after-make-frame-hooks)
-
-(defconst eat/initial-frame (selected-frame)
-  "The frame (if any) active during Emacs initialization.")
-
-(add-hook 'after-init-hook
-          (lambda () (when eat/initial-frame
-                       (eat/run-after-make-frame-hooks eat/initial-frame))))
-#+end_src
-
-* Window
-** TODO tab-bar
-#+begin_src elisp
-(defun eat/tab-bar-tab-name-format-function (tab i)
-  (let ((current-p (eq (car tab) 'current-tab)))
-    (concat
-     (propertize (concat
-                  " "
-                  (alist-get 'name tab)
-                  " ")
-                 'face
-                 (funcall tab-bar-tab-face-function tab))
-     " ")))
-
-(defun eat/tab-bar-switch-project ()
-  "Switch to project in a new tab, project name will be used as tab name.
-
-No tab will created if the command is cancelled."
-  (interactive)
-  (let (succ)
-    (unwind-protect
-        (progn
-          (tab-bar-new-tab)
-          (call-interactively #'project-switch-project)
-          (when-let ((proj (project-root (project-current))))
-            (tab-bar-rename-tab
-             (format "%s" (file-name-nondirectory (directory-file-name proj))))
-            (setq succ t)))
-      (unless succ
-        (tab-bar-close-tab)))))
-
 (with-eval-after-load 'tab-bar
-  ;; (setq
-  ;;  tab-bar-tab-hints t
-  ;;  tab-bar-close-button-show nil
-  ;;  tab-bar-format '(tab-bar-tabs tab-bar-separator)
-  ;;  tab-bar-border nil
-  ;;  tab-bar-tab-name-format-function 'eat/tab-bar-tab-name-format-function)
-
   ;; NOTE do not bind `tab-bar-switch-to-prev-tab' and
   ;; `tab-bar-switch-to-next-tab' to M-[ or M-], it will make emacs
   ;; have some bug to auto insert characters after you type everytime
@@ -1052,9 +1100,217 @@ No tab will created if the command is cancelled."
   (keymap-set tab-prefix-map "," #'tab-bar-rename-tab)
   (keymap-set tab-prefix-map "l" #'eat/tab-bar-switch-project))
 #+end_src
+*** ibuffer
+#+begin_src emacs-lisp
+(fset 'list-buffers 'ibuffer)
+(setq-default ibuffer-show-empty-filter-groups nil)
+(keymap-global-set "C-x B" 'ibuffer)
+;; Modify the default ibuffer-formats (toggle with `)
+(setq ibuffer-formats
+      '((mark modified read-only vc-status-mini " "
+              (name 22 22 :left :elide)
+              " "
+              (size-h 9 -1 :right)
+              " "
+              (mode 12 12 :left :elide)
+              " "
+              vc-relative-file)
+        (mark modified read-only vc-status-mini " "
+              (name 22 22 :left :elide)
+              " "
+              (size-h 9 -1 :right)
+              " "
+              (mode 14 14 :left :elide)
+              " "
+              (vc-status 12 12 :left)
+              " "
+              vc-relative-file)))
 
-** ace-window
+(with-eval-after-load 'ibuffer
+  (setq ibuffer-filter-group-name-face 'font-lock-doc-face)
+  ;; Use human readable Size column instead of original one
+  (define-ibuffer-column size-h
+    (:name "Size" :inline t)
+    (file-size-human-readable (buffer-size))))
+
+#+end_src
+*** eglot
+#+begin_src emacs-lisp
+(setq eglot-events-buffer-size 0
+      eglot-sync-connect nil       ;; don't block of LSP connection attempts
+      eglot-extend-to-xref t       ;; make eglot manage file out of project by `xref-find-definitions'
+      eglot-ignored-server-capabilites
+      '(:documentHighlightProvider
+        :documentFormattingProvider
+        :documentRangeFormattingProvider))
+
+(setq-default eglot-workspace-configuration
+              '((:gopls
+                 (:ui.completion.usePlaceholders . t)
+                 (:ui.diagnostic.staticcheck . t)
+                 ;; for I have to edit wire.go even ignore it in build time
+                 (:build.buildFlags . ["-tags" "wireinject"]))))
+
+(with-eval-after-load 'eglot
+  (keymap-set eglot-mode-map "M-RET" #'eglot-code-actions)
+  (keymap-set eglot-mode-map "C-c r" #'eglot-rename)
+  (keymap-set eglot-mode-map "M-'"   #'eglot-find-implementation)
+
+  (add-to-list 'eglot-server-programs '(rust-mode "rust-analyzer"))
+  (add-to-list 'eglot-server-programs '(sql-mode . ("sqls" "-config" "~/.config/sqls/config.yaml")))
+  (add-to-list 'eglot-server-programs '(nix-mode . ("nixd")))
+  (add-to-list 'eglot-server-programs '(typst-ts-mode . ("typst-lsp")))
+  (add-to-list 'eglot-server-programs '(org-mode . ("ltex-ls")))
+  (add-to-list 'eglot-server-programs '(markdown-mode . ("ltex-ls")))
+  (add-to-list 'eglot-server-programs '(message-mode . ("ltex-ls"))))
+#+end_src
+*** Tree-sitter
+1. Install =tree-sitter= on system.
+2. Build emacs with tree sitter =--with-tree-sitter=.
+3. Install language definitions to =/usr/local/lib= or =~/.config/emacs/tree-sitter= or =treesit-extra-load-path=.
+4. On windows, copy dll files to Emacs’s bin directory.
+
+Also check:
+[[https://git.savannah.gnu.org/cgit/emacs.git/tree/admin/notes/tree-sitter/starter-guide?h=emacs-29][Emacs tree sitter start guide.]]
+[[https://github.com/casouri/tree-sitter-module][Tree sitter language definitions build script.]]
+~treesit-language-source-alist~
+~treesit-install-language-grammar~
+
+#+begin_src emacs-lisp
+(setq
+ ;; 没有在 tree-sitter 组织下的 parser
+ treesit-language-source-alist
+ '((gomod . ("https://github.com/camdencheek/tree-sitter-gomod.git"))
+   (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))))
+
+(with-eval-after-load 'go-ts-mode
+  (require 'go-mode)
+
+  (setq go-ts-mode-hook go-mode-hook
+        go-ts-mode-indent-offset 4)
+
+  (set-keymap-parent go-ts-mode-map go-mode-map))
+
+(when (treesit-available-p)
+  (push '(python-mode . python-ts-mode) major-mode-remap-alist)
+  (push '(go-mode . go-ts-mode) major-mode-remap-alist)
+
+  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.toml\\'" . toml-ts-mode)))
+#+end_src
+
+*** misc
+#+begin_src emacs-lisp
+;; Quick editing in `describe-variable'
+(with-eval-after-load 'help-fns
+  (put 'help-fns-edit-variable 'disabled nil))
+
+(add-hook 'on-first-file-hook #'global-goto-address-mode)
+(add-hook 'on-first-file-hook #'global-auto-revert-mode)
+(add-hook 'on-first-file-hook #'save-place-mode)
+
+(setq outline-minor-mode-cycle t
+      outline-minor-mode-highlight t)
+
+(setq-default vc-handled-backends '(Git))
+
+(add-hook 'prog-mode-hook #'whitespace-mode)
+(add-hook 'conf-mode-hook #'whitespace-mode)
+(setq whitespace-style '(face trailing))
+
+(add-hook 'after-init-hook #'savehist-mode)
+(setq history-length 1000)
+
+(add-hook 'on-first-buffer-hook #'winner-mode)
+(setq winner-dont-bind-my-keys t)
+
+(add-hook 'on-init-ui-hook #'context-menu-mode)
+
+;;; disable blink cursor
+(add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
+
+;;; line number
+(setq display-line-numbers-width 3)
+
+(add-hook 'prog-mode-hook
+          #'(lambda ()
+              (setq-local comment-auto-fill-only-comments t)
+              (turn-on-auto-fill)))
+
+(setq eldoc-idle-delay 1)
+(setq eldoc-documentation-function 'eldoc-documentation-compose)
+
+(add-hook 'prog-mode-hook #'subword-mode)
+
+(add-hook 'prog-mode-hook #'electric-pair-local-mode)
+(setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
+
+(setq show-paren-when-point-in-periphery t
+      show-paren-context-when-offscreen 'overlay
+      show-paren-when-point-inside-paren t
+      show-paren-context-when-offscreen t)
+
+(when (executable-find "readable")
+  (setq eww-retrieve-command '("readable")))
+
+(add-hook 'eshell-mode-hook (lambda () (setq outline-regexp eshell-prompt-regexp)))
+#+end_src
+** Next version
+#+begin_src emacs-lisp
+(when (>= emacs-major-version 30)
+  (add-to-list 'help-fns-describe-function-functions #'shortdoc-help-fns-examples-function))
+#+end_src
+* Libs
+#+begin_src emacs-lisp
+(setq package-archives '(("gnu"    . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+			             ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
+                         ("melpa"  . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/"))
+      package-quickstart t)
+(package-activate-all)
+
+(defmacro eat/pkg (package &optional vc)
+  `(unless (package-installed-p ',package)
+     (unless (memq ',package package-archive-contents)
+       (package-refresh-contents))
+     (if ,vc (package-vc-install ,vc)
+       (package-install ',package))))
+
+(eat/pkg fullframe)
+(eat/pkg hide-mode-line)
+(eat/pkg bind)
+(eat/pkg elpa-mirror)
+(eat/pkg pinyinlib)
+(eat/pkg orderless)
+
+;;; elpa-mirror
+(setq elpamr-default-output-directory "~/Sync/myelpa")
+
+;;; pinyinlib
+(autoload #'pinyinlib-build-regexp-string "pinyinlib")
+
+;;; orderless
+(defun sanityinc/use-orderless-in-minibuffer ()
+  (setq-local completion-styles '(substring orderless)))
+(add-hook 'minibuffer-setup-hook #'sanityinc/use-orderless-in-minibuffer)
+
+(with-eval-after-load 'orderless
+  (defun completion--regex-pinyin (str)
+    (orderless-regexp (pinyinlib-build-regexp-string str)))
+  (add-to-list 'orderless-matching-styles 'completion--regex-pinyin))
+
+;; Recognize any directory with a .project file as a project.
+;; Save and restore project files and window configurations across sessions.
+(eat/pkg project-x "https://github.com/karthink/project-x")
+
+(with-eval-after-load 'project
+  (project-x-mode 1))
+#+end_src
+* Window
 #+begin_src elisp
+(eat/pkg window-numbering)
+(add-hook 'after-init-hook #'window-numbering-mode)
+
 (eat/pkg ace-window)
 
 (keymap-global-set "M-o" 'ace-window)
@@ -1079,9 +1335,7 @@ No tab will created if the command is cancelled."
   (dolist (cmd '(ace-window
                  aw--select-window))
     (advice-add cmd :after #'eat/pulse-momentary-line)))
-#+end_src
-** popper
-#+begin_src elisp
+
 (eat/pkg popper)
 
 (add-hook 'on-first-buffer-hook #'popper-mode)
@@ -1097,13 +1351,13 @@ No tab will created if the command is cancelled."
         "^\\*eshell.*\\*$" eshell-mode  ;eshell as a popup
         "^\\*shell.*\\*$"  shell-mode   ;shell as a popup
         "^\\*term.*\\*$"   term-mode    ;term as a popup
-        "^\\*vterm.*\\*$"  vterm-mode   ;vterm as a popup
-        "^\\*eat.*\\*$"    eat-mode     ;eat as a popup
 
         ;; help & message
         help-mode
+        compilation-mode
+
         ghelp-page-mode
-        compilation-mode))
+        "^\\*eat.*\\*$" eat-mode))
 
 (with-eval-after-load 'project
   (setq popper-group-function 'popper-group-by-project))
@@ -1118,178 +1372,55 @@ No tab will created if the command is cancelled."
      (floor (frame-height) 3)))
   (setq popper-window-height #'my-popper-fit-window-height))
 #+end_src
-** window-numbering
-#+begin_src emacs-lisp
-(eat/pkg window-numbering)
-(add-hook 'after-init-hook #'window-numbering-mode)
-#+end_src
-** switch-window
-
-#+begin_src elisp
-(eat/pkg switchy-window)
-
-(add-hook 'on-first-file-hook #'switchy-window-minor-mode)
-
-;; (keymap-set switchy-window-minor-mode-map "<remap> <other-window>" #'switchy-window)
-#+end_src
 * Buffer
-** Ibuffer
 #+begin_src elisp
-(eat/pkg ibuffer-vc)
-(fset 'list-buffers 'ibuffer)
-(setq-default ibuffer-show-empty-filter-groups nil)
-(keymap-global-set "C-x B" 'ibuffer)
-;; Modify the default ibuffer-formats (toggle with `)
-(setq ibuffer-formats
-      '((mark modified read-only vc-status-mini " "
-              (name 22 22 :left :elide)
-              " "
-              (size-h 9 -1 :right)
-              " "
-              (mode 12 12 :left :elide)
-              " "
-              vc-relative-file)
-        (mark modified read-only vc-status-mini " "
-              (name 22 22 :left :elide)
-              " "
-              (size-h 9 -1 :right)
-              " "
-              (mode 14 14 :left :elide)
-              " "
-              (vc-status 12 12 :left)
-              " "
-              vc-relative-file)))
 (with-eval-after-load 'ibuffer
-  (setq ibuffer-filter-group-name-face 'font-lock-doc-face)
   (with-eval-after-load 'fullframe
-    (fullframe ibuffer ibuffer-quit))
-  ;; Use human readable Size column instead of original one
-  (define-ibuffer-column size-h
-    (:name "Size" :inline t)
-    (file-size-human-readable (buffer-size))))
+    (fullframe ibuffer ibuffer-quit)))
 
-;; Ibuffer-vc
-(add-hook 'ibuffer-hook #'ibuffer-set-up-preferred-filters)
+(eat/pkg ibuffer-vc)
 
 (defun ibuffer-set-up-preferred-filters ()
   (ibuffer-vc-set-filter-groups-by-vc-root)
   (unless (eq ibuffer-sorting-mode 'filename/process)
     (ibuffer-do-sort-by-filename/process)))
+;; Ibuffer-vc
+(add-hook 'ibuffer-hook #'ibuffer-set-up-preferred-filters)
 #+end_src
-** Isearch
+* Minibuffer
 #+begin_src elisp
 (eat/pkg isearch-mb)
-
 (add-hook 'isearch-mode-hook #'isearch-mb-mode)
 
-(with-eval-after-load 'isearch-mb
-  (define-advice isearch-mb--update-prompt (:around (fn &rest _) show-case-fold-info)
-    "Show case fold info in the prompt."
-    (cl-letf* ((isearch--describe-regexp-mode-orig
-                (symbol-function 'isearch--describe-regexp-mode))
-               ((symbol-function 'isearch--describe-regexp-mode)
-                (lambda (regexp-function &optional space-before)
-                  (concat (if isearch-case-fold-search "[Case Fold] " "")
-                          (funcall isearch--describe-regexp-mode-orig
-                                   regexp-function space-before)))))
-      (funcall fn _))))
-#+end_src
+(define-advice isearch-mb--update-prompt (:around (fn &rest args) show-case-fold-info)
+  "Show case fold info in the prompt."
+  (cl-letf* ((isearch--describe-regexp-mode-orig
+              (symbol-function 'isearch--describe-regexp-mode))
+             ((symbol-function 'isearch--describe-regexp-mode)
+              (lambda (regexp-function &optional space-before)
+                (concat (if isearch-case-fold-search "[Case Fold] " "")
+                        (funcall isearch--describe-regexp-mode-orig
+                                 regexp-function space-before)))))
+    (apply fn args)))
 
-* Vertico
-#+begin_src elisp
 ;;; vertico
 (eat/pkg vertico)
 
 (add-hook 'after-init-hook #'vertico-mode)
 (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
 
-;; Use `consult-completion-in-region' if Vertico is enabled.
-;; Otherwise use the default `completion--in-region' function.
-(setq completion-in-region-function
-      (lambda (&rest args)
-        (apply (if vertico-mode
-                   #'consult-completion-in-region
-                 #'completion--in-region)
-               args)))
-
-(with-eval-after-load 'vertico
-  (keymap-set vertico-map "DEL" #'vertico-directory-delete-char)
-  (keymap-set vertico-map "M-DEL" #'vertico-directory-delete-word)
-  (keymap-set vertico-map "RET" #'vertico-directory-enter))
-
 (setq vertico-resize nil
       vertico-count 17)
-#+end_src
-** marginalia
-#+begin_src emacs-lisp
+
+(with-eval-after-load 'vertico
+  (bind vertico-map
+        "DEL" #'vertico-directory-delete-char
+        "RET" #'vertico-directory-enter
+        "M-DEL" #'vertico-directory-delete-word))
+
 (eat/pkg marginalia)
 (add-hook 'after-init-hook #'marginalia-mode)
-#+end_src
-** orderless
-#+begin_src emacs-lisp
-(eat/pkg orderless)
 
-(defun sanityinc/use-orderless-in-minibuffer ()
-  (setq-local completion-styles '(substring orderless)))
-
-(add-hook 'minibuffer-setup-hook #'sanityinc/use-orderless-in-minibuffer)
-
-(with-eval-after-load 'orderless
-  (defun completion--regex-pinyin (str)
-    (orderless-regexp (pinyinlib-build-regexp-string str)))
-  (add-to-list 'orderless-matching-styles 'completion--regex-pinyin))
-#+end_src
-
-** consult
-#+begin_src emacs-lisp
-;;; consult
-(eat/pkg consult)
-(eat/pkg consult-todo "https://github.com/liuyinz/consult-todo")
-
-(advice-add #'multi-occur :override #'consult-multi-occur)
-;; (global-set-key (kbd "C-s") #'consult-line)
-(global-set-key [remap apropos] #'consult-apropos)
-(global-set-key [remap bookmark-jump] #'consult-bookmark)
-(global-set-key [remap goto-line] #'consult-goto-line)
-(global-set-key [remap imenu] #'consult-imenu)
-(global-set-key [remap locate] #'consult-locate)
-(global-set-key [remap man] #'consult-man)
-(global-set-key [remap recentf-open-files] #'consult-recent-file)
-(global-set-key [remap switch-to-buffer] #'consult-buffer)
-(global-set-key [remap switch-to-buffer-other-window] #'consult-buffer-other-window)
-(global-set-key [remap switch-to-buffer-other-frame] #'consult-buffer-other-frame)
-(global-set-key [remap yank-pop] #'consult-yank-pop)
-(global-set-key [remap project-find-regexp] #'consult-grep)
-
-(setq consult-project-root-function  (lambda ()
-                                       (when-let (project (project-current))
-                                         (car (project-roots project))))
-      consult-narrow-key             "<"
-      consult-line-numbers-widen     t
-      consult-async-min-input        2
-      consult-async-refresh-delay    0.15
-      consult-async-input-throttle   0.2
-      consult-async-input-debounce   0.1
-      xref-show-xrefs-function       #'consult-xref
-      xref-show-definitions-function #'consult-xref)
-
-(with-eval-after-load 'consult
-  (consult-customize consult-ripgrep consult-git-grep consult-grep
-                     consult-bookmark consult-recent-file consult-xref
-                     :preview-key nil))
-;;; consult-dir
-(eat/pkg consult-dir)
-(global-set-key [remap list-directory] #'consult-dir)
-(with-eval-after-load 'vertico
-  (keymap-set vertico-map "C-x C-d" #'consult-dir)
-  (keymap-set vertico-map "C-x C-j" #'consult-dir-jump-file))
-
-;;; consult-eglot
-(eat/pkg consult-eglot)
-#+end_src
-
-** embark
-#+begin_src emacs-lisp
 (eat/pkg embark)
 (eat/pkg embark-consult)
 
@@ -1308,236 +1439,133 @@ No tab will created if the command is cancelled."
   (with-eval-after-load 'consult
     (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode)))
 #+end_src
-
 * UI
-** Windows/frames
 #+begin_src emacs-lisp
-(eat/pkg breadcrumb)
+(eat/pkg almost-mono-themes)
+(eat/pkg gruber-darker-theme)
+(eat/pkg standard-themes)
+(eat/pkg kaolin-themes)
+(eat/pkg spacemacs-theme)
 
+(eat/pkg doom-themes)
+(setq doom-ayu-dark-comment-bg t
+      doom-ayu-dark-brighter-comments t
+      doom-ayu-dark-brighter-modeline t)
+
+(eat/pkg breadcrumb)
 (setq-default frame-title-format
               '((:eval (breadcrumb-project-crumbs))
-                " : "
-                (:eval (breadcrumb-imenu-crumbs))))
+                (:eval (and imenu--index-alist
+                            (concat "  ◊  " (breadcrumb-imenu-crumbs))))))
 
-(setq use-dialog-box nil
-      ;; Monitors are trending toward wide, rather than tall.
-      split-width-threshold 160
-      split-height-threshold nil)
-#+end_src
-** Scrolling
-#+begin_src emacs-lisp
-(setq hscroll-step 1
-      hscroll-margin 2
-      ;; The nano style for truncated long lines.
-      auto-hscroll-mode 'current-line
-      scroll-margin 0
-      scroll-conservatively 101
-      scroll-preserve-screen-position t
-      auto-window-vscroll nil
-      ;; Use shift + mouse wheel to scrll horizontally.
-      mouse-wheel-scroll-amount '(2 ((shift) . hscroll))
-      mouse-wheel-scroll-amount-horizontal 2)
+(eat/pkg visual-fill-column)
+(add-hook 'visual-fill-column-mode-hook #'visual-line-mode)
+(setq visual-fill-column-center-text t)
 
-(when (fboundp 'pixel-scroll-precision-mode)
-  (add-hook 'after-init-hook (lambda () (pixel-scroll-precision-mode)))
 
-  (setq pixel-scroll-precision-interpolate-page t)
-  (defun +pixel-scroll-interpolate-down (&optional lines)
-    (interactive)
-    (if lines
-        (pixel-scroll-precision-interpolate (* -1 lines (pixel-line-height)))
-      (pixel-scroll-interpolate-down)))
+(eat/pkg ligature)
+(add-hook 'prog-mode-hook #'(lambda () (ligature-mode t)))
+(autoload #'global-ligature-mode "ligature")
+(with-eval-after-load 'ligature
+  ;; https://htmlpreview.github.io/?https://github.com/kiliman/operator-mono-lig/blob/master/images/preview/normal/index.html
+  (ligature-set-ligatures 'prog-mode
+                          '("&&" "||" "|>" ":=" "==" "===" "==>" "=>"
+                            "=<<" "!=" "!==" ">=" ">=>" ">>=" "->" "--"
+                            "-->" "<|" "<=" "<==" "<=>" "<=<" "<!--" "<-"
+                            "<->" "<--" "</" "+=" "++" "??" "/>" "__" "WWW")))
 
-  (defun +pixel-scroll-interpolate-up (&optional lines)
-    (interactive)
-    (if lines
-        (pixel-scroll-precision-interpolate (* lines (pixel-line-height))))
-    (pixel-scroll-interpolate-up))
 
-  (defalias 'scroll-up-command '+pixel-scroll-interpolate-down)
-  (defalias 'scroll-down-command '+pixel-scroll-interpolate-up))
-#+end_src
-** Font
-#+begin_src elisp
-(defun font-installed-p (font-list)
-  (let ((font-installed nil))
-    (catch 'foo
-      (dolist (font font-list)
-        (when (find-font (font-spec :name font))
-          (setq font-installed font)
-          (throw 'foo t))))
-    font-installed))
+(eat/pkg hl-todo)
+(add-hook 'dired-mode-hook #'hl-todo-mode)
+(add-hook 'prog-mode-hook #'hl-todo-mode)
+(add-hook 'conf-mode-hook #'hl-todo-mode)
 
-(defvar eat/fonts-default        '("Monaco" "Cascadia Code" "Menlo" "Source Code Pro"))
-(defvar eat/fonts-variable-pitch '("Bookerly" "Cardo" "Times New Roman" "DejaVu Sans"))
-(defvar eat/fonts-cjk            '("LXGW WenKai" "WenQuanYi Micro Hei" "Microsoft Yahei"))
-(defvar eat/fonts-unicode        '("Symbola"))
-(defvar eat/fonts-emoji          '("Apple Color Emoji" "Segoe UI Symbol" "Noto Color Emoji"))
-(defvar eat/font-size-default   13)
-(defvar eat/font-default        (font-installed-p eat/fonts-default))
-(defvar eat/font-variable-pitch (font-installed-p eat/fonts-variable-pitch))
-(defvar eat/font-cjk            (font-installed-p eat/fonts-cjk))
-(defvar eat/font-unicode        (font-installed-p eat/fonts-unicode))
-(defvar eat/font-emoji          (font-installed-p eat/fonts-emoji))
-
-(defvar eat/font-rescale-alist
-  `((,eat/font-cjk     . 0.85)
-    (,eat/font-emoji   . 0.85)
-    (,eat/font-unicode . 0.85))
-  "A list of font names that should be rescaled.")
-
-(defun eat/rescale-font ()
-  (interactive)
-  (dolist (setting eat/font-rescale-alist)
-    (when (car setting)
-      (setf (alist-get (car setting)
-                       face-font-rescale-alist nil nil #'equal)
-		    (cdr setting)))))
-
-(defun eat/fixed-pitch-setup ()
-  (interactive)
-  (setq buffer-face-mode-face '(:family "等距更纱黑体 SC"))
-  (buffer-face-mode +1))
-
-(defun eat/setup-mode-line-font ()
-  (set-face-attribute 'mode-line nil :inherit 'variable-pitch)
-  (set-face-attribute 'mode-line-inactive nil :inherit 'variable-pitch))
-
-(defun eat/setup-font ()
-  (interactive)
-  (set-face-attribute 'default     nil :height (* 10 eat/font-size-default))
-  (when eat/font-default
-    (set-face-attribute 'default     nil :family eat/font-default)
-    (set-face-attribute 'fixed-pitch nil :font eat/font-default))
-  ;; variable-pitch
-  (when eat/font-variable-pitch (set-face-font 'variable-pitch eat/font-variable-pitch))
-  ;; unicode
-  (when eat/font-unicode
-    (set-fontset-font t 'unicode eat/font-unicode))
-  ;;  emoji
-  (when eat/font-emoji
-    (set-fontset-font t 'emoji   eat/font-emoji))
-  ;; Chinese font, NOTE must set after unicode
-  (when eat/font-cjk
-    (set-fontset-font t 'kana     eat/font-cjk)
-    (set-fontset-font t 'han      eat/font-cjk)
-    (set-fontset-font t 'cjk-misc eat/font-cjk))
-  (eat/setup-mode-line-font))
-
-(add-hook 'eat/after-make-window-system-frame-hooks #'eat/setup-font)
-(add-hook 'eat/after-make-window-system-frame-hooks #'eat/rescale-font)
-#+end_src
-** Theme
-#+begin_src elisp
-(setq modus-themes-fringes nil)
-
-(defvar eat/theme 'modus-operandi
-  "Default theme.")
-
-(defvar eat/theme-tui 'wombat
-  "Default TUI theme.")
-
-(defvar eat/theme-system-light 'modus-operandi
-  "Default light theme after system appearance changed.")
-
-(defvar eat/theme-system-dark 'wombat
-  "Default dark theme after system appearance changed.")
-
-(defvar load-theme-hook nil
-  "Hooks that run after `load-theme'.")
-
-(defun eat/load-theme (f theme &optional no-confirm no-enable &rest args)
-  (interactive
-   (list
-    (intern (completing-read "Theme: "
-                             (mapcar #'symbol-name
-				                     (custom-available-themes))))))
-  (dolist (theme custom-enabled-themes)
-    (disable-theme theme))
-  (if (featurep (intern (format "%s-theme" theme)))
-      (enable-theme theme)
-    (apply f theme t no-enable args))
-  (run-hooks 'load-theme-hook))
-(advice-add 'load-theme :around #'eat/load-theme)
-
-(defun eat/tui-load-theme ()
-  (when (fboundp 'menu-bar-mode)
-    (menu-bar-mode -1))
-  (when eat/theme-tui
-    (load-theme eat/theme-tui)))
-
-(defun eat/gui-load-theme ()
-  (when eat/theme
-    (load-theme eat/theme))
-  ;; For MacOS, load theme after system appearance changed.
-  (when (boundp 'ns-system-appearance)
-    (add-to-list 'ns-system-appearance-change-functions
-                 (lambda (l?d)
-                   (if (eq l?d 'light)
-                       (progn
-                         (set-frame-parameter nil 'ns-appearance 'light)
-                         (load-theme eat/theme-system-light))
-                     (set-frame-parameter nil 'ns-appearance 'dark)
-                     (load-theme eat/theme-system-dark))))))
-
-(add-hook 'eat/after-make-console-frame-hooks       #'eat/tui-load-theme)
-(add-hook 'eat/after-make-window-system-frame-hooks #'eat/gui-load-theme)
-(add-hook 'load-theme-hook #'eat/setup-mode-line-font)
-
-(eat/pkg gruber-darker-theme)
-
-(eat/pkg nano-theme "https://github.com/404cn/nano-theme.el")
-(add-to-list 'custom-theme-load-path (expand-file-name "elpa/nano-theme" user-emacs-directory))
-
-(eat/pkg carbon-theme "https://github.com/DogLooksGood/carbon-theme")
-(add-to-list 'custom-theme-load-path (expand-file-name "elpa/carbon-theme" user-emacs-directory))
-#+end_src
-** solaire mode
-
-#+begin_src emacs-lisp
-(eat/pkg solaire-mode)
-
-(add-hook 'after-init-hook #'solaire-global-mode)
-#+end_src
-
-** Text Scale
-#+begin_src elisp
-(eat/pkg default-text-scale)
-(keymap-global-set "C-x C-=" #'default-text-scale-increase)
-(keymap-global-set "C-x C--" #'default-text-scale-decrease)
-#+end_src
-** hide minor modes on mode line
-#+begin_src emacs-lisp
-(eat/pkg minions)
+;;; eldoc-box
+(eat/pkg eldoc-box)
+(setq eldoc-box-only-multi-line t)
+(add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode)
 
 (add-hook 'after-init-hook 'minions-mode)
-#+end_src
-** indent bars
-#+begin_src emacs-lisp
-(eat/pkg indent-bars "https://github.com/jdtsmith/indent-bars.git")
 
-(add-hook 'python-base-mode-hook #'indent-bars-mode)
-(add-hook 'yaml-mode-hook #'indent-bars-mode)
-(add-hook 'yaml-ts-mode-hook #'indent-bars-mode)
+(eat/pkg default-text-scale)
+(bind global-map
+      "C-x C-=" #'default-text-scale-increase
+      "C-x C--" #'default-text-scale-decrease)
 
-(setq
- indent-bars-color '(highlight :face-bg t :blend 0.15)
- indent-bars-pattern "."
- indent-bars-width-frac 0.1
- indent-bars-pad-frac 0.1
- indent-bars-zigzag nil
- indent-bars-color-by-depth nil
- indent-bars-display-on-blank-lines nil)
+(eat/pkg solaire-mode)
+(add-hook 'after-init-hook #'solaire-global-mode)
 
-(setq indent-bars-treesit-support (treesit-available-p)
-      ;; indent-bars-prefer-character "│"
-      indent-bars-highlight-current-depth '(:face default :blend 0.3)
-      ;; https://github.com/jdtsmith/indent-bars#configuring-tree-sitter
-      indent-bars-treesit-ignore-blank-lines-types '("module")
-      indent-bars-treesit-wrap '((python argument_list parameters
-				                         list list_comprehension
-				                         dictionary dictionary_comprehension
-				                         parenthesized_expression subscript)))
+;;; auto dark
+(eat/pkg auto-dark)
+(autoload #'auto-dark-mode "auto-dark")
+(add-hook 'after-make-window-system-frame-hooks #'auto-dark-mode)
+
+;;; theme load path
+(eat/pkg nano-theme "https://github.com/mrunhap/nano-theme.el")
+(eat/pkg carbon-theme "https://github.com/DogLooksGood/carbon-theme")
+(eat/pkg paperlike-theme "https://github.com/DogLooksGood/paperlike-theme")
+(add-to-list 'custom-theme-load-path (expand-file-name "elpa/nano-theme" user-emacs-directory))
+(add-to-list 'custom-theme-load-path (expand-file-name "elpa/carbon-theme" user-emacs-directory))
+(add-to-list 'custom-theme-load-path (expand-file-name "elpa/paperlike-theme" user-emacs-directory))
+
+;;; mode-line
+(eat/pkg minions)
+
+(defun luna-mode-line-with-padding (text)
+  "Return TEXT with padding on the left.
+The padding pushes TEXT to the right edge of the mode-line."
+  (if (and (>= emacs-major-version 29) (display-graphic-p))
+      (let* ((len (string-pixel-width text))
+             (space-prop
+              `(space :align-to (- (+ right right-margin) (,len))))
+             (padding (propertize "-" 'display space-prop)))
+        (concat padding text))
+    (concat " " text)))
+
+(defun luna-mode-line-coding-system ()
+  "Display abnormal coding systems."
+  (let ((coding (symbol-name buffer-file-coding-system)))
+    (if (or (and (not (string-prefix-p "prefer-utf-8" coding))
+                 (not (string-prefix-p "utf-8" coding))
+                 (not (string-prefix-p "undecided" coding)))
+            (string-suffix-p "dos" coding))
+        (concat "  " coding)
+      "")))
+
+(setq-default mode-line-format
+              (let* ((spaces
+                      (propertize " " 'display '(space :width 1.2)))
+                     (fringe (propertize
+                              " " 'display '(space :width fringe)))
+                     (percentage
+                      '(format
+                        "[%%l] %d%%"
+                        (/ (* (window-end) 100.0) (point-max)))))
+                `(,fringe
+                  (:eval (if (window-dedicated-p) "🚷" ""))
+                  (:eval (if buffer-read-only "🔒" ""))
+                  (:eval (meow-indicator))
+                  (:eval (rime-lighter))
+                  (:propertize "%[%b%]" face (:weight semi-bold))
+                  (:eval (luna-mode-line-coding-system))
+                  ,spaces
+                  ,(if (boundp 'minions-mode-line-modes)
+                       'minions-mode-line-modes
+                     'mode-line-modes)
+                  ,spaces
+                  (:eval (if (buffer-modified-p)
+                             ,(if (display-graphic-p) "ΦAΦ" "OAO")
+                           ,(if (display-graphic-p) "ΦwΦ" "OwO")))
+                  ,(if (display-graphic-p)
+                       (list (propertize "  " 'display '(raise 0.3))
+                             (propertize " " 'display '(raise -0.3)))
+                     " ")
+                  mode-line-misc-info
+                  (:eval (concat (luna-mode-line-with-padding ,percentage)
+                                 "%%"))
+                  )))
+
+(setq-default header-line-format nil)
 #+end_src
 * Editing
 ** Meow
@@ -1742,21 +1770,17 @@ No tab will created if the command is cancelled."
 (eat/pkg meow)
 
 (require 'meow)
-(setq meow-visit-sanitize-completion nil
-      meow-esc-delay 0.001
-      meow-keypad-describe-delay 1.0
+(setq meow-esc-delay 0.001
       meow-replace-state-name-list
       '((normal . "N")
-        (motion . "M")
-        (keypad . "K")
+        (beacon . "B")
         (insert . "I")
-        (beacon . "B")))
-;; specific font so that line won't break TODO chang to variable
-;; (advice-add 'meow-cheatsheet :after (lambda ()
-;;                                       (interactive)
-;;                                       (setq buffer-face-mode-face '(:family "Menlo"))
-;;                                       (buffer-face-mode +1)))
-;; normal mode list
+        (motion . "M")
+        (keypad . "K")))
+
+(meow-thing-register 'backquote '(regexp "`" "`") '(regexp "`" "`"))
+(add-to-list 'meow-char-thing-table '(?` . backquote))
+
 (dolist (mode '(go-dot-mod-mode
                 diff-mode))
   (add-to-list 'meow-mode-state-list `(,mode . normal)))
@@ -1773,7 +1797,6 @@ No tab will created if the command is cancelled."
   (add-to-list 'meow-mode-state-list `(,mode . insert)))
 
 (meow-setup-dvorak)
-(meow-setup-indicator)
 (meow-global-mode 1)
 #+end_src
 ** Separedit
@@ -1783,18 +1806,12 @@ No tab will created if the command is cancelled."
 #+end_src
 
 ** Undo
-*** vundo
 #+begin_src emacs-lisp
 (eat/pkg vundo)
-#+end_src
-
-*** undo-hl
-#+begin_src emacs-lisp
 (eat/pkg undo-hl "https://github.com/casouri/undo-hl.git")
 (add-hook 'prog-mode-hook #'undo-hl-mode)
 (add-hook 'conf-mode-hook #'undo-hl-mode)
 #+end_src
-
 ** rime for Chinese Input
 If install emacs with nix:
 Set =rime-emacs-module-header-root= to =emacs/include=.
@@ -1831,45 +1848,74 @@ set  to =librime=.
 Only work for orderless for now.
 
 #+begin_src elisp
-(unless (package-installed-p 'rime-regexp)
-  (package-vc-install "https://github.com/colawithsauce/rime-regexp.el"))
-
+(eat/pkg rime-regexp "https://github.com/colawithsauce/rime-regexp.el")
 (with-eval-after-load "rime"
   (rime-regexp-mode))
 #+end_src
 
-** Hl Todo
-#+begin_src emacs-lisp
-(eat/pkg hl-todo)
-(add-hook 'dired-mode-hook #'hl-todo-mode)
-(add-hook 'prog-mode-hook #'hl-todo-mode)
-(add-hook 'conf-mode-hook #'hl-todo-mode)
-#+end_src
-** Ligature
-#+begin_src emacs-lisp
-(eat/pkg ligature)
-
-(add-hook 'prog-mode-hook #'(lambda () (ligature-mode t)))
-
-(autoload #'global-ligature-mode "ligature")
-
-(with-eval-after-load 'ligature
-  ;; https://htmlpreview.github.io/?https://github.com/kiliman/operator-mono-lig/blob/master/images/preview/normal/index.html
-  (ligature-set-ligatures 'prog-mode
-                          '("&&" "||" "|>" ":=" "==" "===" "==>" "=>"
-                            "=<<" "!=" "!==" ">=" ">=>" ">>=" "->" "--"
-                            "-->" "<|" "<=" "<==" "<=>" "<=<" "<!--" "<-"
-                            "<->" "<--" "</" "+=" "++" "??" "/>" "__" "WWW")))
-#+end_src
 ** Avy
+
 #+begin_src elisp
 (eat/pkg avy)
 (with-eval-after-load 'avy
   (setq avy-background t
         avy-style 'pre))
 #+end_src
+** urgrep
+#+begin_src elisp
+(eat/pkg wgrep)
+(eat/pkg urgrep)
+
+(with-eval-after-load 'urgrep
+  (require 'urgrep-wgrep))
+#+end_src
+
 * Completion
-** company for in buffer completion
+** consult
+#+begin_src emacs-lisp
+(eat/pkg consult)
+(eat/pkg consult-dir)
+(eat/pkg consult-eglot)
+
+(setq
+ consult-narrow-key             "<"
+ consult-preview-key            "M-."
+ xref-show-xrefs-function       #'consult-xref
+ xref-show-definitions-function #'consult-xref)
+
+(bind global-map
+      "M-l"            #'consult-line
+      [remap yank-pop] #'consult-yank-pop
+      ;; C-x bindings
+      [remap switch-to-buffer              ] #'consult-buffer
+      [remap switch-to-buffer-other-window ] #'consult-buffer-other-window
+      [remap switch-to-buffer-other-tab    ] #'consult-buffer-other-tab
+      [remap switch-to-buffer-other-frame  ] #'consult-buffer-other-frame
+      [remap project-switch-to-buffer      ] #'consult-project-buffer
+      [remap project-find-regexp           ] #'consult-ripgrep
+      [remap bookmark-jump                 ] #'consult-bookmark
+      [remap recentf-open-files            ] #'consult-recent-file
+      ;; M-g for go to things
+      "M-g e"           #'consult-compile-error
+      "M-g f"           #'consult-flymake
+      "M-g o"           #'consult-outline
+      "M-g m"           #'consult-mark
+      [remap imenu]     #'consult-imenu
+      [remap goto-line] #'consult-goto-line
+      ;; register
+      "M-#"   #'consult-register-load
+      "C-M-'" #'consult-register-store
+      "C-M-#" #'consult-register)
+
+;;; consult-dir
+(keymap-substitute global-map #'list-directory #'consult-dir)
+(with-eval-after-load 'vertico
+  (bind vertico-map
+        "C-x C-d" #'consult-dir
+        "C-x C-j" #'consult-dir-jump-file))
+#+end_src
+
+** company
 
 - use C-p/C-n to select prev/next
 - use tab to do complete
@@ -1968,27 +2014,19 @@ Only work for orderless for now.
   (with-eval-after-load 'meow
     (add-to-list 'copilot-enable-predicates 'meow-insert-mode-p)))
 #+end_src
-
 * Programming
 ** Tools
-*** Devdocs
-#+begin_src elisp
-(eat/pkg devdocs)
-#+end_src
-
-*** Imenu List
+*** direnv
 #+begin_src emacs-lisp
-(eat/pkg imenu-list)
+(eat/pkg envrc)
 
-(setq imenu-list-auto-resize t
-      imenu-list-mode-line-format nil)
-
-(defun eat/imenu-list-setup ()
-  (setq-local header-line-format nil)
-  (face-remap-add-relative 'default :height 0.8))
-
-(add-hook 'imenu-list-major-mode-hook #'eat/imenu-list-setup)
+(add-hook 'after-init-hook #'envrc-global-mode)
 #+end_src
+*** Restclient
+#+begin_src emacs-lisp
+(eat/pkg restclient)
+#+end_src
+
 *** Paredit
 #+begin_src emacs-lisp
 (eat/pkg paredit)
@@ -2010,22 +2048,6 @@ Only work for orderless for now.
 ;;  "C-{" 'puni-barf-backward
 ;;  "C-}" 'puni-barf-forward)
 #+end_src
-*** Dumb Jump
-#+begin_src elisp
-(eat/pkg dumb-jump)
-
-(setq dumb-jump-quiet t
-      dumb-jump-aggressive t
-      dumb-jump-selector 'completing-read)
-
-(when (executable-find "ugrep")
-  (setq dumb-jump-grep-cmd "ugrep"
-        dumb-jump-grep-args "-G -U -Y -. --sort -Dread -dread"))
-
-;; NOTE use `dumb-jump' as default xref backend
-;; you can run `eglot' or `eat/citre-enable' to reset this
-(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
-#+end_src
 *** Apheleia
 #+begin_src elisp
 (eat/pkg apheleia)
@@ -2039,23 +2061,41 @@ Only work for orderless for now.
   (setf (alist-get 'gofmt apheleia-formatters)
         '("goimports")))
 #+end_src
-*** Clue
+*** indent bars
 #+begin_src emacs-lisp
-(eat/pkg clue "https://github.com/AmaiKinono/clue")
+(eat/pkg indent-bars "https://github.com/jdtsmith/indent-bars.git")
+
+(add-hook 'python-base-mode-hook #'indent-bars-mode)
+(add-hook 'yaml-mode-hook #'indent-bars-mode)
+(add-hook 'yaml-ts-mode-hook #'indent-bars-mode)
+
+(setq
+ indent-bars-color '(highlight :face-bg t :blend 0.15)
+ indent-bars-pattern "."
+ indent-bars-width-frac 0.1
+ indent-bars-pad-frac 0.1
+ indent-bars-zigzag nil
+ indent-bars-color-by-depth nil
+ indent-bars-display-on-blank-lines nil)
+
+(setq indent-bars-treesit-support (treesit-available-p)
+      ;; indent-bars-prefer-character "│"
+      indent-bars-highlight-current-depth '(:face default :blend 0.3)
+      ;; https://github.com/jdtsmith/indent-bars#configuring-tree-sitter
+      indent-bars-treesit-ignore-blank-lines-types '("module")
+      indent-bars-treesit-wrap '((python argument_list parameters
+				                         list list_comprehension
+				                         dictionary dictionary_comprehension
+				                         parenthesized_expression subscript)))
 #+end_src
-** Lsp
-*** lsp-bridge                                                       :deps:
-Need a lot...
 
-~pypy3 -m ensurepip && pypy3 -m pip install epc sexpdata six paramiko~
-
+** lsp-bridge
 #+begin_src elisp
 (eat/pkg lsp-bridge "https://github.com/manateelazycat/lsp-bridge")
 (eat/pkg flymake-bridge "https://github.com/liuyinz/flymake-bridge")
-;; (eat/pkg popon "https://codeberg.org/akib/emacs-popon.git")
-;; (eat/pkg acm-terminal "https://github.com/twlz0ne/acm-terminal")
 
 (setq lsp-bridge-c-lsp-server "ccls"
+      acm-enable-tabnine nil
       ;; install lsp server and run lsp_bridge.py on remote server
       lsp-bridge-enable-with-tramp t)
 
@@ -2068,12 +2108,7 @@ Need a lot...
   ;; Use tab to jump to next field but do complete when there's acm complete.
   (with-eval-after-load 'yasnippet
     (define-key yas-keymap (kbd "<tab>") 'acm-complete-or-expand-yas-snippet)
-    (define-key yas-keymap (kbd "TAB") 'acm-complete-or-expand-yas-snippet))
-  ;; Use acm in terminal.
-  ;; (unless (display-graphic-p)
-  ;;   (with-eval-after-load 'acm
-  ;;     (require 'acm-terminal)))
-  )
+    (define-key yas-keymap (kbd "TAB") 'acm-complete-or-expand-yas-snippet)))
 
 (with-eval-after-load 'lsp-bridge
   (add-hook 'lsp-bridge-mode-hook #'eat/lsp-bridge-mode-setup)
@@ -2098,45 +2133,7 @@ Need a lot...
     "n" #'lsp-bridge-ref-jump-next-file)))
 #+end_src
 
-*** eglot
 #+begin_src elisp
-(eat/pkg eldoc-box)
-
-(setq eglot-events-buffer-size 0
-      eglot-sync-connect nil       ;; don't block of LSP connection attempts
-      eglot-extend-to-xref t       ;; make eglot manage file out of project by `xref-find-definitions'
-      eglot-stay-out-of '(company) ;; I will set up company myself for specific backends
-      eglot-ignored-server-capabilites
-      '(:documentHighlightProvider
-        :documentFormattingProvider
-        :documentRangeFormattingProvider))
-
-;; TODO config :stubPath for python's lsp server
-;; https://www.reddit.com/r/emacs/comments/17ry3vr/comment/k8p6j36/?context=3
-(setq-default eglot-workspace-configuration
-              '((:gopls
-                 (:ui.completion.usePlaceholders . t)
-                 (:ui.diagnostic.staticcheck . t)
-                 ;; for I have to edit wire.go even ignore it in build time
-                 (:build.buildFlags . ["-tags" "wireinject"]))))
-
-(when (executable-find "ltex-ls")
-  (add-hook 'message-mode-hook #'eglot-ensure))
-
-(with-eval-after-load 'eglot
-  (bind eglot-mode-map
-        "M-RET"  #'eglot-code-actions
-        "C-c r" #'eglot-rename
-        "M-'" #'eglot-find-implementation)
-
-  (add-to-list 'eglot-server-programs '(rust-mode "rust-analyzer"))
-  (add-to-list 'eglot-server-programs '(sql-mode . ("sqls" "-config" "~/.config/sqls/config.yaml")))
-  (add-to-list 'eglot-server-programs '(nix-mode . ("nixd")))
-  (add-to-list 'eglot-server-programs '(message-mode . ("ltex-ls"))))
-
-(add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode)
-
-
 (eat/pkg eglot-hierarchy "https://github.com/dolmens/eglot-hierarchy")
 #+end_src
 ** Citre
@@ -2297,126 +2294,9 @@ Install =rnix-lsp= and =nixfmt=.
 ;; NOTE js-ts-mode and tsx-ts-mode have bug to stuck emacs
 (setq-default js-indent-level 2)
 #+end_src
-** Tree-sitter
-1. Install =tree-sitter= on system.
-2. Build emacs with tree sitter =--with-tree-sitter=.
-3. Install language definitions to =/usr/local/lib= or =~/.config/emacs/tree-sitter= or =treesit-extra-load-path=.
-4. On windows, copy dll files to Emacs’s bin directory.
-
-Also check:
-[[https://git.savannah.gnu.org/cgit/emacs.git/tree/admin/notes/tree-sitter/starter-guide?h=emacs-29][Emacs tree sitter start guide.]]
-[[https://github.com/casouri/tree-sitter-module][Tree sitter language definitions build script.]]
-~treesit-language-source-alist~
-~treesit-install-language-grammar~
-
-#+begin_src emacs-lisp
-(setq
- ;; 没有在 tree-sitter 组织下的 parser
- treesit-language-source-alist
- '((gomod . ("https://github.com/camdencheek/tree-sitter-gomod.git"))
-   (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))))
-#+end_src
-
-*** go
-
-#+begin_src emacs-lisp
-(with-eval-after-load 'go-ts-mode
-  (require 'go-mode)
-
-  (setq go-ts-mode-hook go-mode-hook
-        go-ts-mode-indent-offset 4)
-
-  (set-keymap-parent go-ts-mode-map go-mode-map)
-
-  ;; FIXME
-  ;; Why treesit-check-indent still use 8 as indent offset as I alreay
-  ;; set go-ts-mode-indent-offset to 4? And electric-indent-mode make
-  ;; enter after) } indent 8 space too.
-  ;; workaround
-  (bind go-ts-mode-map
-        "RET" #'newline-and-indent))
-#+end_src
-
-*** Remap major mode
-#+begin_src emacs-lisp
-(when (treesit-available-p)
-  (push '(python-mode . python-ts-mode) major-mode-remap-alist)
-  (push '(go-mode . go-ts-mode) major-mode-remap-alist)
-
-  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.toml\\'" . toml-ts-mode)))
-#+end_src
-*** Folding
-#+begin_src emacs-lisp
-(defun treesit-fold-toggle (arg)
-  "Toggle folding for the defun at point.
-
-The first and last line of the defun are preserved, the rest are
-folded.
-
-If called interactively with argument (ARG), toggle the top-level
-defun. Top-level folding and non-top-level folding are on
-separate channels, meaning top-level toggle wouldn’t unfold
-non-top-level folding, and vice versa.
-
-What constitutes as a defun is determined by the major mode.
-This command only works in a tree-sitter major mode."
-  (interactive "p")
-  (let* ((tactic (if (eq arg 4) 'top-level 'nested))
-         (node (let ((treesit-defun-tactic tactic))
-                 (treesit-defun-at-point))))
-    (if (null node)
-        (user-error "No defun at point")
-      (let ((indent (save-excursion
-                      (goto-char (treesit-node-start node))
-                      (current-indentation)))
-            ;; We leave the first and last line visible.
-            (beg (save-excursion
-                   (goto-char (treesit-node-start node))
-                   (forward-line 1)
-                   (point)))
-            (end (save-excursion
-                   (goto-char (treesit-node-end node))
-                   (forward-line -1)
-                   (line-end-position)))
-            (has-fold nil))
-        ;; If there are existing overlays, this defun must have been
-        ;; folded, then unfold it. But if the folding overlay has
-        ;; different tactic than the one we are using now, leave it.
-        (dolist (ov (overlays-in beg end))
-          (when (and (overlay-get ov 'treesit-fold)
-                     (eq (overlay-get ov 'treesit-fold-tactic)
-                         tactic))
-            (setq has-fold t)
-            (delete-overlay ov)))
-
-        ;; If there aren’t existing overlay with the same tactic, add
-        ;; new folding.
-        (when (null has-fold)
-          (let ((ov (make-overlay beg end nil t nil)))
-            (overlay-put ov 'treesit-fold t)
-            (overlay-put ov 'treesit-fold-tactic tactic)
-            (overlay-put ov 'display (concat (make-string indent ?\s)
-                                             "..."))))))))
-#+end_src
 ** dape DAP Debugger
 #+begin_src emacs-lisp
-(eat/pkg dape "https://github.com/svaante/dape")
-
-(setq dape-configs
-      '((delve
-         modes (go-mode go-ts-mode)
-         command "dlv"
-         command-args ("dap" "--listen" "127.0.0.1:55878")
-         command-cwd dape-cwd-fn
-         host "127.0.0.1"
-         port 55878
-         :type "debug"
-         :request "launch"
-         :cwd dape-cwd-fn
-         :program dape-cwd-fn)))
-
+(eat/pkg dape)
 (autoload #'dape-toggle-breakpoint "dape" nil t)
 #+end_src
 ** drepl
@@ -2424,23 +2304,6 @@ This command only works in a tree-sitter major mode."
 (eat/pkg drepl)
 #+end_src
 * Tools
-** Visual Fill Column
-Center current window.
-#+begin_src emacs-lisp
-(eat/pkg visual-fill-column)
-
-(add-hook 'visual-fill-column-mode-hook #'visual-line-mode)
-
-(setq visual-fill-column-center-text t)
-#+end_src
-** Grep
-#+begin_src elisp
-(eat/pkg wgrep)
-(eat/pkg urgrep)
-
-(with-eval-after-load 'urgrep
-  (require 'urgrep-wgrep))
-#+end_src
 ** Translate
 #+begin_src elisp
 (eat/pkg go-translate)
@@ -2505,48 +2368,14 @@ Center current window.
   (bind global-map "C-h r" #'ghelp-resume))
 #+end_src
 
-** Restclient
-#+begin_src emacs-lisp
-(eat/pkg restclient)
-#+end_src
-
-** leetcode
-~pip3 install my_cookies~
-
-Set cookie manually:
-~(url-cookie-store "LEETCODE_SESSION" leetcode-session nil "leetcode.com" "/" t)~
-~(url-cookie-store "csrftoken" leetcode-csrftoken nil "leetcode.com" "/" t)~
-
-#+begin_src emacs-lisp
-(eat/pkg leetcode)
-
-(setq leetcode-prefer-language "golang")
-(setq leetcode-save-solutions t)
-(setq leetcode-directory "~/Dropbox/leetcode")
-#+end_src
-** Draw
-
-- plantuml
-- graphviz
-- d2, written in go
-- tikz
-- exclidraw
-
-*** d2
-
+** d2
 #+begin_src emacs-lisp
 (eat/pkg d2-mode)
 (eat/pkg ob-d2)
 
 (add-to-list 'auto-mode-alist '("\\.d2" . d2-mode))
 #+end_src
-** direnv
-#+begin_src emacs-lisp
-(eat/pkg envrc)
-
-(add-hook 'after-init-hook #'envrc-global-mode)
-#+end_src
-** pastebin service
+** pastebin
 #+begin_src emacs-lisp
 (eat/pkg webpaste)
 
@@ -2554,6 +2383,7 @@ Set cookie manually:
       webpaste-add-to-killring t
       webpaste-provider-priority '("paste.mozilla.org")
       webpaste-open-in-browser nil)
+
 #+end_src
 ** AI
 *** Bing Chat
@@ -2592,6 +2422,20 @@ Custome =gptel-backend= as you need.
 
 (add-hook 'gptel-mode-hook #'visual-fill-column-mode)
 #+end_src
+** Editor browser text
+#+begin_src emacs-lisp
+;; https://ghosttext.fregante.com/welcome/
+(eat/pkg atomic-chrome)
+(setq atomic-chrome-buffer-open-style 'frame)
+(add-hook 'after-init-hook #'atomic-chrome-start-server)
+
+;; TODO `after-make-window-system-frame-hooks' will change emacs after
+;; GhostText edit
+#+end_src
+** Epub reader
+#+begin_src emacs-lisp
+(eat/pkg nov)
+#+end_src
 
 * Markup Languages
 ** Align table
@@ -2606,18 +2450,18 @@ Custome =gptel-backend= as you need.
 ** Org
 *** config
 #+begin_src elisp
-(defun eat/org-hook ()
+(defun eat/org-mode-setup ()
   "Configuration for Org Mode."
   (org-indent-mode)
   (electric-pair-local-mode -1)
   (electric-quote-local-mode)
-  (electric-indent-local-mode -1))
+  (electric-indent-local-mode -1)
+  ;; https://github.com/valentjn/ltex-ls/issues/262
+  ;; (when (executable-find "ltex-ls")
+  ;;   (eglot-ensure))
+  )
 
-(add-hook 'org-mode-hook #'eat/org-hook)
-
-;; https://nixos.wiki/wiki/TexLive
-(setq org-latex-compiler "lualatex")
-(setq org-preview-latex-default-process 'dvisvgm)
+(add-hook 'org-mode-hook #'eat/org-mode-setup)
 
 (setq org-directory (expand-file-name "~/Dropbox/org"))
 (defvar load-language-list '((emacs-lisp . t)
@@ -2648,6 +2492,17 @@ Custome =gptel-backend= as you need.
   (require 'ob-dot)
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
   (org-babel-do-load-languages 'org-babel-load-languages load-language-list))
+#+end_src
+*** latex
+#+begin_src emacs-lisp
+(setq org-latex-compiler "xelatex")
+(setq org-preview-latex-default-process 'dvisvgm)
+(setq org-latex-pdf-process
+      '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "rm -fr %b.out %b.log %b.tex auto"))
+(setq org-latex-packages-alist '("\\usepackage[UTF8, fontset=fandol]{ctex}"))
 #+end_src
 *** ob
 **** restclient
@@ -2702,63 +2557,6 @@ Custome =gptel-backend= as you need.
 (keymap-global-set "C-c a" 'org-agenda)
 #+end_src
 
-*** org-present
-#+begin_src emacs-lisp
-(eat/pkg org-present)
-
-(add-hook 'org-present-mode-hook
-          #'(lambda ()
-              (eat/prose-mode -1)
-              ;; full frame
-              (toggle-frame-fullscreen)
-              ;; display header line so that we can use face-remapping
-              ;; to create big enought blank space at the top
-              (setq-local header-line-format " ")
-              ;; incraease font size
-              (setq-local
-               face-remapping-alist
-               '((default (:height 1.5) variable-pitch)
-                 (header-line (:height 4.0) variable-pitch)
-                 (org-document-title (:height 1.75) org-document-title)
-                 (org-code (:height 1.55) org-code)
-                 (org-verbatim (:height 0.7) org-verbatim)
-                 (org-block (:height 1.25) org-block)
-                 (org-block-begin-line (:height 0.7) org-block)))
-              ;; from org-present, after font rescale
-              (org-present-read-only)
-              (org-present-hide-cursor)
-              (org-display-inline-images)
-              ;; center the screen
-              (visual-fill-column-mode 1)
-              (setq-local visual-fill-column-center-text t)
-              (setq-local visual-fill-column-width 90)
-              ;; hide mode line
-              (hide-mode-line-mode 1)
-              ;;
-              (org-variable-pitch-minor-mode 1)))
-
-(add-hook 'org-present-mode-quit-hook
-          #'(lambda ()
-              (toggle-frame-fullscreen)
-              (hide-mode-line-mode -1)
-              (kill-local-variable 'face-remapping-alist)
-              (kill-local-variable 'header-line-format)
-              (eat/prose-mode 1)
-              ;; from org-present
-              (org-present-show-cursor)
-              (org-remove-inline-images)
-              (org-present-read-write)))
-
-(defun my/org-present-prepare-slide (buffer-name heading)
-  ;; Show only top-level hedlines.
-  (org-overview)
-  ;; Unfold the current entry.
-  (org-fold-show-entry)
-  ;; Show only direct subheadings of the slide but don't expand them.
-  (org-fold-show-children))
-
-(add-hook 'org-present-after-navigate-functions #'my/org-present-prepare-slide)
-#+end_src
 *** UI
 **** Chinese inline format
 #+begin_src emacs-lisp
@@ -2798,7 +2596,6 @@ Custome =gptel-backend= as you need.
 (add-hook 'org-mode-hook 'org-modern-indent-mode 90)
 #+end_src
 *** Export
-
 **** Html
 
 ***** Syntax highlighting
@@ -2806,7 +2603,7 @@ Custome =gptel-backend= as you need.
 (eat/pkg htmlize)
 #+end_src
 
-***** TODO Inline image
+***** Embed resources
 For now use ~pandoc --embed-resources --standalone~.
 
 #+begin_src emacs-lisp
@@ -2823,7 +2620,7 @@ Need pandoc installed."
 **** Markdown
 #+begin_src emacs-lisp
 (eat/pkg ox-gfm)
-(with-eval-after-load 'ox-gfm
+(with-eval-after-load 'org
   (add-to-list 'org-export-backends 'md))
 #+end_src
 *** Writing
@@ -2910,10 +2707,26 @@ This is a variadic `cl-pushnew'."
       markdown-fontify-code-blocks-natively t)
 
 (add-to-list 'auto-mode-alist '("README\\.md\\'" . gfm-mode))
+
+(defun eat/markdown-mode-setup ()
+  (when (executable-find "ltex-ls")
+    (eglot-ensure)))
+(add-hook 'markdown-mode-hook 'eat/markdown-mode-setup)
+#+end_src
+** LaTeX
+#+begin_src emacs-lisp
+(defun eat/latex-mode-setup ()
+  (when (executable-find "digestif")
+    (company-mode 1)
+    (eglot-ensure)))
+(add-hook 'latex-mode-hook 'eat/latex-mode-setup)
+#+end_src
+** typst
+#+begin_src emacs-lisp
+(eat/pkg typst-ts-mode "https://git.sr.ht/~meow_king/typst-ts-mode")
 #+end_src
 * Application
 ** Magit
-*** config
 #+begin_src emacs-lisp
 (eat/pkg git-modes)
 (eat/pkg magit)
@@ -2921,18 +2734,20 @@ This is a variadic `cl-pushnew'."
 (add-hook 'magit-diff-visit-file #'my-recenter-and-pulse-line)
 
 (with-eval-after-load 'magit
+  ;; https://www.reddit.com/r/emacs/comments/yw3gpx/magit_autorevert_and_tramp/
+  (defun my-magit-auto-revert-mode-advice (orig-fun &rest args)
+    (unless (and buffer-file-name (file-remote-p buffer-file-name))
+      (apply orig-fun args)))
+  (advice-add 'magit-turn-on-auto-revert-mode-if-desired
+	          :around
+	          #'my-magit-auto-revert-mode-advice)
+
   (fullframe magit-status magit-mode-quit-window)
   (setq-default magit-diff-refine-hunk t))
-#+end_src
 
-*** magit-delta
-#+begin_src emacs-lisp
 (eat/pkg magit-delta)
 (add-hook 'magit-mode-hook #'magit-delta-mode)
-#+end_src
 
-*** diff-hl
-#+begin_src emacs-lisp
 (eat/pkg diff-hl)
 
 (add-hook 'prog-mode-hook #'diff-hl-mode)
@@ -2954,26 +2769,7 @@ This is a variadic `cl-pushnew'."
       (add-to-list 'desktop-minor-mode-table
                    '(diff-hl-margin-mode nil)))))
 #+end_src
-
 ** File Manager
-*** dired
-#+begin_src emacs-lisp
-(add-hook 'dired-mode-hook #'dired-hide-details-mode)
-
-(setq dired-dwim-target t
-      dired-kill-when-opening-new-dired-buffer t
-      dired-auto-revert-buffer t)
-
-(with-eval-after-load 'dired
-  (setq dired-listing-switches
-        "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
-  (keymap-set dired-mode-map "C-c C-p" #'wdired-change-to-wdired-mode)
-  (define-key dired-mode-map (kbd "h") #'dired-up-directory)
-  (define-key dired-mode-map [mouse-2] #'dired-find-file))
-
-#+end_src
-
-*** dirvish
 #+begin_src elisp
 (eat/pkg dirvish)
 
@@ -3012,24 +2808,24 @@ This is a variadic `cl-pushnew'."
         "<mouse-3>" #'dired-mouse-find-file))
 #+end_src
 
-** TODO Terminal
+** Terminal
 Use eat under linux and macos, use eshell under windows.
 #+begin_src elisp
 (eat/pkg eat)
+;; https://abode.karthinks.com/share/eat-modes.png
 
-(keymap-global-set "C-`" #'eat)
+(bind global-map
+      "C-`" #'eat
+      "C-x p e" #'eat-project)
 
 (with-eval-after-load 'eat
   (bind eat-mode-map "C-`" #'eat/quit))
 
-(setq eat-kill-buffer-on-exit t)
+(setq eat-kill-buffer-on-exit t
+      eat-enable-directory-tracking t)
 
 (add-hook 'eshell-load-hook 'eat-eshell-mode)
 (add-hook 'eshell-load-hook 'eat-eshell-visual-command-mode)
-
-;; Quick editing in `describe-variable'
-(with-eval-after-load 'help-fns
-  (put 'help-fns-edit-variable 'disabled nil))
 #+end_src
 
 ** gnus, Mail, News
@@ -3146,7 +2942,6 @@ Use eat under linux and macos, use eshell under windows.
 (add-hook 'gnus-summary-mode-hook #'hl-line-mode)
 
 ;;; message
-(add-hook 'message-mode-hook #'auto-fill-mode)
 (setq message-kill-buffer-on-exit t
       message-mail-alias-type 'ecomplete
       ;; Personal Information
@@ -3159,7 +2954,11 @@ Use eat under linux and macos, use eshell under windows.
       message-send-mail-function #'message-use-send-mail-function
       smtpmail-smtp-server "smtp.gmail.com"
       smtpmail-smtp-service 587)
-
+(defun eat/message-mode-setup ()
+  (auto-fill-mode)
+  (when (executable-find "ltex-ls")
+    (eglot-ensure)))
+(add-hook 'message-mode-hook #'eat/message-mode-setup)
 
 ;; read html mail
 (eat/pkg w3m)
@@ -3172,9 +2971,6 @@ Use eat under linux and macos, use eshell under windows.
 
 (add-hook 'gnus-part-display-hook 'fontify-patch-buffer)
 #+end_src
-
-** TODO Rss
-Use builtin newsticker with freshrss.
 
 ** k8s
 #+begin_src emacs-lisp
@@ -3245,8 +3041,8 @@ Run =docker pull zevlg/telega-server:latest=
 #+begin_src elisp
 (when (eat/modulep '+blog)
   (eat/pkg org-static-blog)
-  (setq org-static-blog-publish-title "404cn's blog"
-        org-static-blog-publish-url "https://404cn.github.io/"
+  (setq org-static-blog-publish-title "mrunhap's blog"
+        org-static-blog-publish-url "https://mrunhap.github.io/"
         org-static-blog-publish-directory "~/p/blog/"
         org-static-blog-posts-directory "~/p/blog/posts/"
         org-static-blog-drafts-directory "~/p/blog/drafts/"
@@ -3328,46 +3124,4 @@ Need =xapian-core=.
   (keymap-set bklink-minor-mode-map "C-c i" #'bklink-insert))
 (setq bklink-summary-read-only-p nil
       bklink-prune-summary-p nil)
-#+end_src
-
-* Trash
-** Corfu
-#+begin_src elisp :tangle trash.el
-(eat/pkg corfu)
-(eat/pkg popon)
-(eat/pkg corfu-terminal)
-
-;; (add-hook 'after-init-hook #'(lambda () (global-corfu-mode 1)))
-(add-hook 'corfu-mode-hook #'(lambda ()
-                               (unless (display-graphic-p)
-                                 (corfu-terminal-mode +1))
-                               (corfu-popupinfo-mode)))
-
-(setq corfu-preview-current nil
-      corfu-auto-delay 0.2
-      corfu-auto-prefix 2
-      corfu-quit-no-match t
-      corfu-quit-at-boundary t
-      corfu-auto t)
-
-(with-eval-after-load 'corfu
-  ;; company can quit capf and insert mode without config
-  (keymap-set corfu-map "<escape>" #'(lambda ()
-                                       (interactive)
-                                       (corfu-quit)
-                                       (when (meow-insert-mode-p)
-                                         (meow-insert-exit))))
-  (keymap-set corfu-map "RET" nil))
-
-(defun eat/yas-next-field-or-maybe-expand ()
-  "Try complete current cond or `yas-next-field-or-maybe-expand'.
-
-Sometime lsp client return a snippet and complete didn't work(TAB will jump to next field),
-so try complete filst, if there nothing to complete then try to jump to next field or expand."
-  (interactive)
-  (or (corfu-insert) ;; NOTE this works
-      (yas-next-field-or-maybe-expand)))
-(with-eval-after-load 'yasnippet
-  (keymap-set yas-keymap "<tab>" 'eat/yas-next-field-or-maybe-expand)
-  (keymap-set yas-keymap "TAB" 'eat/yas-next-field-or-maybe-expand))
 #+end_src
