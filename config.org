@@ -2317,11 +2317,7 @@ Also check:
    (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))))
 #+end_src
 
-*** TODO go
-
-Why treesit-check-indent still use 8 as indent offset as I alreay set
-go-ts-mode-indent-offset to 4?
-And electric-indent-mode make enter after ) } indent 8 space too.
+*** go
 
 #+begin_src emacs-lisp
 (with-eval-after-load 'go-ts-mode
@@ -2330,7 +2326,15 @@ And electric-indent-mode make enter after ) } indent 8 space too.
   (setq go-ts-mode-hook go-mode-hook
         go-ts-mode-indent-offset 4)
 
-  (set-keymap-parent go-ts-mode-map go-mode-map))
+  (set-keymap-parent go-ts-mode-map go-mode-map)
+
+  ;; FIXME
+  ;; Why treesit-check-indent still use 8 as indent offset as I alreay
+  ;; set go-ts-mode-indent-offset to 4? And electric-indent-mode make
+  ;; enter after) } indent 8 space too.
+  ;; workaround
+  (bind go-ts-mode-map
+        "RET" #'newline-and-indent))
 #+end_src
 
 *** Remap major mode
@@ -3171,6 +3175,11 @@ Use eat under linux and macos, use eshell under windows.
 
 ** TODO Rss
 Use builtin newsticker with freshrss.
+
+** k8s
+#+begin_src emacs-lisp
+(eat/pkg kubel)
+#+end_src
 
 * Module
 ** Icon
