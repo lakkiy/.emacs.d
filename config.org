@@ -2277,37 +2277,18 @@ program and dictionaries.
 ** translate
 #+begin_src elisp
 (eat/pkg fanyi)
-(eat/pkg go-translate)
+(eat/pkg immersive-translate)
 
-;; TODO read from authinfo
-(defvar gts-deepl-auth-key nil
-  "Free auto key to access deepl api.")
-
-(setq gts-translate-list '(("en" "zh")))
-
-(with-eval-after-load 'go-translate
-  (setq gts-default-translator
-        (gts-translator
-         :picker
-         (gts-noprompt-picker)
-
-         :engines
-         (list
-          (gts-google-rpc-engine)
-          (gts-bing-engine)
-          (when gts-deepl-auth-key
-            (gts-deepl-engine :auth-key gts-deepl-auth-key :pro nil)))
-
-         :render
-         (gts-buffer-render))))
+;; Write to ~/.authinfo
+;; machine deepl.com login apikey password ${key}
+(setq immersive-translate-backend 'deepl)
 
 (defun eat/translate ()
   (interactive)
   (if (use-region-p)
-      (gts-do-translate)
+      (immersive-translate-paragraph)
     (fanyi-dwim2)))
 (keymap-global-set "C-c y" #'eat/translate)
-
 
 (defun eat/context-translate (menu click)
   "My context MENU to translate text."
