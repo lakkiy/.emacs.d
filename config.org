@@ -781,9 +781,9 @@ Selectively runs either `after-make-console-frame-hooks' or
 
 *** project
 #+begin_src elisp
+(setq compilation-scroll-output 'first-error)
+
 (with-eval-after-load 'project
-  ;; go to the end of buffer after `project-compile'
-  (add-hook 'compilation-start-hook #'end-of-buffer)
   ;; use fd in `project-find-file'
   (defun eat/project-files-in-directory (dir)
     "Use `fd' to list files in DIR."
