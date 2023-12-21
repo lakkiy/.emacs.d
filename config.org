@@ -627,34 +627,29 @@ Selectively runs either `after-make-console-frame-hooks' or
 (defvar eat/font-unicode        (font-installed-p eat/fonts-unicode))
 (defvar eat/font-emoji          (font-installed-p eat/fonts-emoji))
 
-  (defun eat/setup-mode-line-font ()
-    (set-face-attribute 'mode-line nil :inherit 'variable-pitch)
-    (set-face-attribute 'mode-line-inactive nil :inherit 'variable-pitch))
-
-  (defun eat/setup-font ()
-    (set-face-attribute 'default nil :height (* 10 eat/font-size-default))
-    (when eat/font-default
-      (set-face-attribute 'default     nil :family eat/font-default)
-      (set-face-attribute 'fixed-pitch nil :font eat/font-default))
-    (when eat/font-variable-pitch
-      (set-face-font 'variable-pitch eat/font-variable-pitch))
-    (when eat/font-unicode
-      (set-fontset-font t 'unicode eat/font-unicode))
-    (when eat/font-emoji
-      (set-fontset-font t 'emoji   eat/font-emoji))
-    (when eat/font-cjk
-      (set-fontset-font t 'kana     eat/font-cjk)
-      (set-fontset-font t 'han      eat/font-cjk)
-      (set-fontset-font t 'cjk-misc eat/font-cjk))
-    (eat/setup-mode-line-font))
-  (add-hook 'after-make-window-system-frame-hooks #'eat/setup-font)
+(defun eat/setup-font ()
+  (set-face-attribute 'default nil :height (* 10 eat/font-size-default))
+  (when eat/font-default
+    (set-face-attribute 'default     nil :family eat/font-default)
+    (set-face-attribute 'fixed-pitch nil :font eat/font-default))
+  (when eat/font-variable-pitch
+    (set-face-font 'variable-pitch eat/font-variable-pitch))
+  (when eat/font-unicode
+    (set-fontset-font t 'unicode eat/font-unicode))
+  (when eat/font-emoji
+    (set-fontset-font t 'emoji   eat/font-emoji))
+  (when eat/font-cjk
+    (set-fontset-font t 'kana     eat/font-cjk)
+    (set-fontset-font t 'han      eat/font-cjk)
+    (set-fontset-font t 'cjk-misc eat/font-cjk)))
+(add-hook 'after-make-window-system-frame-hooks #'eat/setup-font)
 #+end_src
 *** rescale
 #+begin_src emacs-lisp
 (defvar eat/font-rescale-alist
   `((,eat/font-cjk     . 0.95)
     (,eat/font-emoji   . 0.9)
-    (,eat/font-unicode . 0.9))
+    (,eat/font-unicode . 0.95))
   "A list of font names that should be rescaled.")
 
 (defun eat/rescale-font ()
@@ -674,6 +669,7 @@ Selectively runs either `after-make-console-frame-hooks' or
   (buffer-face-mode +1))
 #+end_src
 ** Theme
+*** Add a hook after load theme
 #+begin_src emacs-lisp
 (defvar eat/theme 'modus-operandi
   "Default theme.")
@@ -696,8 +692,22 @@ Selectively runs either `after-make-console-frame-hooks' or
 (advice-add 'load-theme :around #'eat/load-theme)
 
 (add-hook 'after-make-window-system-frame-hooks #'(lambda () (load-theme eat/theme)))
-(add-hook 'load-theme-hook #'eat/setup-mode-line-font)
 #+end_src
+*** Use flat style for mode line
+https://emacsconf.org/2023/talks/flat/
+#+begin_src emacs-lisp
+(defvar mode-line-height 4)
+(defun flat-style ()
+  (custom-set-faces
+   `(mode-line
+     ((t (:inherit mode-line
+                   :box (:line-width ,mode-line-height :style flat-button)))) t)
+   `(mode-line-inactive
+     ((t (:inherit mode-line-inactive
+                   :box (:line-width ,mode-line-height :style flat-button)))) t)))
+(add-hook 'load-theme-hook #'flat-style)
+#+end_src
+
 ** Built-in packages
 *** package.el
 #+begin_src emacs-lisp
@@ -1736,65 +1746,10 @@ this works for images, HTML, LaTeX snippets, etc.
 (add-hook 'prog-mode-hook #'hl-todo-mode)
 (add-hook 'conf-mode-hook #'hl-todo-mode)
 #+end_src
-** mode-line
+** minions
 #+begin_src emacs-lisp
 (eat/pkg minions)
 (add-hook 'after-init-hook 'minions-mode)
-(defun luna-mode-line-with-padding (text)
-  "Return TEXT with padding on the left.
-The padding pushes TEXT to the right edge of the mode-line."
-  (if (and (>= emacs-major-version 29) (display-graphic-p))
-      (let* ((len (string-pixel-width text))
-             (space-prop
-              `(space :align-to (- (+ right right-margin) (,len))))
-             (padding (propertize "-" 'display space-prop)))
-        (concat padding text))
-    (concat " " text)))
-
-(defun luna-mode-line-coding-system ()
-  "Display abnormal coding systems."
-  (let ((coding (symbol-name buffer-file-coding-system)))
-    (if (or (and (not (string-prefix-p "prefer-utf-8" coding))
-                 (not (string-prefix-p "utf-8" coding))
-                 (not (string-prefix-p "undecided" coding)))
-            (string-suffix-p "dos" coding))
-        (concat "  " coding)
-      "")))
-
-(setq-default mode-line-format
-              (let* ((spaces
-                      (propertize " " 'display '(space :width 1.2)))
-                     (fringe (propertize
-                              " " 'display '(space :width fringe)))
-                     (percentage
-                      '(format
-                        "[%%l] %d%%"
-                        (/ (* (window-end) 100.0) (point-max)))))
-                `(,fringe
-                  (:eval (if (window-dedicated-p) "🚷" ""))
-                  (:eval (if buffer-read-only "🔒" ""))
-                  (:eval (when (featurep 'meow) (meow-indicator)))
-                  (:eval (when (featurep 'rime) (rime-lighter)))
-                  (:propertize "%[%b%]" face (:weight semi-bold))
-                  (:eval (luna-mode-line-coding-system))
-                  ,spaces
-                  ,(if (boundp 'minions-mode-line-modes)
-                       'minions-mode-line-modes
-                     'mode-line-modes)
-                  ,spaces
-                  (:eval (if (buffer-modified-p)
-                             ,(if (display-graphic-p) "ΦAΦ" "OAO")
-                           ,(if (display-graphic-p) "ΦwΦ" "OwO")))
-                  ,(if (display-graphic-p)
-                       (list (propertize "  " 'display '(raise 0.3))
-                             (propertize " " 'display '(raise -0.3)))
-                     " ")
-                  mode-line-misc-info
-                  (:eval (concat (luna-mode-line-with-padding ,percentage)
-                                 "%%"))
-                  )))
-
-(setq-default header-line-format nil)
 #+end_src
 ** fontifi-patch, fontifying patch diffs in mail
 #+begin_src emacs-lisp
@@ -1805,28 +1760,30 @@ The padding pushes TEXT to the right edge of the mode-line."
 
 ** themes
 #+begin_src emacs-lisp
-  (eat/pkg almost-mono-themes)
-  (eat/pkg gruber-darker-theme)
-  (eat/pkg standard-themes)
-  (eat/pkg kaolin-themes)
-  (eat/pkg spacemacs-theme)
+(eat/pkg almost-mono-themes)
+(eat/pkg gruber-darker-theme)
+(eat/pkg standard-themes)
+(eat/pkg kaolin-themes)
+(eat/pkg spacemacs-theme)
+(eat/pkg doom-themes)
 
-  (eat/pkg doom-themes)
-  (setq doom-themes-padded-modeline t
-        eat/theme 'doom-vibrant)
-  (with-eval-after-load "doom-themes"
-    (doom-themes-visual-bell-config)
-    (doom-themes-org-config))
+(setq eat/theme 'spacemacs-light
+      auto-dark-dark-theme 'spacemacs-dark
+      auto-dark-light-theme 'spacemacs-light)
 
-  (eat/pkg nano-theme "https://github.com/mrunhap/nano-theme.el")
-  (eat/pkg carbon-theme "https://github.com/DogLooksGood/carbon-theme")
-  (eat/pkg paperlike-theme "https://github.com/DogLooksGood/paperlike-theme")
-  (add-to-list 'custom-theme-load-path (expand-file-name "elpa/nano-theme" user-emacs-directory))
-  (add-to-list 'custom-theme-load-path (expand-file-name "elpa/carbon-theme" user-emacs-directory))
-  (add-to-list 'custom-theme-load-path (expand-file-name "elpa/paperlike-theme" user-emacs-directory))
+(with-eval-after-load "doom-themes"
+  (doom-themes-visual-bell-config)
+  (doom-themes-org-config))
+
+(eat/pkg nano-theme "https://github.com/mrunhap/nano-theme.el")
+(eat/pkg carbon-theme "https://github.com/DogLooksGood/carbon-theme")
+(eat/pkg paperlike-theme "https://github.com/DogLooksGood/paperlike-theme")
+(add-to-list 'custom-theme-load-path (expand-file-name "elpa/nano-theme" user-emacs-directory))
+(add-to-list 'custom-theme-load-path (expand-file-name "elpa/carbon-theme" user-emacs-directory))
+(add-to-list 'custom-theme-load-path (expand-file-name "elpa/paperlike-theme" user-emacs-directory))
 #+end_src
 * Edit
-** Meow
+** meow
 *** Setup
 #+begin_src elisp
 (defun meow-setup-dvorak ()
@@ -2055,6 +2012,7 @@ The padding pushes TEXT to the right edge of the mode-line."
   (add-to-list 'meow-mode-state-list `(,mode . insert)))
 
 (meow-setup-dvorak)
+(meow-setup-indicator)
 (meow-global-mode 1)
 #+end_src
 ** separedit
@@ -2097,8 +2055,6 @@ set  to =librime=.
  rime-cursor "|"
  rime-show-candidate 'minibuffer)
 (with-eval-after-load 'rime
-  (set-face-attribute 'rime-indicator-face nil :height 0.9)
-  (set-face-attribute 'rime-indicator-dim-face nil :height 0.9)
   (define-key rime-active-mode-map [tab] 'rime-inline-ascii)
   (keymap-set rime-mode-map "M-j" 'rime-force-enable))
 #+end_src
