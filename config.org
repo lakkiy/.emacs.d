@@ -2405,13 +2405,17 @@ Need =xapian-core=.
 
 #+begin_src elisp
 (eat/pkg xeft)
+
 (setq xeft-directory "~/Dropbox/org/roam"
-      xeft-default-extension "org"
       xeft-database "~/.xeft/db")
+
+(defun xeft-setup ()
+  (bklink-minor-mode 1)
+  (auto-fill-mode 1))
+
 (with-eval-after-load 'xeft
-  (require 'flique)
-  (add-hook 'xeft-find-file-hook #'bklink-minor-mode)
-  (add-hook 'bklink-minor-mode-hook #'auto-fill-mode))
+  (add-hook 'xeft-find-file-hook #'xeft-setup)
+  (require 'flique))
 #+end_src
 ** wgrep
 #+begin_src emacs-lisp
@@ -3226,6 +3230,8 @@ Run =docker pull zevlg/telega-server:latest=
 (add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))
 #+end_src
 ** form-feed
+Use =C-q C-l= to insert page break line.
+
 #+begin_src elisp
 (autoload #'form-feed-mode "form-feed")
 
@@ -3250,11 +3256,19 @@ Run =docker pull zevlg/telega-server:latest=
 
 #+begin_src elisp
 (autoload #'bklink-minor-mode "bklink")
-(with-eval-after-load 'bklink
-  (keymap-set bklink-minor-mode-map "C-c l" #'bklink-show-back-link)
-  (keymap-set bklink-minor-mode-map "C-c i" #'bklink-insert))
-(setq bklink-summary-read-only-p nil
+
+(setq bklink-summary-read-only-p t
       bklink-prune-summary-p nil)
+
+(with-eval-after-load 'bklink
+  (bind bklink-minor-mode-map
+        "C-c l" #'bklink-summary-mode
+        "C-c i" #'bklink-insert))
+#+end_src
+** quanjiao
+#+begin_src emacs-lisp
+(autoload #'quanjiao-mode "quanjiao" nil t)
+(add-hook 'text-mode-hook 'quanjiao-mode)
 #+end_src
 ** dired+
 #+begin_src emacs-lisp
