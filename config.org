@@ -2360,7 +2360,18 @@ For openai, set api key in auth file:
 #+end_src
 *** gptel
 
-Custome =gptel-backend= as you need.
+Custome =gptel-backend= as you need, here is an example:
+#+begin_example
+(setq-default gptel-backend
+                (gptel-make-openai
+                 "ChatGPT"
+                 :header (lambda () `(("Authorization" . ,(concat "Bearer " (gptel--get-api-key)))))
+                 :key 'gptel-api-key
+                 :host "api.openai-sb.com"
+                 :stream t
+                 :models '("gpt-3.5-turbo-16k")))
+#+end_example
+
 
 #+begin_src emacs-lisp
 (eat/pkg gptel)
