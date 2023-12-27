@@ -1787,6 +1787,8 @@ this works for images, HTML, LaTeX snippets, etc.
 (eat/pkg spacemacs-theme)
 (eat/pkg doom-themes)
 
+(setq kaolin-themes-modeline-border nil)
+
 (with-eval-after-load "doom-themes"
   (doom-themes-visual-bell-config)
   (doom-themes-org-config))
