@@ -481,10 +481,9 @@ Selectively runs either `after-make-console-frame-hooks' or
   (global-set-key [(super v)] #'yank)
   (global-set-key [(super c)] #'kill-ring-save)
   (global-set-key [(super s)] #'save-buffer)
-  (global-set-key [(super l)] #'goto-line)
   (global-set-key [(super w)] #'delete-frame)
   (global-set-key [(super z)] #'undo)
-  ;; `save-buffers-kill-emacs' will shutdown emacs daemon
+  ;; `save-buffers-kill-emacs' will shutdown emacs daemon.
   (global-set-key [(super q)] #'save-buffers-kill-terminal)
 
   (setq ns-use-native-fullscreen nil
@@ -492,7 +491,10 @@ Selectively runs either `after-make-console-frame-hooks' or
         ns-use-thin-smoothing t
         ;; Don't open a file in a new frame
         ns-pop-up-frames nil)
-  (set-frame-parameter nil 'fullscreen 'maximized))
+  (set-frame-parameter nil 'fullscreen 'maximized)
+
+  ;; No title bar.
+  (add-to-list 'default-frame-alist '(undecorated-round . t)))
 #+end_src
 
 *** Linux
@@ -1621,7 +1623,12 @@ this works for images, HTML, LaTeX snippets, etc.
   (setq python-shell-interpreter "ipython3"
         python-shell-interpreter-args "--simple-prompt --classic"))
 #+end_src
-
+** visual-fill-column
+#+begin_src emacs-lisp
+(eat/pkg visual-fill-column)
+(add-hook 'visual-fill-column-mode-hook #'visual-line-mode)
+(setq visual-fill-column-center-text t)
+#+end_src
 * Window
 ** window-numbering
 #+begin_src emacs-lisp
@@ -1733,12 +1740,6 @@ this works for images, HTML, LaTeX snippets, etc.
 (add-hook 'after-make-window-system-frame-hooks #'auto-dark-mode)
 #+end_src
 
-** visual-fill-column
-#+begin_src emacs-lisp
-(eat/pkg visual-fill-column)
-(add-hook 'visual-fill-column-mode-hook #'visual-line-mode)
-(setq visual-fill-column-center-text t)
-#+end_src
 ** hl-todo
 #+begin_src emacs-lisp
 (eat/pkg hl-todo)
@@ -1782,6 +1783,7 @@ this works for images, HTML, LaTeX snippets, etc.
 (add-to-list 'custom-theme-load-path (expand-file-name "elpa/carbon-theme" user-emacs-directory))
 (add-to-list 'custom-theme-load-path (expand-file-name "elpa/paperlike-theme" user-emacs-directory))
 #+end_src
+
 * Edit
 ** meow
 *** Setup
