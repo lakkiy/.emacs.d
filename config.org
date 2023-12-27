@@ -676,7 +676,7 @@ Selectively runs either `after-make-console-frame-hooks' or
 (defvar eat/theme 'modus-operandi
   "Default theme.")
 
-(defvar load-theme-hook nil
+(defvar after-load-theme-hook nil
   "Hooks run after `load-theme'.")
 
 (defun eat/load-theme (f theme &optional no-confirm no-enable &rest args)
@@ -690,24 +690,18 @@ Selectively runs either `after-make-console-frame-hooks' or
   (if (featurep (intern (format "%s-theme" theme)))
       (enable-theme theme)
     (apply f theme t no-enable args))
-  (run-hooks 'load-theme-hook))
+  (run-hooks 'after-load-theme-hook))
 (advice-add 'load-theme :around #'eat/load-theme)
 
 (add-hook 'after-make-window-system-frame-hooks #'(lambda () (load-theme eat/theme)))
 #+end_src
-*** Use flat style for mode line
-https://emacsconf.org/2023/talks/flat/
+*** Modern mode line
 #+begin_src emacs-lisp
-(defvar mode-line-height 4)
-(defun flat-style ()
-  (custom-set-faces
-   `(mode-line
-     ((t (:inherit mode-line
-                   :box (:line-width ,mode-line-height :style flat-button)))) t)
-   `(mode-line-inactive
-     ((t (:inherit mode-line-inactive
-                   :box (:line-width ,mode-line-height :style flat-button)))) t)))
-(add-hook 'load-theme-hook #'flat-style)
+(when (display-graphic-p)
+  (add-to-list 'mode-line-format
+               '(list (propertize "  " 'display '(raise 0.3))
+                      (propertize " " 'display '(raise -0.3)))
+               t))
 #+end_src
 
 ** Built-in packages
@@ -1728,16 +1722,14 @@ this works for images, HTML, LaTeX snippets, etc.
       "C-x C-=" #'default-text-scale-increase
       "C-x C--" #'default-text-scale-decrease)
 #+end_src
-** solaire-mode
-#+begin_src emacs-lisp
-(eat/pkg solaire-mode)
-(add-hook 'load-theme-hook #'(lambda () (solaire-global-mode +1)))
-#+end_src
 ** auto-dark
 #+begin_src emacs-lisp
 (eat/pkg auto-dark)
 (autoload #'auto-dark-mode "auto-dark")
 (add-hook 'after-make-window-system-frame-hooks #'auto-dark-mode)
+
+(setq auto-dark-dark-theme 'modus-vivendi
+      auto-dark-light-theme 'modus-operandi)
 #+end_src
 
 ** hl-todo
@@ -1768,10 +1760,6 @@ this works for images, HTML, LaTeX snippets, etc.
 (eat/pkg spacemacs-theme)
 (eat/pkg doom-themes)
 
-(setq eat/theme 'spacemacs-light
-      auto-dark-dark-theme 'spacemacs-dark
-      auto-dark-light-theme 'spacemacs-light)
-
 (with-eval-after-load "doom-themes"
   (doom-themes-visual-bell-config)
   (doom-themes-org-config))
@@ -1784,6 +1772,18 @@ this works for images, HTML, LaTeX snippets, etc.
 (add-to-list 'custom-theme-load-path (expand-file-name "elpa/paperlike-theme" user-emacs-directory))
 #+end_src
 
+** spacious-padding
+#+begin_src emacs-lisp
+(eat/pkg spacious-padding)
+(setq spacious-padding-widths
+      '( :internal-border-width 16
+         :header-line-width 4
+         :mode-line-width 2
+         :tab-width 2
+         :right-divider-width 24
+         :scroll-bar-width 8))
+(add-hook 'after-init-hook #'spacious-padding-mode)
+#+end_src
 * Edit
 ** meow
 *** Setup
