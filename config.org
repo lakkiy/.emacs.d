@@ -1466,7 +1466,65 @@ Also check:
 (add-hook 'message-mode-hook #'eat/message-mode-setup)
 
 #+end_src
+*** desktop-save
+#+begin_src emacs-lisp
+(setq history-length 1000)
+(add-hook 'after-init-hook #'savehist-mode)
 
+(setq desktop-auto-save-timeout 300
+      desktop-load-locked-desktop t
+      desktop-restore-eager 20)
+(add-hook 'after-init-hook #'desktop-save-mode)
+
+(defun sanityinc/time-subtract-millis (b a)
+  (* 1000.0 (float-time (time-subtract b a))))
+
+(defun sanityinc/desktop-time-restore (orig &rest args)
+  (let ((start-time (current-time)))
+    (prog1
+        (apply orig args)
+      (message "Desktop restored in %.2fms"
+               (sanityinc/time-subtract-millis (current-time)
+                                               start-time)))))
+(advice-add 'desktop-read :around 'sanityinc/desktop-time-restore)
+
+(defun sanityinc/desktop-time-buffer-create (orig ver filename &rest args)
+  (let ((start-time (current-time)))
+    (prog1
+        (apply orig ver filename args)
+      (message "Desktop: %.2fms to restore %s"
+               (sanityinc/time-subtract-millis (current-time)
+                                               start-time)
+               (when filename
+                 (abbreviate-file-name filename))))))
+(advice-add 'desktop-create-buffer :around 'sanityinc/desktop-time-buffer-create)
+
+(setq desktop-globals-to-save
+      '((comint-input-ring        . 50)
+        (compile-history          . 30)
+        desktop-missing-file-warning
+        (dired-regexp-history     . 20)
+        (extended-command-history . 30)
+        (face-name-history        . 20)
+        (grep-find-history        . 30)
+        (grep-history             . 30)
+        (magit-revision-history   . 50)
+        (minibuffer-history       . 50)
+        (org-clock-history        . 50)
+        (org-refile-history       . 50)
+        (org-tags-history         . 50)
+        (query-replace-history    . 60)
+        (read-expression-history  . 60)
+        (regexp-history           . 60)
+        (shell-command-history    . 50)
+        ;; Default value.
+        tags-file-name
+        tags-table-list
+        (search-ring              . 20)
+        (regexp-search-ring       . 20)
+        register-alist
+        (file-name-history        . 100)))
+#+end_src
 *** misc
 #+begin_src emacs-lisp
 ;; Quick editing in `describe-variable'
@@ -1485,9 +1543,6 @@ Also check:
 (add-hook 'prog-mode-hook #'whitespace-mode)
 (add-hook 'conf-mode-hook #'whitespace-mode)
 (setq whitespace-style '(face trailing))
-
-(add-hook 'after-init-hook #'savehist-mode)
-(setq history-length 1000)
 
 (add-hook 'on-first-buffer-hook #'winner-mode)
 (setq winner-dont-bind-my-keys t)
