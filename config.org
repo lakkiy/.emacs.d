@@ -1905,6 +1905,7 @@ this works for images, HTML, LaTeX snippets, etc.
    '("d" . meow-delete)
    '("D" . meow-backward-delete)
    '("k" . meow-kill)
+   '("K" . meow-kill-whole-line)
    '("r" . meow-replace)
    '("R" . meow-swap-grab)
    '("c" . meow-change)
@@ -1978,7 +1979,6 @@ this works for images, HTML, LaTeX snippets, etc.
    '("'" . repeat)
    '("-" . avy-goto-char-timer)
    '("f" . project-find-file)
-   '("K" . kill-this-buffer)
    ))
 #+end_src
 *** Config
