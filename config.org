@@ -720,8 +720,14 @@ Selectively runs either `after-make-console-frame-hooks' or
        (package-install ',package))))
 #+end_src
 *** tab-bar
+NOTE do not bind =tab-bar-switch-to-prev-tab= and
+=tab-bar-switch-to-next-tab= to =M-[= or =M-]=, it will make emacs have some
+bug to auto insert characters after you type everytime.
+
+
 #+begin_src emacs-lisp
-(setq tab-bar-new-tab-choice "*scratch*"
+(setq tab-bar-new-tab-choice 'ibuffer
+      tab-bar-close-last-tab-choice 'tab-bar-mode-disable
       tab-bar-tab-hints nil
       tab-bar-tab-name-truncated-max 10
       tab-bar-new-button (propertize " 🞤 " 'display '(:height 2.0))
@@ -729,7 +735,18 @@ Selectively runs either `after-make-console-frame-hooks' or
       tab-bar-back-button nil
       ;; 默认为 t 的时候根据 `tab-bar-auto-width-min' 等自动调整，当 tab 名
       ;; 字很短的时候 tab 也会很宽，设置为 nil 让它根据 tab 的名字自动调整
-      tab-bar-auto-width nil)
+      tab-bar-auto-width nil
+      tab-bar-tab-name-function
+      (lambda nil "Use project as tab name."
+        (let ((dir (expand-file-name
+                    (or (if (fboundp 'project-root)
+                            (project-root (project-current)))
+                        default-directory))))
+          (or
+           (and dir
+                (let ((name (substring dir (1+ (string-match "/[^/]+/$" dir)) -1)))
+                  (truncate-string-to-width name tab-bar-tab-name-truncated-max nil ? )))
+           (buffer-name)))))
 
 (defun tab-bar-format-menu-bar ()
   "Produce the Menu button for the tab bar that shows the menu bar."
@@ -746,6 +763,9 @@ Selectively runs either `after-make-console-frame-hooks' or
           (tab-bar-tab-name-current)
           (propertize " " 'display '(raise -0.3))))
 (setq tab-bar-tab-name-function #'tab-bar-tall-name)
+
+(with-eval-after-load 'tab-bar
+  (tab-bar-history-mode 1))
 #+end_src
 *** grep
 #+begin_src emacs-lisp
@@ -1232,17 +1252,6 @@ Stole from https://github.com/astoff/isearch-mb/wiki
 (add-hook 'flymake-mode-hook
           (lambda ()
             (add-hook 'eldoc-documentation-functions 'flymake-eldoc-function nil t)))
-#+end_src
-*** tab-bar
-NOTE do not bind =tab-bar-switch-to-prev-tab= and
-=tab-bar-switch-to-next-tab= to =M-[= or =M-]=, it will make emacs have some
-bug to auto insert characters after you type everytime.
-
-#+begin_src emacs-lisp
-(with-eval-after-load 'tab-bar
-  (keymap-set tab-prefix-map "." #'tab-bar-switch-to-recent-tab)
-  (keymap-set tab-prefix-map "," #'tab-bar-rename-tab)
-  (keymap-set tab-prefix-map "l" #'eat/tab-bar-switch-project))
 #+end_src
 *** ibuffer
 #+begin_src emacs-lisp
