@@ -698,9 +698,8 @@ Selectively runs either `after-make-console-frame-hooks' or
 *** Modern mode line
 #+begin_src emacs-lisp
 (when (display-graphic-p)
-  (add-to-list 'mode-line-format
-               '(list (propertize "  " 'display '(raise 0.3))
-                      (propertize " " 'display '(raise -0.3)))
+  (add-to-list 'mode-line-format (list (propertize "  " 'display '(raise 0.3))
+                                       (propertize " " 'display '(raise -0.3)))
                t))
 #+end_src
 
