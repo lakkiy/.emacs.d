@@ -719,6 +719,34 @@ Selectively runs either `after-make-console-frame-hooks' or
      (if ,vc (package-vc-install ,vc)
        (package-install ',package))))
 #+end_src
+*** tab-bar
+#+begin_src emacs-lisp
+(setq tab-bar-new-tab-choice "*scratch*"
+      tab-bar-tab-hints nil
+      tab-bar-tab-name-truncated-max 10
+      tab-bar-new-button (propertize " 🞤 " 'display '(:height 2.0))
+      tab-bar-close-button-show nil
+      tab-bar-back-button nil
+      ;; 默认为 t 的时候根据 `tab-bar-auto-width-min' 等自动调整，当 tab 名
+      ;; 字很短的时候 tab 也会很宽，设置为 nil 让它根据 tab 的名字自动调整
+      tab-bar-auto-width nil)
+
+(defun tab-bar-format-menu-bar ()
+  "Produce the Menu button for the tab bar that shows the menu bar."
+  `((menu-bar menu-item
+              (format " %s "
+                      (nerd-icons-sucicon "nf-custom-emacs"
+                                          :face '(:inherit nerd-icons-purple)))
+              tab-bar-menu-bar :help "Menu Bar")))
+(add-to-list 'tab-bar-format 'tab-bar-format-menu-bar)
+
+(defun tab-bar-tall-name ()
+  "Make the default tab taller"
+  (concat (propertize " " 'display '(raise 0.3))
+          (tab-bar-tab-name-current)
+          (propertize " " 'display '(raise -0.3))))
+(setq tab-bar-tab-name-function #'tab-bar-tall-name)
+#+end_src
 *** grep
 #+begin_src emacs-lisp
   (autoload 'grep-apply-setting "grep")
