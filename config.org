@@ -697,10 +697,19 @@ Selectively runs either `after-make-console-frame-hooks' or
 #+end_src
 *** Modern mode line
 #+begin_src emacs-lisp
+(defun i-dont-want-see-box ()
+  "Remove box attirbute from mode-line-active and use it's color as background."
+  (let ((box-color (plist-get (face-attribute 'mode-line-active :box) :color)))
+    (when box-color
+      (set-face-attribute 'mode-line nil :background box-color :box nil)
+      (set-face-attribute 'mode-line-active nil :background box-color :box nil)
+      (set-face-attribute 'mode-line-inactive nil :box nil))))
+
 (when (display-graphic-p)
   (add-to-list 'mode-line-format (list (propertize "  " 'display '(raise 0.3))
                                        (propertize " " 'display '(raise -0.3)))
-               t))
+               t)
+  (add-hook 'after-load-theme-hook #'i-dont-want-see-box))
 #+end_src
 
 ** Built-in packages
@@ -730,7 +739,7 @@ See =tab-prefix-map= to custom key bindings for tab-bar, default is =C-x t=.
 (defun tab-bar-format-menu-bar ()
   "Produce the Menu button for the tab bar that shows the menu bar."
   `((menu-bar menu-item
-              (format " %s "
+              (format " %s  "
                       (nerd-icons-sucicon "nf-custom-emacs"
                                           :face '(:inherit nerd-icons-purple)))
               tab-bar-menu-bar :help "Menu Bar")))
