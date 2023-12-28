@@ -1266,7 +1266,10 @@ Stole from https://github.com/astoff/isearch-mb/wiki
       eglot-ignored-server-capabilites
       '(:documentHighlightProvider
         :documentFormattingProvider
-        :documentRangeFormattingProvider))
+        :documentRangeFormattingProvider
+        ;; 好像是会和 treesit 的缩进冲突？不过没有测试 go 的，是群友提
+        ;; 出的 cpp 的，不知道 go-ts-mode 的缩进问题和这个有没有关系
+        :documentOnTypeFormattingProvider))
 
 (setq-default eglot-workspace-configuration
               '((:gopls
