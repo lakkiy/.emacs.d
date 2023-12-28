@@ -724,30 +724,9 @@ NOTE do not bind =tab-bar-switch-to-prev-tab= and
 =tab-bar-switch-to-next-tab= to =M-[= or =M-]=, it will make emacs have some
 bug to auto insert characters after you type everytime.
 
+See =tab-prefix-map= to custom key bindings for tab-bar, default is =C-x t=.
 
 #+begin_src emacs-lisp
-(setq tab-bar-new-tab-choice 'ibuffer
-      tab-bar-close-last-tab-choice 'tab-bar-mode-disable
-      tab-bar-tab-hints nil
-      tab-bar-tab-name-truncated-max 10
-      tab-bar-new-button (propertize " 🞤 " 'display '(:height 2.0))
-      tab-bar-close-button-show nil
-      tab-bar-back-button nil
-      ;; 默认为 t 的时候根据 `tab-bar-auto-width-min' 等自动调整，当 tab 名
-      ;; 字很短的时候 tab 也会很宽，设置为 nil 让它根据 tab 的名字自动调整
-      tab-bar-auto-width nil
-      tab-bar-tab-name-function
-      (lambda nil "Use project as tab name."
-        (let ((dir (expand-file-name
-                    (or (if (fboundp 'project-root)
-                            (project-root (project-current)))
-                        default-directory))))
-          (or
-           (and dir
-                (let ((name (substring dir (1+ (string-match "/[^/]+/$" dir)) -1)))
-                  (truncate-string-to-width name tab-bar-tab-name-truncated-max nil ? )))
-           (buffer-name)))))
-
 (defun tab-bar-format-menu-bar ()
   "Produce the Menu button for the tab bar that shows the menu bar."
   `((menu-bar menu-item
@@ -755,14 +734,53 @@ bug to auto insert characters after you type everytime.
                       (nerd-icons-sucicon "nf-custom-emacs"
                                           :face '(:inherit nerd-icons-purple)))
               tab-bar-menu-bar :help "Menu Bar")))
-(add-to-list 'tab-bar-format 'tab-bar-format-menu-bar)
 
-(defun tab-bar-tall-name ()
-  "Make the default tab taller"
-  (concat (propertize " " 'display '(raise 0.3))
-          (tab-bar-tab-name-current)
-          (propertize " " 'display '(raise -0.3))))
-(setq tab-bar-tab-name-function #'tab-bar-tall-name)
+(defun eat/bar-image ()
+  (when (and (display-graphic-p) (image-type-available-p 'pbm))
+    (propertize
+     " " 'display
+     (ignore-errors
+       (create-image
+        ;; 20 for `dirvish-header-line-height'
+        (concat (format "P1\n%i %i\n" 2 30) (make-string (* 2 30) ?1) "\n")
+        'pbm t :foreground (face-background 'highlight) :ascent 'center)))))
+
+(setq tab-bar-new-tab-choice 'ibuffer
+      tab-bar-close-last-tab-choice 'tab-bar-mode-disable
+      tab-bar-tab-hints nil
+      tab-bar-close-button-show nil
+      tab-bar-separator ""
+      tab-bar-format '(tab-bar-format-menu-bar
+                       tab-bar-format-tabs)
+      ;; NOTE 如果要用到很多 tab 导致 tab 换行的话就把这个设置为 t
+      tab-bar-auto-width nil
+      tab-bar-tab-name-format-function
+      (lambda (tab i) "Center, taller, better, stronger xD."
+        (let* ((current-tab-p (eq (car tab) 'current-tab))
+               (bar (when current-tab-p (eat/bar-image)))
+               (name (string-trim (alist-get 'name tab)))
+               (space-to-add (max 0 (- tab-bar-tab-name-truncated-max (length name))))
+               (left-padding (/ space-to-add 2))
+               (right-padding (- space-to-add left-padding)))
+          (concat
+           bar
+           (propertize (concat (propertize " " 'display '(raise 0.3))
+                               (make-string left-padding ?\s)
+                               name
+                               (make-string right-padding ?\s)
+                               (propertize " " 'display '(raise -0.3)))
+                       'face (funcall tab-bar-tab-face-function tab)))))
+      tab-bar-tab-name-function
+      (lambda nil "Use project as tab name."
+        (let ((dir (expand-file-name
+                    (or (if (and (fboundp 'project-root) (project-current))
+                            (project-root (project-current)))
+                        default-directory))))
+          (or
+           (and dir
+                (let ((name (substring dir (1+ (string-match "/[^/]+/$" dir)) -1)))
+                  (truncate-string-to-width name tab-bar-tab-name-truncated-max nil ? )))
+           (buffer-name)))))
 
 (with-eval-after-load 'tab-bar
   (tab-bar-history-mode 1))
@@ -1613,6 +1631,13 @@ Also check:
 (eat/pkg elpa-mirror)
 (setq elpamr-default-output-directory "~/Sync/myelpa")
 #+end_src
+** visual-fill-column
+#+begin_src emacs-lisp
+(eat/pkg visual-fill-column)
+(add-hook 'visual-fill-column-mode-hook #'visual-line-mode)
+(setq visual-fill-column-center-text t)
+#+end_src
+
 ** Better built in
 *** project-x
 Recognize any directory with a .project file as a project.
@@ -1710,12 +1735,6 @@ this works for images, HTML, LaTeX snippets, etc.
 (when (executable-find "ipython3")
   (setq python-shell-interpreter "ipython3"
         python-shell-interpreter-args "--simple-prompt --classic"))
-#+end_src
-** visual-fill-column
-#+begin_src emacs-lisp
-(eat/pkg visual-fill-column)
-(add-hook 'visual-fill-column-mode-hook #'visual-line-mode)
-(setq visual-fill-column-center-text t)
 #+end_src
 * Window
 ** window-numbering
@@ -3207,7 +3226,9 @@ This is a variadic `cl-pushnew'."
 
 (add-hook 'after-init-hook #'dirvish-override-dired-mode)
 
-(setq dirvish-attributes '(vc-state subtree-state nerd-icons))
+(setq dirvish-attributes '(vc-state subtree-state nerd-icons)
+      dirvish-header-line-height 20
+      dirvish-mode-line-height 20)
 
 (keymap-global-set "C-c f" #'dirvish-fd)
 (keymap-global-set "<f1>" #'dirvish-side)
