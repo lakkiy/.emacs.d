@@ -3299,14 +3299,17 @@ Run =docker pull zevlg/telega-server:latest=
 #+begin_src elisp
 (eat/pkg telega)
 (setq
- telega-avatar-workaround-gaps-for '(return t)
- telega-use-docker (if (executable-find "docker") t nil)
- telega-server-libs-prefix "/usr"
+ telega-use-docker (executable-find "docker")
+ telega-server-libs-prefix (cond (eat/macp "/usr/local")
+                                 (t "/usr"))
  telega-chat-fill-column 75
+ ;; 头像再也不裂了
+ telega-avatar-workaround-gaps-for '(return t)
+ ;; 默认翻译目标语言为中文
  telega-translate-to-language-by-default "zh"
  ;; send code in markdown format
  telega-chat-input-markups '("markdown2" "org")
- ;; use completing instead default ido
+ ;; 使用 capf 代替 telega 默认的 ido 补全
  telega-completing-read-function completing-read-function
  ;; 省略消息中过长的 url
  telega-url-shorten-regexps (list `(too-long-link
