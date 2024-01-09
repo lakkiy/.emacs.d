@@ -77,6 +77,7 @@ Disable native compilation.
 ** custom
 #+begin_src elisp
 ;;; -*- lexical-binding: t -*-
+(setq-default lexical-binding t)
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (and (file-exists-p custom-file) (file-readable-p custom-file))
   (load custom-file :no-error :no-message))
