@@ -704,7 +704,11 @@ Selectively runs either `after-make-console-frame-hooks' or
     (when box-color
       (set-face-attribute 'mode-line nil :background box-color :box nil)
       (set-face-attribute 'mode-line-active nil :background box-color :box nil)
-      (set-face-attribute 'mode-line-inactive nil :box nil))))
+      (set-face-attribute 'mode-line-inactive nil :box nil)
+      (set-face-attribute 'mode-line-inactive nil :box nil)
+      (set-face-attribute 'tab-bar nil :box nil)
+      (set-face-attribute 'tab-bar-tab nil :box nil)
+      (set-face-attribute 'tab-bar-tab-inactive nil :box nil))))
 
 (when (display-graphic-p)
   (add-to-list 'mode-line-format (list (propertize "  " 'display '(raise 0.3))
