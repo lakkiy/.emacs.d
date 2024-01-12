@@ -1750,6 +1750,10 @@ this works for images, HTML, LaTeX snippets, etc.
   (setq python-shell-interpreter "ipython3"
         python-shell-interpreter-args "--simple-prompt --classic"))
 #+end_src
+** page-break-lines
+#+begin_src emacs-lisp
+(eat/pkg page-break-lines)
+#+end_src
 * Window
 ** window-numbering
 #+begin_src emacs-lisp
@@ -3376,17 +3380,6 @@ Run =docker pull zevlg/telega-server:latest=
 (add-to-list 'load-path (expand-file-name "site-lisp" user-emacs-directory))
 (add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))
 #+end_src
-** form-feed
-Use =C-q C-l= to insert page break line.
-
-#+begin_src elisp
-(autoload #'form-feed-mode "form-feed")
-
-(add-hook 'emacs-lisp-mode-hook #'form-feed-mode)
-(add-hook 'text-mode-hook #'form-feed-mode)
-(add-hook 'special-mode-hook #'form-feed-mode)
-#+end_src
-
 ** color-outline
 #+begin_src elisp
 (autoload #'color-outline-mode "color-outline")
