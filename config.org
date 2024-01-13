@@ -2904,6 +2904,12 @@ Install =rnix-lsp= and =nixfmt=.
 ;; NOTE js-ts-mode and tsx-ts-mode have bug to stuck emacs
 (setq-default js-indent-level 2)
 #+end_src
+*** sbcl
+#+begin_src emacs-lisp
+(eat/pkg sly)
+(eat/pkg slime)
+(setq inferior-lisp-program "sbcl")
+#+end_src
 ** dape, DAP Debugger
 #+begin_src emacs-lisp
 (eat/pkg dape)
