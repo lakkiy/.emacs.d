@@ -74,7 +74,7 @@ Disable native compilation.
 #+end_src
 
 * Core
-** custom
+** Load custom file
 #+begin_src elisp
 ;;; -*- lexical-binding: t -*-
 (setq-default lexical-binding t)
@@ -82,19 +82,15 @@ Disable native compilation.
 (when (and (file-exists-p custom-file) (file-readable-p custom-file))
   (load custom-file :no-error :no-message))
 #+end_src
-
-** const
+** Const & Var
 #+begin_src emacs-lisp
 (defconst eat/macp (eq system-type 'darwin))
 (defconst eat/linuxp (eq system-type 'gnu/linux))
 (defconst eat/winp (eq system-type 'windows-nt))
 (defconst my/executable-find-ugrep (executable-find "ugrep"))
 (defconst my/executable-find-rg (executable-find "rg"))
-
-(defvar eat/user-full-name "Liu Bo")
-(defvar eat/user-mail-address "liubolovelife@gmail.com")
 #+end_src
-** funcs
+** Funcs
 *** Delete things(don’t send to kill ring
 #+begin_src emacs-lisp
 (defun eat/delete-to-the-begining ()
@@ -164,7 +160,7 @@ Disable native compilation.
 
 (if (file-exists-p "~/.path")
     (add-hook 'after-init-hook #'eat/getenv-path)
-  (message "%s" "Didn't find path file, run '$ sh -c 'printf \"%s\" \"$PATH\"' > ~/.path' in your terminal and then M-x eat/getenv-path or restart emacs."))
+  (message "%s" "Run '$ sh -c 'printf \"%s\" \"$PATH\"' > ~/.path' in your terminal then M-x eat/getenv-path."))
 #+end_src
 
 *** Misc
@@ -384,65 +380,87 @@ triggering hooks during startup."
 #+end_src
 
 ** Better default
-*** Disable startup screen/message
+*** Some basic config
 #+begin_src emacs-lisp
-;; Suppress GUI features and more
-(setq inhibit-splash-screen t ;; 这个和 `inhibit-startup-screen' 有什么区别吗
-      inhibit-x-resources t
+(setq inhibit-startup-screen t
+      ;; don't load default.el
       inhibit-default-init t
-      inhibit-startup-screen t
-      inhibit-startup-message t
-      inhibit-startup-buffer-menu t
-      initial-scratch-message (concat ";; Happy hacking, " user-login-name " - Emacs ♥ you!\n\n"))
+      ;; Don't use prog-mode an stratup
+      initial-major-mode 'fundamental-mode
+      ;; no client startup messages
+      server-client-instructions nil)
 
 ;; Shut up!
-(defun display-startup-echo-area-message()
-  (message nil))
+(defun display-startup-echo-area-message() nil)
+
+;; Don’t compact font caches during GC.
+(setq inhibit-compacting-font-caches t)
+
+(setq require-final-newline t
+      ;; Echo current unfinished command immediately.
+      echo-keystrokes 0.1
+      ;; Disable "You can run the command balabala..."
+      suggest-key-bindings nil
+      ;; 默认软折行是根据空格来的，但是中文句子没有空格，所以需要开启
+      word-wrap-by-category t
+      cursor-in-non-selected-windows nil
+      visible-cursor t
+      warning-suppress-log-types '((comp)) ; Don't display compile warnings
+      truncate-partial-width-windows 65 ; Don't truncate lines in a window narrower than 65 chars.
+      vc-follow-symlinks t)
+
+(setq ring-bell-function 'ignore
+      ;; Press e to edit variable value in help buffer.
+      help-enable-variable-value-editing t
+      ;; Disable gui box.
+      use-file-dialog nil
+      use-dialog-box nil
+      use-short-answers t
+      ;; NOTE 这是干啥的？
+      redisplay-skip-fontification-on-input t)
+
+;; Monitors are trending toward wide, rather than tall.
+(setq split-width-threshold 160)
+(setq split-height-threshold nil)
+
+ ;; NOTE this may cause lsp-bridge-ref buffer didn't show
+(setq window-resize-pixelwise nil
+      frame-resize-pixelwise t)
 #+end_src
-*** Config
+*** Completion
 #+begin_src emacs-lisp
-(setq browse-url-generic-program
-      (or (executable-find "firefox")
-          (when eat/macp "open")
-          (when eat/linuxp "xdg-open")))
-
-;; Do not show cursor in nonselected windows
-(setq-default cursor-in-non-selected-windows nil)
-
-(setq redisplay-skip-fontification-on-input t)
-
-(setq
- initial-major-mode 'fundamental-mode               ; Don't use prog-mode an stratup
- ring-bell-function 'ignore
- suggest-key-bindings nil                           ; Disable "You can run the command balabala..."
- word-wrap-by-category t                            ; Emacs 之光！
- use-short-answers t                                ; yse-or-no -> y-or-n
- suggest-key-bindings nil
- enable-recursive-minibuffers t
- )
-
-(setq-default
- inhibit-compacting-font-caches t                   ; Don’t compact font caches during GC.
- require-final-newline t                            ; add final newline
- visible-cursor t
- echo-keystrokes 0.01                               ; don't wait for keystrokes display
- warning-suppress-log-types '((comp))               ; Don't display compile warnings
- truncate-partial-width-windows 65                  ; Don't truncate lines in a window narrower than 65 chars.
- vc-follow-symlinks t                               ; always follow link
- server-client-instructions nil                     ; no client startup messages
- )
-
 (setq
  completion-styles '(basic partial-completion)
- completion-category-overrides '((file (styles basic partial-completion)))
- completion-cycle-threshold t
- minibuffer-depth-indicate-mode t
- minibuffer-eldef-shorten-default t
- minibuffer-electric-default-mode t)
-;; Quit that fucking minibuffer!
+ completion-category-overrides '((file (styles basic partial-completion))))
+#+end_src
+
+*** Minibuffer
+#+begin_src emacs-lisp
+;; Quit the fucking minibuffer!
 (keymap-set minibuffer-local-map "C-g" #'keyboard-quit)
 
-(setq help-enable-variable-value-editing t)
+;; Add prompt indicator to `completing-read-multiple'.
+;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
+(defun crm-indicator (args)
+  (cons (format "[CRM%s] %s"
+                (replace-regexp-in-string
+                 "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                 crm-separator)
+                (car args))
+        (cdr args)))
+(advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+;; Do not allow the cursor in the minibuffer prompt
+(setq minibuffer-prompt-properties
+      '(read-only t cursor-intangible t face minibuffer-prompt))
+(add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+
+;; Emacs 28: Hide commands in M-x which do not work in the current mode.
+;; Vertico commands are hidden in normal buffers.
+(setq read-extended-command-predicate #'command-completion-default-include-p)
+
+;; Enable recursive minibuffers
+(setq enable-recursive-minibuffers t)
 #+end_src
 *** Frame hooks
 
@@ -510,39 +528,18 @@ Selectively runs either `after-make-console-frame-hooks' or
  x-gtk-use-system-tooltips nil)
 #+end_src
 
-*** Suppress GUI features
+*** Keybinding
+#+begin_src emacs-lisp
+(keymap-global-set "C-h C-k" #'describe-keymap)
+;; this will stuck emacs
+(keymap-global-unset "C-h h")
 
-#+begin_src emacs-lisp
-(setq use-file-dialog nil)
-(setq use-dialog-box nil)
-(setq inhibit-startup-screen t)
+(when (display-graphic-p)
+  (global-unset-key (kbd "C-z"))
+  (global-unset-key (kbd "C-x C-z")))
 #+end_src
-
-*** Use four spaces instead of tab
-#+begin_src emacs-lisp
-;; indent with whitespace by default
-(setq-default
- tab-width 4
- indent-tabs-mode nil)
-#+end_src
-*** Use utf-8 as default coding system
-#+begin_src emacs-lisp
-;; Contrary to what many Emacs users have in their configs, you don't need
-;; more than this to make UTF-8 the default coding system:
-(set-language-environment "UTF-8")
-#+end_src
-*** Window
-#+begin_src emacs-lisp
-;; Monitors are trending toward wide, rather than tall.
-(setq split-width-threshold 160)
-(setq split-height-threshold nil)
-
-(setq
- ;; NOTE this may cause lsp-bridge-ref buffer didn't show
- window-resize-pixelwise nil
- frame-resize-pixelwise t)
-#+end_src
-*** Scroll
+*** Edit
+**** Scroll
 #+begin_src emacs-lisp
 (setq hscroll-step 1
       hscroll-margin 2
@@ -575,36 +572,54 @@ Selectively runs either `after-make-console-frame-hooks' or
 (defalias 'scroll-up-command '+pixel-scroll-interpolate-down)
 (defalias 'scroll-down-command '+pixel-scroll-interpolate-up)
 #+end_src
-*** keybinding
+**** Auto save
 #+begin_src emacs-lisp
-(keymap-global-set "C-h C-k" #'describe-keymap)
-;; this will stuck emacs
-(keymap-global-unset "C-h h")
+;; Don't generate backups or lockfiles. While auto-save maintains a copy so long
+;; as a buffer is unsaved, backups create copies once, when the file is first
+;; written, and never again until it is killed and reopened. This is better
+;; suited to version control, and I don't want world-readable copies of
+;; potentially sensitive material floating around our filesystem.
+(setq create-lockfiles nil
+      make-backup-files nil)
 
-(when (display-graphic-p)
-  (global-unset-key (kbd "C-z"))
-  (global-unset-key (kbd "C-x C-z")))
-#+end_src
-*** UIxUX
-*** Disable lock and back file, enable auto save
-#+begin_src emacs-lisp
-;; Disable default auto backup and save file
-(setq-default
- create-lockfiles nil                               ; Don't create lockfiles
- make-backup-files nil                              ; Disable auto save and backup
- auto-save-default nil
- auto-save-list-file-prefix nil)
+;; But turn on auto-save, so we have a fallback in case of crashes or lost data.
+;; Use `recover-file' or `recover-session' to recover them.
+(setq auto-save-default t
+      ;; Don't auto-disable auto-save after deleting big chunks. This defeats
+      ;; the purpose of a failsafe. This adds the risk of losing the data we
+      ;; just deleted, but I believe that's VCS's jurisdiction, not ours.
+      auto-save-include-big-deletions t
+      auto-save-list-file-prefix "~/.cache/autosave/"
+      tramp-auto-save-directory  "~/.cache/tramp-autosave/"
+      auto-save-file-name-transforms
+      (list (list "\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'"
+                  ;; Prefix tramp autosaves to prevent conflicts with local ones
+                  (concat auto-save-list-file-prefix "tramp-\\2") t)
+            (list ".*" auto-save-list-file-prefix t)))
 
-;; most of time I will do save manually
+;; Most of time I will do save manually.
 (setq auto-save-visited-interval 10)
-(add-hook 'on-first-file-hook #'auto-save-visited-mode)
+(add-hook 'after-init-hook #'auto-save-visited-mode)
 #+end_src
-*** Delete whitespace after save
+**** Use four spaces instead of tab
+#+begin_src emacs-lisp
+;; indent with whitespace by default
+(setq-default tab-width 4
+              indent-tabs-mode nil)
+#+end_src
+**** Use utf-8 as default coding system
+#+begin_src emacs-lisp
+;; Contrary to what many Emacs users have in their configs, you don't need
+;; more than this to make UTF-8 the default coding system:
+(set-language-environment "UTF-8")
+#+end_src
+**** Delete whitespace after save
 #+begin_src emacs-lisp
 (add-hook 'before-save-hook #'delete-trailing-whitespace)
 #+end_src
-** Font
-*** fonts
+*** UI
+**** Font
+***** Var
 #+begin_src emacs-lisp
 (defvar eat/fonts-default        '("Monaco" "Cascadia Code" "Menlo" "Source Code Pro"))
 (defvar eat/fonts-variable-pitch '("Bookerly" "Cardo" "Times New Roman" "DejaVu Sans"))
@@ -613,7 +628,7 @@ Selectively runs either `after-make-console-frame-hooks' or
 (defvar eat/fonts-emoji          '("Apple Color Emoji" "Segoe UI Symbol" "Noto Color Emoji"))
 (defvar eat/font-size-default   13)
 #+end_src
-*** setup
+***** Setup
 #+begin_src emacs-lisp
 (defun font-installed-p (font-list)
   (let ((font-installed nil))
@@ -647,7 +662,7 @@ Selectively runs either `after-make-console-frame-hooks' or
     (set-fontset-font t 'cjk-misc eat/font-cjk)))
 (add-hook 'after-make-window-system-frame-hooks #'eat/setup-font)
 #+end_src
-*** rescale
+***** Rescale
 #+begin_src emacs-lisp
 (defvar eat/font-rescale-alist
   `((,eat/font-cjk     . 0.95)
@@ -664,15 +679,15 @@ Selectively runs either `after-make-console-frame-hooks' or
             (cdr setting)))))
 (add-hook 'after-make-window-system-frame-hooks #'eat/rescale-font)
 #+end_src
-*** utils
+***** Util funcs
 #+begin_src emacs-lisp
 (defun eat/fixed-pitch-setup ()
   (interactive)
   (setq buffer-face-mode-face '(:family "Sarasa Gothic SC"))
   (buffer-face-mode +1))
 #+end_src
-** Theme
-*** Add a hook after load theme
+**** Theme
+***** Add a hook after load theme
 #+begin_src emacs-lisp
 (defvar eat/theme 'modus-operandi
   "Default theme.")
@@ -696,7 +711,7 @@ Selectively runs either `after-make-console-frame-hooks' or
 
 (add-hook 'after-make-window-system-frame-hooks #'(lambda () (load-theme eat/theme)))
 #+end_src
-*** Modern mode line
+***** Modern mode line
 #+begin_src emacs-lisp
 (defun i-dont-want-see-box ()
   "Remove box attirbute from mode-line-active and use it's color as background."
@@ -732,6 +747,13 @@ Selectively runs either `after-make-console-frame-hooks' or
        (package-refresh-contents))
      (if ,vc (package-vc-install ,vc)
        (package-install ',package))))
+#+end_src
+*** browse-url
+#+begin_src emacs-lisp
+(setq browse-url-generic-program
+      (or (executable-find "firefox")
+          (when eat/macp "open")
+          (when eat/linuxp "xdg-open")))
 #+end_src
 *** tab-bar
 NOTE do not bind =tab-bar-switch-to-prev-tab= and
@@ -1193,7 +1215,6 @@ Stole from https://github.com/astoff/isearch-mb/wiki
 #+begin_src emacs-lisp
 (setq visual-line-fringe-indicators '(nil nil)
       ;; List only applicable commands.
-      read-extended-command-predicate #'command-completion-default-include-p
       fill-column 72)
 #+end_src
 *** smerge
@@ -1377,6 +1398,27 @@ Also check:
                            ;; like "viewport".
                            "--run-together"))
 #+end_src
+*** message
+#+begin_src emacs-lisp
+;;; message
+(setq message-kill-buffer-on-exit t
+      message-mail-alias-type 'ecomplete
+      ;; Personal Information
+      user-full-name "Liu Bo"
+      user-mail-address "liubolovelife@gmail.com"
+      message-signature user-full-name
+      smtpmail-smtp-user user-mail-address
+      ;; Send email through SMTP
+      send-mail-function #'smtpmail-send-it
+      message-send-mail-function #'message-use-send-mail-function
+      smtpmail-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-service 587)
+(defun eat/message-mode-setup ()
+  (auto-fill-mode)
+  (when (executable-find "ltex-ls")
+    (eglot-ensure)))
+(add-hook 'message-mode-hook #'eat/message-mode-setup)
+#+end_src
 *** gnus
 #+begin_src elisp
 ;;; gnus
@@ -1393,7 +1435,7 @@ Also check:
  `((nntp "gmane" (nntp-address "news.gmane.io"))
    (nntp "nntp.lore.kernel.org")
    (nnimap "Gmail"
-           (nnimap-user ,eat/user-mail-address)
+           (nnimap-user "liubolovelife@gmail.com")
            (nnimap-inbox "INBOX")
            (nnimap-address "imap.gmail.com")
            (nnimap-stream ssl)
@@ -1489,25 +1531,6 @@ Also check:
 
 (add-hook 'gnus-select-group-hook #'gnus-group-set-timestamp)
 (add-hook 'gnus-summary-mode-hook #'hl-line-mode)
-
-;;; message
-(setq message-kill-buffer-on-exit t
-      message-mail-alias-type 'ecomplete
-      ;; Personal Information
-      user-full-name eat/user-full-name
-      user-mail-address eat/user-mail-address
-      message-signature user-full-name
-      smtpmail-smtp-user user-mail-address
-      ;; Send email through SMTP
-      send-mail-function #'smtpmail-send-it
-      message-send-mail-function #'message-use-send-mail-function
-      smtpmail-smtp-server "smtp.gmail.com"
-      smtpmail-smtp-service 587)
-(defun eat/message-mode-setup ()
-  (auto-fill-mode)
-  (when (executable-find "ltex-ls")
-    (eglot-ensure)))
-(add-hook 'message-mode-hook #'eat/message-mode-setup)
 
 #+end_src
 *** desktop-save
@@ -2215,150 +2238,6 @@ program and dictionaries.
 #+end_src
 
 * Completion
-** consult
-#+begin_src emacs-lisp
-(eat/pkg consult)
-(eat/pkg consult-dir)
-(eat/pkg consult-eglot)
-
-(setq consult-narrow-key             "<"
-      consult-preview-key            "M-."
-      xref-show-xrefs-function       #'consult-xref
-      xref-show-definitions-function #'consult-xref)
-
-(bind global-map
-      "M-l"            #'consult-line
-      [remap yank-pop] #'consult-yank-pop
-      ;; C-x bindings
-      [remap switch-to-buffer              ] #'consult-buffer
-      [remap switch-to-buffer-other-window ] #'consult-buffer-other-window
-      [remap switch-to-buffer-other-tab    ] #'consult-buffer-other-tab
-      [remap switch-to-buffer-other-frame  ] #'consult-buffer-other-frame
-      [remap project-switch-to-buffer      ] #'consult-project-buffer
-      [remap project-find-regexp           ] (cond (my/executable-find-rg #'consult-ripgrep)
-                                                   (t #'consult-git-grep))
-      [remap bookmark-jump                 ] #'consult-bookmark
-      [remap recentf-open-files            ] #'consult-recent-file
-      ;; M-g for go to things
-      "M-g e"           #'consult-compile-error
-      "M-g f"           #'consult-flymake
-      "M-g o"           #'consult-outline
-      "M-g m"           #'consult-mark
-      [remap imenu]     #'consult-imenu
-      [remap goto-line] #'consult-goto-line
-      ;; register
-      "M-#"   #'consult-register-load
-      "C-M-'" #'consult-register-store
-      "C-M-#" #'consult-register)
-
-;;; consult-dir
-(keymap-substitute global-map #'list-directory #'consult-dir)
-(with-eval-after-load 'vertico
-  (bind vertico-map
-        "C-x C-d" #'consult-dir
-        "C-x C-j" #'consult-dir-jump-file))
-#+end_src
-
-** company
-
-- use C-p/C-n to select prev/next
-- use tab to do complete
-- free ret, popup will no longer interrupt typing
-
-#+begin_src emacs-lisp
-(eat/pkg company)
-
-(add-hook 'prog-mode-hook 'company-mode)
-
-(defun my-company-capf--candidates (func &rest args)
-  "Try default completion styles."
-  (let ((completion-styles '(basic partial-completion)))
-    (apply func args)))
-(advice-add 'company-capf--candidates :around 'my-company-capf--candidates)
-
-(setq company-minimum-prefix-length 2
-      company-idle-delay 0.1 ;; time for snippet expand
-      company-require-match nil)
-
-;; Frontends
-;; don't need preview frontends with copilot
-;; use C-h to show doc(maybe use eldoc-box) instead echo- frontend
-;; so only config tooltip frontend
-(setq company-frontends '(company-pseudo-tooltip-frontend)
-      company-tooltip-align-annotations t
-      ;; no matter if a tooltip is shown above or below point, the
-      ;; candidates are always listed starting near point.
-      company-tooltip-width-grow-only t
-      ;; icon in front of a candidate, make it looks like Atom
-      company-format-margin-function #'company-text-icons-margin
-      company-text-icons-add-background t)
-
-;; Backends
-(setq company-backends '(company-capf
-                         company-files
-                         (;;searching for completion candidates inside the contents of the open buffer(s)
-                          company-dabbrev-code
-                          ;; provides completions from programming language keywords
-                          company-keywords)
-                         company-dabbrev)
-      company-files-exclusions '(".git/" ".DS_Store")
-      ;; search from the buffers with the same majar mode
-      company-dabbrev-other-buffers t
-      company-dabbrev-ignore-case nil
-      company-dabbrev-downcase nil
-      company-dabbrev-code-ignore-case nil
-      company-dabbrev-code-everywhere t)
-
-(with-eval-after-load "company"
-  ;; use tab to do complete and free ret
-  (bind company-active-map
-        [tab] #'company-complete-selection
-        "TAB" #'company-complete-selection
-        [remap completion-at-point] #'company-complete-selection
-        "C-s" #'company-filter-candidates
-        ;; Free SPC and RET, popup will no longer interrupt typing.
-        [escape] nil
-        [return] nil
-        "RET" nil
-        "SPC" nil))
-#+end_src
-** yasnippet
-#+begin_src elisp
-(eat/pkg yasnippet)
-
-(add-hook 'prog-mode-hook #'yas-minor-mode)
-(add-hook 'conf-mode-hook #'yas-minor-mode)
-
-(with-eval-after-load 'yasnippet
-  (let ((inhibit-message t))
-    (yas-reload-all)))
-#+end_src
-** copilot
-
-#+begin_src emacs-lisp
-(eat/pkg copilot "https://github.com/zerolfx/copilot.el")
-
-;; 由于 `lisp-indent-offset' 的默认值是 nil，在编辑 elisp 时每敲一个字
-;; 符都会跳出一个 warning，将其默认值设置为 t 以永不显示这个 warning
-(setq-default copilot--indent-warning-printed-p t)
-
-(when (executable-find "node")
-  (add-hook 'prog-mode-hook 'copilot-mode))
-
-(with-eval-after-load 'copilot
-  (add-to-list 'copilot-major-mode-alist '("go" . "go"))
-  (add-to-list 'copilot-major-mode-alist '("go-ts" . "go"))
-  (bind copilot-completion-map
-        "C-g" #'copilot-clear-overlay
-        "C-f" #'copilot-accept-completion
-        "C-e" #'copilot-accept-completion-by-line
-        "M-f" #'copilot-accept-completion-by-word
-        "M-p" #'copilot-previous-completion
-        "M-n" #'copilot-next-completion)
-  ;; only enable copilot in meow insert mode
-  (with-eval-after-load 'meow
-    (add-to-list 'copilot-enable-predicates 'meow-insert-mode-p)))
-#+end_src
 ** vertico
 #+begin_src emacs-lisp
 (eat/pkg vertico)
@@ -2407,6 +2286,172 @@ program and dictionaries.
 
   (with-eval-after-load 'consult
     (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode)))
+#+end_src
+
+** consult
+#+begin_src emacs-lisp
+(eat/pkg consult)
+(eat/pkg consult-dir)
+(eat/pkg consult-eglot)
+
+(setq consult-narrow-key             "<"
+      consult-preview-key            "M-."
+      xref-show-xrefs-function       #'consult-xref
+      xref-show-definitions-function #'consult-xref)
+
+;; Use `consult-completion-in-region' if Vertico is enabled.
+;; Otherwise use the default `completion--in-region' function.
+(setq completion-in-region-function
+      (lambda (&rest args)
+        (apply (if vertico-mode
+                   #'consult-completion-in-region
+                 #'completion--in-region)
+               args)))
+
+(bind global-map
+      "M-l"            #'consult-line
+      [remap yank-pop] #'consult-yank-pop
+      ;; C-x bindings
+      [remap switch-to-buffer              ] #'consult-buffer
+      [remap switch-to-buffer-other-window ] #'consult-buffer-other-window
+      [remap switch-to-buffer-other-tab    ] #'consult-buffer-other-tab
+      [remap switch-to-buffer-other-frame  ] #'consult-buffer-other-frame
+      [remap project-switch-to-buffer      ] #'consult-project-buffer
+      [remap project-find-regexp           ] (cond (my/executable-find-rg #'consult-ripgrep)
+                                                   (t #'consult-git-grep))
+      [remap bookmark-jump                 ] #'consult-bookmark
+      [remap recentf-open-files            ] #'consult-recent-file
+      ;; M-g for go to things
+      "M-g e"           #'consult-compile-error
+      "M-g f"           #'consult-flymake
+      "M-g o"           #'consult-outline
+      "M-g m"           #'consult-mark
+      [remap imenu]     #'consult-imenu
+      [remap goto-line] #'consult-goto-line
+      ;; register
+      "M-#"   #'consult-register-load
+      "C-M-'" #'consult-register-store
+      "C-M-#" #'consult-register)
+
+;;; consult-dir
+(keymap-substitute global-map #'list-directory #'consult-dir)
+(with-eval-after-load 'vertico
+  (bind vertico-map
+        "C-x C-d" #'consult-dir
+        "C-x C-j" #'consult-dir-jump-file))
+#+end_src
+
+** company
+
+- use C-p/C-n to select prev/next
+- use tab to do complete
+- free ret, popup will no longer interrupt typing
+- when disable company, use =completion-at-point= to do it manually
+
+*** enable
+#+begin_src emacs-lisp
+(eat/pkg company)
+
+;; (add-hook 'after-init-hook 'global-company-mode)
+#+end_src
+*** basic config
+#+begin_src emacs-lisp
+(defun my-company-capf--candidates (func &rest args)
+  "Try default completion styles."
+  (let ((completion-styles '(basic partial-completion)))
+    (apply func args)))
+(advice-add 'company-capf--candidates :around 'my-company-capf--candidates)
+
+(setq company-minimum-prefix-length 2
+      company-idle-delay 0.1 ;; time for snippet expand
+      company-require-match nil)
+#+end_src
+*** frontend
+#+begin_src emacs-lisp
+;; Frontends
+;; don't need preview frontends with copilot
+;; use C-h to show doc(maybe use eldoc-box) instead echo- frontend
+;; so only config tooltip frontend
+(setq company-frontends '(company-pseudo-tooltip-frontend)
+      company-tooltip-align-annotations t
+      ;; no matter if a tooltip is shown above or below point, the
+      ;; candidates are always listed starting near point.
+      company-tooltip-width-grow-only t
+      ;; icon in front of a candidate, make it looks like Atom
+      company-format-margin-function #'company-text-icons-margin
+      company-text-icons-add-background t)
+#+end_src
+*** backend
+#+begin_src emacs-lisp
+;; Backends
+;; Do not use company-capf with company-yasnippet, it will cause
+;; completions list messed up.
+(setq company-backends '(company-capf
+                         company-files
+                         (;;searching for completion candidates inside the contents of the open buffer(s)
+                          company-dabbrev-code
+                          ;; provides completions from programming language keywords
+                          company-keywords)
+                         company-dabbrev)
+      company-files-exclusions '(".git/" ".DS_Store")
+      ;; search from the buffers with the same majar mode
+      company-dabbrev-other-buffers t
+      company-dabbrev-ignore-case nil
+      company-dabbrev-downcase nil
+      company-dabbrev-code-ignore-case nil
+      company-dabbrev-code-everywhere t)
+#+end_src
+*** keybinding
+#+begin_src emacs-lisp
+(with-eval-after-load "company"
+  ;; use tab to do complete and free ret
+  (bind company-active-map
+        [tab] #'company-complete-selection
+        "TAB" #'company-complete-selection
+        "C-s" #'company-filter-candidates
+        ;; Free SPC and RET, popup will no longer interrupt typing.
+        [escape] nil
+        [return] nil
+        "RET" nil
+        "SPC" nil))
+#+end_src
+
+** yasnippet
+#+begin_src elisp
+(eat/pkg yasnippet)
+
+(add-hook 'prog-mode-hook #'yas-minor-mode)
+(add-hook 'conf-mode-hook #'yas-minor-mode)
+
+(with-eval-after-load 'yasnippet
+  (let ((inhibit-message t))
+    (yas-reload-all)))
+#+end_src
+** copilot
+
+#+begin_src emacs-lisp
+(eat/pkg copilot "https://github.com/zerolfx/copilot.el")
+
+;; 由于 `lisp-indent-offset' 的默认值是 nil，在编辑 elisp 时每敲一个字
+;; 符都会跳出一个 warning，将其默认值设置为 t 以永不显示这个 warning
+(setq-default copilot--indent-warning-printed-p t)
+
+(when (executable-find "node")
+  (add-hook 'prog-mode-hook 'copilot-mode))
+
+(with-eval-after-load 'copilot
+  (add-to-list 'copilot-major-mode-alist '("go" . "go"))
+  (add-to-list 'copilot-major-mode-alist '("go-ts" . "go"))
+  (bind copilot-completion-map
+        "C-g" #'copilot-clear-overlay
+        "C-f" #'copilot-accept-completion
+        "C-e" #'copilot-accept-completion-by-line
+        "M-f" #'copilot-accept-completion-by-word
+        "M-p" #'copilot-previous-completion
+        "M-n" #'copilot-next-completion)
+  ;; only enable copilot in meow insert mode
+  (with-eval-after-load 'meow
+    (add-to-list 'copilot-enable-predicates 'meow-insert-mode-p)))
 #+end_src
 * Tools
 ** translate
