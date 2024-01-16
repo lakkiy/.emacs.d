@@ -2449,6 +2449,14 @@ program and dictionaries.
 (add-hook 'prog-mode-hook 'copilot-mode)
 
 (with-eval-after-load 'copilot
+
+  ;; Don't warning when file is too big.
+  (defun +copilot--get-source-a-around (fn &rest args)
+    "Advice function for `copilot--get-source'."
+    (cl-letf (((symbol-function #'warn) #'message))
+      (apply fn args)))
+  (advice-add #'copilot--get-source :around #'+copilot--get-source-a-around)
+
   (add-to-list 'copilot-major-mode-alist '("go" . "go"))
   (add-to-list 'copilot-major-mode-alist '("go-ts" . "go"))
   (bind copilot-completion-map
