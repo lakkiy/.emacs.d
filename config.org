@@ -1592,6 +1592,16 @@ Also check:
         register-alist
         (file-name-history        . 100)))
 #+end_src
+*** hi-lock
+#+begin_quote
+I use global-hi-lock-mode in Emacs to introduce color-highlighting
+into my notes using special punctuation. For instance, when I use
+"??", it renders the line yellow, signaling outstanding
+questions. "@@" transforms the line into green, emphasizing noteworthy
+ideas or observations. Finally, "!!" marks the line as red, indicating
+a warning or an important point. This system significantly enhances my
+writing/thinking workflow.
+#+end_quote
 *** misc
 #+begin_src emacs-lisp
 ;; Quick editing in `describe-variable'
@@ -2436,8 +2446,7 @@ program and dictionaries.
 ;; 符都会跳出一个 warning，将其默认值设置为 t 以永不显示这个 warning
 (setq-default copilot--indent-warning-printed-p t)
 
-(when (executable-find "node")
-  (add-hook 'prog-mode-hook 'copilot-mode))
+(add-hook 'prog-mode-hook 'copilot-mode)
 
 (with-eval-after-load 'copilot
   (add-to-list 'copilot-major-mode-alist '("go" . "go"))
