@@ -2730,29 +2730,6 @@ Need =xapian-core=.
 				                         dictionary dictionary_comprehension
 				                         parenthesized_expression subscript)))
 #+end_src
-*** diff-hl
-#+begin_src emacs-lisp
-(eat/pkg diff-hl)
-
-(add-hook 'prog-mode-hook #'diff-hl-mode)
-(add-hook 'conf-mode-hook #'diff-hl-mode)
-(add-hook 'dired-mode-hook #'diff-hl-dired-mode)
-
-(setq diff-hl-draw-borders nil)
-
-(with-eval-after-load 'diff-hl
-  (add-hook 'magit-pre-refresh-hook #'diff-hl-magit-pre-refresh)
-  (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh)
-  ;; Highlight on-the-fly
-  (diff-hl-flydiff-mode 1)
-  (unless (display-graphic-p)
-    ;; Fall back to the display margin since the fringe is unavailable in tty
-    (diff-hl-margin-mode 1)
-    ;; Avoid restoring `diff-hl-margin-mode'
-    (with-eval-after-load 'desktop
-      (add-to-list 'desktop-minor-mode-table
-                   '(diff-hl-margin-mode nil)))))
-#+end_src
 *** devdocs.el
 #+begin_src emacs-lisp
 (eat/pkg devdocs)
@@ -3305,6 +3282,27 @@ This is a variadic `cl-pushnew'."
 (eat/pkg magit-delta)
 (when (executable-find "delta")
   (add-hook 'magit-mode-hook #'magit-delta-mode))
+
+(eat/pkg diff-hl)
+(add-hook 'prog-mode-hook #'diff-hl-mode)
+(add-hook 'conf-mode-hook #'diff-hl-mode)
+(add-hook 'dired-mode-hook #'diff-hl-dired-mode)
+
+(setq diff-hl-draw-borders nil
+      diff-hl-disable-on-remote t)
+
+(with-eval-after-load 'diff-hl
+  (add-hook 'magit-pre-refresh-hook #'diff-hl-magit-pre-refresh)
+  (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh)
+  ;; Highlight on-the-fly
+  (diff-hl-flydiff-mode 1)
+  (unless (display-graphic-p)
+    ;; Fall back to the display margin since the fringe is unavailable in tty
+    (diff-hl-margin-mode 1)
+    ;; Avoid restoring `diff-hl-margin-mode'
+    (with-eval-after-load 'desktop
+      (add-to-list 'desktop-minor-mode-table
+                   '(diff-hl-margin-mode nil)))))
 #+end_src
 ** dirvish
 #+begin_src elisp
