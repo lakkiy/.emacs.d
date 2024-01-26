@@ -720,7 +720,7 @@ Stole from https://github.com/astoff/isearch-mb/wiki
 #+begin_src emacs-lisp
 (defun eat/fixed-pitch-setup ()
   (interactive)
-  (setq buffer-face-mode-face '(:family "Sarasa Gothic SC"))
+  (setq buffer-face-mode-face '(:family "Sarasa Mono SC"))
   (buffer-face-mode +1))
 #+end_src
 **** Theme
@@ -1341,6 +1341,8 @@ tramp-remote-path, so the process may can’t find remote programs.
         :documentLinkProvider
         ;; 好像是会和 treesit 的缩进冲突？不过没有测试 go 的，是群友提
         ;; 出的 cpp 的，不知道 go-ts-mode 的缩进问题和这个有没有关系
+        ;; TODO 这个没有生效？在 go 中 if 后面 RET 还是格式化成了 8 空
+        ;; 格
         :documentOnTypeFormattingProvider))
 
 (setq-default eglot-workspace-configuration
@@ -1978,6 +1980,12 @@ this works for images, HTML, LaTeX snippets, etc.
 (add-hook 'after-init-hook #'spacious-padding-mode)
 #+end_src
 * Edit
+** expand-region
+#+begin_src emacs-lisp
+(eat/pkg expreg)
+(keymap-global-set "C-=" #'expreg-expand)
+(keymap-global-set "C--" #'expreg-contract)
+#+end_src
 ** meow
 *** Setup
 #+begin_src elisp
@@ -2003,8 +2011,6 @@ this works for images, HTML, LaTeX snippets, etc.
   (add-to-list 'meow-keymap-alist (cons 'leader 'meow-leader-command-prefix))
 
   (meow-leader-define-key
-   '("a" . execute-extended-command)
-   '("e" . "C-x C-e")
    '(";" . comment-dwim)
    '("-" . negative-argument)
 
@@ -2049,16 +2055,80 @@ this works for images, HTML, LaTeX snippets, etc.
    '("L" . display-line-numbers-mode)
    '("A" . org-agenda-list)
    '("T" . telega)
-   )
+
+   ;; Use SPC (0-9) for digit arguments.
+   '("1" . meow-digit-argument)
+   '("2" . meow-digit-argument)
+   '("3" . meow-digit-argument)
+   '("4" . meow-digit-argument)
+   '("5" . meow-digit-argument)
+   '("6" . meow-digit-argument)
+   '("7" . meow-digit-argument)
+   '("8" . meow-digit-argument)
+   '("9" . meow-digit-argument)
+   '("0" . meow-digit-argument))
 
   (meow-normal-define-key
    '("?" . meow-cheatsheet)
    '("<escape>" . mode-line-other-buffer)
    '(";" . meow-reverse)
-   '("g" . meow-cancel-selection)
    '("q" . eat/quit)
-   '("\\" . comment-dwim)
+   '("/" . comment-dwim)
+   '("=" . expreg-expand)
+   '("+" . expreg-contract)
+   '("S" . save-buffer)
+   '("@" . hs-toggle-hiding)
 
+   ;; scroll
+   '("v" . scroll-up-command)
+   '("V" . scroll-down-command)
+
+   ;; wrap && unwrap
+   '("\"" . insert-pair)
+   '("[" . insert-pair)
+   '("{" . insert-pair)
+   '("(" . insert-pair)
+   '("]" . delete-pair) ;; NOTE maybe custom `delete-pair-blink-delay'
+
+   ;; flymake
+   '("Q" . flymake-goto-prev-error)
+   '("J" . flymake-goto-next-error)
+
+   ;; tab-bar
+   '(")" . tab-bar-switch-to-prev-tab)
+   '("}" . tab-bar-switch-to-next-tab)
+
+   ;; misc
+   '("'" . repeat)
+   '("-" . avy-goto-char-timer)
+
+   ;; kill/delete/change/replace
+   '("d" . meow-delete)
+   '("D" . meow-backward-delete)
+   '("k" . meow-kill)
+   '("K" . meow-kill-whole-line)
+   '("r" . meow-change)
+   '("R" . meow-replace)
+
+   ;; yank/pop
+   '("y" . meow-save)
+   '("Y" . meow-yank)
+
+   ;; grab
+   '("G" . meow-grab)
+   '("z" . meow-pop-selection)
+
+   ;; find/till/visit, most used in beacon mode
+   '("M" . meow-search)
+   '("f" . meow-find)
+   '("F" . meow-till)
+   '("l" . meow-visit)
+
+   ;; undo
+   '("u" . meow-undo)
+   '("U" . meow-undo-in-selection)
+
+   ;; Below config basicly won't change anymore.
    ;; expand by numbers
    '("0" . meow-expand-0)
    '("9" . meow-expand-9)
@@ -2070,6 +2140,27 @@ this works for images, HTML, LaTeX snippets, etc.
    '("3" . meow-expand-3)
    '("2" . meow-expand-2)
    '("1" . meow-expand-1)
+
+   ;; line operation
+   '("j" . meow-join)
+   '("e" . meow-line)
+   '("o" . meow-block)
+
+   ;; query replace
+   '("&" . meow-query-replace)
+   '("%" . meow-query-replace-regexp)
+
+   ;; start keypad
+   '("m" . meow-keypad-start)
+   '("g" . meow-keypad-start)
+   '("c" . meow-keypad-start)
+   '("x" . meow-keypad-start)
+
+   ;; thing
+   '("," . meow-inner-of-thing)
+   '("." . meow-bounds-of-thing)
+   '("<" . meow-beginning-of-thing)
+   '(">" . meow-end-of-thing)
 
    ;; movement, like hjkl
    '("h" . meow-left)
@@ -2091,89 +2182,7 @@ this works for images, HTML, LaTeX snippets, etc.
    '("b" . meow-back-word)
    '("B" . meow-back-symbol)
    '("w" . meow-next-word)
-   '("W" . meow-next-symbol)
-   '("m" . meow-mark-word)
-   '("M" . meow-mark-symbol)
-
-   ;; kill/delete/change/replace
-   '("d" . meow-delete)
-   '("D" . meow-backward-delete)
-   '("k" . meow-kill)
-   '("K" . meow-kill-whole-line)
-   '("r" . meow-replace)
-   '("R" . meow-swap-grab)
-   '("c" . meow-change)
-
-   ;; line operation
-   '("j" . meow-join)
-   '("e" . meow-line) ;; NOTE F3 or insert/append/change in grab to enable "every n line" grab
-   '("E" . meow-goto-line)
-   '("o" . meow-block)
-   '("O" . meow-to-block)
-
-   ;; yank/pop
-   '("x" . meow-save)
-   '("X" . meow-sync-grab)
-   '("y" . meow-yank)
-
-   ;; grab
-   '("G" . meow-grab)
-   '("z" . meow-pop-selection)
-
-   ;; query replace
-   '("&" . meow-query-replace)
-   '("%" . meow-query-replace-regexp)
-
-   ;; thing
-   '("," . meow-inner-of-thing)
-   '("." . meow-bounds-of-thing)
-   '("<" . meow-beginning-of-thing)
-   '(">" . meow-end-of-thing)
-
-   ;; find/till/visit, most used in beacon mode
-   '("/" . meow-search)
-   '("F" . meow-find)
-   '("L" . meow-till)
-   '("l" . meow-visit)
-
-   ;; undo
-   '("u" . meow-undo)
-   '("U" . meow-undo-in-selection)
-
-
-   ;;
-   '(":" . execute-extended-command)
-
-   ;; scroll
-   '("v" . scroll-up-command)
-   '("V" . scroll-down-command)
-
-   ;; buffer
-   '("S" . save-buffer)
-
-   ;; window
-   '("s" . ace-select-window)
-
-   ;; wrap && unwrap
-   '("\"" . insert-pair)
-   '("[" . insert-pair)
-   '("{" . insert-pair)
-   '("(" . insert-pair)
-   '("]" . delete-pair) ;; NOTE maybe custom `delete-pair-blink-delay'
-
-   ;; flymake
-   '("Q" . flymake-goto-prev-error)
-   '("J" . flymake-goto-next-error)
-
-   ;; tab-bar
-   '(")" . tab-bar-switch-to-prev-tab)
-   '("}" . tab-bar-switch-to-next-tab)
-
-   ;; misc
-   '("'" . repeat)
-   '("-" . avy-goto-char-timer)
-   '("f" . project-find-file)
-   ))
+   '("W" . meow-next-symbol)))
 #+end_src
 *** Config
 #+begin_src elisp
@@ -2273,7 +2282,6 @@ program and dictionaries.
   (add-hook 'text-mode-hook 'jit-spell-mode)
   (add-hook 'prog-mode-hook 'jit-spell-mode))
 #+end_src
-
 * Completion
 ** vertico
 #+begin_src emacs-lisp
@@ -2649,7 +2657,8 @@ Need =xapian-core=.
 (eat/pkg xeft)
 
 (setq xeft-directory "~/Dropbox/org/roam"
-      xeft-database "~/.xeft/db")
+      xeft-database "~/.xeft/db"
+      xeft-default-extension  "org")
 
 (defun xeft-setup ()
   (bklink-minor-mode 1)
