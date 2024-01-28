@@ -1821,26 +1821,7 @@ this works for images, HTML, LaTeX snippets, etc.
 
 (keymap-global-set "M-o" 'ace-window)
 
-(setq aw-keys '(?a ?o ?e ?u ?i)
-      aw-scope 'frame
-      aw-dispatch-alist
-      '((?d aw-delete-window "Ace - Delete Window")
-        (?s aw-swap-window "Ace - Swap Window")
-        (?p aw-flip-window)
-        (?v aw-split-window-vert "Ace - Split Vert Window")
-        (?h aw-split-window-horz "Ace - Split Horz Window")
-        (?m delete-other-windows "Ace - Maximize Window")
-        (?g delete-other-windows)
-        (?b balance-windows)
-        (?u (lambda ()
-              (progn
-                (winner-undo)
-                (setq this-command 'winner-undo))))
-        (?r winner-redo)))
-(with-eval-after-load 'ace-window
-  (dolist (cmd '(ace-window
-                 aw--select-window))
-    (advice-add cmd :after #'eat/pulse-momentary-line)))
+(setq aw-keys '(?a ?o ?e ?u ?i))
 #+end_src
 ** popper
 #+begin_src emacs-lisp
@@ -1989,207 +1970,157 @@ this works for images, HTML, LaTeX snippets, etc.
 ** meow
 *** Setup
 #+begin_src elisp
-(defun meow-setup-dvorak ()
-  (interactive)
-  (setq meow-cheatsheet-layout meow-cheatsheet-layout-dvorak)
+  (defun meow-setup-dvorak ()
+    (interactive)
+    (setq meow-cheatsheet-layout meow-cheatsheet-layout-dvorak)
 
-  (meow-motion-overwrite-define-key
-   '("<escape>" . mode-line-other-buffer)
-   '("'" . repeat)
-   '(")" . tab-bar-switch-to-prev-tab)
-   '("}" . tab-bar-switch-to-next-tab)
-   )
+    (meow-motion-overwrite-define-key
+     '("<escape>" . mode-line-other-buffer)
+     '("'" . repeat)
+     '(")" . tab-bar-switch-to-prev-tab)
+     '("}" . tab-bar-switch-to-next-tab))
 
-  ;; NOTE key defined in leader same as bind to C-c
-  ;; so make sure it didn't conflict with keybindings
-  ;; defined in other files or bulitin that start with C-c
-  ;; or use this to make it start with C-c m
-  (defalias 'meow-leader-command-prefix (make-sparse-keymap))
-  (defvar meow-leader-map (symbol-function 'meow-leader-command-prefix)
-    "Keymap for characters following C-c m.")
-  (keymap-global-set "C-c m" 'meow-leader-command-prefix)
-  (add-to-list 'meow-keymap-alist (cons 'leader 'meow-leader-command-prefix))
+    (meow-leader-define-key
+     '("b" . switch-to-buffer)
+     '("k" . kill-this-buffer)
+     (cons "p" project-prefix-map)
 
-  (meow-leader-define-key
-   '(";" . comment-dwim)
-   '("-" . negative-argument)
+     ;; Use SPC (0-9) for digit arguments.
+     '("1" . meow-digit-argument)
+     '("2" . meow-digit-argument)
+     '("3" . meow-digit-argument)
+     '("4" . meow-digit-argument)
+     '("5" . meow-digit-argument)
+     '("6" . meow-digit-argument)
+     '("7" . meow-digit-argument)
+     '("8" . meow-digit-argument)
+     '("9" . meow-digit-argument)
+     '("0" . meow-digit-argument))
 
-   ;; file
-   '("f" . find-file)
-   '("F" . find-file-other-window)
+    (meow-normal-define-key
+     '("S" . save-buffer)
+     '("Q" . flymake-goto-prev-error)
+     '("J" . flymake-goto-next-error)
+     '(")" . tab-bar-switch-to-prev-tab)
+     '("}" . tab-bar-switch-to-next-tab)
+     '("-" . avy-goto-char-timer)
 
-   ;; buffer
-   '("b" . switch-to-buffer)
-   '("B" . switch-to-buffer-other-window)
-   '("k" . kill-this-buffer)
+     ;;; Below config basicly won't change anymore.
+     '("'" . repeat)
+     '("~" . eat-project)
+     '("`" . eat)
+     '("@" . hs-toggle-hiding)
+     '("q" . eat/quit)
+     '("/" . comment-dwim)
+     '("=" . expreg-expand)
+     '("+" . expreg-contract)
+     '("v" . scroll-up-command)
+     '("V" . scroll-down-command)
+     '("\"" . insert-pair)
+     '("[" . insert-pair)
+     '("{" . insert-pair)
+     '("(" . insert-pair)
+     '("]" . delete-pair)
 
-   ;; window
-   '("w" . ace-select-window)
-   '("W" . ace-swap-window)
-   '("o" . "C-x 1")
-   '("O" . ace-delete-window)
-   '("q" . delete-window)
-   '("-" . "C-x 2")
-   '("s" . "C-x 3")
+     '("?" . meow-cheatsheet)
+     '("<escape>" . mode-line-other-buffer)
+     '(";" . meow-reverse)
 
-   ;; xref
-   '("." . "M-.")
-   '("," . "M-,")
-   '("?" . "M-?")
+     ;; mark/find/till/visit, most used in beacon mode
+     '("O" . meow-mark-word)
+     '("E" . meow-mark-symbol)
+     '("M" . meow-search)
+     '("f" . meow-find)
+     '("F" . meow-till)
+     '("l" . meow-visit)
 
-   ;; project, bind to keymap
-   (cons "p" project-prefix-map)
-   ;; smerge
-   ;; (cons "=" smerge-basic-map)
+     ;; kill/delete/change/replace
+     '("d" . meow-delete)
+     '("D" . meow-backward-delete)
+     '("k" . meow-kill)
+     '("K" . meow-kill-whole-line)
+     '("C" . meow-change)
+     '("r" . meow-replace)
 
-   ;; tab-bar
-   (cons "t" tab-prefix-map)
+     ;; yank/pop
+     '("s" . meow-save)
+     '("y" . meow-yank)
 
-   ;; app
-   '("d" . dired)
-   '("v" . magit)
-   '("C" . xeft)
+     ;; grab
+     '("G" . meow-grab)
+     '("X" . meow-sync-grab)
+     '("R" . meow-swap-grab)
+     '("z" . meow-pop-selection)
 
-   ;; toggles
-   '("$" . load-theme)
-   '("L" . display-line-numbers-mode)
-   '("A" . org-agenda-list)
-   '("T" . telega)
+     ;; undo
+     '("u" . meow-undo)
+     '("U" . meow-undo-in-selection)
 
-   ;; Use SPC (0-9) for digit arguments.
-   '("1" . meow-digit-argument)
-   '("2" . meow-digit-argument)
-   '("3" . meow-digit-argument)
-   '("4" . meow-digit-argument)
-   '("5" . meow-digit-argument)
-   '("6" . meow-digit-argument)
-   '("7" . meow-digit-argument)
-   '("8" . meow-digit-argument)
-   '("9" . meow-digit-argument)
-   '("0" . meow-digit-argument))
+     ;; expand by numbers
+     '("0" . meow-expand-0)
+     '("9" . meow-expand-9)
+     '("8" . meow-expand-8)
+     '("7" . meow-expand-7)
+     '("6" . meow-expand-6)
+     '("5" . meow-expand-5)
+     '("4" . meow-expand-4)
+     '("3" . meow-expand-3)
+     '("2" . meow-expand-2)
+     '("1" . meow-expand-1)
 
-  (meow-normal-define-key
-   '("?" . meow-cheatsheet)
-   '("<escape>" . mode-line-other-buffer)
-   '(";" . meow-reverse)
-   '("q" . eat/quit)
-   '("/" . comment-dwim)
-   '("=" . expreg-expand)
-   '("+" . expreg-contract)
-   '("S" . save-buffer)
-   '("@" . hs-toggle-hiding)
+     ;; line operation
+     '("j" . meow-join)
+     '("e" . meow-line)
+     '("o" . meow-block)
 
-   ;; scroll
-   '("v" . scroll-up-command)
-   '("V" . scroll-down-command)
+     ;; query replace & kmacro
+     '("#" . meow-start-kmacro-or-insert-counter)
+     '("$" . meow-end-or-call-kmacro)
+     '("&" . meow-query-replace)
+     '("%" . meow-query-replace-regexp)
 
-   ;; wrap && unwrap
-   '("\"" . insert-pair)
-   '("[" . insert-pair)
-   '("{" . insert-pair)
-   '("(" . insert-pair)
-   '("]" . delete-pair) ;; NOTE maybe custom `delete-pair-blink-delay'
+     ;; start keypad
+     '("m" . meow-keypad-start)
+     '("g" . meow-keypad-start)
+     '("c" . meow-keypad-start)
+     '("x" . meow-keypad-start)
 
-   ;; flymake
-   '("Q" . flymake-goto-prev-error)
-   '("J" . flymake-goto-next-error)
+     ;; thing
+     '("," . meow-inner-of-thing)
+     '("." . meow-bounds-of-thing)
+     '("<" . meow-beginning-of-thing)
+     '(">" . meow-end-of-thing)
 
-   ;; tab-bar
-   '(")" . tab-bar-switch-to-prev-tab)
-   '("}" . tab-bar-switch-to-next-tab)
+     ;; movement, like hjkl
+     '("h" . meow-left)
+     '("H" . meow-left-expand)
+     '("t" . meow-right)
+     '("T" . meow-right-expand)
+     '("n" . meow-next)
+     '("N" . meow-next-expand)
+     '("p" . meow-prev)
+     '("P" . meow-prev-expand)
 
-   ;; misc
-   '("'" . repeat)
-   '("-" . avy-goto-char-timer)
+     ;; insert above/below
+     '("i" . meow-insert)
+     '("I" . meow-open-above)
+     '("A" . meow-open-below)
+     '("a" . meow-append)
 
-   ;; kill/delete/change/replace
-   '("d" . meow-delete)
-   '("D" . meow-backward-delete)
-   '("k" . meow-kill)
-   '("K" . meow-kill-whole-line)
-   '("r" . meow-change)
-   '("R" . meow-replace)
-
-   ;; yank/pop
-   '("y" . meow-save)
-   '("Y" . meow-yank)
-
-   ;; grab
-   '("G" . meow-grab)
-   '("z" . meow-pop-selection)
-
-   ;; find/till/visit, most used in beacon mode
-   '("M" . meow-search)
-   '("f" . meow-find)
-   '("F" . meow-till)
-   '("l" . meow-visit)
-
-   ;; undo
-   '("u" . meow-undo)
-   '("U" . meow-undo-in-selection)
-
-   ;; Below config basicly won't change anymore.
-   ;; expand by numbers
-   '("0" . meow-expand-0)
-   '("9" . meow-expand-9)
-   '("8" . meow-expand-8)
-   '("7" . meow-expand-7)
-   '("6" . meow-expand-6)
-   '("5" . meow-expand-5)
-   '("4" . meow-expand-4)
-   '("3" . meow-expand-3)
-   '("2" . meow-expand-2)
-   '("1" . meow-expand-1)
-
-   ;; line operation
-   '("j" . meow-join)
-   '("e" . meow-line)
-   '("o" . meow-block)
-
-   ;; query replace
-   '("&" . meow-query-replace)
-   '("%" . meow-query-replace-regexp)
-
-   ;; start keypad
-   '("m" . meow-keypad-start)
-   '("g" . meow-keypad-start)
-   '("c" . meow-keypad-start)
-   '("x" . meow-keypad-start)
-
-   ;; thing
-   '("," . meow-inner-of-thing)
-   '("." . meow-bounds-of-thing)
-   '("<" . meow-beginning-of-thing)
-   '(">" . meow-end-of-thing)
-
-   ;; movement, like hjkl
-   '("h" . meow-left)
-   '("H" . meow-left-expand)
-   '("t" . meow-right)
-   '("T" . meow-right-expand)
-   '("n" . meow-next)
-   '("N" . meow-next-expand)
-   '("p" . meow-prev)
-   '("P" . meow-prev-expand)
-
-   ;; insert above/below
-   '("i" . meow-insert)
-   '("I" . meow-open-above)
-   '("A" . meow-open-below)
-   '("a" . meow-append)
-
-   ;; move/mark by word/symbol
-   '("b" . meow-back-word)
-   '("B" . meow-back-symbol)
-   '("w" . meow-next-word)
-   '("W" . meow-next-symbol)))
+     ;; move/mark by word/symbol
+     '("b" . meow-back-word)
+     '("B" . meow-back-symbol)
+     '("W" . meow-next-symbol)
+     '("w" . meow-next-word)))
 #+end_src
 *** Config
 #+begin_src elisp
 (eat/pkg meow)
-
 (require 'meow)
+
 (setq meow-esc-delay 0.001
+      meow-keypad-leader-dispatch "C-c"
+      meow-keypad-start-keys nil
       meow-replace-state-name-list
       '((normal . "N")
         (beacon . "B")
@@ -2197,23 +2128,10 @@ this works for images, HTML, LaTeX snippets, etc.
         (motion . "M")
         (keypad . "K")))
 
+(meow-thing-register 'angle '(pair ("<") (">")) '(pair ("<") (">")))
+(add-to-list 'meow-char-thing-table '(?a . angle))
 (meow-thing-register 'backquote '(regexp "`" "`") '(regexp "`" "`"))
 (add-to-list 'meow-char-thing-table '(?` . backquote))
-
-(dolist (mode '(go-dot-mod-mode
-                diff-mode))
-  (add-to-list 'meow-mode-state-list `(,mode . normal)))
-;; motion mode list
-(dolist (mode '(lsp-bridge-ref-mode
-                Info-mode
-                ghelp-page-mode
-                notmuch-hello-mode
-                notmuch-search-mode
-                notmuch-tree-mode))
-  (add-to-list 'meow-mode-state-list `(,mode . motion)))
-(dolist (mode '(xeft-mode
-                gud-mode))
-  (add-to-list 'meow-mode-state-list `(,mode . insert)))
 
 (meow-setup-dvorak)
 (meow-setup-indicator)
@@ -2231,6 +2149,7 @@ this works for images, HTML, LaTeX snippets, etc.
 (eat/pkg undo-hl "https://github.com/casouri/undo-hl.git")
 (add-hook 'prog-mode-hook #'undo-hl-mode)
 (add-hook 'conf-mode-hook #'undo-hl-mode)
+(keymap-global-set "C-z" #'vundo)
 #+end_src
 ** rime
 If install emacs with nix:
@@ -3309,18 +3228,8 @@ This is a variadic `cl-pushnew'."
 #+begin_src emacs-lisp
 (eat/pkg magit)
 (add-hook 'magit-diff-visit-file #'my-recenter-and-pulse-line)
+(keymap-global-set "C-x g" #'magit-status)
 
-(with-eval-after-load 'magit
-  ;; https://www.reddit.com/r/emacs/comments/yw3gpx/magit_autorevert_and_tramp/
-  (defun my-magit-auto-revert-mode-advice (orig-fun &rest args)
-    (unless (and buffer-file-name (file-remote-p buffer-file-name))
-      (apply orig-fun args)))
-  (advice-add 'magit-turn-on-auto-revert-mode-if-desired
-	          :around
-	          #'my-magit-auto-revert-mode-advice)
-
-  (fullframe magit-status magit-mode-quit-window)
-  (setq-default magit-diff-refine-hunk t))
 
 (eat/pkg magit-delta)
 (when (executable-find "delta")
@@ -3357,7 +3266,6 @@ This is a variadic `cl-pushnew'."
       dirvish-header-line-height 20
       dirvish-mode-line-height 20)
 
-(keymap-global-set "C-c f" #'dirvish-fd)
 (keymap-global-set "<f1>" #'dirvish-side)
 
 (with-eval-after-load 'dirvish
@@ -3391,10 +3299,7 @@ Use eat under linux and macos, use eshell under windows.
 (eat/pkg eat)
 ;; https://abode.karthinks.com/share/eat-modes.png
 
-(bind global-map
-      "C-`" #'eat
-      "C-x p e" #'eat-project)
-
+(bind global-map "C-`" #'eat)
 (with-eval-after-load 'eat
   (bind eat-mode-map "C-`" #'eat/quit))
 
