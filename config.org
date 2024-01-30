@@ -2009,6 +2009,7 @@ this works for images, HTML, LaTeX snippets, etc.
 
    ;;; Below config basicly won't change anymore.
    '("'" . repeat)
+   '(":" . gptel-menu)
    '("~" . eat-project)
    '("`" . eat)
    '("@" . hs-toggle-hiding)
