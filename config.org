@@ -597,22 +597,8 @@ Selectively runs either `after-make-console-frame-hooks' or
 ;; suited to version control, and I don't want world-readable copies of
 ;; potentially sensitive material floating around our filesystem.
 (setq create-lockfiles nil
-      make-backup-files nil)
-
-;; But turn on auto-save, so we have a fallback in case of crashes or lost data.
-;; Use `recover-file' or `recover-session' to recover them.
-(setq auto-save-default t
-      ;; Don't auto-disable auto-save after deleting big chunks. This defeats
-      ;; the purpose of a failsafe. This adds the risk of losing the data we
-      ;; just deleted, but I believe that's VCS's jurisdiction, not ours.
-      auto-save-include-big-deletions t
-      auto-save-list-file-prefix "~/.cache/autosave/"
-      tramp-auto-save-directory  "~/.cache/tramp-autosave/"
-      auto-save-file-name-transforms
-      (list (list "\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'"
-                  ;; Prefix tramp autosaves to prevent conflicts with local ones
-                  (concat auto-save-list-file-prefix "tramp-\\2") t)
-            (list ".*" auto-save-list-file-prefix t)))
+      make-backup-files nil
+      auto-save-default nil)
 
 ;; Most of time I will do save manually.
 (setq auto-save-visited-interval 10)
