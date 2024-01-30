@@ -2139,6 +2139,11 @@ this works for images, HTML, LaTeX snippets, etc.
 (meow-setup-indicator)
 (meow-global-mode 1)
 #+end_src
+*** Disable flymake in insert mode
+#+begin_src emacs-lisp
+(add-hook 'meow-insert-exit-hook (lambda () (when (derived-mode-p 'prog-mode) (flymake-mode 1))))
+(add-hook 'meow-insert-enter-hook (lambda () (when (derived-mode-p 'prog-mode) (flymake-mode -1))))
+#+end_src
 ** separedit
 #+begin_src emacs-lisp
 (eat/pkg separedit)
