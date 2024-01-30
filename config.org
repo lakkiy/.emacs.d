@@ -895,6 +895,7 @@ See =tab-prefix-map= to custom key bindings for tab-bar, default is =C-x t=.
         ("Emacs News" . "sachachua.com/blog/category/emacs-news/")
         ("Github" . [simple-query "github.com" "github.com/search?q=" #1#])
         ("Google" . [simple-query "google.com" "google.com/search?q=" #1#])
+        ("Kagi" . [simple-query "kagi.com" "kagi.com/search?q=" #1#])
         ("Youtube" . [simple-query "youtube.com" "youtube.com/results?search_query=" #1#])
         ("Google Groups" . [simple-query "groups.google.com" "groups.google.com/groups?q=" #1#])
         ("stackoverflow" . [simple-query "stackoverflow.com" "stackoverflow.com/search?q=" #1#])
