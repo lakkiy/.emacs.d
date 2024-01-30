@@ -736,23 +736,24 @@ Stole from https://github.com/astoff/isearch-mb/wiki
 #+end_src
 ***** Modern mode line
 #+begin_src emacs-lisp
-(defun i-dont-want-see-box ()
-  "Remove box attirbute from mode-line-active and use it's color as background."
-  (let ((box-color (plist-get (face-attribute 'mode-line-active :box) :color)))
-    (when box-color
-      (set-face-attribute 'mode-line nil :background box-color :box nil)
-      (set-face-attribute 'mode-line-active nil :background box-color :box nil)
-      (set-face-attribute 'mode-line-inactive nil :box nil)
-      (set-face-attribute 'mode-line-inactive nil :box nil)
-      (set-face-attribute 'tab-bar nil :box nil)
-      (set-face-attribute 'tab-bar-tab nil :box nil)
-      (set-face-attribute 'tab-bar-tab-inactive nil :box nil))))
+;; (defun i-dont-want-see-box ()
+;;   "Remove box attirbute from mode-line-active and use it's color as background."
+;;   (let ((box-color (plist-get (face-attribute 'mode-line-active :box) :color)))
+;;     (when box-color
+;;       (set-face-attribute 'mode-line nil :background box-color :box nil)
+;;       (set-face-attribute 'mode-line-active nil :background box-color :box nil)
+;;       (set-face-attribute 'mode-line-inactive nil :box nil)
+;;       (set-face-attribute 'mode-line-inactive nil :box nil)
+;;       (set-face-attribute 'tab-bar nil :box nil)
+;;       (set-face-attribute 'tab-bar-tab nil :box nil)
+;;       (set-face-attribute 'tab-bar-tab-inactive nil :box nil))))
 
-(when (display-graphic-p)
-  (add-to-list 'mode-line-format (list (propertize "  " 'display '(raise 0.3))
-                                       (propertize " " 'display '(raise -0.3)))
-               t)
-  (add-hook 'after-load-theme-hook #'i-dont-want-see-box))
+;; (when (display-graphic-p)
+;;   (add-to-list 'mode-line-format (list (propertize "  " 'display '(raise 0.3))
+;;                                        (propertize " " 'display '(raise -0.3)))
+;;                t)
+;;   (add-hook 'after-load-theme-hook #'i-dont-want-see-box)
+;;   )
 #+end_src
 
 ** Built-in packages
@@ -823,11 +824,12 @@ See =tab-prefix-map= to custom key bindings for tab-bar, default is =C-x t=.
                (right-padding (- space-to-add left-padding)))
           (concat
            bar
-           (propertize (concat (propertize " " 'display '(raise 0.3))
+           (propertize (concat ;; (propertize " " 'display '(raise 0.3))
                                (make-string left-padding ?\s)
                                name
                                (make-string right-padding ?\s)
-                               (propertize " " 'display '(raise -0.3)))
+                               ;; (propertize " " 'display '(raise -0.3))
+                               )
                        'face (funcall tab-bar-tab-face-function tab)))))
       tab-bar-tab-name-function
       (lambda nil "Use project as tab name."
