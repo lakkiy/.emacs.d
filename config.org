@@ -1,8 +1,7 @@
-#+STARTUP: fold
+#+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el :mkdirp yes
 
-* Core
-** Early init
+* Early init
 
 early-init.el is run before init.el,
 - before package initialization, and
@@ -74,15 +73,24 @@ Disable native compilation.
 (setq frame-inhibit-implied-resize t)
 #+end_src
 
-** Load custom file
-#+begin_src elisp
+* Better Defaults
+** Use lexical binding
+
+#+begin_src emacs-lisp
 ;;; -*- lexical-binding: t -*-
+#+end_src
+
+** Discard the custom file
+
+#+begin_src elisp
 (setq-default lexical-binding t)
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (and (file-exists-p custom-file) (file-readable-p custom-file))
   (load custom-file :no-error :no-message))
 #+end_src
+
 ** Const & Var
+
 #+begin_src emacs-lisp
 (defconst eat/macp (eq system-type 'darwin))
 (defconst eat/linuxp (eq system-type 'gnu/linux))
@@ -90,6 +98,7 @@ Disable native compilation.
 (defconst my/executable-find-ugrep (executable-find "ugrep"))
 (defconst my/executable-find-rg (executable-find "rg"))
 #+end_src
+
 ** Funcs
 *** Delete things(don’t send to kill ring
 #+begin_src emacs-lisp
@@ -1409,16 +1418,14 @@ Also check:
                            "--run-together"))
 #+end_src
 *** message
+
 #+begin_src emacs-lisp
-;;; message
 (setq message-kill-buffer-on-exit t
       message-mail-alias-type 'ecomplete
-      ;; Personal Information
       user-full-name "Liu Bo"
       user-mail-address "liubolovelife@gmail.com"
       message-signature user-full-name
       smtpmail-smtp-user user-mail-address
-      ;; Send email through SMTP
       send-mail-function #'smtpmail-send-it
       message-send-mail-function #'message-use-send-mail-function
       smtpmail-smtp-server "smtp.gmail.com"
@@ -1429,6 +1436,7 @@ Also check:
     (eglot-ensure)))
 (add-hook 'message-mode-hook #'eat/message-mode-setup)
 #+end_src
+
 *** gnus
 #+begin_src elisp
 ;;; gnus
@@ -1939,18 +1947,6 @@ this works for images, HTML, LaTeX snippets, etc.
 (add-to-list 'custom-theme-load-path (expand-file-name "elpa/paperlike-theme" user-emacs-directory))
 #+end_src
 
-** spacious-padding
-#+begin_src emacs-lisp
-(eat/pkg spacious-padding)
-(setq spacious-padding-widths
-      '( :internal-border-width 16
-         :header-line-width 4
-         :mode-line-width 2
-         :tab-width 2
-         :right-divider-width 24
-         :scroll-bar-width 8))
-(add-hook 'after-init-hook #'spacious-padding-mode)
-#+end_src
 * Edit
 ** expand-region
 #+begin_src emacs-lisp
@@ -1998,6 +1994,7 @@ this works for images, HTML, LaTeX snippets, etc.
 
    ;;; Below config basicly won't change anymore.
    '("'" . repeat)
+   '("!" . dirvish-side)
    '(":" . gptel-menu)
    '("~" . eat-project)
    '("`" . eat)
@@ -2567,6 +2564,7 @@ Custome =gptel-backend= as you need, here is an example:
         [remap scroll-down-command] #'pdf-view-scroll-down-or-previous-page))
 #+end_src
 ** xeft, search notes
+
 Need =xapian-core=.
 
 #+begin_src elisp
@@ -2584,6 +2582,7 @@ Need =xapian-core=.
   (add-hook 'xeft-find-file-hook #'xeft-setup)
   (require 'flique))
 #+end_src
+
 ** wgrep
 #+begin_src emacs-lisp
 (eat/pkg wgrep)
@@ -2913,8 +2912,43 @@ Install =rnix-lsp= and =nixfmt=.
 (eat/pkg dape)
 (autoload #'dape-toggle-breakpoint "dape" nil t)
 #+end_src
-* Markup Languages
+* Org mode
+
+#+begin_src emacs-lisp
+(setq
+ org-directory (expand-file-name "~/Dropbox/org")
+ calendar-date-style 'ios ;; YYYY-MM-DD
+ org-plantuml-exec-mode 'plantuml
+ org-complete-tags-always-offer-all-agenda-tags t
+ org-footnote-auto-adjust t
+ org-footnote-section nil ;; Footnotes go into the section they are referenced in
+ org-hide-emphasis-markers t
+ org-return-follows-link t
+ org-image-actual-width '(300)
+ org-ellipsis " ▾ "
+ org-special-ctrl-a/e t
+ org-special-ctrl-k t
+ org-modules nil
+ org-log-done t
+ org-confirm-babel-evaluate nil
+ org-edit-src-content-indentation 0
+ org-src-window-setup 'current-window)
+
+(defun eat/org-mode-setup ()
+  (auto-fill-mode 1)
+  (org-indent-mode 1)
+  (electric-pair-local-mode -1)
+  (electric-quote-local-mode)
+  (electric-indent-local-mode -1))
+(add-hook 'org-mode-hook #'eat/org-mode-setup)
+
+(with-eval-after-load 'org
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+  (require 'org-tempo))
+#+end_src
+
 ** valign
+
 #+begin_src elisp
 (eat/pkg valign)
 (setq valign-fancy-bar t)
@@ -2923,56 +2957,29 @@ Install =rnix-lsp= and =nixfmt=.
   (add-hook 'markdown-mode-hook #'valign-mode))
 #+end_src
 
-** org
-*** config
-#+begin_src elisp
-(defun eat/org-mode-setup ()
-  "Configuration for Org Mode."
-  (org-indent-mode)
-  (electric-pair-local-mode -1)
-  (electric-quote-local-mode)
-  (electric-indent-local-mode -1)
-  ;; https://github.com/valentjn/ltex-ls/issues/262
-  ;; (when (executable-find "ltex-ls")
-  ;;   (eglot-ensure))
-  )
+** More workflow states
 
-(add-hook 'org-mode-hook #'eat/org-mode-setup)
-
-(setq org-directory (expand-file-name "~/Dropbox/org"))
-(defvar load-language-list '((emacs-lisp . t)
-                             (python . t)
-                             (js . t)
-                             (C . t)
-                             (shell . t)
-                             (plantuml . t)))
-(setq org-plantuml-exec-mode 'plantuml)
-
-(with-eval-after-load 'org
-  (setq org-edit-src-content-indentation 0
-        org-special-ctrl-a/e t
-        org-special-ctrl-k t
-        ;; comment after emacs merge noverly branch
-        ;; org-src-fontify-natively nil ;; see it in `org-edit-special'
-        org-src-window-setup 'current-window
-        org-return-follows-link t
-        org-confirm-babel-evaluate nil
-        org-image-actual-width '(300)
-        org-ellipsis " ▾ "
-        ;; Faster loading
-        org-modules nil
-        org-log-done t)
-  (require 'org-mouse) ;; mouse support
-  (require 'org-tempo) ;; see `org-structure-template-alist'
-  (require 'ob)
-  (require 'ob-dot)
-  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-  (org-babel-do-load-languages 'org-babel-load-languages load-language-list))
+#+begin_src emacs-lisp
+(setq org-todo-keywords '((sequence "TODO(t)" "WIP(i!)" "WAIT(w!)" "|" "DONE(d!)" "CANCELLED(c@/!)"))
+      org-todo-keyword-faces '(("TODO"       :foreground "#7c7c75" :weight bold)
+                               ("WIP"        :foreground "#0098dd" :weight bold)
+                               ("WAIT"       :foreground "#9f7efe" :weight bold)
+                               ("DONE"       :foreground "#50a14f" :weight bold)
+                               ("CANCELLED"  :foreground "#ff6480" :weight bold)))
 #+end_src
-*** latex
+
+** Save when I change a workflow state
+
+#+begin_src emacs-lisp
+(add-hook 'org-trigger-hook 'save-buffer)
+#+end_src
+
+** LaTex
+
 #+begin_src emacs-lisp
 (setq org-latex-compiler "xelatex")
 (setq org-preview-latex-default-process 'dvisvgm)
+(setq org-preview-latex-image-directory "~/.cache/org-latex")
 (setq org-latex-pdf-process
       '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
         "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
@@ -2980,45 +2987,24 @@ Install =rnix-lsp= and =nixfmt=.
         "rm -fr %b.out %b.log %b.tex auto"))
 (setq org-latex-packages-alist '("\\usepackage[UTF8, fontset=fandol]{ctex}"))
 #+end_src
-*** ob
-**** restclient
-#+begin_src elisp
-(eat/pkg ob-restclient)
-(cl-pushnew '(restclient . t) load-language-list)
-(with-eval-after-load 'ob-restclient
-  (add-to-list 'org-structure-template-alist '("rc" . "src restclient")))
-#+end_src
 
-**** go
-#+begin_src elisp
-(eat/pkg ob-go)
+** Capture
 
-(cl-pushnew '(go .t) load-language-list)
-
-(with-eval-after-load 'ob-go
-  (add-to-list 'org-structure-template-alist '("go" . "src go")))
-#+end_src
-
-*** org-capture
 #+begin_src elisp
 (keymap-global-set "C-c c" 'org-capture)
 
-(defun eat/org-capture-inbox ()
-  (interactive)
-  (org-capture nil "i"))
-(keymap-global-set "C-c I" #'eat/org-capture-inbox)
-
 (setq org-default-notes-file (concat org-directory "/default-notes.org")
       org-capture-templates
-      `(("i" "Inbox" entry (file "~/Dropbox/org/inbox.org")
-         "* TODO %?\n:PROPERITIES:\n:Created: %T\n:END:")
+      `(("b" "Blog idea" entry (file "~/Dropbox/org/blog.org") "* %^{title}\n%u\n%?" :prepend t)
+        ("p" "Project idea" entry (file "~/Dropbox/org/project.org") "* %^{title}\n%u\n%?" :prepend t)
+        ("i" "Inbox" entry (file "~/Dropbox/org/inbox.org") "* TODO %?\n:PROPERITIES:\n:Created: %T\n:END:")
+        ("n" "Note" entry (file "~/Dropbox/org/roma/Notes.org") "* %^{title}\n%u\n%?" :prepend t)
         ("w" "Work" entry (file+olp+datetree "~/Dropbox/org/Work.org")
-         "* %^{Title}\n:PROPERITIES:\n:Created: %T\n:END:" :tree-type week)
-        ("n" "Note" entry (file "~/Dropbox/org/Notes.org")
-         "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)))
+         "* %^{Title}\n:PROPERITIES:\n:Created: %T\n:END:" :tree-type week)))
 #+end_src
 
-*** org-agenda
+** Agenda
+
 #+begin_src elisp
 (setq org-agenda-files (list org-directory)
       org-agenda-prefix-format '((agenda . " %i %-12:c%?-12t% s")
@@ -3033,10 +3019,11 @@ Install =rnix-lsp= and =nixfmt=.
 (keymap-global-set "C-c a" 'org-agenda)
 #+end_src
 
-*** UI
-**** zero width space for CJK inline format
+** 零宽空格，中文排版
+
 没有=零宽=空格
 有​=零宽=​空格
+
 #+begin_src emacs-lisp
 (defun eat/insert-zero-width-space ()
   (interactive)
@@ -3044,46 +3031,58 @@ Install =rnix-lsp= and =nixfmt=.
 (keymap-global-set "C-x 8 0" #'eat/insert-zero-width-space)
 #+end_src
 
-**** org-appear
+** org-appear
+
 #+begin_src emacs-lisp
 (eat/pkg org-appear)
-(setq org-hide-emphasis-markers t)
 (add-hook 'org-mode-hook #'org-appear-mode)
 #+end_src
 
-**** org-variable-pitch
+** org-variable-pitch
+
 #+begin_src emacs-lisp
 (eat/pkg org-variable-pitch)
 #+end_src
-**** org-modern
+
+** org-modern
+
 #+begin_src emacs-lisp
 (eat/pkg org-modern)
 (eat/pkg org-modern-indent "https://github.com/jdtsmith/org-modern-indent")
 
 (setq org-modern-star ["›"]
-      org-modern-hide-stars nil
       ;; Enable this will break code block indentation.
-      org-modern-block-fringe nil
-      ;; Use valign instead
-      org-modern-table nil)
+      org-modern-block-fringe nil)
+
+;; org modern indent
+(setq org-modern-hide-stars nil
+      org-modern-block-name '("" . ""))
+
+;; valign
+(setq org-modern-table nil)
 
 (defun eat/setup-org-modern ()
   (setq-local line-spacing 0.15)
   (org-modern-mode))
 (add-hook 'org-mode-hook 'eat/setup-org-modern)
+(add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
 (add-hook 'org-mode-hook 'org-modern-indent-mode 90)
 #+end_src
-*** export
-**** html
-***** syntax highlighting
+
+** Org babel
+
 #+begin_src emacs-lisp
-(eat/pkg htmlize)
+(add-hook 'org-babel-after-execute #'org-redisplay-inline-images)
+(eat/pkg ob-restclient)
+(eat/pkg ob-go)
 #+end_src
 
-***** embed resources
+** Org export
+
 For now use ~pandoc --embed-resources --standalone~.
 
 #+begin_src emacs-lisp
+(eat/pkg htmlize)
 (defun eat/org-export-to-html ()
   "Convert current org buffer to html with image embed.
 Need pandoc installed."
@@ -3092,21 +3091,22 @@ Need pandoc installed."
          (to (concat (file-name-sans-extension from) ".html")))
     (shell-command (format "pandoc --embed-resources --standalone %s -o %s" from to))
     (find-file to)))
-#+end_src
 
-**** markdown
-#+begin_src emacs-lisp
 (eat/pkg ox-gfm)
 (with-eval-after-load 'org
   (add-to-list 'org-export-backends 'md))
 #+end_src
-*** writing
-**** Table of content
+
+** toc-org
+
 #+begin_src elisp
 (eat/pkg toc-org)
+(autoload 'toc-org-enable "toc-org" nil t)
+(autoload 'toc-org-insert-toc "toc-org" nil t)
 #+end_src
 
-**** Cite
+** citar
+
 M-x ~org-cite-insert~
 
 #+begin_src elisp
@@ -3120,57 +3120,8 @@ M-x ~org-cite-insert~
 
 #+end_src
 
-**** Drag image
-#+begin_src emacs-lisp
-(eat/pkg org-download)
+** org-static-blog
 
-;; NOTE from doomemacs
-(defmacro pushnew! (place &rest values)
-  "Push VALUES sequentially into PLACE, if they aren't already present.
-This is a variadic `cl-pushnew'."
-  (let ((var (make-symbol "result")))
-    `(dolist (,var (list ,@values) (with-no-warnings ,place))
-       (cl-pushnew ,var ,place :test #'equal))))
-
-;; HACK We add these manually so that org-download is truly lazy-loaded
-(pushnew! dnd-protocol-alist
-          '("^\\(?:https?\\|ftp\\|file\\|nfs\\):" . org-download-dnd)
-          '("^data:" . org-download-dnd-base64))
-(advice-add #'org-download-enable :override #'ignore)
-
-(setq org-download-image-dir "img"
-      org-download-image-org-width 800)
-#+end_src
-**** A minor mode
-#+begin_src elisp
-(defvar eat/prose-mode-map
-  (let ((map (make-sparse-keymap)))
-    (keymap-set map "C-a" #'beginning-of-visual-line)
-    (keymap-set map "C-e" #'end-of-visual-line)
-    map)
-  "Mode map for ‘eat/prose-mode’.")
-
-(define-minor-mode eat/prose-mode
-  "A mode that optimizes for prose editing."
-  :lighter " PROSE"
-  :keymap eat/prose-mode-map
-  (if eat/prose-mode
-      (progn
-        (org-variable-pitch-minor-mode 1)
-        (visual-fill-column-mode 1)
-        (setq-local cursor-type 'bar)
-        (setq-local line-spacing 0.15)
-        (setq-local whitespace-style '(tab-mark))
-        (turn-off-auto-fill)
-        (whitespace-mode))
-    (org-variable-pitch-minor-mode -1)
-    (visual-fill-column-mode -1)
-    (whitespace-mode -1)
-    (variable-pitch-mode -1)
-    (kill-local-variable 'line-spacing)
-    (kill-local-variable 'cursor-type)))
-#+end_src
-*** blog
 #+begin_src elisp
 (eat/pkg org-static-blog)
 (setq org-static-blog-publish-title "mrunhap's blog"
@@ -3189,7 +3140,8 @@ This is a variadic `cl-pushnew'."
         org-static-blog-page-postamble (get-string-from-file "~/p/blog/static/postamble.html")))
 #+end_src
 
-** markdown
+* Markdown
+
 #+begin_src emacs-lisp
 (eat/pkg markdown-mode)
 (eat/pkg markdown-toc)
@@ -3208,7 +3160,9 @@ This is a variadic `cl-pushnew'."
     (eglot-ensure)))
 (add-hook 'markdown-mode-hook 'eat/markdown-mode-setup)
 #+end_src
-** latex
+
+* LaTex
+
 #+begin_src emacs-lisp
 (defun eat/latex-mode-setup ()
   (when (executable-find "digestif")
@@ -3216,22 +3170,32 @@ This is a variadic `cl-pushnew'."
     (eglot-ensure)))
 (add-hook 'latex-mode-hook 'eat/latex-mode-setup)
 #+end_src
-** typst
+
+* Typst
+
 #+begin_src emacs-lisp
 (eat/pkg typst-ts-mode "https://git.sr.ht/~meow_king/typst-ts-mode")
 #+end_src
-* Application
-** magit
+
+* Magit
+
 #+begin_src emacs-lisp
 (eat/pkg magit)
 (add-hook 'magit-diff-visit-file #'my-recenter-and-pulse-line)
 (keymap-global-set "C-x g" #'magit-status)
+#+end_src
 
+** magit-delta
 
+#+begin_src emacs-lisp
 (eat/pkg magit-delta)
 (when (executable-find "delta")
   (add-hook 'magit-mode-hook #'magit-delta-mode))
+#+end_src
 
+** diff-hl
+
+#+begin_src emacs-lisp
 (eat/pkg diff-hl)
 (add-hook 'prog-mode-hook #'diff-hl-mode)
 (add-hook 'conf-mode-hook #'diff-hl-mode)
@@ -3253,7 +3217,9 @@ This is a variadic `cl-pushnew'."
       (add-to-list 'desktop-minor-mode-table
                    '(diff-hl-margin-mode nil)))))
 #+end_src
-** dirvish
+
+* Dirvish
+
 #+begin_src elisp
 (eat/pkg dirvish)
 
@@ -3290,8 +3256,8 @@ This is a variadic `cl-pushnew'."
         "<mouse-3>" #'dired-mouse-find-file))
 #+end_src
 
-** eat
-Use eat under linux and macos, use eshell under windows.
+* Eat
+
 #+begin_src elisp
 (eat/pkg eat)
 ;; https://abode.karthinks.com/share/eat-modes.png
@@ -3307,12 +3273,14 @@ Use eat under linux and macos, use eshell under windows.
 (add-hook 'eshell-load-hook 'eat-eshell-visual-command-mode)
 #+end_src
 
-** kubel
+* Kubel
+
 #+begin_src emacs-lisp
 (eat/pkg kubel)
 #+end_src
 
-** telega
+* Telega
+
 Need =telegram-tdlib=.
 Run =docker pull zevlg/telega-server:latest=
 
@@ -3361,6 +3329,7 @@ Run =docker pull zevlg/telega-server:latest=
 
 * Modes
 ** csv-mode
+
 #+begin_src emacs-lisp
 (eat/pkg csv-mode)
 
@@ -3370,6 +3339,7 @@ Run =docker pull zevlg/telega-server:latest=
 #+end_src
 
 ** protobuf-mode
+
 #+begin_src emacs-lisp
 (eat/pkg protobuf-mode)
 
@@ -3379,30 +3349,38 @@ Run =docker pull zevlg/telega-server:latest=
               (setq imenu-generic-expression
                     '((nil "^[[:space:]]*\\(message\\|service\\|enum\\)[[:space:]]+\\([[:alnum:]]+\\)" 2))))))
 #+end_src
+
 ** git-mode
+
 #+begin_src emacs-lisp
 (eat/pkg git-modes)
 (add-to-list 'auto-mode-alist
              (cons "/.dockerignore\\'" 'gitignore-mode))
 #+end_src
+
 * Site Lisp
 ** Load Path
+
 #+begin_src elisp
 (add-to-list 'load-path (expand-file-name "site-lisp" user-emacs-directory))
 (add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))
 #+end_src
+
 ** color-outline
+
 #+begin_src elisp
 (autoload #'color-outline-mode "color-outline")
 (add-hook 'prog-mode-hook #'color-outline-mode)
 #+end_src
 
 ** iimg
+
 #+begin_src elisp
 (autoload #'iimg-enable "iimg")
 (add-hook 'text-mode-hook #'iimg-enable)
 (setq iimg-prune-slices-p nil)
 #+end_src
+
 ** bklink
 
 #+begin_src elisp
@@ -3416,12 +3394,16 @@ Run =docker pull zevlg/telega-server:latest=
         "C-c l" #'bklink-summary-mode
         "C-c i" #'bklink-insert))
 #+end_src
+
 ** quanjiao
+
 #+begin_src emacs-lisp
 (autoload #'quanjiao-mode "quanjiao" nil t)
 (add-hook 'text-mode-hook 'quanjiao-mode)
 #+end_src
+
 ** dired+
+
 #+begin_src emacs-lisp
 (autoload 'dired-toggle-mark-click "dired+" nil t)
 (autoload 'dired-copy "dired+" nil t)
