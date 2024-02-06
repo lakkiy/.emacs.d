@@ -1895,16 +1895,6 @@ this works for images, HTML, LaTeX snippets, etc.
       "C-x C-=" #'default-text-scale-increase
       "C-x C--" #'default-text-scale-decrease)
 #+end_src
-** auto-dark
-#+begin_src emacs-lisp
-(eat/pkg auto-dark)
-(autoload #'auto-dark-mode "auto-dark")
-(add-hook 'after-make-window-system-frame-hooks #'auto-dark-mode)
-
-(setq auto-dark-dark-theme 'modus-vivendi
-      auto-dark-light-theme 'modus-operandi)
-#+end_src
-
 ** hl-todo
 #+begin_src emacs-lisp
 (eat/pkg hl-todo)
@@ -1927,17 +1917,9 @@ this works for images, HTML, LaTeX snippets, etc.
 ** themes
 #+begin_src emacs-lisp
 (eat/pkg almost-mono-themes)
-(eat/pkg gruber-darker-theme)
 (eat/pkg standard-themes)
 (eat/pkg kaolin-themes)
 (eat/pkg spacemacs-theme)
-(eat/pkg doom-themes)
-
-(setq kaolin-themes-modeline-border nil)
-
-(with-eval-after-load "doom-themes"
-  (doom-themes-visual-bell-config)
-  (doom-themes-org-config))
 
 (eat/pkg nano-theme "https://github.com/mrunhap/nano-theme.el")
 (eat/pkg carbon-theme "https://github.com/DogLooksGood/carbon-theme")
@@ -1947,6 +1929,15 @@ this works for images, HTML, LaTeX snippets, etc.
 (add-to-list 'custom-theme-load-path (expand-file-name "elpa/paperlike-theme" user-emacs-directory))
 #+end_src
 
+** auto-dark
+#+begin_src emacs-lisp
+(eat/pkg auto-dark)
+(autoload #'auto-dark-mode "auto-dark")
+(add-hook 'after-make-window-system-frame-hooks #'auto-dark-mode)
+
+(setq auto-dark-dark-theme 'standard-light
+      auto-dark-light-theme 'standard-dark)
+#+end_src
 * Edit
 ** expand-region
 #+begin_src emacs-lisp
