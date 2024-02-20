@@ -2849,8 +2849,6 @@ Install =rnix-lsp= and =nixfmt=.
 
 (add-hook 'clojure-mode-hook #'puni-mode)
 
-(setq cider-repl-display-help-banner nil)
-
 (with-eval-after-load 'clojure-mode
   ;; better indentation for compojure
   ;; https://github.com/weavejester/compojure/wiki/Emacs-indentation
