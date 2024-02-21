@@ -3012,12 +3012,21 @@ Install =rnix-lsp= and =nixfmt=.
 
 没有=零宽=空格
 有​=零宽=​空格
+使用 prettify 显示零宽空格
 
 #+begin_src emacs-lisp
 (defun eat/insert-zero-width-space ()
   (interactive)
   (insert-char ?\u200B))
-(keymap-global-set "C-x 8 0" #'eat/insert-zero-width-space)
+(keymap-global-set "M-SPC" #'eat/insert-zero-width-space)
+
+;; 导出时（导出为 org 时除外），去除零宽空格
+(defun +org-export-remove-zero-width-space (text _backend _info)
+  "Remove zero width spaces from TEXT."
+  (unless (org-export-derived-backend-p 'org)
+    (replace-regexp-in-string "\u200b" "" text)))
+(with-eval-after-load 'ox
+  (add-to-list 'org-export-filter-final-output-functions #'+org-export-remove-zero-width-space t))
 #+end_src
 
 ** org-appear
