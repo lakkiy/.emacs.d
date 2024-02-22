@@ -721,7 +721,7 @@ Stole from https://github.com/astoff/isearch-mb/wiki
 **** Theme
 ***** Add a hook after load theme
 #+begin_src emacs-lisp
-(defvar eat/theme 'modus-operandi
+(defvar eat/theme 'pale
   "Default theme.")
 
 (defvar after-load-theme-hook nil
