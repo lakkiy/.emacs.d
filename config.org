@@ -1989,6 +1989,7 @@ this works for images, HTML, LaTeX snippets, etc.
    '(":" . gptel-menu)
    '("~" . eat-project)
    '("`" . eat)
+   '("_" . xeft)
    '("@" . hs-toggle-hiding)
    '("q" . eat/quit)
    '("/" . comment-dwim)
