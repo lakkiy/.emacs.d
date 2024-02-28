@@ -536,10 +536,7 @@ Selectively runs either `after-make-console-frame-hooks' or
         ns-use-thin-smoothing t
         ;; Don't open a file in a new frame
         ns-pop-up-frames nil)
-  (set-frame-parameter nil 'fullscreen 'maximized)
-
-  ;; No title bar.
-  (add-to-list 'default-frame-alist '(undecorated-round . t)))
+  (set-frame-parameter nil 'fullscreen 'maximized))
 #+end_src
 
 *** Linux
