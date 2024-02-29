@@ -1927,6 +1927,7 @@ this works for images, HTML, LaTeX snippets, etc.
 =page-break-lines= 在开启 =bklink= 和 =visual-fill-column= 的 org buffer 中在 ^L 上移动会卡死，但是 form-feed 用着没有问题。
 
 #+begin_src emacs-lisp
+(autoload 'form-feed-mode "form-feed" nil t)
 (add-hook 'org-mode-hook 'form-feed-mode)
 (add-hook 'emacs-lisp-mode-hook 'form-feed-mode)
 (add-hook 'text-mode-hook 'form-feed-mode)
