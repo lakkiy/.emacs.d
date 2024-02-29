@@ -2682,53 +2682,12 @@ Need =xapian-core=.
 (eat/pkg drepl)
 #+end_src
 
-** lsp-bridge
-#+begin_src elisp
-(eat/pkg lsp-bridge "https://github.com/manateelazycat/lsp-bridge")
-(eat/pkg flymake-bridge "https://github.com/liuyinz/flymake-bridge")
-
-(setq lsp-bridge-c-lsp-server "ccls"
-      acm-enable-tabnine nil
-      ;; install lsp server and run lsp_bridge.py on remote server
-      lsp-bridge-enable-with-tramp t)
-
-(defun my/lsp-bridge-mode-setup ()
-  (interactive)
-  (flymake-bridge-setup)
-  ;; Disable corfu since lsp-bridge use acm.
-  (ignore-errors
-    (company-mode -1))
-  ;; Use tab to jump to next field but do complete when there's acm complete.
-  (with-eval-after-load 'yasnippet
-    (define-key yas-keymap (kbd "<tab>") 'acm-complete-or-expand-yas-snippet)
-    (define-key yas-keymap (kbd "TAB") 'acm-complete-or-expand-yas-snippet)))
-
-(with-eval-after-load 'lsp-bridge
-  (add-hook 'lsp-bridge-mode-hook #'my/lsp-bridge-mode-setup)
-
-  (bind
-   (lsp-bridge-mode-map
-    "M-."     #'lsp-bridge-find-def
-    "C-x 4 ." #'lsp-bridge-find-def-other-window
-    "M-,"     #'lsp-bridge-find-def-return
-    "M-?"     #'lsp-bridge-find-references
-    "M-'"     #'lsp-bridge-find-impl
-    "C-c r"   #'lsp-bridge-rename
-    "M-RET"   #'lsp-bridge-code-action)
-   (lsp-bridge-ref-mode-map
-    "j" nil
-    "k" nil
-    "h" nil
-    "l" nil
-    "p" #'lsp-bridge-ref-jump-prev-file
-    "h" #'lsp-bridge-ref-jump-prev-keyword
-    "t" #'lsp-bridge-ref-jump-next-keyword
-    "n" #'lsp-bridge-ref-jump-next-file)))
-#+end_src
+** eglot-hierarchy
 
 #+begin_src elisp
 (eat/pkg eglot-hierarchy "https://github.com/dolmens/eglot-hierarchy")
 #+end_src
+
 ** citre
 #+begin_src elisp
 (eat/pkg citre)
