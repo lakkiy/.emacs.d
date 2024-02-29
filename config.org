@@ -452,6 +452,8 @@ ASCII字符（如中文、日文、韩文等）的情况下。不过，不压缩
  ;; NOTE this may cause lsp-bridge-ref buffer didn't show
 (setq window-resize-pixelwise nil
       frame-resize-pixelwise t)
+
+(setq-default fill-column 72)
 #+end_src
 *** Completion
 #+begin_src emacs-lisp
@@ -1223,12 +1225,6 @@ tramp-remote-path, so the process may can’t find remote programs.
 (add-hook 'next-error #'eat/recenter-and-pulse-line)
 #+end_src
 
-*** simple
-#+begin_src emacs-lisp
-(setq visual-line-fringe-indicators '(nil nil)
-      ;; List only applicable commands.
-      fill-column 72)
-#+end_src
 *** smerge
 #+begin_src elisp
 (add-hook 'find-file-hook #'(lambda ()
@@ -1414,7 +1410,11 @@ Also check:
                            ;; like "viewport".
                            "--run-together"))
 #+end_src
+
 *** message
+
+https://man.sr.ht/lists.sr.ht/etiquette.md#wrap-lines
+在邮件中使用 =auto-fill-column= 进行硬折行。
 
 #+begin_src emacs-lisp
 (setq message-kill-buffer-on-exit t
@@ -1556,7 +1556,7 @@ Also check:
 (setq desktop-auto-save-timeout 300
       desktop-load-locked-desktop t
       desktop-restore-eager 20)
-(add-hook 'after-init-hook #'desktop-save-mode)
+;; (add-hook 'after-init-hook #'desktop-save-mode)
 
 (defun sanityinc/time-subtract-millis (b a)
   (* 1000.0 (float-time (time-subtract b a))))
@@ -1912,6 +1912,7 @@ this works for images, HTML, LaTeX snippets, etc.
 #+end_src
 
 ** themes
+
 #+begin_src emacs-lisp
 (eat/pkg almost-mono-themes)
 (eat/pkg standard-themes)
@@ -1926,15 +1927,6 @@ this works for images, HTML, LaTeX snippets, etc.
 (add-to-list 'custom-theme-load-path (expand-file-name "elpa/paperlike-theme" user-emacs-directory))
 #+end_src
 
-** auto-dark
-#+begin_src emacs-lisp
-(eat/pkg auto-dark)
-(autoload #'auto-dark-mode "auto-dark")
-(add-hook 'after-make-window-system-frame-hooks #'auto-dark-mode)
-
-(setq auto-dark-dark-theme 'standard-light
-      auto-dark-light-theme 'standard-dark)
-#+end_src
 * Edit
 ** expand-region
 #+begin_src emacs-lisp
@@ -2552,6 +2544,7 @@ Custome =gptel-backend= as you need, here is an example:
         [remap scroll-up-command] #'pdf-view-scroll-up-or-next-page
         [remap scroll-down-command] #'pdf-view-scroll-down-or-previous-page))
 #+end_src
+
 ** xeft, search notes
 
 Need =xapian-core=.
@@ -2562,17 +2555,10 @@ Need =xapian-core=.
 (setq xeft-directory "~/Dropbox/org/roam"
       xeft-database "~/.xeft/db"
       xeft-default-extension  "org")
-
-(defun xeft-setup ()
-  (bklink-minor-mode 1)
-  (auto-fill-mode 1))
-
-(with-eval-after-load 'xeft
-  (add-hook 'xeft-find-file-hook #'xeft-setup)
-  (require 'flique))
 #+end_src
 
 ** wgrep
+
 #+begin_src emacs-lisp
 (eat/pkg wgrep)
 (setq wgrep-change-readonly-file t)
@@ -2580,13 +2566,16 @@ Need =xapian-core=.
 #+end_src
 
 ** urgrep
+
 #+begin_src elisp
 (eat/pkg urgrep)
 
 (with-eval-after-load 'urgrep
   (require 'urgrep-wgrep))
 #+end_src
+
 ** avy
+
 #+begin_src elisp
 (eat/pkg avy)
 (with-eval-after-load 'avy
@@ -2901,6 +2890,8 @@ Install =rnix-lsp= and =nixfmt=.
 #+end_src
 * Org mode
 
+使用 =visual-fill-column-mode= 进行软折行，避免一行太长不方便游览。
+
 #+begin_src emacs-lisp
 (setq
  org-directory (expand-file-name "~/Dropbox/org")
@@ -2922,7 +2913,7 @@ Install =rnix-lsp= and =nixfmt=.
  org-src-window-setup 'current-window)
 
 (defun eat/org-mode-setup ()
-  (auto-fill-mode 1)
+  (visual-fill-column-mode 1)
   (org-indent-mode 1)
   (electric-pair-local-mode -1)
   (electric-quote-local-mode)
@@ -3286,7 +3277,7 @@ Run =docker pull zevlg/telega-server:latest=
  telega-use-docker (executable-find "docker")
  telega-server-libs-prefix (cond (eat/macp "/usr/local")
                                  (t "/usr"))
- telega-chat-fill-column 75
+ telega-chat-fill-column fill-column
  ;; 头像再也不裂了
  telega-avatar-workaround-gaps-for '(return t)
  ;; 默认翻译目标语言为中文
