@@ -1853,7 +1853,9 @@ this works for images, HTML, LaTeX snippets, etc.
   (setq popper-window-height #'my-popper-fit-window-height))
 #+end_src
 * UI
+
 ** nerd-icons
+
 #+begin_src emacs-lisp
 ;; run `nerd-icons-install-fonts'
 (eat/pkg nerd-icons)
@@ -1867,11 +1869,13 @@ this works for images, HTML, LaTeX snippets, etc.
           #'(lambda ()
               (if dirvish-override-dired-mode
                   (nerd-icons-dired-mode -1)
-                (nerd-icons-dired-mode 1))))
+                (unless (file-remote-p default-directory)
+                  (nerd-icons-dired-mode 1)))))
 
 (eat/pkg nerd-icons-completion)
 (add-hook 'minibuffer-setup-hook #'nerd-icons-completion-mode)
 #+end_src
+
 ** breadcrumb
 #+begin_src emacs-lisp
 (eat/pkg breadcrumb)
@@ -3175,8 +3179,6 @@ M-x ~org-cite-insert~
 
 #+begin_src elisp
 (eat/pkg dirvish)
-
-(add-hook 'after-init-hook #'dirvish-override-dired-mode)
 
 (setq dirvish-attributes '(vc-state subtree-state nerd-icons)
       dirvish-header-line-height 20
