@@ -3154,9 +3154,15 @@ M-x ~org-cite-insert~
 
 #+begin_src emacs-lisp
 (eat/pkg diff-hl)
+
+(defun enable-diff-hl-dired-locally ()
+  (if (file-remote-p default-directory)
+      (diff-hl-dired-mode -1)
+    (diff-hl-dired-mode 1)))
+
 (add-hook 'prog-mode-hook #'diff-hl-mode)
 (add-hook 'conf-mode-hook #'diff-hl-mode)
-(add-hook 'dired-mode-hook #'diff-hl-dired-mode)
+(add-hook 'dired-mode-hook #'enable-diff-hl-dired-locally)
 
 (setq diff-hl-draw-borders nil
       diff-hl-disable-on-remote t)
