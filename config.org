@@ -3084,17 +3084,14 @@ M-x ~org-cite-insert~
 (setq org-static-blog-publish-title "mrunhap's blog"
       org-static-blog-publish-url "https://mrunhap.github.io/"
       org-static-blog-publish-directory "~/p/blog/"
-      org-static-blog-posts-directory "~/p/blog/posts/"
-      org-static-blog-drafts-directory "~/p/blog/drafts/"
-      org-static-blog-enable-tags t
-      org-static-blog-use-preview t
-      org-static-blog-preview-ellipsis ""
-      org-export-with-toc nil
-      org-export-with-section-numbers nil)
+      org-static-blog-posts-directory "~/Dropbox/blog/posts/"
+      org-static-blog-drafts-directory "~/Dropbox/blog/drafts/"
+      org-static-blog-enable-tags t)
 (with-eval-after-load 'org-static-blog
   (setq org-static-blog-page-header (get-string-from-file "~/p/blog/static/header.html")
         org-static-blog-page-preamble (get-string-from-file "~/p/blog/static/preamble.html")
         org-static-blog-page-postamble (get-string-from-file "~/p/blog/static/postamble.html")))
+
 #+end_src
 
 * Markdown
@@ -3340,6 +3337,22 @@ Run =docker pull zevlg/telega-server:latest=
 (autoload #'iimg-enable "iimg")
 (add-hook 'text-mode-hook #'iimg-enable)
 (setq iimg-prune-slices-p nil)
+
+;; TODO pngpaste and other system
+;; TODO run screenshot and paste
+(defun iimg-insert-clipboard (name)
+  (interactive
+   (list (let ((name (read-string "Caption/name for the image: ")))
+           (if (equal name "")
+               (format-time-string "%s")
+             name))))
+  (let ((image-file "/tmp/iimg.png"))
+    (if (zerop (shell-command (concat "wl-paste -t image/png > " image-file)))
+        (progn
+          (iimg-insert image-file name t)
+          (message "Image inserted successfully: %s" name)
+          (delete-file image-file))
+      (message "Failed to paste image from clipboard."))))
 #+end_src
 
 ** bklink
