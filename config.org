@@ -1009,9 +1009,6 @@ tramp-remote-path, so the process may can’t find remote programs.
  tramp-verbose 0
  ;; C-x C-f /ssh:
  tramp-default-method "ssh"
- ;; Bypass TRAMP’s handling of the ControlMaster options, and use your
- ;; own settings in ~/.ssh/config
- tramp-use-connection-share nil
  ;;  speed up complete
  tramp-completion-reread-directory-timeout nil
  tramp-auto-save-directory temporary-file-directory
