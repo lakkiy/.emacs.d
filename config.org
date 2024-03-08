@@ -260,6 +260,16 @@ point reaches the beginning or end of the buffer, stop there."
 (keymap-global-set "C-x |" 'split-window-horizontally-instead)
 (keymap-global-set "C-x _" 'split-window-vertically-instead)
 #+end_src
+*** Display ansi color
+#+begin_src emacs-lisp
+;; 不知道为什么现在在 tramp 上执行 vc-region-history 或者 urgrep 都会有
+;; 乱码或者颜色不对，例如 ^[33m，目前先用这个函数救急
+(defun display-ansi-colors ()
+  (interactive)
+  (let ((inhibit-read-only t))
+    (ansi-color-apply-on-region (point-min) (point-max))))
+
+#+end_src
 ** Performance
 *** Garbge collection
 #+begin_src emacs-lisp
