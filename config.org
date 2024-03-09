@@ -874,10 +874,15 @@ Set cursor pos to mouse pos if they are not in same pos.
 (setq xref-prompt-for-identifier nil
       xref-show-xrefs-function #'xref-show-definitions-completing-read
       xref-show-definitions-function #'xref-show-definitions-completing-read
-      ;; fix massed xref cross multiple project
+      ;; Fix massed xref cross multiple project.
       xref-history-storage 'xref-window-local-history
-      ;; xref-search-program 'ripgrep
-      )
+      ;; Emacs 28+
+      ;;
+      ;; `project-find-regexp' can be faster when setting `xref-search-program' to
+      ;;  `ripgrep'.
+      xref-search-program (cond ((executable-find "rg") 'ripgrep)
+                                ((executable-find "ugrep") 'ugrep)
+                                (t 'grep)))
 
 #+end_src
 
@@ -1078,7 +1083,6 @@ tramp-remote-path, so the process may can’t find remote programs.
 #+begin_src elisp
 (add-hook 'prog-mode-hook #'hs-minor-mode)
 
-;; FIXME
 (defconst hideshow-folded-face '((t (:inherit 'font-lock-comment-face :box t))))
 
 (defface hideshow-border-face
@@ -2103,55 +2107,54 @@ program and dictionaries.
 
 ** consult
 #+begin_src emacs-lisp
-(eat/pkg consult)
-(eat/pkg consult-dir)
-(eat/pkg consult-eglot)
+  (eat/pkg consult)
+  (eat/pkg consult-dir)
+  (eat/pkg consult-eglot)
 
-(setq consult-narrow-key             "<"
-      consult-preview-key            "M-."
-      xref-show-xrefs-function       #'consult-xref
-      xref-show-definitions-function #'consult-xref)
+  (setq consult-narrow-key             "<"
+        consult-preview-key            "M-."
+        xref-show-xrefs-function       #'consult-xref
+        xref-show-definitions-function #'consult-xref)
 
-;; Use `consult-completion-in-region' if Vertico is enabled.
-;; Otherwise use the default `completion--in-region' function.
-(setq completion-in-region-function
-      (lambda (&rest args)
-        (apply (if vertico-mode
-                   #'consult-completion-in-region
-                 #'completion--in-region)
-               args)))
+  ;; Use `consult-completion-in-region' if Vertico is enabled.
+  ;; Otherwise use the default `completion--in-region' function.
+  (setq completion-in-region-function
+        (lambda (&rest args)
+          (apply (if vertico-mode
+                     #'consult-completion-in-region
+                   #'completion--in-region)
+                 args)))
 
-(bind global-map
-      "M-l"            #'consult-line
-      [remap yank-pop] #'consult-yank-pop
-      ;; C-x bindings
-      [remap switch-to-buffer              ] #'consult-buffer
-      [remap switch-to-buffer-other-window ] #'consult-buffer-other-window
-      [remap switch-to-buffer-other-tab    ] #'consult-buffer-other-tab
-      [remap switch-to-buffer-other-frame  ] #'consult-buffer-other-frame
-      [remap project-switch-to-buffer      ] #'consult-project-buffer
-      [remap project-find-regexp           ] (cond (my/executable-find-rg #'consult-ripgrep)
-                                                   (t #'consult-git-grep))
-      [remap bookmark-jump                 ] #'consult-bookmark
-      [remap recentf-open-files            ] #'consult-recent-file
-      ;; M-g for go to things
-      "M-g e"           #'consult-compile-error
-      "M-g f"           #'consult-flymake
-      "M-g o"           #'consult-outline
-      "M-g m"           #'consult-mark
-      [remap imenu]     #'consult-imenu
-      [remap goto-line] #'consult-goto-line
-      ;; register
-      "M-#"   #'consult-register-load
-      "C-M-'" #'consult-register-store
-      "C-M-#" #'consult-register)
+  (bind global-map
+        "M-l"            #'consult-line
+        [remap yank-pop] #'consult-yank-pop
+        ;; C-x bindings
+        [remap switch-to-buffer              ] #'consult-buffer
+        [remap switch-to-buffer-other-window ] #'consult-buffer-other-window
+        [remap switch-to-buffer-other-tab    ] #'consult-buffer-other-tab
+        [remap switch-to-buffer-other-frame  ] #'consult-buffer-other-frame
+        [remap project-switch-to-buffer      ] #'consult-project-buffer
+        [remap project-find-regexp           ] #'consult-ripgrep
+        [remap bookmark-jump                 ] #'consult-bookmark
+        [remap recentf-open-files            ] #'consult-recent-file
+        ;; M-g for go to things
+        "M-g e"           #'consult-compile-error
+        "M-g f"           #'consult-flymake
+        "M-g o"           #'consult-outline
+        "M-g m"           #'consult-mark
+        [remap imenu]     #'consult-imenu
+        [remap goto-line] #'consult-goto-line
+        ;; register
+        "M-#"   #'consult-register-load
+        "C-M-'" #'consult-register-store
+        "C-M-#" #'consult-register)
 
-;;; consult-dir
-(keymap-substitute global-map #'list-directory #'consult-dir)
-(with-eval-after-load 'vertico
-  (bind vertico-map
-        "C-x C-d" #'consult-dir
-        "C-x C-j" #'consult-dir-jump-file))
+  ;;; consult-dir
+  (keymap-substitute global-map #'list-directory #'consult-dir)
+  (with-eval-after-load 'vertico
+    (bind vertico-map
+          "C-x C-d" #'consult-dir
+          "C-x C-j" #'consult-dir-jump-file))
 #+end_src
 
 ** company
@@ -2439,7 +2442,14 @@ Need =xapian-core=.
 (add-hook #'grep-setup-hook #'wgrep-setup)
 #+end_src
 
-** urgrep
+** Better grep
+
+#+begin_src emacs-lisp
+(eat/pkg rg)
+#+end_src
+
+urgrep 在 tramp project 上搜索显示颜色有问题，但是 rg 可以，如果解决不了就弃用 urgrep。
+https://github.com/jimporter/urgrep/issues/12
 
 #+begin_src elisp
 (eat/pkg urgrep)
