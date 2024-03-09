@@ -95,8 +95,6 @@ Disable native compilation.
 (defconst eat/macp (eq system-type 'darwin))
 (defconst eat/linuxp (eq system-type 'gnu/linux))
 (defconst eat/winp (eq system-type 'windows-nt))
-(defconst my/executable-find-ugrep (executable-find "ugrep"))
-(defconst my/executable-find-rg (executable-find "rg"))
 #+end_src
 
 ** Funcs
@@ -285,81 +283,6 @@ point reaches the beginning or end of the buffer, stop there."
                 (unless (frame-focus-state)
                   (garbage-collect))))
 #+end_src
-*** Custom hook
-#+begin_src emacs-lisp
-;; Hooks split from doom-emacs
-(defvar on-first-input-hook nil
-  "Transient hooks run before the first user input.")
-(put 'on-first-input-hook 'permanent-local t)
-
-(defvar on-first-file-hook nil
-  "Transient hooks run before the first interactively opened file.")
-(put 'on-first-file-hook 'permanent-local t)
-
-(defvar on-first-buffer-hook nil
-  "Transient hooks run before the first interactively opened buffer.")
-(put 'on-first-buffer-hook 'permanent-local t)
-
-(defvar on-init-ui-hook nil
-  "List of hooks to run when the UI has been initialized.")
-
-(defun on-run-hook-on (hook-var trigger-hooks)
-  "Configure HOOK-VAR to be invoked exactly once when any of the TRIGGER-HOOKS
-are invoked *after* Emacs has initialized (to reduce false positives). Once
-HOOK-VAR is triggered, it is reset to nil.
-
-HOOK-VAR is a quoted hook.
-TRIGGER-HOOK is a list of quoted hooks and/or sharp-quoted functions."
-  (dolist (hook trigger-hooks)
-    (let ((fn (intern (format "%s-init-on-%s-h" hook-var hook))))
-      (fset
-       fn (lambda (&rest _)
-            ;; Only trigger this after Emacs has initialized.
-            (when (and after-init-time
-                       (or (daemonp)
-                           ;; In some cases, hooks may be lexically unset to
-                           ;; inhibit them during expensive batch operations on
-                           ;; buffers (such as when processing buffers
-                           ;; internally). In these cases we should assume this
-                           ;; hook wasn't invoked interactively.
-                           (and (boundp hook)
-                                (symbol-value hook))))
-              (run-hooks hook-var)
-              (set hook-var nil))))
-      (cond ((daemonp)
-             ;; In a daemon session we don't need all these lazy loading
-             ;; shenanigans. Just load everything immediately.
-             (add-hook 'after-init-hook fn 'append))
-            ((eq hook 'find-file-hook)
-             ;; Advise `after-find-file' instead of using `find-file-hook'
-             ;; because the latter is triggered too late (after the file has
-             ;; opened and modes are all set up).
-             (advice-add 'after-find-file :before fn '((depth . -101))))
-            ((add-hook hook fn -101)))
-      fn)))
-
-(defun on-init-ui-h (&optional _)
-  "Initialize user interface by applying its hooks.
-
-These should be done as late as possible, as to avoid/minimize prematurely
-triggering hooks during startup."
-  (run-hooks 'on-init-ui-hook)
-
-  ;; Add trigger hooks to `on-first-buffer-hook'.
-  (on-run-hook-on 'on-first-buffer-hook '(window-buffer-change-functions server-visit-hook))
-
-  ;; Only execute this function once.
-  (remove-hook 'window-buffer-change-functions #'on-init-ui-h))
-
-;; Initialize UI as late as possible. `window-buffer-change-functions' runs
-;; once, when the scratch/dashboard buffer is first displayed.
-(add-hook 'window-buffer-change-functions #'on-init-ui-h -100)
-
-(unless noninteractive
-  (on-run-hook-on 'on-first-buffer-hook '(find-file-hook on-switch-buffer-hook))
-  (on-run-hook-on 'on-first-file-hook   '(find-file-hook dired-initial-position-hook))
-  (on-run-hook-on 'on-first-input-hook  '(pre-command-hook)))
-#+end_src
 *** Show startup time
 #+begin_src emacs-lisp
 (defun eat/show-startup-time ()
@@ -388,7 +311,7 @@ triggering hooks during startup."
 #+end_src
 *** Long line
 #+begin_src emacs-lisp
-(add-hook 'on-first-file-hook #'global-so-long-mode)
+(add-hook 'after-init-hook #'global-so-long-mode)
 
 ;; https://emacs-china.org/t/topic/25811/9?u=rua
 (setq-default bidi-display-reordering 'left-to-right)
@@ -477,17 +400,6 @@ ASCII字符（如中文、日文、韩文等）的情况下。不过，不压缩
 ;; Quit the fucking minibuffer!
 (keymap-set minibuffer-local-map "C-g" #'keyboard-quit)
 
-;; Add prompt indicator to `completing-read-multiple'.
-;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
-(defun crm-indicator (args)
-  (cons (format "[CRM%s] %s"
-                (replace-regexp-in-string
-                 "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
-                 crm-separator)
-                (car args))
-        (cdr args)))
-(advice-add #'completing-read-multiple :filter-args #'crm-indicator)
-
 ;; Do not allow the cursor in the minibuffer prompt
 (setq minibuffer-prompt-properties
       '(read-only t cursor-intangible t face minibuffer-prompt))
@@ -566,8 +478,13 @@ Selectively runs either `after-make-console-frame-hooks' or
 *** Keybinding
 #+begin_src emacs-lisp
 (keymap-global-set "C-h C-k" #'describe-keymap)
-;; this will stuck emacs
+
+;; 会卡住 emacs，因为要显示多国字体
 (keymap-global-unset "C-h h")
+;; zap-to-char 经常误触，而且会常驻在 minibuffer，点过去取消后还会打乱
+;; window layout
+(keymap-global-unset "M-z")
+
 
 (when (display-graphic-p)
   (global-unset-key (kbd "C-z"))
@@ -609,11 +526,6 @@ Selectively runs either `after-make-console-frame-hooks' or
 #+end_src
 **** Auto save
 #+begin_src emacs-lisp
-;; Don't generate backups or lockfiles. While auto-save maintains a copy so long
-;; as a buffer is unsaved, backups create copies once, when the file is first
-;; written, and never again until it is killed and reopened. This is better
-;; suited to version control, and I don't want world-readable copies of
-;; potentially sensitive material floating around our filesystem.
 (setq create-lockfiles nil
       make-backup-files nil
       auto-save-default nil)
@@ -864,21 +776,6 @@ See =tab-prefix-map= to custom key bindings for tab-bar, default is =C-x t=.
 (with-eval-after-load 'tab-bar
   (tab-bar-history-mode 1))
 #+end_src
-*** grep
-#+begin_src emacs-lisp
-  (autoload 'grep-apply-setting "grep")
-  (cond
-   (my/executable-find-ugrep
-    (grep-apply-setting 'grep-command "ugrep -0In -e ")
-    (grep-apply-setting 'grep-template "ugrep -0In -e <R> <D>")
-    (grep-apply-setting 'grep-find-command '("ugrep -0Inr -e ''" . 30))
-    (grep-apply-setting 'grep-find-template "ugrep <C> -0Inr -e <R> <D>"))
-   (my/executable-find-rg
-    (grep-apply-setting 'grep-command "rg --null -nH --no-heading -e ")
-    (grep-apply-setting 'grep-template "rg --null --no-heading -g '!*/' -e <R> <D>")
-    (grep-apply-setting 'grep-find-command '("rg --null -nH --no-heading -e ''" . 38))
-    (grep-apply-setting 'grep-find-template "rg --null -nH --no-heading -e <R> <D>")))
-#+end_src
 *** dired
 #+begin_src emacs-lisp
 (setq mouse-drag-and-drop-region t
@@ -898,7 +795,7 @@ See =tab-prefix-map= to custom key bindings for tab-bar, default is =C-x t=.
 #+end_src
 *** recentf
 #+begin_src emacs-lisp
-(add-hook 'on-first-input-hook #'recentf-mode)
+(add-hook 'after-init-hook #'recentf-mode)
 (setq recentf-max-saved-items 1000
       recentf-exclude `(,tramp-file-name-regexp
                         "COMMIT_EDITMSG"))
@@ -962,6 +859,7 @@ See =tab-prefix-map= to custom key bindings for tab-bar, default is =C-x t=.
 #+end_src
 
 *** xref
+
 Must set before consult.
 Use control-left-click to jump to defintions.
 
@@ -977,12 +875,10 @@ Set cursor pos to mouse pos if they are not in same pos.
       xref-show-xrefs-function #'xref-show-definitions-completing-read
       xref-show-definitions-function #'xref-show-definitions-completing-read
       ;; fix massed xref cross multiple project
-      xref-history-storage 'xref-window-local-history)
+      xref-history-storage 'xref-window-local-history
+      ;; xref-search-program 'ripgrep
+      )
 
-;; Commands such as `project-find-regexp' that rely on Xref can now
-;; leverage the power of ugrep or ripgrep.
-(cond (my/executable-find-ugrep (setq xref-search-program 'ugrep))
-      (my/executable-find-rg (setq xref-search-program 'rg)))
 #+end_src
 
 *** tramp
@@ -1078,78 +974,7 @@ tramp-remote-path, so the process may can’t find remote programs.
   (keymap-set isearch-mode-map "C-c C-o" #'isearch-occur)
   ;; DEL during isearch should edit the search string, not jump back
   ;; to the previous result
-  (keymap-substitute isearch-mode-map #'isearch-delete-chac #'isearch-del-chac)
-
-  ;; steal from
-  ;; http://yummymelon.com/devnull/improving-emacs-isearch-usability-with-transient.html
-  (transient-define-prefix my/isearch-menu ()
-    "isearch Menu"
-    [["Edit Search String"
-      ("e"
-       "Edit the search string (recursive)"
-       isearch-edit-string
-       :transient nil)
-      ("w"
-       "Pull next word or character word from buffer"
-       isearch-yank-word-or-char
-       :transient nil)
-      ("s"
-       "Pull next symbol or character from buffer"
-       isearch-yank-symbol-or-char
-       :transient nil)
-      ("l"
-       "Pull rest of line from buffer"
-       isearch-yank-line
-       :transient nil)
-      ("y"
-       "Pull string from kill ring"
-       isearch-yank-kill
-       :transient nil)
-      ("t"
-       "Pull thing from buffer"
-       isearch-forward-thing-at-point
-       :transient nil)]
-
-     ["Replace"
-      ("q"
-       "Start ‘query-replace’"
-       isearch-query-replace
-       :if-nil buffer-read-only
-       :transient nil)
-      ("x"
-       "Start ‘query-replace-regexp’"
-       isearch-query-replace-regexp
-       :if-nil buffer-read-only
-       :transient nil)]]
-
-    [["Toggle"
-      ("X"
-       "Toggle regexp searching"
-       isearch-toggle-regexp
-       :transient nil)
-      ("S"
-       "Toggle symbol searching"
-       isearch-toggle-symbol
-       :transient nil)
-      ("W"
-       "Toggle word searching"
-       isearch-toggle-word
-       :transient nil)
-      ("F"
-       "Toggle case fold"
-       isearch-toggle-case-fold
-       :transient nil)
-      ("L"
-       "Toggle lax whitespace"
-       isearch-toggle-lax-whitespace
-       :transient nil)]
-
-     ["Misc"
-      ("o"
-       "occur"
-       isearch-occur
-       :transient nil)]])
-  (keymap-set isearch-mode-map "C-h C-h" #'my/isearch-menu))
+  (keymap-substitute isearch-mode-map #'isearch-delete-chac #'isearch-del-chac))
 #+end_src
 *** ediff
 #+begin_src elisp
@@ -1302,7 +1127,7 @@ tramp-remote-path, so the process may can’t find remote programs.
   (let* ((counter (string-to-number
                    (nth 1
                         (cadr
-                         (flymake--mode-line-counter :error t)))))
+                         (flymake--mode-line-counter :error)))))
          (sekiro-flymake (when (> counter 0)
                            'compilation-error)))
     (propertize
@@ -1337,10 +1162,7 @@ tramp-remote-path, so the process may can’t find remote programs.
         :documentFormattingProvider
         :documentRangeFormattingProvider
         :documentLinkProvider
-        ;; 好像是会和 treesit 的缩进冲突？不过没有测试 go 的，是群友提
-        ;; 出的 cpp 的，不知道 go-ts-mode 的缩进问题和这个有没有关系
-        ;; TODO 这个没有生效？在 go 中 if 后面 RET 还是格式化成了 8 空
-        ;; 格
+        ;; 和 treesit 的缩进冲突
         :documentOnTypeFormattingProvider))
 
 (setq-default eglot-workspace-configuration
@@ -1555,64 +1377,11 @@ https://man.sr.ht/lists.sr.ht/etiquette.md#wrap-lines
 (add-hook 'gnus-summary-mode-hook #'hl-line-mode)
 
 #+end_src
-*** desktop-save
+*** savehist
 #+begin_src emacs-lisp
 (setq history-length 1000)
 (add-hook 'after-init-hook #'savehist-mode)
 
-(setq desktop-auto-save-timeout 300
-      desktop-load-locked-desktop t
-      desktop-restore-eager 20)
-;; (add-hook 'after-init-hook #'desktop-save-mode)
-
-(defun sanityinc/time-subtract-millis (b a)
-  (* 1000.0 (float-time (time-subtract b a))))
-
-(defun sanityinc/desktop-time-restore (orig &rest args)
-  (let ((start-time (current-time)))
-    (prog1
-        (apply orig args)
-      (message "Desktop restored in %.2fms"
-               (sanityinc/time-subtract-millis (current-time)
-                                               start-time)))))
-(advice-add 'desktop-read :around 'sanityinc/desktop-time-restore)
-
-(defun sanityinc/desktop-time-buffer-create (orig ver filename &rest args)
-  (let ((start-time (current-time)))
-    (prog1
-        (apply orig ver filename args)
-      (message "Desktop: %.2fms to restore %s"
-               (sanityinc/time-subtract-millis (current-time)
-                                               start-time)
-               (when filename
-                 (abbreviate-file-name filename))))))
-(advice-add 'desktop-create-buffer :around 'sanityinc/desktop-time-buffer-create)
-
-(setq desktop-globals-to-save
-      '((comint-input-ring        . 50)
-        (compile-history          . 30)
-        desktop-missing-file-warning
-        (dired-regexp-history     . 20)
-        (extended-command-history . 30)
-        (face-name-history        . 20)
-        (grep-find-history        . 30)
-        (grep-history             . 30)
-        (magit-revision-history   . 50)
-        (minibuffer-history       . 50)
-        (org-clock-history        . 50)
-        (org-refile-history       . 50)
-        (org-tags-history         . 50)
-        (query-replace-history    . 60)
-        (read-expression-history  . 60)
-        (regexp-history           . 60)
-        (shell-command-history    . 50)
-        ;; Default value.
-        tags-file-name
-        tags-table-list
-        (search-ring              . 20)
-        (regexp-search-ring       . 20)
-        register-alist
-        (file-name-history        . 100)))
 #+end_src
 *** hi-lock
 #+begin_quote
@@ -1630,9 +1399,9 @@ writing/thinking workflow.
 (with-eval-after-load 'help-fns
   (put 'help-fns-edit-variable 'disabled nil))
 
-(add-hook 'on-first-file-hook #'global-goto-address-mode)
-(add-hook 'on-first-file-hook #'global-auto-revert-mode)
-(add-hook 'on-first-file-hook #'save-place-mode)
+(add-hook 'after-init-hook #'global-goto-address-mode)
+(add-hook 'after-init-hook #'global-auto-revert-mode)
+(add-hook 'after-init-hook #'save-place-mode)
 
 (setq outline-minor-mode-cycle t
       outline-minor-mode-highlight t)
@@ -1643,10 +1412,10 @@ writing/thinking workflow.
 (add-hook 'conf-mode-hook #'whitespace-mode)
 (setq whitespace-style '(face trailing))
 
-(add-hook 'on-first-buffer-hook #'winner-mode)
+(add-hook 'after-init-hook #'winner-mode)
 (setq winner-dont-bind-my-keys t)
 
-(add-hook 'on-init-ui-hook #'context-menu-mode)
+(add-hook 'after-init-hook #'context-menu-mode)
 
 ;;; disable blink cursor
 (add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
@@ -1678,10 +1447,86 @@ writing/thinking workflow.
 (add-hook 'eshell-mode-hook (lambda () (setq outline-regexp eshell-prompt-regexp)))
 #+end_src
 ** Next version
+
+
 #+begin_src emacs-lisp
 (when (>= emacs-major-version 30)
   (add-to-list 'help-fns-describe-function-functions #'shortdoc-help-fns-examples-function))
 #+end_src
+
+** Site Lisp
+*** Load Path
+
+#+begin_src elisp
+(add-to-list 'load-path (expand-file-name "site-lisp" user-emacs-directory))
+(add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))
+#+end_src
+
+*** color-outline
+
+#+begin_src elisp
+(autoload #'color-outline-mode "color-outline")
+(add-hook 'prog-mode-hook #'color-outline-mode)
+#+end_src
+
+*** iimg
+
+#+begin_src elisp
+(autoload #'iimg-enable "iimg")
+(add-hook 'text-mode-hook #'iimg-enable)
+(setq iimg-prune-slices-p nil)
+
+;; TODO pngpaste and other system
+;; TODO run screenshot and paste
+(defun iimg-insert-clipboard (name)
+  (interactive
+   (list (let ((name (read-string "Caption/name for the image: ")))
+           (if (equal name "")
+               (format-time-string "%s")
+             name))))
+  (let ((image-file "/tmp/iimg.png"))
+    (if (zerop (shell-command (concat "wl-paste -t image/png > " image-file)))
+        (progn
+          (iimg-insert image-file name t)
+          (message "Image inserted successfully: %s" name)
+          (delete-file image-file))
+      (message "Failed to paste image from clipboard."))))
+#+end_src
+
+*** bklink
+
+#+begin_src elisp
+(autoload #'bklink-minor-mode "bklink")
+
+(setq bklink-summary-read-only-p t
+      bklink-prune-summary-p nil)
+
+(with-eval-after-load 'bklink
+  (bind bklink-minor-mode-map
+        "C-c l" #'bklink-summary-mode
+        "C-c i" #'bklink-insert))
+#+end_src
+
+*** quanjiao
+
+#+begin_src emacs-lisp
+(autoload #'quanjiao-mode "quanjiao" nil t)
+(add-hook 'text-mode-hook 'quanjiao-mode)
+#+end_src
+
+*** dired+
+
+#+begin_src emacs-lisp
+(autoload 'dired-toggle-mark-click "dired+" nil t)
+(autoload 'dired-copy "dired+" nil t)
+(autoload 'dired-paste "dired+" nil t)
+(autoload 'dired-move "dired+" nil t)
+
+(with-eval-after-load "dired"
+  (bind dired-mode-map
+        "<s-mouse-1>" #'dired-toggle-mark-click))
+#+end_src
+
 * Libs
 ** fullframe
 #+begin_src emacs-lisp
@@ -1825,7 +1670,7 @@ this works for images, HTML, LaTeX snippets, etc.
 #+begin_src emacs-lisp
 (eat/pkg popper)
 
-(add-hook 'on-first-buffer-hook #'popper-mode)
+(add-hook 'after-init-hook #'popper-mode)
 
 (setq popper-reference-buffers
       '("\\*Messages\\*"
@@ -1860,17 +1705,25 @@ this works for images, HTML, LaTeX snippets, etc.
   (setq popper-window-height #'my-popper-fit-window-height))
 #+end_src
 * UI
-
 ** nerd-icons
 
 #+begin_src emacs-lisp
 ;; run `nerd-icons-install-fonts'
-(eat/pkg nerd-icons)
-
 ;; ttf-nerd-fonts-symbols-1000-em-mono
+(eat/pkg nerd-icons)
+#+end_src
+
+*** ibuffer
+
+#+begin_src emacs-lisp
 (eat/pkg nerd-icons-ibuffer)
 (add-hook 'ibuffer-mode-hook #'nerd-icons-ibuffer-mode)
+#+end_src
+*** dired
 
+在 tramp 上关闭，非常影响 dired 性能。
+
+#+begin_src emacs-lisp
 (eat/pkg nerd-icons-dired)
 (add-hook 'dired-mode-hook
           #'(lambda ()
@@ -1878,7 +1731,10 @@ this works for images, HTML, LaTeX snippets, etc.
                   (nerd-icons-dired-mode -1)
                 (unless (file-remote-p default-directory)
                   (nerd-icons-dired-mode 1)))))
+#+end_src
+*** completion
 
+#+begin_src emacs-lisp
 (eat/pkg nerd-icons-completion)
 (add-hook 'minibuffer-setup-hook #'nerd-icons-completion-mode)
 #+end_src
@@ -3142,7 +2998,6 @@ M-x ~org-cite-insert~
 
 #+begin_src emacs-lisp
 (eat/pkg magit)
-(add-hook 'magit-diff-visit-file #'my-recenter-and-pulse-line)
 (keymap-global-set "C-x g" #'magit-status)
 #+end_src
 
@@ -3328,77 +3183,4 @@ Run =docker pull zevlg/telega-server:latest=
 (eat/pkg git-modes)
 (add-to-list 'auto-mode-alist
              (cons "/.dockerignore\\'" 'gitignore-mode))
-#+end_src
-
-* Site Lisp
-** Load Path
-
-#+begin_src elisp
-(add-to-list 'load-path (expand-file-name "site-lisp" user-emacs-directory))
-(add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))
-#+end_src
-
-** color-outline
-
-#+begin_src elisp
-(autoload #'color-outline-mode "color-outline")
-(add-hook 'prog-mode-hook #'color-outline-mode)
-#+end_src
-
-** iimg
-
-#+begin_src elisp
-(autoload #'iimg-enable "iimg")
-(add-hook 'text-mode-hook #'iimg-enable)
-(setq iimg-prune-slices-p nil)
-
-;; TODO pngpaste and other system
-;; TODO run screenshot and paste
-(defun iimg-insert-clipboard (name)
-  (interactive
-   (list (let ((name (read-string "Caption/name for the image: ")))
-           (if (equal name "")
-               (format-time-string "%s")
-             name))))
-  (let ((image-file "/tmp/iimg.png"))
-    (if (zerop (shell-command (concat "wl-paste -t image/png > " image-file)))
-        (progn
-          (iimg-insert image-file name t)
-          (message "Image inserted successfully: %s" name)
-          (delete-file image-file))
-      (message "Failed to paste image from clipboard."))))
-#+end_src
-
-** bklink
-
-#+begin_src elisp
-(autoload #'bklink-minor-mode "bklink")
-
-(setq bklink-summary-read-only-p t
-      bklink-prune-summary-p nil)
-
-(with-eval-after-load 'bklink
-  (bind bklink-minor-mode-map
-        "C-c l" #'bklink-summary-mode
-        "C-c i" #'bklink-insert))
-#+end_src
-
-** quanjiao
-
-#+begin_src emacs-lisp
-(autoload #'quanjiao-mode "quanjiao" nil t)
-(add-hook 'text-mode-hook 'quanjiao-mode)
-#+end_src
-
-** dired+
-
-#+begin_src emacs-lisp
-(autoload 'dired-toggle-mark-click "dired+" nil t)
-(autoload 'dired-copy "dired+" nil t)
-(autoload 'dired-paste "dired+" nil t)
-(autoload 'dired-move "dired+" nil t)
-
-(with-eval-after-load "dired"
-  (bind dired-mode-map
-        "<s-mouse-1>" #'dired-toggle-mark-click))
 #+end_src
