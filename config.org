@@ -2511,20 +2511,6 @@ https://github.com/jimporter/urgrep/issues/12
 ;;  "C-{" 'puni-barf-backward
 ;;  "C-}" 'puni-barf-forward)
 #+end_src
-*** apheleia, run formatter
-#+begin_src elisp
-(eat/pkg apheleia)
-
-(setq apheleia-remote-algorithm 'local)
-
-(add-hook 'go-mode-hook #'apheleia-mode)
-
-(with-eval-after-load 'apheleia
-  (when (executable-find "goimports")
-    (push '(go-ts-mode . gofmt) apheleia-mode-alist)
-    (setf (alist-get 'gofmt apheleia-formatters)
-          '("goimports"))))
-#+end_src
 *** indent-bars
 #+begin_src emacs-lisp
 (eat/pkg indent-bars "https://github.com/jdtsmith/indent-bars.git")
@@ -2733,6 +2719,25 @@ Install =rnix-lsp= and =nixfmt=.
 (eat/pkg dape)
 (autoload #'dape-toggle-breakpoint "dape" nil t)
 #+end_src
+
+** Code format
+
+gofmt and goimprots don’t support format region by format-all, so apheleia is best for now.
+
+#+begin_src emacs-lisp
+(eat/pkg apheleia)
+
+(setq apheleia-remote-algorithm 'remote)
+
+(add-hook 'go-mode-hook #'apheleia-mode)
+
+(with-eval-after-load 'apheleia
+  (push '(go-ts-mode . gofmt) apheleia-mode-alist)
+  (when (executable-find "goimports")
+    (setf (alist-get 'gofmt apheleia-formatters)
+          '("goimports"))))
+#+end_src
+
 * Org mode
 
 使用 =visual-fill-column-mode= 进行软折行，避免一行太长不方便游览。
