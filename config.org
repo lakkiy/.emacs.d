@@ -17,7 +17,6 @@ In Emacs 27+, package initialization occurs before =user-init-file= is
 loaded, but after =early-init-file=.
 #+begin_src emacs-lisp :tangle early-init.el
 (setq package-enable-at-startup nil
-      package-quickstart nil
       load-prefer-newer t)
 #+end_src
 
@@ -271,12 +270,6 @@ point reaches the beginning or end of the buffer, stop there."
 ** Performance
 *** Garbge collection
 #+begin_src emacs-lisp
-(let ((normal-gc-cons-threshold (* 20 1024 1024))
-      (init-gc-cons-threshold (* 128 1024 1024)))
-  (setq gc-cons-threshold init-gc-cons-threshold)
-  (add-hook 'emacs-startup-hook
-            (lambda () (setq gc-cons-threshold normal-gc-cons-threshold))))
-
 ;; GC automatically while unfocusing the frame
 (add-function :after after-focus-change-function
               (lambda ()
@@ -693,7 +686,8 @@ Stole from https://github.com/astoff/isearch-mb/wiki
 			             ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
                          ("melpa"  . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/"))
       package-quickstart t)
-(package-activate-all)
+(setq package-enable-at-startup nil)
+(package-initialize)
 
 (defmacro eat/pkg (package &optional vc)
   `(unless (package-installed-p ',package)
@@ -1653,6 +1647,14 @@ this works for images, HTML, LaTeX snippets, etc.
 (when (executable-find "ipython3")
   (setq python-shell-interpreter "ipython3"
         python-shell-interpreter-args "--simple-prompt --classic"))
+#+end_src
+** gcmh
+#+begin_src emacs-lisp
+(eat/pkg gcmh)
+
+(setq gcmh-high-cons-threshold (* 128 1024 1024))
+
+(add-hook 'after-init-hook #'gcmh-mode)
 #+end_src
 * Window
 ** window-numbering
@@ -2891,12 +2893,12 @@ Install =rnix-lsp= and =nixfmt=.
 ;; valign
 (setq org-modern-table nil)
 
-(defun eat/setup-org-modern ()
-  (setq-local line-spacing 0.15)
-  (org-modern-mode))
-(add-hook 'org-mode-hook 'eat/setup-org-modern)
-(add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
-(add-hook 'org-mode-hook 'org-modern-indent-mode 90)
+;; (defun eat/setup-org-modern ()
+;;   (setq-local line-spacing 0.15)
+;;   (org-modern-mode))
+;; (add-hook 'org-mode-hook 'eat/setup-org-modern)
+;; (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+;; (add-hook 'org-mode-hook 'org-modern-indent-mode 90)
 #+end_src
 
 ** Org babel
