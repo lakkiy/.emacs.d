@@ -30,9 +30,9 @@
       vertico-count 17)
 
 (with-eval-after-load 'vertico
-  (bind-key "DEL" #'vertico-directory-delete-char vertico-map)
-  (bind-key "RET" #'vertico-directory-enter vertico-map)
-  (bind-key "M-DEL" #'vertico-directory-delete-word vertico-map))
+  (keymap-set vertico-map "DEL" #'vertico-directory-delete-char)
+  (keymap-set vertico-map "RET" #'vertico-directory-enter)
+  (keymap-set vertico-map "M-DEL" #'vertico-directory-delete-word))
 
 ;;; marginalia
 (install-package 'marginalia)

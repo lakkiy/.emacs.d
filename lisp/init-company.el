@@ -55,14 +55,15 @@
 
 ;;; Keybinding
 (with-eval-after-load "company"
-  (bind-key [tab] #'company-complete-selection company-active-map)
-  (bind-key "C-s" #'company-filter-candidates company-active-map)
+  (define-key company-active-map [tab] #'company-complete-selection)
+  (define-key company-active-map (kbd "TAB") #'company-complete-selection)
+  (define-key company-active-map (kbd "C-s") #'company-filter-candidates)
   ;; Free SPC and RET, popup will no longer interrupt typing.
   ;; use tab to do complete and free ret
-  (bind-key [escape] nil company-active-map)
-  (bind-key [return] nil company-active-map)
-  (bind-key "RET" nil company-active-map)
-  (bind-key "SPC" nil company-active-map))
+  (define-key company-active-map [escape] nil)
+  (define-key company-active-map [return] nil)
+  (define-key company-active-map (kbd "RET") nil)
+  (define-key company-active-map (kbd "SPC") nil))
 
 ;;; Manually complete
 ;;
@@ -101,14 +102,14 @@
   (add-to-list 'copilot-major-mode-alist '("go" . "go"))
   (add-to-list 'copilot-major-mode-alist '("go-ts" . "go"))
 
-  (bind-key "C-g" #'copilot-clear-overlay copilot-completion-map)
-  (bind-key "C-f" #'copilot-accept-completion copilot-completion-map)
-  (bind-key "C-e" #'copilot-accept-completion-by-line copilot-completion-map)
-  (bind-key "M-f" #'copilot-accept-completion-by-word copilot-completion-map)
-  (bind-key "M-p" #'copilot-previous-completion copilot-completion-map)
-  (bind-key "M-n" #'copilot-next-completion copilot-completion-map)
+  (keymap-set copilot-completion-map "C-g" #'copilot-clear-overlay)
+  (keymap-set copilot-completion-map "C-f" #'copilot-accept-completion)
+  (keymap-set copilot-completion-map "C-e" #'copilot-accept-completion-by-line)
+  (keymap-set copilot-completion-map "M-f" #'copilot-accept-completion-by-word)
+  (keymap-set copilot-completion-map "M-p" #'copilot-previous-completion)
+  (keymap-set copilot-completion-map "M-n" #'copilot-next-completion)
 
-    ;; only enable copilot in meow insert mode
+  ;; only enable copilot in meow insert mode
   (with-eval-after-load 'meow
     (add-to-list 'copilot-enable-predicates 'meow-insert-mode-p)))
 
