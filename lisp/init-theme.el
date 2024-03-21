@@ -33,9 +33,9 @@
 (install-package 'paperlike-theme "https://github.com/DogLooksGood/paperlike-theme")
 
 (defun my/setup-custom-theme-load-path ()
-  (add-to-list 'custom-theme-load-path (expand-file-name "nano-theme" package-user-dir))
-  (add-to-list 'custom-theme-load-path (expand-file-name "carbon-theme" package-user-dir))
-  (add-to-list 'custom-theme-load-path (expand-file-name "paperlike-theme" package-user-dir)))
+  (push (dir-concat package-user-dir "nano-theme/") custom-theme-load-path)
+  (push (dir-concat package-user-dir "carbon-theme/") custom-theme-load-path)
+  (push (dir-concat package-user-dir "paperlike-theme/") custom-theme-load-path))
 (add-hook 'after-init-hook #'my/setup-custom-theme-load-path)
 
 (provide 'init-theme)

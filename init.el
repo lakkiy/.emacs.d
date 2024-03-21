@@ -31,11 +31,14 @@
 (setq debug-on-error init-file-debug)
 
 ;; Setup `load-path'.
-(let ((dir (locate-user-emacs-file "lisp")))
-  (add-to-list 'load-path (file-name-as-directory dir))
-  (add-to-list 'load-path (file-name-as-directory (expand-file-name "lang" dir))))
-(add-to-list 'load-path (expand-file-name "site-lisp" user-emacs-directory))
-(add-to-list 'custom-theme-load-path (expand-file-name "themes" user-emacs-directory))
+(defun dir-concat (dir file)
+  "join path DIR with filename FILE correctly"
+  (concat (file-name-as-directory dir) file))
+(push (dir-concat user-emacs-directory "lisp/") load-path)
+(push (dir-concat user-emacs-directory "lisp/lang/") load-path)
+(push (dir-concat user-emacs-directory "site-lisp/") load-path)
+(push (dir-concat user-emacs-directory "themes/") custom-theme-load-path)
+
 (setq custom-file (locate-user-emacs-file "custom.el"))
 
 (require 'init-must)
