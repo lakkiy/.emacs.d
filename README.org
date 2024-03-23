@@ -1,9 +1,3 @@
-* 个人 =Emacs= 配置(WIP)
-
-#+begin_src bash
-emacs --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "~/.config/emacs/config.org")'
-#+end_src
-
 * Dep
 
 ** Optional
@@ -21,15 +15,10 @@ emacs --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "~/.config/
 * FAQ
 
 ** Can’t find program in path?
-Echo $PATH to ~/.path:
+
+Echo $PATH to ~/.path then restart:
 #+begin_src bash
 sh -c 'printf "%s" "$PATH"' > ~/.path
-#+end_src
-
-And =eat/getenv-path= to =after-init-hook=, eg:
-#+begin_src emacs-lisp
-;; ~/.config/emacs/custom.el
-(add-hook 'after-init-hook #'eat/getenv-path)
 #+end_src
 
 ** rime, can’t find emacs_module.h?

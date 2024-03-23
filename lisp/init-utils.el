@@ -65,7 +65,7 @@
 ;; $ sh -c 'printf "%s" "$PATH"' > ~/.path
 ;; then add this to custom.el
 ;; (add-hook 'after-init-hook #'eat/getenv-path)
-(defun eat/getenv-path()
+(defun my/getenv-path()
   (interactive)
   (condition-case err
       (let ((path (with-temp-buffer
@@ -76,7 +76,7 @@
     (error (warn "%s" (error-message-string err)))))
 
 (if (file-exists-p "~/.path")
-    (add-hook 'after-init-hook #'eat/getenv-path)
+    (add-hook 'after-init-hook #'my/getenv-path)
   (message "%s" "Run '$ sh -c 'printf \"%s\" \"$PATH\"' > ~/.path' in your terminal then M-x eat/getenv-path."))
 
 ;; http://emacsredux.com/blog/2013/05/22/smarter-navigation-to-the-beginning-of-a-line/
