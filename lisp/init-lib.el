@@ -1,5 +1,6 @@
 ;;; -*- lexical-binding: t -*-
 
+(install-package 'popon)
 (install-package 'fullframe)
 (install-package 'hide-mode-line)
 

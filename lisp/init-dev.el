@@ -24,8 +24,9 @@
 ;;
 ;; Need to install https://github.com/blahgeek/emacs-lsp-booster
 (install-package 'eglot-booster "https://github.com/jdtsmith/eglot-booster")
-(with-eval-after-load 'eglot
-  (eglot-booster-mode 1))
+(when (executable-find "emacs-lsp-booster")
+  (with-eval-after-load 'eglot
+    (eglot-booster-mode 1)))
 
 ;;; eglot
 (setq eglot-events-buffer-size 0
@@ -279,6 +280,55 @@
 				                         list list_comprehension
 				                         dictionary dictionary_comprehension
 				                         parenthesized_expression subscript)))
+
+;;; lsp-bridge, mainly for editing remote files.
+(install-package 'lsp-bridge "https://github.com/manateelazycat/lsp-bridge")
+(install-package 'acm-terminal "https://github.com/twlz0ne/acm-terminal")
+(install-package 'flymake-bridge "https://github.com/liuyinz/flymake-bridge")
+
+(setq lsp-bridge-c-lsp-server "ccls"
+      acm-enable-tabnine nil
+      ;; use `lsp-bridge-enable-with-tramp' or tramp
+      ;; clone lsp-bridge repo to home
+      lsp-bridge-enable-with-tramp t
+      lsp-bridge-remote-start-automatically t
+      ;; NOTE otherwise this may cause lsp-bridge-ref buffer didn't show
+      window-resize-pixelwise nil)
+
+(defun my/lsp-bridge-mode-setup ()
+  (interactive)
+  (flymake-bridge-setup)
+  ;; Disable corfu since lsp-bridge use acm.
+  (ignore-errors
+    (company-mode -1)
+    (corfu-mode -1))
+  ;; Use tab to jump to next field but do complete when there's acm complete.
+  (with-eval-after-load 'yasnippet
+    (define-key yas-keymap (kbd "<tab>") 'acm-complete-or-expand-yas-snippet)
+    (define-key yas-keymap (kbd "TAB") 'acm-complete-or-expand-yas-snippet))
+  ;; make completion work in terminal
+  (unless (display-graphic-p)
+    (with-eval-after-load 'acm
+      (require 'acm-terminal))))
+
+(with-eval-after-load 'lsp-bridge
+  (add-hook 'lsp-bridge-mode-hook #'my/lsp-bridge-mode-setup)
+
+  (keymap-set lsp-bridge-mode-map "M-."     #'lsp-bridge-find-def)
+  (keymap-set lsp-bridge-mode-map "C-x 4 ." #'lsp-bridge-find-def-other-window)
+  (keymap-set lsp-bridge-mode-map "M-,"     #'lsp-bridge-find-def-return)
+  (keymap-set lsp-bridge-mode-map "M-?"     #'lsp-bridge-find-references)
+  (keymap-set lsp-bridge-mode-map "M-'"     #'lsp-bridge-find-impl)
+  (keymap-set lsp-bridge-mode-map "C-c r"   #'lsp-bridge-rename)
+  (keymap-set lsp-bridge-mode-map "M-RET"   #'lsp-bridge-code-action)
+  (keymap-set lsp-bridge-ref-mode-map "p"   #'lsp-bridge-ref-jump-prev-file)
+  (keymap-set lsp-bridge-ref-mode-map "h"   #'lsp-bridge-ref-jump-prev-keyword)
+  (keymap-set lsp-bridge-ref-mode-map "t"   #'lsp-bridge-ref-jump-next-keyword)
+  (keymap-set lsp-bridge-ref-mode-map "n"   #'lsp-bridge-ref-jump-next-file)
+  (keymap-set lsp-bridge-ref-mode-map "j" nil)
+  (keymap-set lsp-bridge-ref-mode-map "k" nil)
+  (keymap-set lsp-bridge-ref-mode-map "h" nil)
+  (keymap-set lsp-bridge-ref-mode-map "l" nil))
 
 ;;; require langs
 (require 'init-lisp)
