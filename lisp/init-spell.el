@@ -10,9 +10,7 @@
 ;;
 ;; jit-spell relies on the =ispell= library to pick a spell checking
 ;; program and dictionaries.
+;; TODO check aspell and directory exists
 (install-package 'jit-spell)
-(when (executable-find "aspell")
-  (add-hook 'text-mode-hook 'jit-spell-mode)
-  (add-hook 'prog-mode-hook 'jit-spell-mode))
 
 (provide 'init-spell)
