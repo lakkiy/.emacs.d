@@ -1,5 +1,8 @@
 ;;; -*- lexical-binding: t -*-
 
+(install-package 'dired-sidebar)
+(setq dired-sidebar-theme 'nerd)
+
 (install-package 'dirvish)
 
 (setq dirvish-attributes '(vc-state subtree-state nerd-icons)
