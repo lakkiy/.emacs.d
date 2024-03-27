@@ -77,7 +77,7 @@
 
 (if (file-exists-p "~/.path")
     (add-hook 'after-init-hook #'my/getenv-path)
-  (message "%s" "Run '$ sh -c 'printf \"%s\" \"$PATH\"' > ~/.path' in your terminal then M-x eat/getenv-path."))
+  (message "%s" "Run '$ sh -c 'printf \"%s\" \"$PATH\"' > ~/.path' in your terminal then M-x my/getenv-path."))
 
 ;; http://emacsredux.com/blog/2013/05/22/smarter-navigation-to-the-beginning-of-a-line/
 (defun smarter-move-beginning-of-line (arg)
