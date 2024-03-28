@@ -206,5 +206,6 @@
 
 ;;; outli
 (install-package 'outli "https://github.com/jdtsmith/outli")
+(add-hook 'prog-mode-hook #'outli-mode)
 
 (provide 'init-tools)

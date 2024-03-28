@@ -180,14 +180,17 @@
 ;;; eglot-hierarchy
 (install-package 'eglot-hierarchy "https://github.com/dolmens/eglot-hierarchy")
 
-;;; dape, DAP Debugger
+;;; dape
 (install-package 'dape)
 (autoload #'dape-toggle-breakpoint "dape" nil t)
 
-;;; code format
+;;; apheleia
 (install-package 'apheleia)
 
-(setq apheleia-remote-algorithm 'remote)
+;; Don't format remote file on save, use func to format project's all
+;; changed file, for example
+;; git diff --name-only --cached | grep '\.go$' | xargs -I {} goimports -w {}
+(setq apheleia-remote-algorithm 'cancel)
 
 (add-hook 'go-mode-hook #'apheleia-mode)
 

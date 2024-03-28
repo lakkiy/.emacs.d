@@ -29,6 +29,12 @@
              (message "Installed %s" pkg)
            (message "Failed to install %s: %d" pkg status)))))))
 
+(defun my/format-go ()
+  (interactive)
+  (let ((default-directory (project-root (project-current t))))
+    (shell-command "git diff --name-only --cached | grep '\.go$' | xargs -I {} goimports -w {}")))
+(keymap-set project-prefix-map "t" #'my/format-go)
+
 (install-package 'go-mode)
 (install-package 'flymake-go-staticcheck)
 (install-package 'go-gen-test)
