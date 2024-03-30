@@ -1,9 +1,20 @@
 ;;; -*- lexical-binding: t -*-
 
+;;; Init
+
+;; --debug-init implies `debug-on-error'.
+(setq debug-on-error init-file-debug)
+
+(dolist (dir '("lisp" "lisp/lang" "site-lisp"))
+  (push (expand-file-name dir user-emacs-directory) load-path))
+
+(setq custom-theme-directory (expand-file-name "themes" user-emacs-directory))
+
 (setq package-archives
       '(("gnu"    . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
 	    ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
         ("melpa"  . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
+;; To prevent initializing twice
 (setq package-enable-at-startup nil)
 (package-initialize)
 
@@ -15,32 +26,16 @@
         (package-refresh-contents))
       (package-install pkg))))
 
-;; Show startup time.
-(defun my/show-startup-time ()
-  "Print startup time."
-  (message
-   "Emacs loaded in %s with %d garbage collections."
-   (format
-    "%.2f seconds"
-    (float-time
-     (time-subtract after-init-time before-init-time)))
-   gcs-done))
-(add-hook 'emacs-startup-hook #'my/show-startup-time)
+;;; Benchmark
+(install-package 'benchmark-init)
+(add-hook 'after-init-hook 'benchmark-init/deactivate)
+(benchmark-init/activate)
 
-;; --debug-init implies `debug-on-error'.
-(setq debug-on-error init-file-debug)
-
-;; Setup `load-path'.
-(defun dir-concat (dir file)
-  "join path DIR with filename FILE correctly"
-  (concat (file-name-as-directory dir) file))
-(push (dir-concat user-emacs-directory "lisp/") load-path)
-(push (dir-concat user-emacs-directory "lisp/lang/") load-path)
-(push (dir-concat user-emacs-directory "site-lisp/") load-path)
-(push (dir-concat user-emacs-directory "themes/") custom-theme-load-path)
-
+;;; Custom file
 (setq custom-file (locate-user-emacs-file "custom.el"))
+(when (file-exists-p custom-file) (load custom-file :no-error :no-message))
 
+;;; Configs
 (require 'init-must)
 (require 'init-utils)
 (require 'init-font)
@@ -67,6 +62,3 @@
 
 (when (eq system-type 'darwin)
   (require 'init-osx))
-
-(when (and (file-exists-p custom-file))
-  (load custom-file :no-error :no-message))

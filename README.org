@@ -40,3 +40,7 @@ Get librime path installed with nix:
 #+begin_src bash
 nix eval nixpkgs#librime.outPath
 #+end_src
+
+** Automatic File Headers
+
+See [[https://www.emacswiki.org/emacs/AutoInsertMode][Auto Insert Mode]].

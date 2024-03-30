@@ -1,7 +1,34 @@
 ;;; -*- lexical-binding: t -*-
 
 (install-package 'meow)
-(require 'meow)
+
+(setq meow-esc-delay 0.001
+      meow-keypad-leader-dispatch "C-c"
+      meow-keypad-start-keys nil
+      meow-replace-state-name-list
+      '((normal . "N")
+        (beacon . "B")
+        (insert . "I")
+        (motion . "M")
+        (keypad . "K")))
+
+(defun my/meow-setup ()
+  (require 'meow)
+
+  (meow-thing-register 'angle '(pair ("<") (">")) '(pair ("<") (">")))
+  (add-to-list 'meow-char-thing-table '(?a . angle))
+  (meow-thing-register 'backquote '(regexp "`" "`") '(regexp "`" "`"))
+  (add-to-list 'meow-char-thing-table '(?` . backquote))
+
+  ;; Optimize flymake for meow.
+  (add-hook 'meow-insert-exit-hook (lambda () (setq flymake-no-changes-timeout 0.5)))
+  (add-hook 'meow-insert-enter-hook (lambda () (setq flymake-no-changes-timeout nil)))
+
+  (meow-setup-dvorak)
+  (meow-setup-indicator)
+  (meow-global-mode 1))
+
+(add-hook 'after-init-hook #'my/meow-setup)
 
 (defun meow-setup-dvorak ()
   (interactive)
@@ -146,30 +173,6 @@
    ;; move/mark by word/symbol
    '("b" . meow-back-word)
    '("B" . meow-back-symbol)
-   '("W" . meow-next-symbol)
-   '("w" . meow-next-word)))
-
-(setq meow-esc-delay 0.001
-      meow-keypad-leader-dispatch "C-c"
-      meow-keypad-start-keys nil
-      meow-replace-state-name-list
-      '((normal . "N")
-        (beacon . "B")
-        (insert . "I")
-        (motion . "M")
-        (keypad . "K")))
-
-(meow-thing-register 'angle '(pair ("<") (">")) '(pair ("<") (">")))
-(add-to-list 'meow-char-thing-table '(?a . angle))
-(meow-thing-register 'backquote '(regexp "`" "`") '(regexp "`" "`"))
-(add-to-list 'meow-char-thing-table '(?` . backquote))
-
-;; Optimize flymake for meow.
-(add-hook 'meow-insert-exit-hook (lambda () (setq flymake-no-changes-timeout 0.5)))
-(add-hook 'meow-insert-enter-hook (lambda () (setq flymake-no-changes-timeout nil)))
-
-(meow-setup-dvorak)
-(meow-setup-indicator)
-(meow-global-mode 1)
+   '("W" . meow-next-symbol)))
 
 (provide 'init-meow)

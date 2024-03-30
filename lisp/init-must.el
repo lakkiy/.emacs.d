@@ -1,11 +1,14 @@
-;;; -*- lexical-binding: t -*-
+;;; init-must.el --- Must have config -*- lexical-binding: t; -*-
+
+;;; Commentary:
 ;;
-;; 即使最小化启动也需要使用到的 emacs builtin 的配置.
+
+;;; Code:
 
 ;;; perf
 (setq redisplay-skip-fontification-on-input t
       frame-resize-pixelwise t
-       ;; NOTE this may cause lsp-bridge-ref buffer didn't show.
+      ;; NOTE this may cause lsp-bridge-ref buffer didn't show.
       window-resize-pixelwise nil
       ;; Don't pass case-insensitive to `auto-mode-alist'
       auto-mode-case-fold nil
@@ -342,3 +345,5 @@
           (when (eq system-type 'gnu/linux) "xdg-open")))
 
 (provide 'init-must)
+
+;;; init-must.el ends here
