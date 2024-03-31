@@ -1,5 +1,10 @@
 ;;; -*- lexical-binding: t -*-
 
+(install-package 'almost-mono-themes)
+(install-package 'standard-themes)
+(install-package 'kaolin-themes)
+(install-package 'spacemacs-theme)
+
 ;;; hl-line, disabled
 (setq hl-line-sticky-flag nil)
 

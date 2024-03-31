@@ -344,6 +344,31 @@
           (when (eq system-type 'darwin) "open")
           (when (eq system-type 'gnu/linux) "xdg-open")))
 
+;;; theme
+(defvar my/theme 'paperlike
+  "Default theme.")
+
+(defvar after-load-theme-hook nil
+  "Hooks run after `load-theme'.")
+
+(defun my/load-theme (f theme &optional no-confirm no-enable &rest args)
+  (interactive
+   (list
+    (intern (completing-read "Theme: "
+                             (mapcar #'symbol-name
+				                     (custom-available-themes))))))
+  (dolist (theme custom-enabled-themes)
+    (disable-theme theme))
+  (if (featurep (intern (format "%s-theme" theme)))
+      (enable-theme theme)
+    (apply f theme t no-enable args))
+  (run-hooks 'after-load-theme-hook))
+(advice-add 'load-theme :around #'my/load-theme)
+
+(add-hook 'after-init-hook #'(lambda ()
+                               (when (display-graphic-p)
+                                 (load-theme my/theme))))
+
 (provide 'init-must)
 
 ;;; init-must.el ends here
