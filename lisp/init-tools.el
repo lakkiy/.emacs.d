@@ -206,6 +206,6 @@
 
 ;;; outli
 (install-package 'outli "https://github.com/jdtsmith/outli")
-(add-hook 'prog-mode-hook #'outli-mode)
+(add-hook 'prog-mode-hook #'(lambda () (unless (file-remote-p default-directory) (outli-mode 1))))
 
 (provide 'init-tools)
