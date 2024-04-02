@@ -173,6 +173,7 @@
    ;; move/mark by word/symbol
    '("b" . meow-back-word)
    '("B" . meow-back-symbol)
+   '("w" . meow-next-word)
    '("W" . meow-next-symbol)))
 
 (provide 'init-meow)

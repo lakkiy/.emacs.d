@@ -31,6 +31,8 @@
 (require 'init-dev)
 (require 'init-rime)
 
+;; standalone apps
+;; should work with init-package
 (require 'init-org)
 (require 'init-git)
 (require 'init-text)
