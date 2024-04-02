@@ -276,9 +276,11 @@
    `(erc-timestamp-face             ((t (:inherit font-lock-constant-face))))
    `(erc-notice-face                ((t (:inherit font-lock-comment-face))))
 
-   `(tab-bar                        ((t (:background ,fg :foreground ,bg))))
-   `(tab-bar-tab                    ((t (:inverse-video t :bold t))))
-   `(tab-bar-tab-inactive           ((t ())))
+   `(tab-bar                        ((t ())))
+   `(tab-bar-tab-group-current      ((t ())))
+   `(tab-bar-tab                    ((t (:inverse-video t))))
+   `(tab-bar-tab-group-inactive     ((t ())))
+   `(tab-bar-tab-inactive           ((t (:bold nil))))
 
    `(ansi-color-blue                ((t (:foreground "#169edd"))))
    `(ansi-color-bright-blue         ((t (:foreground "#169edd"))))
