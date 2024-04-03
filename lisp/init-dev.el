@@ -20,14 +20,6 @@
                                 ((executable-find "ugrep") 'ugrep)
                                 (t 'grep)))
 
-;;; eglot-booster
-;;
-;; Need to install https://github.com/blahgeek/emacs-lsp-booster
-(install-package 'eglot-booster "https://github.com/jdtsmith/eglot-booster")
-(when (executable-find "emacs-lsp-booster")
-  (with-eval-after-load 'eglot
-    (eglot-booster-mode 1)))
-
 ;;; eglot
 (setq eglot-events-buffer-size 0
       eglot-autoshutdown t
