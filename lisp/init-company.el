@@ -87,7 +87,8 @@
 
 ;; 由于 `lisp-indent-offset' 的默认值是 nil，在编辑 elisp 时每敲一个字
 ;; 符都会跳出一个 warning，将其默认值设置为 t 以永不显示这个 warning
-(setq-default copilot--indent-warning-printed-p t)
+(setq-default copilot--indent-warning-printed-p t
+              copilot-indent-offset-warning-disable t)
 
 (add-hook 'prog-mode-hook 'copilot-mode)
 
@@ -103,9 +104,7 @@
   (add-to-list 'copilot-major-mode-alist '("go-ts" . "go"))
 
   (keymap-set copilot-completion-map "C-g" #'copilot-clear-overlay)
-  (keymap-set copilot-completion-map "C-f" #'copilot-accept-completion)
-  (keymap-set copilot-completion-map "C-e" #'copilot-accept-completion-by-line)
-  (keymap-set copilot-completion-map "M-f" #'copilot-accept-completion-by-word)
+  (keymap-set copilot-completion-map "C-e" #'copilot-accept-completion)
   (keymap-set copilot-completion-map "M-p" #'copilot-previous-completion)
   (keymap-set copilot-completion-map "M-n" #'copilot-next-completion)
 

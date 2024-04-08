@@ -1,5 +1,13 @@
 ;;; -*- lexical-binding: t -*-
 
+;;; compile
+(setq compilation-always-kill t       ; kill compilation process before starting another
+      compilation-ask-about-save nil  ; save all buffers on `compile'
+      compilation-scroll-output 'first-error)
+
+;;; comment
+(setq comment-empty-lines t)
+
 ;;; xref
 (add-hook 'xref-after-return-hook #'recenter)
 (add-hook 'xref-after-jump-hook #'recenter)

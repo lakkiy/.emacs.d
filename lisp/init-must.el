@@ -256,8 +256,6 @@
 (keymap-global-set "C-x C-r" #'recentf-open-files)
 
 ;;; project
-(setq compilation-scroll-output 'first-error)
-
 (with-eval-after-load 'project
   ;; use fd in `project-find-file'
   (defun eat/project-files-in-directory (dir)
