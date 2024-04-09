@@ -15,18 +15,18 @@
 (keymap-global-unset "C-<down-mouse-1>")
 (keymap-global-set "C-<mouse-1>" #'xref-find-definitions-at-mouse)
 
-(setq xref-prompt-for-identifier nil
-      xref-show-xrefs-function #'xref-show-definitions-completing-read
+(setq xref-show-xrefs-function #'xref-show-definitions-completing-read
       xref-show-definitions-function #'xref-show-definitions-completing-read
       ;; Fix massed xref cross multiple project.
-      xref-history-storage 'xref-window-local-history
-      ;; Emacs 28+
-      ;;
-      ;; `project-find-regexp' can be faster when setting `xref-search-program' to
-      ;;  `ripgrep'.
-      xref-search-program (cond ((executable-find "rg") 'ripgrep)
-                                ((executable-find "ugrep") 'ugrep)
-                                (t 'grep)))
+      xref-history-storage 'xref-window-local-history)
+
+(with-eval-after-load 'xref
+  ;; Emacs 28+
+  ;;
+  ;; `project-find-regexp' can be faster when setting `xref-search-program' to
+  ;;  `ripgrep'.
+  (setq xref-search-program (cond ((executable-find "rg") 'ripgrep)
+                                  (t 'grep))))
 
 ;;; eglot
 (setq eglot-events-buffer-size 0
