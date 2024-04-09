@@ -72,7 +72,7 @@ point reaches the beginning or end of the buffer, stop there."
 (global-set-key (kbd "M-C-9") (lambda () (interactive) (my/adjust-opacity nil 2)))
 (global-set-key (kbd "M-C-7") (lambda () (interactive) (modify-frame-parameters nil `((alpha-background . 100)))))
 
-;; 不知道为什么现在在 tramp 上执行 vc-region-history 或者 urgrep 都会有
+;; 不知道为什么现在在 tramp 上执行 vc-region-history
 ;; 乱码或者颜色不对，例如 ^[33m，目前先用这个函数救急
 (defun display-ansi-colors ()
   (interactive)

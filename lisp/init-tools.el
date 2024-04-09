@@ -44,10 +44,11 @@
 (setq wgrep-change-readonly-file t)
 (add-hook #'grep-setup-hook #'wgrep-setup)
 
-;;; urgrep
-(install-package 'urgrep)
-(with-eval-after-load 'urgrep
-  (require 'urgrep-wgrep))
+;;; rg
+;;
+;; It has a menu command `rg-menu', UI better than urgrep and deadgrep.
+(install-package 'rg)
+(keymap-set project-prefix-map "r" #'rg-project)
 
 ;;; avy
 (install-package 'avy)
