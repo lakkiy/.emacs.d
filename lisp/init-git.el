@@ -36,6 +36,9 @@
 (install-package 'magit)
 (keymap-global-set "C-x g" #'magit-status)
 
+(setq magit-diff-refine-hunk t
+      magit-diff-paint-whitespace nil)
+
 (install-package 'magit-delta)
 
 (when (executable-find "delta")
