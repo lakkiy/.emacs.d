@@ -193,8 +193,13 @@
 (setq apheleia-remote-algorithm 'cancel)
 
 (add-hook 'go-mode-hook #'apheleia-mode)
+(add-hook 'd2-mode-hook #'apheleia-mode)
 
 (with-eval-after-load 'apheleia
+  ;; Add support for d2.
+  (push '(d2fmt "d2" "fmt" file) apheleia-formatters)
+  (push '(d2-mode . d2fmt) apheleia-mode-alist)
+
   (push '(go-ts-mode . gofmt) apheleia-mode-alist)
   (when (executable-find "goimports")
     (setf (alist-get 'gofmt apheleia-formatters)
