@@ -1,5 +1,4 @@
 ;;; -*- lexical-binding: t -*-
-
 ;;; tab-bar
 ;;
 ;; Built-in window layout manager
@@ -115,11 +114,11 @@
 
 ;;; ace-window
 (install-package 'ace-window)
-
 (keymap-global-set "M-o" 'ace-window)
-(keymap-global-set "C-x C-o" 'ace-window)
-(keymap-substitute global-map 'other-window 'ace-window)
-
 (setq aw-keys '(?a ?o ?e ?u ?i))
+
+;;; golden-ratio
+(install-package 'golden-ratio)
+(define-key mode-specific-map "\\" 'golden-ratio)
 
 (provide 'init-window)

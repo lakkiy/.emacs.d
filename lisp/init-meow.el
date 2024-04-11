@@ -64,6 +64,7 @@
    '(")" . tab-bar-switch-to-prev-tab)
    '("}" . tab-bar-switch-to-next-tab)
    '("-" . avy-goto-char-timer)
+   '("\\" . golden-ratio)
 
    ;;; Below config basicly won't change anymore.
    '("'" . repeat)
