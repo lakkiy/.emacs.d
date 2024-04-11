@@ -144,6 +144,27 @@ Need pandoc installed."
       org-cite-activate-processor 'citar
       citar-bibliography org-cite-global-bibliography)
 
+;;; org-tidy
+(install-package 'org-tidy)
+(add-hook 'org-mode-hook #'org-tidy-mode)
+
+;;; org-remark
+(install-package 'org-remark)
+
+(setq org-remark-notes-file-name "~/Dropbox/org/roam/remark.org")
+
+(define-key global-map (kbd "C-c n m") #'org-remark-mark)
+
+(with-eval-after-load 'org-remark
+  (org-remark-global-tracking-mode +1)
+  (org-remark-info-mode +1)
+
+  (define-key org-remark-mode-map (kbd "C-c n o") #'org-remark-open)
+  (define-key org-remark-mode-map (kbd "C-c n ]") #'org-remark-view-next)
+  (define-key org-remark-mode-map (kbd "C-c n [") #'org-remark-view-prev)
+  (define-key org-remark-mode-map (kbd "C-c n r") #'org-remark-remove)
+  (define-key org-remark-mode-map (kbd "C-c n d") #'org-remark-delete))
+
 ;;; toc
 (install-package 'toc-org)
 (autoload 'toc-org-enable "toc-org" nil t)
