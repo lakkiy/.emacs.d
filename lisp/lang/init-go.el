@@ -36,13 +36,16 @@
 (keymap-set project-prefix-map "t" #'my/format-go)
 
 (install-package 'go-mode)
-(install-package 'flymake-go-staticcheck)
 (install-package 'go-gen-test)
 (install-package 'go-dlv)
 (install-package 'go-fill-struct)
 (install-package 'go-impl)
 (install-package 'gotest)
 (install-package 'go-tag)
+
+(install-package 'flymake-go-staticcheck)
+(when (executable-find "staticcheck")
+  (add-hook 'go-mode-hook #'flymake-go-staticcheck-enable))
 
 (setq gofmt-command "goimports"
       gofmt-show-errors nil)
