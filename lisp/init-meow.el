@@ -67,7 +67,7 @@
 
    ;;; Below config basicly won't change anymore.
    '("'" . repeat)
-   '("!" . dirvish-side)
+   '("!" . dired-sidebar-toggle-sidebar)
    '(":" . gptel-menu)
    '("~" . eat-project)
    '("`" . eat)

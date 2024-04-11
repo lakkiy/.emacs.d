@@ -1,5 +1,43 @@
-;;; -*- lexical-binding: t -*-
+;;; corfu
+(install-package corfu)
+(install-package popon)
+(install-package corfu-terminal)
 
+;; (add-hook 'after-init-hook #'(lambda () (global-corfu-mode 1)))
+(add-hook 'corfu-mode-hook #'(lambda ()
+                               (unless (display-graphic-p)
+                                 (corfu-terminal-mode +1))
+                               (corfu-popupinfo-mode)))
+
+(setq corfu-preview-current nil
+      corfu-auto-delay 0.2
+      corfu-auto-prefix 2
+      corfu-quit-no-match t
+      corfu-quit-at-boundary t
+      corfu-auto t)
+
+(with-eval-after-load 'corfu
+  ;; company can quit capf and insert mode without config
+  (keymap-set corfu-map "<escape>" #'(lambda ()
+                                       (interactive)
+                                       (corfu-quit)
+                                       (when (meow-insert-mode-p)
+                                         (meow-insert-exit))))
+  (keymap-set corfu-map "RET" nil))
+
+(defun eat/yas-next-field-or-maybe-expand ()
+  "Try complete current cond or `yas-next-field-or-maybe-expand'.
+
+Sometime lsp client return a snippet and complete didn't work(TAB will jump to next field),
+so try complete filst, if there nothing to complete then try to jump to next field or expand."
+  (interactive)
+  (or (corfu-insert) ;; NOTE this works
+      (yas-next-field-or-maybe-expand)))
+(with-eval-after-load 'yasnippet
+  (keymap-set yas-keymap "<tab>" 'eat/yas-next-field-or-maybe-expand)
+  (keymap-set yas-keymap "TAB" 'eat/yas-next-field-or-maybe-expand))
+
+;;; dirvish
 (install-package 'dired-sidebar)
 (setq dired-sidebar-theme 'nerd)
 

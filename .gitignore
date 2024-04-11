@@ -6,7 +6,6 @@ tabsessions.el
 var
 project-window-list
 *.md
-trash.el
 codeium
 session.*
 tree-sitter

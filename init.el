@@ -40,7 +40,6 @@
 (require 'init-spell)
 (require 'init-shell)
 (require 'init-telega)
-(require 'init-dirvish)
 (require 'init-launcher)
 
 (when (eq system-type 'darwin)
