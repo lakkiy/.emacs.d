@@ -2,6 +2,17 @@
 ;;
 ;; 一些工具函数
 
+;; https://www.emacswiki.org/emacs/BuildTags
+;; Or generate manually, an expample for go file:
+;; find . -type f -iname "*.go" | etags -
+(defun create-etags (dir-name file-extension)
+  "Create tags file in DIR-NAME for files matching FILE-EXTENSION."
+  (interactive
+   (list (read-directory-name "Directory: ")
+         (read-regexp "Iname regexp (e.g., *.go): ")))
+  (eshell-command
+   (format "find %s -type f -iname \"%s\" | etags -" dir-name file-extension)))
+
 (defun get-string-from-file (filePath)
   "Return file content as string."
   (with-temp-buffer
