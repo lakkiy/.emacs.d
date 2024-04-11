@@ -10,7 +10,6 @@
   (setq-local completion-styles '(substring orderless)))
 (add-hook 'minibuffer-setup-hook #'sanityinc/use-orderless-in-minibuffer)
 
-(keymap-global-set "C-." #'embark-act)
 (keymap-set minibuffer-local-map "C-c C-o" #'embark-export)
 
 (with-eval-after-load 'embark

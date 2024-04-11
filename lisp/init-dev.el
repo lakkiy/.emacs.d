@@ -228,14 +228,14 @@
 ;; Use ctags/gtag to jump and complete.
 (install-package 'citre)
 
-(keymap-global-set "C-x c j" #'citre-jump)
+(keymap-global-set "C-." #'citre-jump)
 (keymap-global-set "C-x c u" #'citre-update-this-tags-file)
 (keymap-global-set "C-x c p" #'citre-peek)
 (keymap-global-set "C-x c U" #'citre-global-update-database)
 (keymap-global-set "C-x c r" #'citre-jump-to-reference)
 
 (with-eval-after-load 'citre
-  (keymap-global-set "C-x c J" #'citre-jump-back)
+  (keymap-global-set "C-'" #'citre-jump-back)
   ;; NOTE
   ;; Notice that GTAGSOBJDIRPREFIX must exist for gtags to use it. So you need to run:
   ;; $ mkdir -p ~/.cache/gtags/
