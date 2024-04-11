@@ -22,4 +22,16 @@
     (eat-term-get-suitable-term-name display)))
 (setq eat-term-name 'jps-eat-term-name)
 
+;; Use char mode in INSERT state, and emacs mode in NORMAL
+;; state. When switching to INSERT state, move the cursor to the end
+;; of buffer.
+(defun eat-meow-setup ()
+  (add-hook 'meow-normal-mode-hook 'eat-emacs-mode nil t)
+  (add-hook 'meow-insert-mode-hook 'eat-char-mode nil t))
+
+(with-eval-after-load "eat"
+  ;; Replace semi-char mode with emacs mode
+  (advice-add 'eat-semi-char-mode :after 'eat-emacs-mode)
+  (add-hook 'eat-mode-hook 'eat-meow-setup))
+
 (provide 'init-shell)
