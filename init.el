@@ -41,6 +41,7 @@
 (require 'init-shell)
 (require 'init-telega)
 (require 'init-launcher)
+(require 'init-dired)
 
 (when (eq system-type 'darwin)
   (require 'init-osx))

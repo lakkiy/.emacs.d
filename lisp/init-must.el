@@ -175,9 +175,6 @@
 (defalias 'scroll-up-command '+pixel-scroll-interpolate-down)
 (defalias 'scroll-down-command '+pixel-scroll-interpolate-up)
 
-;;; Optimize default keybinding
-(keymap-global-set "C-h C-k" #'describe-keymap)
-
 ;;; help
 ;;
 ;; Press e to edit variable value in help buffer.
@@ -193,6 +190,14 @@
 (when (display-graphic-p)
   (global-unset-key (kbd "C-z"))
   (global-unset-key (kbd "C-x C-z")))
+
+;; If variable is a keymap, use `describe-keymap'.
+(advice-add 'describe-variable :around
+            (lambda (oldfun variable &optional buffer frame)
+              (if (and (boundp variable)
+                       (keymapp (symbol-value variable)))
+                  (describe-keymap variable)
+                (apply oldfun variable buffer frame))))
 
 ;;; vc
 ;;
@@ -369,6 +374,5 @@
                                (when (display-graphic-p)
                                  (load-theme my/theme))))
 
-(provide 'init-must)
-
 ;;; init-must.el ends here
+(provide 'init-must)

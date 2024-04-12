@@ -37,6 +37,11 @@
 (install-package 'marginalia)
 (add-hook 'vertico-mode-hook #'marginalia-mode)
 
+;;; icon
+(install-package 'nerd-icons-completion)
+(add-hook 'after-init-hook #'nerd-icons-completion-mode)
+(add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup)
+
 ;;; consult
 (install-package 'consult)
 (install-package 'embark-consult)

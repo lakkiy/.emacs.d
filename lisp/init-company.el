@@ -22,7 +22,6 @@
 (advice-add 'company-capf--candidates :around 'my-company-capf--candidates)
 
 (setq company-minimum-prefix-length 2
-      company-idle-delay 0.1 ;; time for snippet expand
       company-require-match nil)
 
 ;;; Frontend
