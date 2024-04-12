@@ -1,4 +1,9 @@
 ;;; -*- lexical-binding: t -*-
+
+;;; capf
+(setq completion-ignore-case t)
+
+;;; company
 ;;
 ;; - use C-p/C-n to select prev/next
 ;; - use tab to do complete
@@ -65,12 +70,8 @@
   (define-key company-active-map (kbd "RET") nil)
   (define-key company-active-map (kbd "SPC") nil))
 
-;;; Manually complete
-;;
+;;; Do complete manually
 ;; (setq company-idle-delay nil)
-;; (with-eval-after-load 'company
-;;   (keymap-substitute company-mode-map #'completion-at-point #'company-complete)
-;;   (keymap-set company-mode-map "C-M-i" #'company-complete))
 
 ;;; yasnippet
 (install-package 'yasnippet)
