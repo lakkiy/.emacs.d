@@ -152,12 +152,12 @@ point reaches the beginning or end of the buffer, stop there."
 
 (defun split-window-func-with-other-buffer (split-function)
   (lambda (&optional arg)
-    "Split this window and switch to the new window unless ARG is provided."
+    "Split this window and switch to the new window with other-buffer unless ARG is provided."
     (interactive "P")
     (funcall split-function)
     (let ((target-window (next-window)))
-      (set-window-buffer target-window (other-buffer))
       (unless arg
+        (set-window-buffer target-window (other-buffer))
         (select-window target-window)))))
 
 (keymap-global-set "C-x 2" (split-window-func-with-other-buffer 'split-window-vertically))
