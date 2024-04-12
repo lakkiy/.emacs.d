@@ -30,6 +30,7 @@
   (add-hook 'meow-insert-mode-hook 'eat-char-mode nil t))
 
 (with-eval-after-load "eat"
+  (define-key eat-char-mode-map (kbd "C-y") 'eat-yank)
   ;; Replace semi-char mode with emacs mode
   (advice-add 'eat-semi-char-mode :after 'eat-emacs-mode)
   (add-hook 'eat-mode-hook 'eat-meow-setup))
