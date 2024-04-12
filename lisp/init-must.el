@@ -109,11 +109,12 @@
 (setq auto-save-visited-interval 10)
 (add-hook 'after-init-hook #'auto-save-visited-mode)
 
-;;; Tab width
+;;; Tab
 ;;
-;; indent with whitespace by default
-(setq-default tab-width 4
-              indent-tabs-mode nil)
+;; Indent with spaces, not tabs, also use tab do complete.
+(setq-default indent-tabs-mode nil)
+(setq tab-width 4
+      tab-always-indent 'complete)
 
 ;;; subword
 (add-hook 'prog-mode-hook #'subword-mode)
