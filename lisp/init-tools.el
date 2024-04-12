@@ -128,19 +128,8 @@
 
 ;;; ghelp
 (install-package 'ghelp "https://github.com/casouri/ghelp.git")
-
-(autoload #'ghelp-describe          "ghelp")
-(autoload #'ghelp-describe-function "ghelp")
-(autoload #'ghelp-describe-variable "ghelp")
-(autoload #'ghelp-describe-key      "ghelp")
-(autoload #'ghelp-describe-elisp    "ghelp")
-
+(autoload #'ghelp-describe "ghelp")
 (keymap-global-set "C-h C-h" #'ghelp-describe)
-(keymap-global-set "C-h f"   #'ghelp-describe-function)
-(keymap-global-set "C-h v"   #'ghelp-describe-variable)
-(keymap-global-set "C-h k"   #'ghelp-describe-key)
-(keymap-global-set "C-h o"   #'ghelp-describe-elisp)
-
 (with-eval-after-load 'ghelp
   (keymap-global-set "C-h r" #'ghelp-resume))
 

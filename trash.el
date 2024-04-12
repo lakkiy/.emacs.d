@@ -72,4 +72,6 @@ so try complete filst, if there nothing to complete then try to jump to next fie
   (define-key dirvish-mode-map (kbd "<mouse-2>") #'dired-mouse-find-file-other-window)
   (define-key dirvish-mode-map (kbd "<mouse-3>") #'dired-mouse-find-file))
 
-(provide 'init-dirvish)
+;;; window-numbering
+(install-package 'window-numbering)
+(add-hook 'after-init-hook #'window-numbering-mode)

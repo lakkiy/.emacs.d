@@ -1,4 +1,11 @@
 ;;; -*- lexical-binding: t -*-
+
+;;; windmove
+(keymap-global-set "M-1" 'windmove-up)
+(keymap-global-set "M-2" 'windmove-left)
+(keymap-global-set "M-3" 'windmove-right)
+(keymap-global-set "M-4" 'windmove-down)
+
 ;;; tab-bar
 ;;
 ;; Built-in window layout manager
@@ -107,10 +114,6 @@
      (floor (frame-height) 3)
      (floor (frame-height) 3)))
   (setq popper-window-height #'my-popper-fit-window-height))
-
-;;; window-numbering
-(install-package 'window-numbering)
-(add-hook 'after-init-hook #'window-numbering-mode)
 
 ;;; ace-window
 (install-package 'ace-window)

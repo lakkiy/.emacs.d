@@ -2,6 +2,22 @@
 ;;
 ;; 一些工具函数
 
+(defun move-region-to-trash (start end)
+  "Move the selected region to trash.el."
+  (interactive "r")
+  (let ((region-content (buffer-substring start end))
+        (trash-file (expand-file-name "trash.el" user-emacs-directory)))
+    ;; Ensure the file exists
+    (unless (file-exists-p trash-file)
+      (with-temp-buffer (write-file trash-file)))
+    ;; Append the content to the trash file
+    (with-temp-file trash-file
+      (insert-file-contents trash-file)
+      (goto-char (point-max))
+      (insert "\n" region-content "\n"))
+    ;; Optionally, delete the region from the original buffer
+    (delete-region start end)))
+
 ;; https://www.emacswiki.org/emacs/BuildTags
 ;; Or generate manually, an expample for go file:
 ;; find . -type f -iname "*.go" | etags -
