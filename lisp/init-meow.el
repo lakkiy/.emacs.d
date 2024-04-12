@@ -76,8 +76,6 @@
    '("@" . hs-toggle-hiding)
    '("q" . delete-window)
    '("/" . comment-dwim)
-   '("=" . expreg-expand)
-   '("+" . expreg-contract)
    '("v" . scroll-up-command)
    '("V" . scroll-down-command)
    '("\"" . insert-pair)

@@ -182,6 +182,7 @@
 ;;
 ;; Press e to edit variable value in help buffer.
 (setq help-enable-variable-value-editing t)
+(put 'help-fns-edit-variable 'disabled nil)
 
 ;; 会卡住 emacs，因为要显示多国字体
 (keymap-global-unset "C-h h")
