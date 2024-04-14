@@ -111,8 +111,10 @@
 ;;; nov
 (install-package 'nov)
 
-;;; kubel
+;;; k8s
 (install-package 'kubel)
+(install-package 'kele)
+(autoload #'kele-dispatch "kele" nil t)
 
 ;;; restclient
 (install-package 'restclient)

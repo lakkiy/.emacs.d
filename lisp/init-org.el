@@ -59,7 +59,7 @@
       `(("b" "Blog idea" entry (file "~/Dropbox/org/blog.org") "* %^{title}\n%u\n%?" :prepend t)
         ("p" "Project idea" entry (file "~/Dropbox/org/project.org") "* %^{title}\n%u\n%?" :prepend t)
         ("i" "Inbox" entry (file "~/Dropbox/org/inbox.org") "* TODO %?\n:PROPERITIES:\n:Created: %T\n:END:")
-        ("n" "Note" entry (file "~/Dropbox/org/roma/Notes.org") "* %^{title}\n%u\n%?" :prepend t)
+        ("n" "Note" entry (file "~/Dropbox/org/roam/Notes.org") "* %^{title}\n%u\n%?" :prepend t)
         ("w" "Work" entry (file+olp+datetree "~/Dropbox/org/Work.org")
          "* %^{Title}\n:PROPERITIES:\n:Created: %T\n:END:" :tree-type week)))
 (keymap-global-set "C-c c" 'org-capture)

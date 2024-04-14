@@ -247,7 +247,7 @@
   ;; the list by the special value ‘tramp-own-remote-path’.
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 
-;;; repeat command
+;;; repeat
 ;;
 ;; Use `repeat' to rerun previout command.
 (setq repeat-mode t
@@ -263,31 +263,34 @@
 (keymap-global-set "C-x C-r" #'recentf-open-files)
 
 ;;; project
+
+(setq project-vc-ignores '("target/" "bin/" "obj/")
+      project-vc-extra-root-markers '(".project"
+                                      "go.mod"
+                                      "Cargo.toml"
+                                      "project.clj"
+                                      "pom.xml"
+                                      "package.json"
+                                      "Makefile"
+                                      "README.org"
+                                      "README.md"))
+
+;; use fd in `project-find-file'
+(defun my/project-files-in-directory (dir)
+  "Use `fd' to list files in DIR."
+  (let* ((default-directory dir)
+         (localdir (file-local-name (expand-file-name dir)))
+         (command (format "fd -c never -H -t f -0 . %s" localdir)))
+    (project--remote-file-names
+     (sort (split-string (shell-command-to-string command) "\0" t)
+           #'string<))))
+
 (with-eval-after-load 'project
-  ;; use fd in `project-find-file'
-  (defun eat/project-files-in-directory (dir)
-    "Use `fd' to list files in DIR."
-    (let* ((default-directory dir)
-           (localdir (file-local-name (expand-file-name dir)))
-           (command (format "fd -c never -H -t f -0 . %s" localdir)))
-      (project--remote-file-names
-       (sort (split-string (shell-command-to-string command) "\0" t)
-             #'string<))))
   (when (executable-find "fd")
     (cl-defmethod project-files ((project (head local)) &optional dirs)
       "Override `project-files' to use `fd' in local projects."
-      (mapcan #'eat/project-files-in-directory
-              (or dirs (list (project-root project))))))
-  (setq project-vc-ignores '("target/" "bin/" "obj/")
-        project-vc-extra-root-markers '(".project"
-                                        "go.mod"
-                                        "Cargo.toml"
-                                        "project.clj"
-                                        "pom.xml"
-                                        "package.json"
-                                        "Makefile"
-                                        "README.org"
-                                        "README.md")))
+      (mapcan #'my/project-files-in-directory
+              (or dirs (list (project-root project)))))))
 
 ;;; savehist and place
 (setq history-length 1000)
@@ -350,7 +353,7 @@
           (when (eq system-type 'gnu/linux) "xdg-open")))
 
 ;;; theme
-(defvar my/theme 'paperlike
+(defvar my/theme 'modus-operandi
   "Default theme.")
 
 (defvar after-load-theme-hook nil
