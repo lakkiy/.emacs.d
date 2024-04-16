@@ -112,9 +112,9 @@
 ;;; Tab
 ;;
 ;; Indent with spaces, not tabs, also use tab do complete.
-(setq-default indent-tabs-mode nil)
-(setq tab-width 4
-      tab-always-indent 'complete)
+(setq-default indent-tabs-mode nil
+              tab-width 4
+              tab-always-indent 'complete)
 
 ;;; subword
 (add-hook 'prog-mode-hook #'subword-mode)

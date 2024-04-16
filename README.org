@@ -1,10 +1,3 @@
-* Dep
-
-** Optional
-- =aspell=: 拼写检查
-- =delta=
-- =direnv=
-
 * Note
 
 ** Use deepl to translate
