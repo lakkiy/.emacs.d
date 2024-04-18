@@ -38,9 +38,6 @@ so try complete filst, if there nothing to complete then try to jump to next fie
   (keymap-set yas-keymap "TAB" 'eat/yas-next-field-or-maybe-expand))
 
 ;;; dirvish
-(install-package 'dired-sidebar)
-(setq dired-sidebar-theme 'nerd)
-
 (install-package 'dirvish)
 
 (setq dirvish-attributes '(vc-state subtree-state nerd-icons)

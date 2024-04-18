@@ -306,6 +306,8 @@
       dired-kill-when-opening-new-dired-buffer t
       dired-auto-revert-buffer t)
 
+(add-hook 'dired-mode-hook #'dired-hide-details-mode)
+
 (with-eval-after-load 'dired
   (setq dired-listing-switches
         "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
