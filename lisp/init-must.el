@@ -32,14 +32,13 @@
       large-hscroll-threshold 1000
       syntax-wholeline-max 1000)
 
-;;; inhibit startup
+;;; inhibit startup message
 (setq inhibit-startup-screen t
-      ;; Don't load default.el, only init.el
-      inhibit-default-init t
-      ;; Don't use prog-mode an stratup
-      initial-major-mode 'fundamental-mode)
-;; Shut up!
-(defun display-startup-echo-area-message() nil)
+      inhibit-startup-message t
+      initial-major-mode 'fundamental-mode
+      server-client-instructions nil)
+(fset #'display-startup-echo-area-message #'ignore)
+
 
 ;;; Disable some annoying UI features
 (setq ring-bell-function 'ignore
@@ -355,8 +354,8 @@
           (when (eq system-type 'gnu/linux) "xdg-open")))
 
 ;;; theme
-(defvar my/theme 'modus-operandi
-  "Default theme.")
+(defvar my/theme 'modus-operandi)
+(defvar my/theme-tui 'carbon)
 
 (defvar after-load-theme-hook nil
   "Hooks run after `load-theme'.")
@@ -375,9 +374,15 @@
   (run-hooks 'after-load-theme-hook))
 (advice-add 'load-theme :around #'my/load-theme)
 
-(add-hook 'after-init-hook #'(lambda ()
-                               (when (display-graphic-p)
-                                 (load-theme my/theme))))
+(defun my/setup-theme ()
+  (if (display-graphic-p)
+      (load-theme my/theme t)
+    (load-theme my/theme-tui t)))
+
+(if (daemonp)
+    (add-hook 'server-after-make-frame-hook #'my/setup-theme)
+  (add-hook 'after-init-hook #'my/setup-theme))
+
 
 ;;; init-must.el ends here
 (provide 'init-must)
