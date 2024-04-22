@@ -87,6 +87,12 @@
 (setq split-width-threshold 160)
 (setq split-height-threshold nil)
 
+;; mouse-1 to follow link
+(put 'default-button 'follow-link t)
+;; enable narrow function
+(put 'narrow-to-page 'disabled nil)
+(put 'narrow-to-region 'disabled nil)
+
 ;;; Disable lockfiles and backup files
 (setq create-lockfiles nil
       make-backup-files nil
