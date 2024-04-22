@@ -16,8 +16,17 @@
                                  :venv venv))))
     (message "Configured `%s` to use environment `%s`" out-file pyvenv-virtual-env)))
 
+;;; pet, setup virtual environment for emacs
 (install-package 'pet)
 ;; This will turn on `pet-mode' on `python-mode' and `python-ts-mode'
 (add-hook 'python-base-mode-hook 'pet-mode -10)
+
+;;; ruff, linter(use apheleia to format
+(install-package 'flymake-ruff)
+
+(defun my/flymake-ruff-maybe-enable ()
+  (when (executable-find "ruff")
+    (flymake-ruff-load)))
+(add-hook 'python-base-mode-hook 'my/flymake-ruff-maybe-enable)
 
 (provide 'init-python)

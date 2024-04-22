@@ -5,6 +5,14 @@
 (setq gcmh-high-cons-threshold (* 128 1024 1024))
 (add-hook 'after-init-hook #'gcmh-mode)
 
+;;; vundo
+(install-package 'vundo)
+(install-package 'undo-hl "https://github.com/casouri/undo-hl.git")
+(add-hook 'prog-mode-hook #'undo-hl-mode)
+(add-hook 'conf-mode-hook #'undo-hl-mode)
+(keymap-global-set "C-z" #'vundo)
+
+
 ;;; isearch-mb
 (install-package 'isearch-mb)
 (add-hook 'isearch-mode-hook #'isearch-mb-mode)
