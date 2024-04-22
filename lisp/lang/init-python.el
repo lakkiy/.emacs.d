@@ -3,6 +3,15 @@
 ;; Disable readline based native completion
 (setq python-shell-completion-native-enable nil)
 
+;; pyright with venv project, or check other pyright config like
+;; extraPaths if project is managed by pdm and pyproject.toml, for
+;; example:
+;;
+;; [tool.pyright]
+;; extraPaths = ["__pypackages__/3.8/lib/"]
+;;
+;; https://github.com/microsoft/pyright/issues/2767
+;; Also check basedpyright and delance
 (defun pyrightconfig-write ()
   "Write a `pyrightconfig.json' file at the root of a project with
 `venvPath` and `venv`."
