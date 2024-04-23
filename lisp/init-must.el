@@ -274,6 +274,7 @@
                                       "go.mod"
                                       "Cargo.toml"
                                       "project.clj"
+                                      "pyproject.toml"
                                       "pom.xml"
                                       "package.json"
                                       "Makefile"

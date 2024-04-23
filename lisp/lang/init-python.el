@@ -3,14 +3,13 @@
 ;; Disable readline based native completion
 (setq python-shell-completion-native-enable nil)
 
-;; pyright with venv project, or check other pyright config like
-;; extraPaths if project is managed by pdm and pyproject.toml, for
-;; example:
-;;
+;; pyright with pdm + project.toml/pyrightconfig.json projet.
 ;; [tool.pyright]
-;; extraPaths = ["__pypackages__/3.8/lib/"]
-;;
+;; extraPaths = ["__pypackages__/3.8/lib/", "src/]
+;; https://pdm-project.org/en/latest/usage/pep582/#__tabbed_1_2
 ;; https://github.com/microsoft/pyright/issues/2767
+;;
+;; pyright with venv project, need setup venv and venvPath
 ;; Also check basedpyright and delance
 (defun pyrightconfig-write ()
   "Write a `pyrightconfig.json' file at the root of a project with
@@ -25,12 +24,12 @@
                                  :venv venv))))
     (message "Configured `%s` to use environment `%s`" out-file pyvenv-virtual-env)))
 
-;;; pet, setup virtual environment for emacs
-(install-package 'pet)
-;; This will turn on `pet-mode' on `python-mode' and `python-ts-mode'
-(add-hook 'python-base-mode-hook 'pet-mode -10)
+;;; venv support
+;;
+;; don't need this if use pdm to manage python project
+(install-package 'pyvenv)
 
-;;; ruff, linter(use apheleia to format
+;;; ruff, lint and format python code(use apheleia to do format in emacs
 (install-package 'flymake-ruff)
 
 (defun my/flymake-ruff-maybe-enable ()
