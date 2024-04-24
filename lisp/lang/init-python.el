@@ -1,7 +1,8 @@
 ;;; -*- lexical-binding: t -*-
 
 ;; Disable readline based native completion
-(setq python-shell-completion-native-enable nil)
+(setq python-shell-completion-native-enable nil
+      python-indent-guess-indent-offset nil)
 
 ;; pyright with pdm + project.toml/pyrightconfig.json projet.
 ;; [tool.pyright]
