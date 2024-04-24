@@ -68,24 +68,6 @@ point reaches the beginning or end of the buffer, stop there."
       (move-beginning-of-line 1))))
 (keymap-substitute global-map #'move-beginning-of-line #'smarter-move-beginning-of-line)
 
-;; The problem of the default query-replace UI is when you accidently
-;; press a key that's not in query-replace-map, the session is
-;; terminated. This makes it feel fragile.
-;;
-;; Here's an advice fixing it. When you press a non query-replace-map
-;; key, it opens the help info.
-;;
-;; Stole from https://github.com/astoff/isearch-mb/wiki
-(define-advice perform-replace (:around (fn &rest args) dont-exit-on-anykey)
-  "Don't exit replace for anykey that's not in `query-replace-map'."
-  (cl-letf* ((lookup-key-orig
-              (symbol-function 'lookup-key))
-             ((symbol-function 'lookup-key)
-              (lambda (map key &optional accept-default)
-                (or (apply lookup-key-orig map key accept-default)
-                    (when (eq map query-replace-map) 'help)))))
-    (apply fn args)))
-
 (defun my/adjust-opacity (frame incr)
   "Adjust the background opacity of FRAME by increment INCR."
   (unless (display-graphic-p frame)

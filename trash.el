@@ -72,3 +72,22 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 ;;; window-numbering
 (install-package 'window-numbering)
 (add-hook 'after-init-hook #'window-numbering-mode)
+
+;; NOTE this break query-replace on emacs30
+;; The problem of the default query-replace UI is when you accidently
+;; press a key that's not in query-replace-map, the session is
+;; terminated. This makes it feel fragile.
+;;
+;; Here's an advice fixing it. When you press a non query-replace-map
+;; key, it opens the help info.
+;;
+;; Stole from https://github.com/astoff/isearch-mb/wiki
+(define-advice perform-replace (:around (fn &rest args) dont-exit-on-anykey)
+  "Don't exit replace for anykey that's not in `query-replace-map'."
+  (cl-letf* ((lookup-key-orig
+              (symbol-function 'lookup-key))
+             ((symbol-function 'lookup-key)
+              (lambda (map key &optional accept-default)
+                (or (apply lookup-key-orig map key accept-default)
+                    (when (eq map query-replace-map) 'help)))))
+    (apply fn args)))
