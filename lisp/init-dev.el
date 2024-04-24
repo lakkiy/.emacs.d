@@ -146,8 +146,8 @@
     (push '(d2-mode . d2fmt) apheleia-mode-alist))
   ;; python
   (when (executable-find "ruff")
-    (setf (alist-get 'python-mode apheleia-mode-alist) '(ruff-isort ruff))
-    (setf (alist-get 'python-ts-mode apheleia-mode-alist) '(ruff-isort ruff)))
+    (setf (alist-get 'python-mode apheleia-mode-alist) '(ruff))
+    (setf (alist-get 'python-ts-mode apheleia-mode-alist) '(ruff)))
   ;; go
   (when (executable-find "goimports")
     (setf (alist-get 'go-mode apheleia-mode-alist) '(goimports))
@@ -214,12 +214,6 @@
 
 (setq hs-set-up-overlay #'hideshow-folded-overlay-fn)
 
-;;; eldoc-box, show eldoc in box
-(setq eldoc-idle-delay 1
-      eldoc-documentation-function 'eldoc-documentation-compose)
-(install-package 'eldoc-box)
-(setq eldoc-box-only-multi-line t)
-(add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode)
 
 ;;; pnui, struct editing
 (install-package 'puni)
@@ -231,11 +225,15 @@
 ;;  "C-}" 'puni-barf-forward)
 
 
-;;; devdocs
-(install-package 'devdocs)
-(keymap-global-set "C-h D" #'devdocs-lookup)
+;;; eldoc-box, show eldoc in box
+(setq eldoc-idle-delay 1
+      eldoc-documentation-function 'eldoc-documentation-compose)
+(install-package 'eldoc-box)
+(setq eldoc-box-only-multi-line t)
+(add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode)
 
-;; Jump to definition
+
+;;; dumb-jump
 ;;
 ;; As default xref backend function.
 (install-package 'dumb-jump)
@@ -248,6 +246,7 @@
 (setq dumb-jump-quiet t
       dumb-jump-aggressive t
       dumb-jump-selector 'completing-read)
+
 
 ;;; indent-tabrs, show indent level for yaml, python
 (install-package 'indent-bars "https://github.com/jdtsmith/indent-bars.git")
@@ -273,6 +272,12 @@
 				                         dictionary dictionary_comprehension
 				                         parenthesized_expression subscript)))
 
+
+;;; devdocs
+(install-package 'devdocs)
+(keymap-global-set "C-h D" #'devdocs-lookup)
+
+
 ;;; require langs
 (install-package 'protobuf-mode)
 
@@ -291,4 +296,5 @@
 (require 'init-nix)
 (require 'init-web)
 
+;;; init-dev.el ends here
 (provide 'init-dev)
