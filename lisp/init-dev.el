@@ -97,6 +97,11 @@
 ;; Use ctags/gtag to jump and complete.
 (install-package 'citre)
 
+(setq citre-default-create-tags-file-location 'global-cache
+      citre-use-project-root-when-creating-tags t
+      citre-prompt-language-for-ctags-command t
+      citre-auto-enable-citre-mode-modes '(prog-mode))
+
 (keymap-global-set "C-." #'citre-jump)
 (keymap-global-set "C-x c u" #'citre-update-this-tags-file)
 (keymap-global-set "C-x c p" #'citre-peek)
@@ -104,15 +109,11 @@
 (keymap-global-set "C-x c r" #'citre-jump-to-reference)
 
 (with-eval-after-load 'citre
+  ;; Notice that GTAGSOBJDIRPREFIX must exist for gtags to use.
+  (when (not (file-exists-p (concat (getenv "HOME") "/.cache/gtags")))
+    (make-directory (concat (getenv "HOME") "/.cache/gtags") t))
   (keymap-global-set "C-'" #'citre-jump-back)
-  ;; NOTE
-  ;; Notice that GTAGSOBJDIRPREFIX must exist for gtags to use it. So you need to run:
-  ;; $ mkdir -p ~/.cache/gtags/
   (keymap-global-set "C-x c P" #'citre-ace-peek-references)
-  (setq citre-default-create-tags-file-location 'global-cache
-        citre-use-project-root-when-creating-tags t
-        citre-prompt-language-for-ctags-command t
-        citre-auto-enable-citre-mode-modes '(prog-mode))
   (with-eval-after-load 'cc-mode (require 'citre-lang-c))
   (with-eval-after-load 'dired (require 'citre-lang-fileref))
   (with-eval-after-load 'verilog-mode (require 'citre-lang-verilog)))
