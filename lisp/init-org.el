@@ -1,6 +1,6 @@
 ;;; -*- lexical-binding: t -*-
 
-;;; bklink
+;;; bklink; create back link
 (autoload #'bklink-minor-mode "bklink")
 
 (setq bklink-summary-read-only-p t
@@ -10,7 +10,7 @@
   (keymap-set bklink-minor-mode-map "C-c l" #'bklink-summary-mode)
   (keymap-set bklink-minor-mode-map "C-c i" #'bklink-insert))
 
-;;; setup
+;;; setup for org-mode
 (defun my/org-mode-setup ()
   (visual-fill-column-mode 1)
   (org-indent-mode 1)
@@ -21,7 +21,7 @@
     (valign-mode 1)))
 (add-hook 'org-mode-hook #'my/org-mode-setup)
 
-;;; basic
+;;; basic config
 (setq org-directory (expand-file-name "~/Dropbox/org")
       calendar-date-style 'ios ;; YYYY-MM-DD
       org-plantuml-exec-mode 'plantuml
@@ -123,6 +123,14 @@ Need pandoc installed."
 (with-eval-after-load 'org
   (add-to-list 'org-export-backends 'md))
 
+;;; citar
+(install-package 'citar)
+(setq org-cite-global-bibliography '("~/Dropbox/bib/references.bib")
+      org-cite-insert-processor 'citar
+      org-cite-follow-processor 'citar
+      org-cite-activate-processor 'citar
+      citar-bibliography org-cite-global-bibliography)
+
 ;;; org-static-blog
 (install-package 'org-static-blog)
 (setq org-static-blog-publish-title "mrunhap's blog"
@@ -136,39 +144,16 @@ Need pandoc installed."
         org-static-blog-page-preamble (get-string-from-file "~/p/blog/static/preamble.html")
         org-static-blog-page-postamble (get-string-from-file "~/p/blog/static/postamble.html")))
 
-;;; citar
-(install-package 'citar)
-(setq org-cite-global-bibliography '("~/Dropbox/bib/references.bib")
-      org-cite-insert-processor 'citar
-      org-cite-follow-processor 'citar
-      org-cite-activate-processor 'citar
-      citar-bibliography org-cite-global-bibliography)
 
-;;; org-tidy
-(install-package 'org-tidy)
-(add-hook 'org-mode-hook #'org-tidy-mode)
-
-;;; org-remark
-(install-package 'org-remark)
-
-(setq org-remark-notes-file-name "~/Dropbox/org/roam/remark.org")
-
-(define-key global-map (kbd "C-c n m") #'org-remark-mark)
-
-(with-eval-after-load 'org-remark
-  (org-remark-global-tracking-mode +1)
-  (org-remark-info-mode +1)
-
-  (define-key org-remark-mode-map (kbd "C-c n o") #'org-remark-open)
-  (define-key org-remark-mode-map (kbd "C-c n ]") #'org-remark-view-next)
-  (define-key org-remark-mode-map (kbd "C-c n [") #'org-remark-view-prev)
-  (define-key org-remark-mode-map (kbd "C-c n r") #'org-remark-remove)
-  (define-key org-remark-mode-map (kbd "C-c n d") #'org-remark-delete))
-
-;;; toc
+;;; toc-org
 (install-package 'toc-org)
 (autoload 'toc-org-enable "toc-org" nil t)
 (autoload 'toc-org-insert-toc "toc-org" nil t)
+
+
+;;; org-tidy; Automatically tidy org-mode property drawers
+(install-package 'org-tidy)
+(add-hook 'org-mode-hook #'org-tidy-mode)
 
 ;;; org-appear
 (install-package 'org-appear)
