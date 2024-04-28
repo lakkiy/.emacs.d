@@ -275,11 +275,8 @@
                                       "Cargo.toml"
                                       "project.clj"
                                       "pyproject.toml"
-                                      "pom.xml"
-                                      "package.json"
-                                      "Makefile"
-                                      "README.org"
-                                      "README.md"))
+                                      "pyrightconfig.json"
+                                      "package.json"))
 
 ;; use fd in `project-find-file'
 (defun my/project-files-in-directory (dir)
