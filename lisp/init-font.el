@@ -21,7 +21,8 @@
          (my/font-emoji          (font-installed-p my/fonts-emoji))
          (my/font-rescale-alist  `((,my/font-cjk     . 0.95)
                                    (,my/font-emoji   . 0.9)
-                                   (,my/font-unicode . 0.95))))
+                                   (,my/font-unicode . 0.95)
+                                   (,my/font-variable-pitch . 1.2))))
     (set-face-attribute 'default nil :height (* 10 my/font-size-default))
     (when my/font-default
       (set-face-attribute 'default     nil :family my/font-default)
