@@ -53,5 +53,12 @@
 (add-hook 'python-base-mode-hook 'my/flymake-ruff-maybe-enable)
 
 
+;;; jupyter
+;;
+;; Better with jupytext and pandoc installed.
+(install-package 'code-cells)
+(add-hook 'python-base-mode-hook 'code-cells-mode-maybe)
+
+
 ;;; init-python.el ends here
 (provide 'init-python)
