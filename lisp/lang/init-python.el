@@ -32,7 +32,12 @@
          (venv (file-name-base vp))
          (out-file (expand-file-name "pyrightconfig.json" (project-root (project-current)))))
     (with-temp-file out-file
-      (insert (json-encode (list :reportArgumentType: "none",
+      (insert (json-encode (list :reportOptionalMemberAccess: "none",
+                                 :reportOptionalSubscript: "none",
+                                 :reportOptionalIterable: "none",
+                                 :reportAttributeAccessIssue: "none",
+                                 :reportOperatorIssue: "none",
+                                 :reportArgumentType: "none",
                                  :reportCallIssue: "none",
                                  :venvPath venvPath
                                  :venv venv))))
