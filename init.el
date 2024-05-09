@@ -42,6 +42,7 @@
 (require 'init-telega)
 (require 'init-launcher)
 (require 'init-dired)
+(require 'init-translator)
 
 (when (eq system-type 'darwin)
   (require 'init-osx))
