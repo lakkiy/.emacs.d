@@ -12,7 +12,7 @@
   (unless (package-installed-p pkg)
     (if url
         (package-vc-install url)
-      (unless (assoc pkg package-archive-contents)
+      (unless (package-installed-p pkg)
         (package-refresh-contents))
       (package-install pkg))))
 
