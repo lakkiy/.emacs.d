@@ -1,9 +1,11 @@
 ;;; -*- lexical-binding: t -*-
 
+
 ;;; gcmh
 (install-package 'gcmh)
 (setq gcmh-high-cons-threshold (* 128 1024 1024))
 (add-hook 'after-init-hook #'gcmh-mode)
+
 
 ;;; vundo
 (install-package 'vundo)
@@ -32,6 +34,7 @@
   (keymap-set isearch-mb-minibuffer-map "C-h C-h" #'my/isearch-menu)
   (keymap-set isearch-mb-minibuffer-map "C-c C-o" #'isearch-occur))
 
+
 ;;; webjump
 (keymap-global-set "C-x C-/" #'webjump)
 (setq webjump-sites
@@ -47,10 +50,12 @@
         ("stackoverflow" . [simple-query "stackoverflow.com" "stackoverflow.com/search?q=" #1#])
         ("Wikipedia" . [simple-query "wikipedia.org" "wikipedia.org/wiki/" #1#])))
 
+
 ;;; wgrep
 (install-package 'wgrep)
 (setq wgrep-change-readonly-file t)
 (add-hook #'grep-setup-hook #'wgrep-setup)
+
 
 ;;; rg
 ;;
@@ -58,11 +63,13 @@
 (install-package 'rg)
 (keymap-set project-prefix-map "r" #'rg-project)
 
+
 ;;; avy
 (install-package 'avy)
 (with-eval-after-load 'avy
   (setq avy-background t
         avy-style 'pre))
+
 
 ;;; pastebin
 (install-package 'webpaste)
@@ -72,9 +79,11 @@
       webpaste-provider-priority '("paste.mozilla.org")
       webpaste-open-in-browser nil)
 
+
 ;;; separedit
 (install-package 'separedit)
 (keymap-global-set "C-c '" #'separedit)
+
 
 ;;; xeft
 (install-package 'xeft)
@@ -82,10 +91,12 @@
       xeft-database "~/.xeft/db"
       xeft-default-extension  "org")
 
+
 ;;; d2
 (install-package 'd2-mode)
 (install-package 'ob-d2)
 (add-to-list 'auto-mode-alist '("\\.d2" . d2-mode))
+
 
 ;;; csv-mode
 (install-package 'csv-mode)
@@ -93,12 +104,14 @@
   (setq-local auto-hscroll-mode t))
 (add-hook 'csv-mode-hook #'my/csv-mode-setup)
 
+
 ;;; atomic-chrome
 ;;
 ;; Edit browser text with emacs.
 (install-package 'atomic-chrome)
 (setq atomic-chrome-buffer-open-style 'frame)
 (add-hook 'after-init-hook #'atomic-chrome-start-server)
+
 
 ;;; pdf-tools
 (install-package 'pdf-tools)
@@ -116,13 +129,16 @@
   (keymap-substitute pdf-view-mode-map #'scroll-up-command #'pdf-view-scroll-up-or-next-page)
   (keymap-substitute pdf-view-mode-map #'scroll-down-command #'pdf-view-scroll-down-or-previous-page))
 
+
 ;;; nov
 (install-package 'nov)
+
 
 ;;; k8s
 (install-package 'kubel)
 (install-package 'kele)
 (autoload #'kele-dispatch "kele" nil t)
+
 
 ;;; restclient
 (install-package 'restclient)
@@ -136,6 +152,7 @@
     (restclient-mode)
     (pop-to-buffer (current-buffer))))
 
+
 ;;; ghelp
 (install-package 'ghelp "https://github.com/casouri/ghelp.git")
 (autoload #'ghelp-describe "ghelp")
@@ -143,19 +160,49 @@
 (with-eval-after-load 'ghelp
   (keymap-global-set "C-h r" #'ghelp-resume))
 
+
 ;;; translate
 ;;
 ;; Write to ~/.authinfo
-;; machine deepl.com login apikey password ${key}
-(install-package 'immersive-translate)
-(install-package 'fanyi)
+;; machine api.deepl.com login auth-key password ****
+;; machine api.openai.com login apikey password ****
+(install-package 'go-translate)
 
-(setq immersive-translate-backend 'deepl)
+(setq gt-langs '(en zh)
+      gt-chatgpt-host "https://api.openai-sb.com"
+      gt-chatgpt-model "gpt-3.5-turbo-16k")
+
+(with-eval-after-load 'go-translate
+  (setq my/gt-engine (list
+                      (when (auth-source-search :host "api.openai.com"
+                                                :user "apikey")
+                        (gt-chatgpt-engine))
+                      (when (auth-source-search :host "api.deepl.com"
+                                                :user "auth-key")
+                        (gt-deepl-engine))
+                      (gt-google-engine)
+                      (gt-bing-engine)))
+  ;; NOTE youdao 不支持分段翻译
+  (setq gt-default-translator (gt-translator :engines my/gt-engine :render  (gt-buffer-render))))
+
+(defun my/gt-immersive-translate ()
+  "Overlay render gt-do-translate.
+Default to translate buffer, or select region."
+  (interactive)
+  (require 'go-translate)
+  (gt-start (gt-translator
+             :taker (gt-taker :text 'buffer)
+             :engines (car my/gt-engine)
+             :render (gt-overlay-render))))
+
+(add-hook 'gt-buffer-render-init-hook #'visual-fill-column-mode)
+
+(install-package 'fanyi)
 
 (defun my/translate ()
   (interactive)
   (if (use-region-p)
-      (immersive-translate-paragraph)
+      (gt-do-translate)
     (fanyi-dwim2)))
 (keymap-global-set "C-c y" #'my/translate)
 
@@ -166,7 +213,8 @@
   menu)
 (add-hook 'context-menu-functions #'my/context-translate)
 
-;;; bind ai search
+
+;;; bing ai search
 ;;
 ;; - Install the cookie editor extension for [[https://microsoftedge.microsoft.com/addons/detail/cookieeditor/neaplmfkghagebokkhpjpoebhdledlfi][Egde]]
 ;; - Go to bing.com
@@ -174,38 +222,43 @@
 ;; - Click “Export” on the bottom right (This saves your cookies to clipboard)
 ;; - Paste your cookies into a file cookies.json
 ;; - Set =aichat-bingai-cookies-file= to your cookies.json path
-
-;; For openai, set api key in auth file:
-;; =machine platform.openai.com login aichat-openai password
-;; your-app-key=
 (install-package 'async-await)
 (install-package 'emacs-aichat "https://github.com/xhcoding/emacs-aichat")
+
 (setq aichat-bingai-cookies-file "~/Dropbox/.bingcookies.json"
       aichat-bingai-chat-file "~/Sync/aichat.md")
 (autoload #'aichat-bingai-chat "aichat-bingai.el" nil t)
 (autoload #'aichat-bingai-assistant "aichat-bingai.el" nil t)
-(autoload #'aichat-openai-assistant "aichat-openai.el" nil t)
+
 
 ;;; gptel
 ;;
 ;; store gpt key in ~/.authinfo
-;; machine api.openai.com login apikey password TOKEN
-;; An example for openai-sb:
-;;
-;; (setq-default gptel-backend
-;;               (gptel-make-openai
-;;                "ChatGPT"
-;;                :header (lambda () `(("Authorization" . ,(concat "Bearer " (gptel--get-api-key)))))
-;;                :key 'gptel-api-key
-;;                :host "api.openai-sb.com"
-;;                :stream t
-;;                :models '("gpt-3.5-turbo-16k")))
+;; machine api.openai.com login apikey password ****
+;; or
+;; machine api.openai-sb.com login apikey password ****
 (install-package 'gptel)
+
 (setq gptel-default-mode 'org-mode)
+
 (add-hook 'gptel-mode-hook #'visual-fill-column-mode)
+
+(with-eval-after-load 'gptel
+  (when (auth-source-search :host "api.openai-sb.com" :user "apikey")
+  (setq-default gptel-backend
+                (gptel-make-openai
+                    "ChatGPT"
+                  :header (lambda () `(("Authorization" . ,(concat "Bearer " (gptel--get-api-key)))))
+                  :key 'gptel-api-key
+                  :host "api.openai-sb.com"
+                  :stream t
+                  :models '("gpt-3.5-turbo-16k")))))
+
 
 ;;; outli
 (install-package 'outli "https://github.com/jdtsmith/outli")
 (add-hook 'prog-mode-hook #'(lambda () (unless (file-remote-p default-directory) (outli-mode 1))))
 
+
+;;; init-tools.el ends here
 (provide 'init-tools)
