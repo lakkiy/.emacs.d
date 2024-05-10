@@ -2,6 +2,21 @@
 ;;
 ;; 一些工具函数
 
+(defun retrieve-authinfo-key (host user)
+  "从 .authinfo 中检索指定 HOST 和 USER 的密钥。"
+  (interactive "sEnter host: \nsEnter user: ")  ; 交互式输入 host 和 user
+  ;; 使用 auth-source-search 来搜索匹配的条目
+  (let ((credentials (auth-source-search :host host
+                                         :user user
+                                         :require '(:secret)  ; 确保结果中包含密钥
+                                         :max 1)))  ; 最多返回一个结果
+    (if credentials
+        ;; 如果找到了凭据，使用 auth-source-secret 函数解析并返回密钥
+        (let ((secret (funcall (plist-get (car credentials) :secret))))
+          secret)
+      ;; 如果没有找到凭据，显示消息
+      (message "No credentials found for %s@%s." user host))))
+
 (defun move-region-to-trash (start end)
   "Move the selected region to trash.el."
   (interactive "r")

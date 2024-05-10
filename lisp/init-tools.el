@@ -190,16 +190,16 @@
 
 (add-hook 'gptel-mode-hook #'visual-fill-column-mode)
 
+(defun gptel-openai-sb ()
+  (gptel-make-openai "ChatGPT-SB"
+    :host "api.openai-sb.com"
+    :key (retrieve-authinfo-key "api.openai-sb.com" "apikey")
+    :stream t
+    :models '("gpt-3.5-turbo-16k")))
+
 (with-eval-after-load 'gptel
   (when (auth-source-search :host "api.openai-sb.com" :user "apikey")
-  (setq-default gptel-backend
-                (gptel-make-openai
-                    "ChatGPT"
-                  :header (lambda () `(("Authorization" . ,(concat "Bearer " (gptel--get-api-key)))))
-                  :key 'gptel-api-key
-                  :host "api.openai-sb.com"
-                  :stream t
-                  :models '("gpt-3.5-turbo-16k")))))
+    (setq-default gptel-backend (gptel-openai-sb))))
 
 
 ;;; outli
