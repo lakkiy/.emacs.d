@@ -26,21 +26,21 @@
   "Write a `pyrightconfig.json' file at the root of a project with
 `venvPath` and `venv`."
   (interactive)
-  (let* ((fn (tramp-file-local-name python-shell-virtualenv-root))
-         (vp (string-trim-right fn "/"))
-         (venvPath (file-name-directory vp))
-         (venv (file-name-base vp))
+  (call-interactively #'pyvenv-activate)
+  (let* ((json-encoding-pretty-print t)
+         (fn (tramp-file-local-name python-shell-virtualenv-root))
+         (venvPath (string-trim-right fn "/"))
          (out-file (expand-file-name "pyrightconfig.json" (project-root (project-current)))))
     (with-temp-file out-file
-      (insert (json-encode (list :reportOptionalMemberAccess: "none",
-                                 :reportOptionalSubscript: "none",
-                                 :reportOptionalIterable: "none",
-                                 :reportAttributeAccessIssue: "none",
-                                 :reportOperatorIssue: "none",
-                                 :reportArgumentType: "none",
-                                 :reportCallIssue: "none",
+      (insert (json-encode (list :reportOptionalMemberAccess: "none"
+                                 :reportOptionalSubscript: "none"
+                                 :reportOptionalIterable: "none"
+                                 :reportAttributeAccessIssue: "none"
+                                 :reportOperatorIssue: "none"
+                                 :reportArgumentType: "none"
+                                 :reportCallIssue: "none"
                                  :venvPath venvPath
-                                 :venv venv))))
+                                 :venv ".venv"))))
     (message "Configured `%s` to use environment `%s`" out-file pyvenv-virtual-env)))
 
 
