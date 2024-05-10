@@ -207,5 +207,10 @@
 (add-hook 'prog-mode-hook #'(lambda () (unless (file-remote-p default-directory) (outli-mode 1))))
 
 
+;;; database
+(install-package 'pg)
+(install-package 'pgmacs "https://github.com/emarsden/pgmacs")
+
+
 ;;; init-tools.el ends here
 (provide 'init-tools)
