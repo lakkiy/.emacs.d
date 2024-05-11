@@ -121,6 +121,15 @@ point reaches the beginning or end of the buffer, stop there."
   (add-hook 'after-init-hook #'my/getenv-path))
 
 
+;;; my/ctl-t-map
+;;
+;; The original `C-t' is bound to `transpose-chars', which is not very
+;; useful(I never use it since I use emacs), and `C-t' is only for my
+;; personal keymap in dvorak keyboard layout.
+(define-prefix-command 'my/ctl-t-map)
+(global-set-key (kbd "C-t") 'my/ctl-t-map)
+
+
 ;;; Delete things(don’t send to kill ring
 (defun my/delete-to-the-begining ()
   (interactive)
@@ -146,9 +155,12 @@ point reaches the beginning or end of the buffer, stop there."
 
 
 ;;; window
-;;
-;; When splitting window, show (other-buffer) in the new window
+(keymap-global-set "M-o" 'other-window)
 
+;; Skip window by setting no-other-window window parameter in
+;; display-buffer-alist for specific buffer(like dired-sidebar).
+
+;; When splitting window, show (other-buffer) in the new window
 (defun split-window-func-with-other-buffer (split-function)
   (lambda (&optional arg)
     "Split this window and switch to the new window with other-buffer unless ARG is provided."
@@ -194,13 +206,81 @@ point reaches the beginning or end of the buffer, stop there."
 (keymap-global-set "C-x _" 'split-window-vertically-instead)
 
 
-;;; my/ctl-t-map
+;;;; windmove
 ;;
-;; The original `C-t' is bound to `transpose-chars', which is not very
-;; useful(I never use it since I use emacs), and `C-t' is only for my
-;; personal keymap in dvorak keyboard layout.
-(define-prefix-command 'my/ctl-t-map)
-(global-set-key (kbd "C-t") 'my/ctl-t-map)
+;; If the keybinding is conflict with window mamager, try frames-only-mode.
+(keymap-global-set "s-p" 'windmove-up)
+(keymap-global-set "s-h" 'windmove-left)
+(keymap-global-set "s-t" 'windmove-right)
+(keymap-global-set "s-n" 'windmove-down)
+
+
+;;;; tab-bar
+;;
+;; Built-in window layout manager
+;; NOTE do not bind =tab-bar-switch-to-prev-tab= and
+;; =tab-bar-switch-to-next-tab= to =M-[= or =M-]=, it will make emacs have some
+;; bug to auto insert characters after you type everytime.
+;;
+;; See =tab-prefix-map= to custom key bindings for tab-bar, default is =C-x t=.
+(defun tab-bar-format-menu-bar ()
+  "Produce the Menu button for the tab bar that shows the menu bar."
+  `((menu-bar menu-item
+              (format " %s  "
+                      (nerd-icons-sucicon "nf-custom-emacs"
+                                          :face '(:inherit nerd-icons-purple)))
+              tab-bar-menu-bar :help "Menu Bar")))
+
+(defun eat/bar-image ()
+  (when (and (display-graphic-p) (image-type-available-p 'pbm))
+    (propertize
+     " " 'display
+     (ignore-errors
+       (create-image
+        ;; 20 for `dirvish-header-line-height'
+        (concat (format "P1\n%i %i\n" 2 30) (make-string (* 2 30) ?1) "\n")
+        'pbm t :foreground (face-background 'highlight) :ascent 'center)))))
+
+(setq tab-bar-new-tab-choice 'ibuffer
+      tab-bar-close-last-tab-choice 'tab-bar-mode-disable
+      tab-bar-tab-hints nil
+      tab-bar-close-button-show nil
+      tab-bar-separator ""
+      tab-bar-format '(tab-bar-format-menu-bar
+                       tab-bar-format-tabs)
+      ;; NOTE 如果要用到很多 tab 导致 tab 换行的话就把这个设置为 t
+      tab-bar-auto-width nil
+      tab-bar-tab-name-format-function
+      (lambda (tab i) "Center, taller, better, stronger xD."
+        (let* ((current-tab-p (eq (car tab) 'current-tab))
+               (bar (when current-tab-p (eat/bar-image)))
+               (name (string-trim (alist-get 'name tab)))
+               (space-to-add (max 0 (- tab-bar-tab-name-truncated-max (length name))))
+               (left-padding (/ space-to-add 2))
+               (right-padding (- space-to-add left-padding)))
+          (concat
+           bar
+           (propertize (concat ;; (propertize " " 'display '(raise 0.3))
+                        (make-string left-padding ?\s)
+                        name
+                        (make-string right-padding ?\s)
+                        ;; (propertize " " 'display '(raise -0.3))
+                        )
+                       'face (funcall tab-bar-tab-face-function tab)))))
+      tab-bar-tab-name-function
+      (lambda nil "Use project as tab name."
+        (let ((dir (expand-file-name
+                    (or (if (and (fboundp 'project-root) (project-current))
+                            (project-root (project-current)))
+                        default-directory))))
+          (or
+           (and dir
+                (let ((name (substring dir (1+ (string-match "/[^/]+/$" dir)) -1)))
+                  (truncate-string-to-width name tab-bar-tab-name-truncated-max nil ? )))
+           (buffer-name)))))
+
+(with-eval-after-load 'tab-bar
+  (tab-bar-history-mode 1))
 
 
 ;;; init-utils.el ends here
