@@ -1,15 +1,14 @@
 ;;; -*- lexical-binding: t -*-
-;;
-;; 一些工具函数
+
 
 (defun retrieve-authinfo-key (host user)
   "从 .authinfo 中检索指定 HOST 和 USER 的密钥。"
-  (interactive "sEnter host: \nsEnter user: ")  ; 交互式输入 host 和 user
+  (interactive "sEnter host: \nsEnter user: ") ; 交互式输入 host 和 user
   ;; 使用 auth-source-search 来搜索匹配的条目
   (let ((credentials (auth-source-search :host host
                                          :user user
-                                         :require '(:secret)  ; 确保结果中包含密钥
-                                         :max 1)))  ; 最多返回一个结果
+                                         :require '(:secret) ; 确保结果中包含密钥
+                                         :max 1))) ; 最多返回一个结果
     (if credentials
         ;; 如果找到了凭据，使用 auth-source-secret 函数解析并返回密钥
         (let ((secret (funcall (plist-get (car credentials) :secret))))
@@ -103,6 +102,7 @@ point reaches the beginning or end of the buffer, stop there."
   (let ((inhibit-read-only t))
     (ansi-color-apply-on-region (point-min) (point-max))))
 
+
 ;;; Set PATH and `exec-path'
 ;; https://emacs-china.org/t/emacs-mac-port-profile/2895/29?u=rua
 ;; NOTE: When PATH is changed, run the following command
@@ -119,6 +119,7 @@ point reaches the beginning or end of the buffer, stop there."
 
 (when (file-exists-p "~/.path")
   (add-hook 'after-init-hook #'my/getenv-path))
+
 
 ;;; Delete things(don’t send to kill ring
 (defun my/delete-to-the-begining ()
@@ -142,6 +143,7 @@ point reaches the beginning or end of the buffer, stop there."
                              (file-name-nondirectory buffer-file-name)))
     (delete-file (buffer-file-name))
     (kill-this-buffer)))
+
 
 ;;; window
 ;;
@@ -192,4 +194,14 @@ point reaches the beginning or end of the buffer, stop there."
 (keymap-global-set "C-x _" 'split-window-vertically-instead)
 
 
+;;; my/ctl-t-map
+;;
+;; The original `C-t' is bound to `transpose-chars', which is not very
+;; useful(I never use it since I use emacs), and `C-t' is only for my
+;; personal keymap in dvorak keyboard layout.
+(define-prefix-command 'my/ctl-t-map)
+(global-set-key (kbd "C-t") 'my/ctl-t-map)
+
+
+;;; init-utils.el ends here
 (provide 'init-utils)
