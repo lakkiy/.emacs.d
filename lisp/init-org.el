@@ -1,5 +1,21 @@
 ;;; -*- lexical-binding: t -*-
 
+
+(defun my/url-get-title (url &optional descr)
+  "Takes a URL and returns the value of the <title> HTML tag,
+   Thanks to https://frozenlock.org/tag/url-retrieve/ for documenting url-retrieve"
+  (let ((buffer (url-retrieve-synchronously url))
+        (title nil))
+    (save-excursion
+      (set-buffer buffer)
+      (goto-char (point-min))
+      (search-forward-regexp "<title>\\([^<]+?\\)</title>")
+      (setq title (match-string 1 ) )
+      (kill-buffer (current-buffer)))
+    title))
+(setq org-make-link-description-function 'my/url-get-title)
+
+
 ;;; bklink; create back link
 (autoload #'bklink-minor-mode "bklink")
 
@@ -9,6 +25,7 @@
 (with-eval-after-load 'bklink
   (keymap-set bklink-minor-mode-map "C-c l" #'bklink-summary-mode)
   (keymap-set bklink-minor-mode-map "C-c i" #'bklink-insert))
+
 
 ;;; setup for org-mode
 (defun my/org-mode-setup ()
@@ -20,6 +37,7 @@
   (when (display-graphic-p)
     (valign-mode 1)))
 (add-hook 'org-mode-hook #'my/org-mode-setup)
+
 
 ;;; basic config
 (setq org-directory (expand-file-name "~/Dropbox/org")
@@ -43,6 +61,7 @@
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
   (require 'org-tempo))
 
+
 ;;; More workflow states
 (setq org-todo-keywords '((sequence "TODO(t)" "WIP(i!)" "WAIT(w!)" "|" "DONE(d!)" "CANCELLED(c@/!)"))
       org-todo-keyword-faces '(("TODO"       :foreground "#7c7c75" :weight bold)
@@ -52,6 +71,7 @@
                                ("CANCELLED"  :foreground "#ff6480" :weight bold)))
 ;; Save when I change a workflow state.
 (add-hook 'org-trigger-hook 'save-buffer)
+
 
 ;;; Capture
 (setq org-default-notes-file (concat org-directory "/default-notes.org")
@@ -64,6 +84,7 @@
          "* %^{Title}\n:PROPERITIES:\n:Created: %T\n:END:" :tree-type week)))
 (keymap-global-set "C-c c" 'org-capture)
 
+
 ;;; Agenda
 (setq org-agenda-files (list org-directory)
       org-agenda-prefix-format '((agenda . " %i %-12:c%?-12t% s")
@@ -75,6 +96,7 @@
       org-agenda-current-time-string
       "⭠ now ─────────────────────────────────────────────────")
 (keymap-global-set "C-c a" 'org-agenda)
+
 
 ;;; 零宽空格，中文排版
 (defun eat/insert-zero-width-space ()
@@ -90,6 +112,7 @@
 (with-eval-after-load 'ox
   (add-to-list 'org-export-filter-final-output-functions #'+org-export-remove-zero-width-space t))
 
+
 ;;; LaTeX
 (setq org-latex-compiler "xelatex")
 (setq org-preview-latex-default-process 'dvisvgm)
@@ -101,10 +124,12 @@
         "rm -fr %b.out %b.log %b.tex auto"))
 (setq org-latex-packages-alist '("\\usepackage[UTF8, fontset=fandol]{ctex}"))
 
+
 ;;; babel
 (add-hook 'org-babel-after-execute #'org-redisplay-inline-images)
 (install-package 'ob-restclient)
 (install-package 'ob-go)
+
 
 ;;; export
 ;;
@@ -123,6 +148,7 @@ Need pandoc installed."
 (with-eval-after-load 'org
   (add-to-list 'org-export-backends 'md))
 
+
 ;;; citar
 (install-package 'citar)
 (setq org-cite-global-bibliography '("~/Dropbox/bib/references.bib")
@@ -130,6 +156,7 @@ Need pandoc installed."
       org-cite-follow-processor 'citar
       org-cite-activate-processor 'citar
       citar-bibliography org-cite-global-bibliography)
+
 
 ;;; org-static-blog
 (install-package 'org-static-blog)
@@ -155,12 +182,15 @@ Need pandoc installed."
 (install-package 'org-tidy)
 (add-hook 'org-mode-hook #'org-tidy-mode)
 
+
 ;;; org-appear
 (install-package 'org-appear)
 (add-hook 'org-mode-hook #'org-appear-mode)
 
+
 ;;; org-variable-pitch
 (install-package 'org-variable-pitch)
+
 
 ;;; org-modern
 (install-package 'org-modern)
