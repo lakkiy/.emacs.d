@@ -238,14 +238,12 @@
 ;; As default xref backend function.
 (install-package 'dumb-jump)
 
-(setq-default xref-backend-functions '(dumb-jump-xref-activate))
-
-(keymap-global-set "M-g j" #'dumb-jump-go)
-(keymap-global-set "M-g J" #'dumb-jump-go-other-window)
-
 (setq dumb-jump-quiet t
-      dumb-jump-aggressive t
-      dumb-jump-selector 'completing-read)
+      dumb-jump-prefer-searcher 'rg
+      ;; If force searcher is not set, it will default to using git-grep
+      ;; in a git project, and git-grep just don't work at all.
+      dumb-jump-force-searcher 'rg)
+(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 
 
 ;;; indent-tabrs, show indent level for yaml, python

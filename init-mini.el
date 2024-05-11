@@ -7,6 +7,8 @@
 (require 'init-must)
 (require 'init-utils)
 (require 'init-font)
+;; Only for test package from scratch
+(require 'init-package)
 
 (when (eq system-type 'darwin)
   (require 'init-osx))
