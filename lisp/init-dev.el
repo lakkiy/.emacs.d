@@ -90,7 +90,7 @@
 
 ;;; dape, debug client use DAP
 (install-package 'dape)
-(autoload #'dape-toggle-breakpoint "dape" nil t)
+(autoload #'dape-breakpoint-toggle "dape" nil t)
 
 ;;; citre, ctags/gtag jump and complete
 ;;
