@@ -117,7 +117,44 @@
   ;; Kill compile buffer on build success
   (add-hook 'dape-compile-compile-hooks 'kill-buffer)
   ;; Save buffers on startup, useful for interpreted languages
-  (add-hook 'dape-on-start-hooks (lambda () (save-some-buffers t t))))
+  (add-hook 'dape-on-start-hooks (lambda () (save-some-buffers t t)))
+
+  ;; Support debug go unit test
+  (defun dape-go-test-rdir ()
+    "Return the file directory relative to dape's cwd. This is used by Delve debugger."
+    (if (string-suffix-p "_test.go" (buffer-name))
+        (concat "./" (file-relative-name
+                      default-directory (funcall dape-cwd-fn)))
+      (error "Not test file")))
+
+  (defun dape-go-test-args ()
+    (let* ((test-name (save-excursion
+                        (end-of-line)
+                        (beginning-of-defun)
+                        (when (re-search-forward "^func[[:space:]]+\\([[:alnum:]_]+\\)" nil t)
+                          (match-string 1))))
+           (test-regexp (concat "^" test-name "$")))
+      (if test-name
+          `["-test.run" ,test-regexp]
+        (error "No test selected"))))
+
+  ;; https://github.com/go-delve/delve/blob/master/Documentation/usage/dlv_dap.md
+  ;; https://github.com/go-delve/delve/blob/master/Documentation/usage/dlv_test.md
+  (add-to-list 'dape-configs
+               `(dlv-test
+                 modes (go-mode go-ts-mode)
+                 ensure dape-ensure-command
+                 command "dlv"
+                 command-args ("dap" "--listen" "127.0.0.1::autoport")
+                 command-cwd dape-command-cwd
+                 port :autoport
+                 :request "launch"
+                 :mode "test"
+                 :type "debug"
+                 :cwd dape-cwd-fn
+                 :program dape-go-test-rdir
+                 :args dape-go-test-args)))
+
 
 
 ;;; citre, ctags/gtag jump and complete
