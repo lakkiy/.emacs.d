@@ -142,7 +142,6 @@
 
 ;;; Delete whitespace after save
 (setq whitespace-style '(face trailing))
-(add-hook 'before-save-hook #'delete-trailing-whitespace)
 (add-hook 'prog-mode-hook #'whitespace-mode)
 (add-hook 'conf-mode-hook #'whitespace-mode)
 
