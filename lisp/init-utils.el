@@ -1,5 +1,19 @@
 ;;; -*- lexical-binding: t -*-
 
+(defun my/url-get-title (url &optional descr)
+  "Takes a URL and returns the value of the <title> HTML tag,
+   Thanks to https://frozenlock.org/tag/url-retrieve/ for documenting url-retrieve"
+  (when (or (string-prefix-p "http" url)
+            (string-prefix-p "https" url))
+    (let ((buffer (url-retrieve-synchronously url))
+          (title nil))
+      (save-excursion
+        (set-buffer buffer)
+        (goto-char (point-min))
+        (search-forward-regexp "<title>\\([^<]+?\\)</title>")
+        (setq title (match-string 1 ) )
+        (kill-buffer (current-buffer)))
+      title)))
 
 (defun retrieve-authinfo-key (host user)
   "从 .authinfo 中检索指定 HOST 和 USER 的密钥。"

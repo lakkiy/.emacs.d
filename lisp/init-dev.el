@@ -1,8 +1,10 @@
 ;;; -*- lexical-binding: t -*-
 
+
 ;;; direnv, load environment variables
 (install-package 'envrc)
 (add-hook 'after-init-hook #'envrc-global-mode)
+
 
 ;;; flymake, syntax check
 (add-hook 'prog-mode-hook #'flymake-mode)
@@ -35,6 +37,7 @@
 (add-hook 'flymake-mode-hook
           (lambda ()
             (add-hook 'eldoc-documentation-functions 'flymake-eldoc-function nil t)))
+
 
 ;;; xref, cross reference
 (add-hook 'xref-after-return-hook #'recenter)
@@ -88,9 +91,34 @@
   (add-to-list 'eglot-server-programs '(markdown-mode . ("ltex-ls")))
   (add-to-list 'eglot-server-programs '(message-mode . ("ltex-ls"))))
 
+
+;;; gud; The unified debugger
+(add-hook 'gud-mode-hook #'gud-tooltip-mode)
+(setq gud-highlight-current-line t)
+
+
 ;;; dape, debug client use DAP
 (install-package 'dape)
-(autoload #'dape-breakpoint-toggle "dape" nil t)
+
+;; To use window configuration like gud (gdb-mi)
+(setq dape-buffer-window-arrangement 'gud)
+
+(defun my/dape-setup ()
+  (require 'dape)
+  ;; Global bindings for setting breakpoints with mouse
+  (dape-breakpoint-global-mode)
+  ;; Load breakpoints on startup
+  (dape-breakpoint-load))
+(add-hook 'prog-mode-hook #'my/dape-setup)
+
+(with-eval-after-load 'dape
+  ;; Save breakpoints on quit
+  (add-hook 'kill-emacs-hook #'dape-breakpoint-save)
+  ;; Kill compile buffer on build success
+  (add-hook 'dape-compile-compile-hooks 'kill-buffer)
+  ;; Save buffers on startup, useful for interpreted languages
+  (add-hook 'dape-on-start-hooks (lambda () (save-some-buffers t t))))
+
 
 ;;; citre, ctags/gtag jump and complete
 ;;
@@ -102,18 +130,13 @@
       citre-prompt-language-for-ctags-command t
       citre-auto-enable-citre-mode-modes '(prog-mode))
 
-(keymap-global-set "C-." #'citre-jump)
 (keymap-global-set "C-x c u" #'citre-update-this-tags-file)
-(keymap-global-set "C-x c p" #'citre-peek)
 (keymap-global-set "C-x c U" #'citre-global-update-database)
-(keymap-global-set "C-x c r" #'citre-jump-to-reference)
 
 (with-eval-after-load 'citre
   ;; Notice that GTAGSOBJDIRPREFIX must exist for gtags to use.
   (when (not (file-exists-p (concat (getenv "HOME") "/.cache/gtags")))
     (make-directory (concat (getenv "HOME") "/.cache/gtags") t))
-  (keymap-global-set "C-'" #'citre-jump-back)
-  (keymap-global-set "C-x c P" #'citre-ace-peek-references)
   (with-eval-after-load 'cc-mode (require 'citre-lang-c))
   (with-eval-after-load 'dired (require 'citre-lang-fileref))
   (with-eval-after-load 'verilog-mode (require 'citre-lang-verilog)))
@@ -146,20 +169,23 @@
     (push '(d2-mode . d2fmt) apheleia-mode-alist))
   ;; python
   (when (executable-find "ruff")
-    (setf (alist-get 'python-mode apheleia-mode-alist) '(ruff))
-    (setf (alist-get 'python-ts-mode apheleia-mode-alist) '(ruff)))
+    (setf (alist-get 'python-mode apheleia-mode-alist) '(ruff-isort ruff))
+    (setf (alist-get 'python-ts-mode apheleia-mode-alist) '(ruff-isort ruff)))
   ;; go
   (when (executable-find "goimports")
     (setf (alist-get 'go-mode apheleia-mode-alist) '(goimports))
     (setf (alist-get 'go-ts-mode apheleia-mode-alist) '(goimports))))
+
 
 ;;; compile, custome compile buffer when `project-compile'
 (setq compilation-always-kill t ; kill compilation process before starting another
       compilation-ask-about-save nil    ; save all buffers on `compile'
       compilation-scroll-output 'first-error)
 
+
 ;;; comment
 (setq comment-empty-lines t)
+
 
 ;;; treesit, syntax highlight
 (setq treesit-language-source-alist
@@ -176,6 +202,7 @@
 (when (treesit-available-p)
   (push '(python-mode . python-ts-mode) major-mode-remap-alist)
   (push '(go-mode . go-ts-mode) major-mode-remap-alist))
+
 
 ;;; hideshow, code folding
 (add-hook 'prog-mode-hook #'hs-minor-mode)
@@ -294,5 +321,6 @@
 (require 'init-nix)
 (require 'init-web)
 
-;;; init-dev.el ends here
+
 (provide 'init-dev)
+;;; init-dev.el ends here

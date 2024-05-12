@@ -1,26 +1,13 @@
 ;;; -*- lexical-binding: t -*-
 
 
-(defun my/url-get-title (url &optional descr)
-  "Takes a URL and returns the value of the <title> HTML tag,
-   Thanks to https://frozenlock.org/tag/url-retrieve/ for documenting url-retrieve"
-  (let ((buffer (url-retrieve-synchronously url))
-        (title nil))
-    (save-excursion
-      (set-buffer buffer)
-      (goto-char (point-min))
-      (search-forward-regexp "<title>\\([^<]+?\\)</title>")
-      (setq title (match-string 1 ) )
-      (kill-buffer (current-buffer)))
-    title))
-(setq org-make-link-description-function 'my/url-get-title)
-
-
 ;;; bklink; create back link
-(autoload #'bklink-minor-mode "bklink")
-
 (setq bklink-summary-read-only-p t
       bklink-prune-summary-p nil)
+
+(add-hook 'org-mode-hook #'(lambda ()
+                             (require 'bklink)
+                             (bklink-minor-mode 1)))
 
 (with-eval-after-load 'bklink
   (keymap-set bklink-minor-mode-map "C-c l" #'bklink-summary-mode)
@@ -57,6 +44,7 @@
       org-confirm-babel-evaluate nil
       org-edit-src-content-indentation 0
       org-src-window-setup 'current-window)
+(setq org-make-link-description-function 'my/url-get-title)
 (with-eval-after-load 'org
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
   (require 'org-tempo))
