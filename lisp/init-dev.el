@@ -280,22 +280,26 @@
 (add-hook 'yaml-mode-hook #'indent-bars-mode)
 (add-hook 'yaml-ts-mode-hook #'indent-bars-mode)
 
+;; https://github.com/jdtsmith/indent-bars/blob/main/examples.md
+;; Minimal colorpop but disable color by depth
 (setq indent-bars-color '(highlight :face-bg t :blend 0.15)
       indent-bars-pattern "."
       indent-bars-width-frac 0.1
       indent-bars-pad-frac 0.1
       indent-bars-zigzag nil
       indent-bars-color-by-depth nil
-      indent-bars-display-on-blank-lines nil)
-(setq indent-bars-treesit-support (treesit-available-p)
-      ;; indent-bars-prefer-character "│"
-      indent-bars-highlight-current-depth '(:face default :blend 0.3)
-      ;; https://github.com/jdtsmith/indent-bars#configuring-tree-sitter
-      indent-bars-treesit-ignore-blank-lines-types '("module")
-      indent-bars-treesit-wrap '((python argument_list parameters
-				                         list list_comprehension
-				                         dictionary dictionary_comprehension
-				                         parenthesized_expression subscript)))
+      indent-bars-highlight-current-depth '(:blend 0.5)
+      indent-bars-display-on-blank-lines t)
+
+(with-eval-after-load 'indent-bars
+  (when (treesit-available-p)
+    (require 'indent-bars-ts)
+    (setq indent-bars-treesit-support t
+          indent-bars-treesit-ignore-blank-lines-types '("module")
+          indent-bars-treesit-wrap '((python argument_list parameters
+				                             list list_comprehension
+				                             dictionary dictionary_comprehension
+				                             parenthesized_expression subscript)))))
 
 
 ;;; devdocs
