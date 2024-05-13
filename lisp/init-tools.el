@@ -91,6 +91,9 @@
       xeft-database "~/.xeft/db"
       xeft-default-extension  "org")
 
+(with-eval-after-load 'xeft
+  (add-hook 'xeft-find-file-hook #'visual-fill-column-mode))
+
 
 ;;; d2
 (install-package 'd2-mode)
@@ -130,14 +133,8 @@
   (keymap-substitute pdf-view-mode-map #'scroll-down-command #'pdf-view-scroll-down-or-previous-page))
 
 
-;;; nov
-(install-package 'nov)
-
-
 ;;; k8s
 (install-package 'kubel)
-(install-package 'kele)
-(autoload #'kele-dispatch "kele" nil t)
 
 
 ;;; restclient

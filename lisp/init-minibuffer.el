@@ -1,7 +1,9 @@
 ;;; -*- lexical-binding: t -*-
 
+
 ;;; orderless
 (install-package 'orderless)
+
 
 ;;; embark
 (install-package 'embark)
@@ -10,6 +12,7 @@
   (setq-local completion-styles '(substring orderless)))
 (add-hook 'minibuffer-setup-hook #'sanityinc/use-orderless-in-minibuffer)
 
+(keymap-global-set "C-." #'embark-act)
 (keymap-set minibuffer-local-map "C-c C-o" #'embark-export)
 
 (with-eval-after-load 'embark
@@ -18,6 +21,7 @@
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                  nil
                  (window-parameters (mode-line-format . none)))))
+
 
 ;;; vertico
 (install-package 'vertico)
@@ -33,14 +37,17 @@
   (keymap-set vertico-map "RET" #'vertico-directory-enter)
   (keymap-set vertico-map "M-DEL" #'vertico-directory-delete-word))
 
+
 ;;; marginalia
 (install-package 'marginalia)
 (add-hook 'vertico-mode-hook #'marginalia-mode)
+
 
 ;;; icon
 (install-package 'nerd-icons-completion)
 (add-hook 'after-init-hook #'nerd-icons-completion-mode)
 (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup)
+
 
 ;;; consult
 (install-package 'consult)
@@ -95,4 +102,6 @@
 (with-eval-after-load 'consult
   (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode))
 
+
+;;; init-minibuffer.el ends here
 (provide 'init-minibuffer)
