@@ -1,5 +1,6 @@
 ;;; -*- lexical-binding: t -*-
 
+
 ;;; ediff
 (defvar local-ediff-saved-window-conf nil)
 (defun eat/ediff-save-window-conf ()
@@ -18,6 +19,7 @@
   (add-hook 'ediff-before-setup-hook #'eat/ediff-save-window-conf)
   (add-hook 'ediff-quit-hook #'eat/ediff-restore-window-conf))
 
+
 ;;; smerge
 (add-hook 'find-file-hook #'(lambda ()
                               (save-excursion
@@ -32,6 +34,7 @@
   (keymap-set smerge-mode-map "M-n" #'smerge-next)
   (keymap-set smerge-mode-map "M-p" #'smerge-prev))
 
+
 ;;; magit
 (install-package 'magit)
 (keymap-global-set "C-x g" #'magit-status)
@@ -43,6 +46,19 @@
 
 (when (executable-find "delta")
   (add-hook 'magit-mode-hook #'magit-delta-mode))
+
+
+;;; magit-gptcommit
+(install-package 'gpt-commit)
+
+(with-eval-after-load 'magit
+  (when (auth-source-search :host "api.openai-sb.com" :user "apikey")
+    (require 'gpt-commit)
+    (setq gpt-commit-api-url "https://api.openai-sb.com/v1/chat/completions")
+    (setq gpt-commit-openai-key (retrieve-authinfo-key "api.openai-sb.com" "apikey"))
+    (setq gpt-commit-model-name "gpt-3.5-turbo-16k")
+    (add-hook 'git-commit-setup-hook 'gpt-commit-message)))
+
 
 ;;; diff-hl
 (install-package 'diff-hl)
@@ -72,4 +88,6 @@
       (add-to-list 'desktop-minor-mode-table
                    '(diff-hl-margin-mode nil)))))
 
+
 (provide 'init-git)
+;;; init-git.el ends here
