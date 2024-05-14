@@ -25,4 +25,5 @@
   (define-key rime-active-mode-map [tab] 'rime-inline-ascii)
   (keymap-set rime-mode-map "M-j" 'rime-force-enable))
 
+;;; init-rime.el ends here
 (provide 'init-rime)

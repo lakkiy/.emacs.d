@@ -1,7 +1,6 @@
 ;;; -*- lexical-binding: t -*-
 
-
-;;; ediff
+;; ediff
 (defvar local-ediff-saved-window-conf nil)
 (defun eat/ediff-save-window-conf ()
   (setq local-ediff-saved-window-conf (current-window-configuration)))
@@ -19,8 +18,7 @@
   (add-hook 'ediff-before-setup-hook #'eat/ediff-save-window-conf)
   (add-hook 'ediff-quit-hook #'eat/ediff-restore-window-conf))
 
-
-;;; smerge
+;; smerge
 (add-hook 'find-file-hook #'(lambda ()
                               (save-excursion
                                 (goto-char (point-min))
@@ -34,8 +32,7 @@
   (keymap-set smerge-mode-map "M-n" #'smerge-next)
   (keymap-set smerge-mode-map "M-p" #'smerge-prev))
 
-
-;;; magit
+;; magit
 (install-package 'magit)
 (keymap-global-set "C-x g" #'magit-status)
 
@@ -47,8 +44,7 @@
 (when (executable-find "delta")
   (add-hook 'magit-mode-hook #'magit-delta-mode))
 
-
-;;; magit-gptcommit
+;; magit-gptcommit
 (install-package 'gpt-commit)
 
 (with-eval-after-load 'magit
@@ -59,8 +55,7 @@
     (setq gpt-commit-model-name "gpt-3.5-turbo-16k")
     (add-hook 'git-commit-setup-hook 'gpt-commit-message)))
 
-
-;;; diff-hl
+;; diff-hl
 (install-package 'diff-hl)
 
 (defun enable-diff-hl-dired-locally ()
@@ -88,6 +83,5 @@
       (add-to-list 'desktop-minor-mode-table
                    '(diff-hl-margin-mode nil)))))
 
-
-(provide 'init-git)
 ;;; init-git.el ends here
+(provide 'init-git)

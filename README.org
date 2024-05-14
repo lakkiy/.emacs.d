@@ -1,12 +1,92 @@
-* FAQ
+WIP
 
-** Can’t find program in path?
+* Before use this emacs config
+** About keybinding
+Use meow as modal editing and all keybindings basiclly for dvorak keyborad layout.
 
-Echo $PATH to ~/.path then restart:
-#+begin_src bash
+** Still want to ues
+Make sure emacs can find program in =PATH=.
+#+begin_src sh
 sh -c 'printf "%s" "$PATH"' > ~/.path
 #+end_src
 
+* Change font and theme
+C-h v:
+- =my/fonts-default=
+- =my/fonts-variable-pitch=
+- =my/fonts-cjk=
+- =my/fonts-unicode=
+- =my/fonts-emoji=
+- =my/font-size-default=
+- =my/theme=
+- =my/theme-tui=
+
+* Dep
+
+*git* 
+
+** Optional
+- =curl=
+- =direnv=
+- =rg= 
+- =kubectl= for kubel
+- =d2= text to diagram
+- =delta= for magit-delta
+- =rsync= for dired-rsync
+- =aspell= and dicts for spell check
+- =w3m= read html mail
+- =tdlib= for telega(telegram client)
+- =xelatex= LaTeX compiler, export org to pdf
+- =pandoc= export org to html with inline image
+- =librime= Chinese input method, also see emacs-rime
+- =M-x copilot-install-server= to use copilot in emacs
+- Nerd font to display icon(M-x nerd-icons-install-fonts or install manually)
+- ltex-ls org, markdown 
+- digestif LaTeX
+
+*** Programming language specific
+
+* Develop workflow
+
+** Basic concepts
+Lint(flymake)
+
+Formater(aphe)
+
+Auto complete(company)
+
+Auto complete backend(eglot citre)
+
+Debugger(gud dape)
+
+Jump to def(dumb-jump eglot citre)
+
+Tramp
+
+** Golang
+
+** Python
+pyright ruff  
+
+*** venv
+
+*** pdm
+
+*** jupyter
+
+* Some package specific config
+
+** AI & Translator
+
+Write to =~/.authinfo=
+#+begin_src 
+machine api.deepl.com login auth-key password ****
+machine api.openai.com login apikey password ****
+#+end_src
+
+* FAQ
+** Install package
+** Custom config
 ** rime, can’t find emacs_module.h?
 Set ==rime-emacs-module-header-root= to =emacs/include=, eg:
 #+begin_src emacs-lisp

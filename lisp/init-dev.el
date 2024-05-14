@@ -1,12 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
-
-;;; direnv, load environment variables
-(install-package 'envrc)
-(add-hook 'after-init-hook #'envrc-global-mode)
-
-
-;;; flymake, syntax check
+
+;; lint
 (add-hook 'prog-mode-hook #'flymake-mode)
 (add-hook 'emacs-lisp-mode-hook #'(lambda ()
                                     (flymake-mode -1)))
@@ -33,13 +28,12 @@
   (add-to-list 'mode-line-misc-info
                `(flymake-mode (" [" sekiro-flymake-mode-line-format "] "))))
 
-
 (add-hook 'flymake-mode-hook
           (lambda ()
             (add-hook 'eldoc-documentation-functions 'flymake-eldoc-function nil t)))
 
-
-;;; xref, cross reference
+
+;; jump
 (add-hook 'xref-after-return-hook #'recenter)
 (add-hook 'xref-after-jump-hook #'recenter)
 
@@ -59,7 +53,22 @@
   (setq xref-search-program (cond ((executable-find "rg") 'ripgrep)
                                   (t 'grep))))
 
-;;; eglot, lsp client
+;; dumb-jump
+;;
+;; As default xref backend function.
+(install-package 'dumb-jump)
+
+(setq dumb-jump-quiet t
+      dumb-jump-prefer-searcher 'rg
+      ;; If force searcher is not set, it will default to using git-grep
+      ;; in a git project, and git-grep just don't work at all.
+      dumb-jump-force-searcher 'rg)
+(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+
+
+;; jump & complete
+
+;; eglot, lsp client
 (install-package 'eglot-hierarchy "https://github.com/dolmens/eglot-hierarchy")
 (setq eglot-events-buffer-size 0
       eglot-autoshutdown t
@@ -91,73 +100,7 @@
   (add-to-list 'eglot-server-programs '(markdown-mode . ("ltex-ls")))
   (add-to-list 'eglot-server-programs '(message-mode . ("ltex-ls"))))
 
-
-;;; gud; The unified debugger
-(add-hook 'gud-mode-hook #'gud-tooltip-mode)
-(setq gud-highlight-current-line t)
-
-
-;;; dape, debug client use DAP
-(install-package 'dape)
-
-;; To use window configuration like gud (gdb-mi)
-(setq dape-buffer-window-arrangement 'gud)
-
-(defun my/dape-setup ()
-  (require 'dape)
-  ;; Global bindings for setting breakpoints with mouse
-  (dape-breakpoint-global-mode)
-  ;; Load breakpoints on startup
-  (dape-breakpoint-load))
-(add-hook 'prog-mode-hook #'my/dape-setup)
-
-(with-eval-after-load 'dape
-  ;; Save breakpoints on quit
-  (add-hook 'kill-emacs-hook #'dape-breakpoint-save)
-  ;; Kill compile buffer on build success
-  (add-hook 'dape-compile-compile-hooks 'kill-buffer)
-  ;; Save buffers on startup, useful for interpreted languages
-  (add-hook 'dape-on-start-hooks (lambda () (save-some-buffers t t)))
-
-  ;; Support debug go unit test
-  (defun dape-go-test-rdir ()
-    "Return the file directory relative to dape's cwd. This is used by Delve debugger."
-    (if (string-suffix-p "_test.go" (buffer-name))
-        (concat "./" (file-relative-name
-                      default-directory (funcall dape-cwd-fn)))
-      (error "Not test file")))
-
-  (defun dape-go-test-args ()
-    (let* ((test-name (save-excursion
-                        (end-of-line)
-                        (beginning-of-defun)
-                        (when (re-search-forward "^func[[:space:]]+\\([[:alnum:]_]+\\)" nil t)
-                          (match-string 1))))
-           (test-regexp (concat "^" test-name "$")))
-      (if test-name
-          `["-test.run" ,test-regexp]
-        (error "No test selected"))))
-
-  ;; https://github.com/go-delve/delve/blob/master/Documentation/usage/dlv_dap.md
-  ;; https://github.com/go-delve/delve/blob/master/Documentation/usage/dlv_test.md
-  (add-to-list 'dape-configs
-               `(dlv-test
-                 modes (go-mode go-ts-mode)
-                 ensure dape-ensure-command
-                 command "dlv"
-                 command-args ("dap" "--listen" "127.0.0.1::autoport")
-                 command-cwd dape-command-cwd
-                 port :autoport
-                 :request "launch"
-                 :mode "test"
-                 :type "debug"
-                 :cwd dape-cwd-fn
-                 :program dape-go-test-rdir
-                 :args dape-go-test-args)))
-
-
-
-;;; citre, ctags/gtag jump and complete
+;; citre, ctags/gtag jump and complete
 ;;
 ;; Use ctags/gtag to jump and complete.
 (install-package 'citre)
@@ -186,8 +129,8 @@
 (with-eval-after-load 'citre-peek
   (keymap-set citre-peek-keymap "M-l r" 'citre-peek-through-references))
 
-
-;;; apheleia, code formatter
+
+;; formatter
 (install-package 'apheleia)
 
 ;; Don't format remote file on save, use func to format project's all
@@ -213,18 +156,79 @@
     (setf (alist-get 'go-mode apheleia-mode-alist) '(goimports))
     (setf (alist-get 'go-ts-mode apheleia-mode-alist) '(goimports))))
 
-
-;;; compile, custome compile buffer when `project-compile'
+;; compile, custome compile buffer when `project-compile'
 (setq compilation-always-kill t ; kill compilation process before starting another
       compilation-ask-about-save nil    ; save all buffers on `compile'
       compilation-scroll-output 'first-error)
 
+
+;; debugger
+;; gud; The unified debugger
+(add-hook 'gud-mode-hook #'gud-tooltip-mode)
+(setq gud-highlight-current-line t)
 
-;;; comment
+;; dape, debug client use DAP
+(install-package 'dape)
+
+;; To use window configuration like gud (gdb-mi)
+(setq dape-buffer-window-arrangement 'gud)
+
+(defun my/dape-setup ()
+  (require 'dape)
+  ;; Global bindings for setting breakpoints with mouse
+  (dape-breakpoint-global-mode)
+  ;; Load breakpoints on startup
+  (dape-breakpoint-load))
+(add-hook 'prog-mode-hook #'my/dape-setup)
+
+(with-eval-after-load 'dape
+  ;; Save breakpoints on quit
+  (add-hook 'kill-emacs-hook #'dape-breakpoint-save)
+  ;; Kill compile buffer on build success
+  (add-hook 'dape-compile-compile-hooks 'kill-buffer)
+  ;; Save buffers on startup, useful for interpreted languages
+  (add-hook 'dape-on-start-hooks (lambda () (save-some-buffers t t)))
+
+  ;; Support debug go unit test
+  (defun dape-go-test-rdir ()
+    "Return the file directory relative to dape's cwd. This is used by Delve debugger."
+    (if (string-suffix-p "_test.go" (buffer-name))
+        (concat "./" (file-relative-name
+                      default-directory (funcall dape-cwd-fn)))
+      (error "Not test file")))
+  (defun dape-go-test-name ()
+    (require 'which-func)
+    (if-let* ((file-name (buffer-file-name))
+              ((string-suffix-p "_test.go" file-name))
+              (fn-name (which-function)))
+        `["-test.run" ,(concat "^" (car (split-string (substring-no-properties fn-name))) "$")]
+      []))
+  ;; https://github.com/go-delve/delve/blob/master/Documentation/usage/dlv_dap.md
+  ;; https://github.com/go-delve/delve/blob/master/Documentation/usage/dlv_test.md
+  (add-to-list 'dape-configs
+               `(dlv-test
+                 modes (go-mode go-ts-mode)
+                 ensure dape-ensure-command
+                 command "dlv"
+                 command-args ("dap" "--listen" "127.0.0.1::autoport")
+                 command-cwd dape-command-cwd
+                 port :autoport
+                 :request "launch"
+                 :mode "test"
+                 :type "debug"
+                 :cwd dape-cwd-fn
+                 :program dape-go-test-rdir
+                 :args dape-go-test-name)))
+
+
+;; direnv, load environment variables
+(install-package 'envrc)
+(add-hook 'after-init-hook #'envrc-global-mode)
+
+;; comment
 (setq comment-empty-lines t)
 
-
-;;; treesit, syntax highlight
+;; treesit, syntax highlight
 (setq treesit-language-source-alist
       '((gomod . ("https://github.com/camdencheek/tree-sitter-gomod.git"))
         (toml . ("https://github.com/ikatyang/tree-sitter-toml"))
@@ -240,8 +244,7 @@
   (push '(python-mode . python-ts-mode) major-mode-remap-alist)
   (push '(go-mode . go-ts-mode) major-mode-remap-alist))
 
-
-;;; hideshow, code folding
+;; hideshow, code folding
 (add-hook 'prog-mode-hook #'hs-minor-mode)
 
 (defconst hideshow-folded-face '((t (:inherit 'font-lock-comment-face :box t))))
@@ -278,8 +281,7 @@
 
 (setq hs-set-up-overlay #'hideshow-folded-overlay-fn)
 
-
-;;; pnui, struct editing
+;; pnui, struct editing
 (install-package 'puni)
 ;; (:bind
 ;;  "M-r" 'puni-splice
@@ -288,29 +290,14 @@
 ;;  "C-{" 'puni-barf-backward
 ;;  "C-}" 'puni-barf-forward)
 
-
-;;; eldoc-box, show eldoc in box
+;; eldoc-box, show eldoc in box
 (setq eldoc-idle-delay 1
       eldoc-documentation-function 'eldoc-documentation-compose)
 (install-package 'eldoc-box)
 (setq eldoc-box-only-multi-line t)
 (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode)
 
-
-;;; dumb-jump
-;;
-;; As default xref backend function.
-(install-package 'dumb-jump)
-
-(setq dumb-jump-quiet t
-      dumb-jump-prefer-searcher 'rg
-      ;; If force searcher is not set, it will default to using git-grep
-      ;; in a git project, and git-grep just don't work at all.
-      dumb-jump-force-searcher 'rg)
-(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
-
-
-;;; indent-tabrs, show indent level for yaml, python
+;; indent-tabrs, show indent level for yaml, python
 (install-package 'indent-bars "https://github.com/jdtsmith/indent-bars.git")
 
 (add-hook 'python-base-mode-hook #'indent-bars-mode)
@@ -326,7 +313,7 @@
       indent-bars-zigzag nil
       indent-bars-color-by-depth nil
       indent-bars-highlight-current-depth '(:blend 0.5)
-      indent-bars-display-on-blank-lines nil)
+      indent-bars-display-on-blank-lines t)
 
 (with-eval-after-load 'indent-bars
   (when (treesit-available-p)
@@ -338,13 +325,11 @@
 				                             dictionary dictionary_comprehension
 				                             parenthesized_expression subscript)))))
 
-
-;;; devdocs
+;; devdocs
 (install-package 'devdocs)
 (keymap-global-set "C-h D" #'devdocs-lookup)
 
-
-;;; require langs
+;; require langs
 (install-package 'protobuf-mode)
 
 (with-eval-after-load "protobuf-mode"
@@ -355,13 +340,17 @@
 (install-package 'yaml-mode)
 (install-package 'toml-mode)
 
-(require 'init-lisp)
-(require 'init-go)
-(require 'init-python)
-(require 'init-c)
-(require 'init-nix)
-(require 'init-web)
+;; Show trailing whitespaces
+(setq whitespace-style '(face trailing))
+(add-hook 'prog-mode-hook #'whitespace-mode)
+(add-hook 'conf-mode-hook #'whitespace-mode)
 
+(add-hook 'prog-mode-hook
+          #'(lambda ()
+              (setq-local comment-auto-fill-only-comments t)
+              (turn-on-auto-fill)))
 
-(provide 'init-dev)
+(add-hook 'prog-mode-hook #'subword-mode)
+
 ;;; init-dev.el ends here
+(provide 'init-dev)

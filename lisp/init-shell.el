@@ -1,9 +1,9 @@
 ;;; -*- lexical-binding: t -*-
 
-;;; eshell
+;; eshell
 (add-hook 'eshell-mode-hook (lambda () (setq outline-regexp eshell-prompt-regexp)))
 
-;;; eat
+;; eat
 ;;
 ;; https://abode.karthinks.com/share/eat-modes.png
 (install-package 'eat)
@@ -35,4 +35,5 @@
   (advice-add 'eat-semi-char-mode :after 'eat-emacs-mode)
   (add-hook 'eat-mode-hook 'eat-meow-setup))
 
+;;; init-shell.el ends here
 (provide 'init-shell)

@@ -63,4 +63,5 @@
   (keymap-set go-mode-map "C-c t a" #'go-tag-add)
   (keymap-set go-mode-map "C-c t r" #'go-tag-remove))
 
+;;; init-go.el ends here
 (provide 'init-go)

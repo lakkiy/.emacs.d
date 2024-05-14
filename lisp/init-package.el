@@ -70,4 +70,6 @@
         (setq idle-jobs (append idle-jobs (list fun)))
       (push fun idle-jobs))))
 
+
+;;; init-package.el ends here
 (provide 'init-package)

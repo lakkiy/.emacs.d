@@ -4,8 +4,7 @@
 (setq python-shell-completion-native-enable nil
       python-indent-guess-indent-offset nil)
 
-
-;;; venv
+;; venv
 (install-package 'pyvenv)
 
 ;; Two ways to make pyright work with installed package.
@@ -44,7 +43,7 @@
     (message "Configured `%s` to use environment `%s`" out-file pyvenv-virtual-env)))
 
 
-;;; ruff, lint and format python code(use apheleia to do format in emacs
+;; ruff, lint and format python code(use apheleia to do format in emacs
 (install-package 'flymake-ruff)
 
 (defun my/flymake-ruff-maybe-enable ()
@@ -52,13 +51,11 @@
     (flymake-ruff-load)))
 (add-hook 'python-base-mode-hook 'my/flymake-ruff-maybe-enable)
 
-
-;;; jupyter
+;; jupyter
 ;;
 ;; Better with jupytext and pandoc installed.
 (install-package 'code-cells)
 (add-hook 'python-base-mode-hook 'code-cells-mode-maybe)
-
 
 ;;; init-python.el ends here
 (provide 'init-python)

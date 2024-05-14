@@ -1,168 +1,93 @@
-;;; init-must.el --- Must have config -*- lexical-binding: t; -*-
+;;; init-must.el -*- lexical-binding: t; -*-
 
-;;; Commentary:
-;;
+;; Contrary to what many Emacs users have in their configs, you don't need
+;; more than this to make UTF-8 the default coding system:
+(set-language-environment "UTF-8")
 
-;;; Code:
-
-;;; perf
-(setq redisplay-skip-fontification-on-input t
-      frame-resize-pixelwise t
-      ;; NOTE this may cause lsp-bridge-ref buffer didn't show.
-      window-resize-pixelwise nil
-      ;; Don't pass case-insensitive to `auto-mode-alist'
-      auto-mode-case-fold nil
-      ;; Don't ping things that look like domain names.
-      ffap-machine-p-known 'reject)
-
-;; For lsp
+;; Speed up process data
 (setq read-process-output-max (* 4 1024 1024)
       process-adaptive-read-buffering nil)
 
-;; Don’t compact font caches during GC.
-(setq inhibit-compacting-font-caches t)
+;; Suppress GUI features and more
+(setq use-file-dialog nil
+      use-dialog-box nil
+      suggest-key-bindings nil
+      initial-major-mode 'fundamental-mode
+      inhibit-x-resources t
+      inhibit-default-init t
+      inhibit-startup-screen t
+      inhibit-startup-message t
+      inhibit-startup-buffer-menu t
+      warning-suppress-log-types '((comp))
+      server-client-instructions nil)
+(fset #'display-startup-echo-area-message #'ignore)
 
-;; Long line
-(add-hook 'after-init-hook #'global-so-long-mode)
+;; Pixelwise resize
+(setq window-resize-pixelwise t
+      frame-resize-pixelwise t)
 
+;; Linux specific
+(setq x-gtk-use-system-tooltips nil
+      x-gtk-use-native-input t
+      x-gtk-resize-child-frames 'resize-mode
+      x-underline-at-descent-line t)
+
+;; With GPG 2.1+, this forces gpg-agent to use the Emacs minibuffer to prompt
+;; for the key passphrase.
+(setq epg-pinentry-mode 'loopback)
+
+;; Optimize for long line
 ;; https://emacs-china.org/t/topic/25811/9?u=rua
 (setq-default bidi-display-reordering 'left-to-right)
 (setq bidi-inhibit-bpa t
       long-line-threshold 1000
       large-hscroll-threshold 1000
       syntax-wholeline-max 1000)
+(add-hook 'after-init-hook #'global-so-long-mode)
 
-;;; inhibit startup message
-(setq inhibit-startup-screen t
-      inhibit-startup-message t
-      initial-major-mode 'fundamental-mode
-      server-client-instructions nil)
-(fset #'display-startup-echo-area-message #'ignore)
-
-
-;;; Disable some annoying UI features
-(setq ring-bell-function 'ignore
-      x-underline-at-descent-line t
-      ;; Disable gui box, use minibuffer to comfirm action.
-      use-file-dialog nil
-      use-dialog-box nil
-      ;; yes or no -> y or n
-      use-short-answers t
-      ;; Don't use Fcitx5 in Emacs in PGTK build.
-      pgtk-use-im-context-on-new-connection nil
-      ;; Avoid breakage of childframes.
-      x-gtk-resize-child-frames 'resize-mode
-      ;; Don't use GTK+ tooltip.
-      x-gtk-use-system-tooltips nil
-      ;; Disable "You can run the command balabala..."
-      suggest-key-bindings nil)
-(add-hook 'after-init-hook (lambda () (blink-cursor-mode -1)))
-
-;;; TODO
-(add-hook 'after-init-hook #'global-goto-address-mode)
-(add-hook 'after-init-hook #'context-menu-mode)
-
-(setq outline-minor-mode-cycle t
-      outline-minor-mode-highlight t)
-
-(add-hook 'after-init-hook #'winner-mode)
-(setq winner-dont-bind-my-keys t)
-
-;; Emacs 28: Hide commands in M-x which do not work in the current mode.
-;; Vertico commands are hidden in normal buffers.
-(setq read-extended-command-predicate #'command-completion-default-include-p)
-(setq completion-styles '(basic partial-completion)
-      completion-category-overrides '((file (styles basic partial-completion))))
-(setq require-final-newline t
-      ;; Echo current unfinished command immediately.
-      echo-keystrokes 0.1
-      ;; 默认软折行是根据空格来的，但是中文句子没有空格，所以需要开启
-      word-wrap-by-category t
-      cursor-in-non-selected-windows nil
-      visible-cursor t
-      warning-suppress-log-types '((comp)) ; Don't display compile warnings
-      truncate-partial-width-windows 65 ; Don't truncate lines in a window narrower than 65 chars.
-      vc-follow-symlinks t)
-;; Monitors are trending toward wide, rather than tall.
-(setq split-width-threshold 160)
-(setq split-height-threshold nil)
-
-;; mouse-1 to follow link
-(put 'default-button 'follow-link t)
-;; enable narrow function
-(put 'narrow-to-page 'disabled nil)
-(put 'narrow-to-region 'disabled nil)
-
-;;; Disable lockfiles and backup files
-(setq create-lockfiles nil
-      make-backup-files nil
+;; No backup files
+(setq make-backup-files nil
       auto-save-default nil)
 
-;;; auto-fill
-(setq-default fill-column 72)
-(add-hook 'prog-mode-hook
-          #'(lambda ()
-              (setq-local comment-auto-fill-only-comments t)
-              (turn-on-auto-fill)))
+;; No lock files
+(setq create-lockfiles nil)
 
-;;; line number
-(setq display-line-numbers-width 3)
+;; Always load the newest file
+(setq load-prefer-newer t)
 
-;;; Enable auto save.
-;;
-;; Most of time I will do save manually.
-(setq auto-save-visited-interval 10)
-(add-hook 'after-init-hook #'auto-save-visited-mode)
+;; No gc for font caches
+(setq inhibit-compacting-font-caches t)
 
-;;; Tab
-;;
-;; Indent with spaces, not tabs, also use tab do complete.
-(setq-default indent-tabs-mode nil
-              tab-width 4
-              tab-always-indent 'complete)
+;; Improve display
+(setq display-raw-bytes-as-hex t
+      redisplay-skip-fontification-on-input t)
 
-;;; subword
-(add-hook 'prog-mode-hook #'subword-mode)
+;; No annoying bell
+(setq ring-bell-function 'ignore)
 
-;;; electric-pair
-(add-hook 'prog-mode-hook #'electric-pair-local-mode)
-(setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
+;; No eyes distraction
+(setq blink-cursor-mode nil)
 
-;;; show-paren
-(setq show-paren-when-point-in-periphery t
-      show-paren-context-when-offscreen 'overlay
-      show-paren-when-point-inside-paren t
-      show-paren-context-when-offscreen t)
-
-;;; Coding system
-;;
-;; Contrary to what many Emacs users have in their configs, you don't need
-;; more than this to make UTF-8 the default coding system:
-(set-language-environment "UTF-8")
-
-;;; Delete whitespace after save
-(setq whitespace-style '(face trailing))
-(add-hook 'prog-mode-hook #'whitespace-mode)
-(add-hook 'conf-mode-hook #'whitespace-mode)
-
-;;; Auto revert edited file.
-(add-hook 'after-init-hook #'global-auto-revert-mode)
-
-;;; scroll
-(setq hscroll-step 1
+;; Smooth scroll & friends
+(setq scroll-step 2
+      scroll-margin 2
+      hscroll-step 2
       hscroll-margin 2
-      ;; The nano style for truncated long lines.
-      auto-hscroll-mode 'current-line
-      scroll-margin 0
       scroll-conservatively 101
-      scroll-preserve-screen-position t
-      auto-window-vscroll nil
-      ;; Use shift + mouse wheel to scrll horizontally.
-      mouse-wheel-scroll-amount '(2 ((shift) . hscroll))
-      mouse-wheel-scroll-amount-horizontal 2
-      pixel-scroll-precision-interpolate-page t)
+      scroll-preserve-screen-position 'always)
 
-(add-hook 'after-init-hook (lambda () (pixel-scroll-precision-mode)))
+;; The nano style for truncated long lines.
+(setq auto-hscroll-mode 'current-line)
+
+;; Disable auto vertical scroll for tall lines
+(setq auto-window-vscroll nil)
+
+;; Use shift + mouse wheel to scrll horizontally.
+(setq mouse-wheel-scroll-amount '(2 ((shift) . hscroll))
+      mouse-wheel-scroll-amount-horizontal 2)
+
+;; Smooth scroll up & down
+(setq pixel-scroll-precision-interpolate-page t)
 
 (defun +pixel-scroll-interpolate-down (&optional lines)
   (interactive)
@@ -179,21 +104,42 @@
 (defalias 'scroll-up-command '+pixel-scroll-interpolate-down)
 (defalias 'scroll-down-command '+pixel-scroll-interpolate-up)
 
-;;; help
-;;
-;; Press e to edit variable value in help buffer.
-(setq help-enable-variable-value-editing t)
-(put 'help-fns-edit-variable 'disabled nil)
+;; Dont move points out of eyes
+(setq mouse-yank-at-point t)
 
-;; 会卡住 emacs，因为要显示多国字体
-(keymap-global-unset "C-h h")
-;; zap-to-char 经常误触，而且会常驻在 minibuffer，点过去取消后还会打乱
-;; window layout
-(keymap-global-unset "M-z")
+(setq-default fill-column 80)
 
-(when (display-graphic-p)
-  (global-unset-key (kbd "C-z"))
-  (global-unset-key (kbd "C-x C-z")))
+;; No tabs
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
+
+;; Tab to complete
+(setq tab-always-indent 'complete)
+
+;; Sane defaults
+(setq use-short-answers t)
+
+;; Inhibit switching out from `y-or-n-p' and `read-char-choice'
+(setq y-or-n-p-use-read-key t
+      read-char-choice-use-read-key t)
+
+;; Enable the disabled narrow commands
+(put 'narrow-to-defun  'disabled nil)
+(put 'narrow-to-page   'disabled nil)
+(put 'narrow-to-region 'disabled nil)
+;; mouse-1 on a button should follow the link
+(put 'default-button 'follow-link t)
+
+;; Enable the disabled dired commands
+(put 'dired-find-alternate-file 'disabled nil)
+
+;; Enable the disabled `list-timers', `list-threads' commands
+(put 'list-timers 'disabled nil)
+(put 'list-threads 'disabled nil)
+
+;; Quick editing in `describe-variable'
+(with-eval-after-load 'help-fns
+  (put 'help-fns-edit-variable 'disabled nil))
 
 ;; If variable is a keymap, use `describe-keymap'.
 (advice-add 'describe-variable :around
@@ -203,28 +149,138 @@
                   (describe-keymap variable)
                 (apply oldfun variable buffer frame))))
 
-;;; vc
+;; Most of time I will do save manually.
+(setq auto-save-visited-interval 10)
+(add-hook 'after-init-hook #'auto-save-visited-mode)
+
+;; Don't pass case-insensitive to `auto-mode-alist'
+(setq auto-mode-case-fold nil)
+
+;; Don't ping things that look like domain names.
+(setq ffap-machine-p-known 'reject)
+
+;; No Fcitx5 in Emacs PGTK build.
+(setq pgtk-use-im-context-on-new-connection nil)
+
+;; Highlight current line
+(defun my/hl-line-setup ()
+  "Disable `hl-line-mode' if region is active."
+  (when (and (bound-and-true-p hl-line-mode)
+             (region-active-p))
+    (hl-line-unhighlight)))
+(with-eval-after-load 'hl-line
+  (add-hook 'post-command-hook #'my/hl-line-setup))
+(when (display-graphic-p)
+  (add-hook 'after-init-hook #'global-hl-line-mode))
+
+;; Highlight parenthesises
+(setq show-paren-when-point-in-periphery t
+      show-paren-context-when-offscreen 'overlay
+      show-paren-when-point-inside-paren t
+      show-paren-context-when-offscreen t)
+(add-hook 'after-init-hook #'show-paren-mode)
+
+;; Undo window change
+(setq winner-dont-bind-my-keys t)
+(add-hook 'after-init-hook #'winner-mode)
+
+;; Back to the previous position
+(add-hook 'after-init-hook #'save-place-mode)
+
+;; Needed by `webpaste'
+(setq browse-url-generic-program
+      (or (executable-find "firefox")
+          (when (eq system-type 'darwin) "open")
+          (when (eq system-type 'gnu/linux) "xdg-open")))
+
+;; Buffer manager
+(fset 'list-buffers 'ibuffer)
+(setq-default ibuffer-show-empty-filter-groups nil)
+
+;; Enable `repeat-mode' to reduce key sequence length
 ;;
-;; Also speed up version control on tramp.
+;; If we have been idle for `repeat-exit-timeout' seconds, exit the repeated
+;; state.
+(setq repeat-mode t
+      repeat-keep-prefix t
+      repeat-exit-timeout 3
+      repeat-exit-key (kbd "RET"))
+
+;; Better word wrapping for CJK characters
+(setq word-wrap-by-category t)
+(setq sentence-end-double-space nil)
+
+;; Emacs 28: Hide commands in M-x which do not work in the current mode.
+(setq read-extended-command-predicate #'command-completion-default-include-p)
+
+;; Save minibuffer history
+(setq history-length 1000)
+(add-hook 'after-init-hook #'savehist-mode)
+
+;; Recently opened files
+(keymap-global-set "C-x C-r" #'recentf-open-files)
+(add-hook 'after-init-hook #'recentf-mode)
+(setq recentf-max-saved-items 1000
+      recentf-auto-cleanup 'never
+      recentf-exclude `(,tramp-file-name-regexp
+                        "COMMIT_EDITMSG"))
+
+;; Echo current unfinished command immediately.
+(setq echo-keystrokes 0.1)
+
+(defun my/init-func ()
+  (context-menu-mode 1)
+  (global-auto-revert-mode 1)
+  (global-goto-address-mode 1)
+  (pixel-scroll-precision-mode 1))
+(add-hook 'after-init-hook #'my/init-func)
+
+
+
+(setq outline-minor-mode-cycle t
+      outline-minor-mode-highlight t)
+
+(setq completion-styles '(basic partial-completion)
+      completion-category-overrides '((file (styles basic partial-completion))))
+
+(setq require-final-newline t
+      cursor-in-non-selected-windows nil
+      visible-cursor t
+      vc-follow-symlinks t)
+
+(setq display-line-numbers-width 3)
+
+;; electric-pair
+(add-hook 'prog-mode-hook #'electric-pair-local-mode)
+(setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
+
+(keymap-global-unset "C-h h")
+(keymap-global-unset "M-z")
+(when (display-graphic-p)
+  (global-unset-key (kbd "C-z"))
+  (global-unset-key (kbd "C-x C-z")))
+
+
+;; tramp
 (setq-default vc-handled-backends '(Git))
 
-;;; tramp
-(setq tramp-terminal-type "tramp"
-      ;; Set remote-file-name-inhibit-cache to nil if remote files are not
-      ;; independently updated outside TRAMP’s control. That cache cleanup
-      ;; will be necessary if the remote directories or files are updated
-      ;; independent of TRAMP.
-      remote-file-name-inhibit-cache nil
-      ;;  Disable file locks. Set remote-file-name-inhibit-locks to t if
-      ;;  you know that different Emacs sessions are not modifying the same
-      ;;  remote file.
-      remote-file-name-inhibit-locks t
-      ;; Disable excessive traces.
-      tramp-verbose 0
-      ;; C-x C-f /ssh:
-      tramp-default-method "ssh"
-      ;;  speed up complete
-      tramp-completion-reread-directory-timeout nil
+(setq tramp-verbose 0
+      tramp-terminal-type "tramp"
+      tramp-default-method "ssh")
+
+;; Set remote-file-name-inhibit-cache to nil if remote files are not
+;; independently updated outside TRAMP’s control. That cache cleanup
+;; will be necessary if the remote directories or files are updated
+;; independent of TRAMP.
+(setq remote-file-name-inhibit-cache nil)
+
+;;  Disable file locks. Set remote-file-name-inhibit-locks to t if
+;;  you know that different Emacs sessions are not modifying the same
+;;  remote file.
+(setq remote-file-name-inhibit-locks t)
+
+;; Speed up complete
+(setq tramp-completion-reread-directory-timeout nil
       tramp-auto-save-directory temporary-file-directory)
 
 (defun sudo-find-file (file)
@@ -233,11 +289,11 @@
   (when (file-writable-p file)
     (user-error "File is user writeable, aborting sudo"))
   (find-file (if (file-remote-p file)
-		 (concat "/" (file-remote-p file 'method) ":"
-			 (file-remote-p file 'user) "@" (file-remote-p file 'host)
-			 "|sudo:root@"
-			 (file-remote-p file 'host) ":" (file-remote-p file 'localname))
-	       (concat "/sudo:root@localhost:" file))))
+		         (concat "/" (file-remote-p file 'method) ":"
+			             (file-remote-p file 'user) "@" (file-remote-p file 'host)
+			             "|sudo:root@"
+			             (file-remote-p file 'host) ":" (file-remote-p file 'localname))
+	           (concat "/sudo:root@localhost:" file))))
 
 (defun sudo-this-file ()
   "Open the current file as root."
@@ -251,23 +307,8 @@
   ;; the list by the special value ‘tramp-own-remote-path’.
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 
-;;; repeat
-;;
-;; Use `repeat' to rerun previout command.
-(setq repeat-mode t
-      repeat-keep-prefix t
-      repeat-exit-timeout 3
-      repeat-exit-key (kbd "RET"))
-
-;;; recentf
-(add-hook 'after-init-hook #'recentf-mode)
-(setq recentf-max-saved-items 1000
-      recentf-exclude `(,tramp-file-name-regexp
-                        "COMMIT_EDITMSG"))
-(keymap-global-set "C-x C-r" #'recentf-open-files)
-
-;;; project
-
+
+;; project
 (setq project-vc-ignores '("target/" "bin/" "obj/")
       project-vc-extra-root-markers '(".project"
                                       "go.mod"
@@ -277,29 +318,24 @@
                                       "pyrightconfig.json"
                                       "package.json"))
 
-;; use fd in `project-find-file'
-(defun my/project-files-in-directory (dir)
-  "Use `fd' to list files in DIR."
-  (let* ((default-directory dir)
-         (localdir (file-local-name (expand-file-name dir)))
-         (command (format "fd -c never -H -t f -0 . %s" localdir)))
-    (project--remote-file-names
-     (sort (split-string (shell-command-to-string command) "\0" t)
-           #'string<))))
-
 (with-eval-after-load 'project
+  ;; Use fd in `project-find-file'
   (when (executable-find "fd")
+    (defun my/project-files-in-directory (dir)
+      "Use `fd' to list files in DIR."
+      (let* ((default-directory dir)
+             (localdir (file-local-name (expand-file-name dir)))
+             (command (format "fd -c never -H -t f -0 . %s" localdir)))
+        (project--remote-file-names
+         (sort (split-string (shell-command-to-string command) "\0" t)
+               #'string<))))
     (cl-defmethod project-files ((project (head local)) &optional dirs)
       "Override `project-files' to use `fd' in local projects."
       (mapcan #'my/project-files-in-directory
               (or dirs (list (project-root project)))))))
 
-;;; savehist and place
-(setq history-length 1000)
-(add-hook 'after-init-hook #'savehist-mode)
-(add-hook 'after-init-hook #'save-place-mode)
-
-;;; dired
+
+;; dired
 (setq mouse-drag-and-drop-region t
       mouse-drag-and-drop-region-cross-program t)
 
@@ -317,11 +353,8 @@
   (define-key dired-mode-map (kbd "h") #'dired-up-directory)
   (define-key dired-mode-map [mouse-2] #'dired-find-file))
 
-;;; ibuffer
-(fset 'list-buffers 'ibuffer)
-(setq-default ibuffer-show-empty-filter-groups nil)
-
-;;; isearch
+
+;; isearch
 (setq isearch-lazy-count t
       isearch-lazy-highlight t
       lazy-highlight-buffer t
@@ -349,42 +382,6 @@
   ;; DEL during isearch should edit the search string, not jump back
   ;; to the previous result
   (keymap-substitute isearch-mode-map #'isearch-delete-chac #'isearch-del-chac))
-
-;;; browse-url
-(setq browse-url-generic-program
-      (or (executable-find "firefox")
-          (when (eq system-type 'darwin) "open")
-          (when (eq system-type 'gnu/linux) "xdg-open")))
-
-;;; theme
-(defvar my/theme 'modus-operandi)
-(defvar my/theme-tui 'carbon)
-
-(defvar after-load-theme-hook nil
-  "Hooks run after `load-theme'.")
-
-(defun my/load-theme (f theme &optional no-confirm no-enable &rest args)
-  (interactive
-   (list
-    (intern (completing-read "Theme: "
-                             (mapcar #'symbol-name
-				                     (custom-available-themes))))))
-  (dolist (theme custom-enabled-themes)
-    (disable-theme theme))
-  (if (featurep (intern (format "%s-theme" theme)))
-      (enable-theme theme)
-    (apply f theme t no-enable args))
-  (run-hooks 'after-load-theme-hook))
-(advice-add 'load-theme :around #'my/load-theme)
-
-(defun my/setup-theme ()
-  (if (display-graphic-p)
-      (load-theme my/theme t)
-    (load-theme my/theme-tui t)))
-
-(if (daemonp)
-    (add-hook 'server-after-make-frame-hook #'my/setup-theme)
-  (add-hook 'after-init-hook #'my/setup-theme))
 
 
 ;;; init-must.el ends here

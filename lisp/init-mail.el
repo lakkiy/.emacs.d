@@ -1,14 +1,15 @@
 ;;; -*- lexical-binding: t -*-
 
-;;; fontify-patch
+;; fontify-patch
 (install-package 'fontify-patch "https://github.com/whame/fontify-patch")
 (add-hook 'gnus-part-display-hook 'fontify-patch-buffer)
 
-;;; w3m, read html mail
+;; w3m, read html mail
 (install-package 'w3m)
-(setq mm-text-html-renderer 'w3m)
+(when (executable-find "w3m")
+  (setq mm-text-html-renderer 'w3m))
 
-;;; message
+;; message
 ;;
 ;; https://man.sr.ht/lists.sr.ht/etiquette.md#wrap-lines
 ;; 在邮件中使用 =auto-fill-column= 进行硬折行。
@@ -29,7 +30,8 @@
     (eglot-ensure)))
 (add-hook 'message-mode-hook #'my/message-mode-setup)
 
-;;; gnus
+
+;; gnus
 (setq gnus-use-cache t
       gnus-use-scoring nil
       gnus-suppress-duplicates t
@@ -40,17 +42,17 @@
       gnus-select-method '(nnnil "")
       gnus-secondary-select-methods
       `((nntp "gmane" (nntp-address "news.gmane.io"))
-	(nntp "nntp.lore.kernel.org")
-	(nnimap "Gmail"
-		(nnimap-user "liubolovelife@gmail.com")
-		(nnimap-inbox "INBOX")
-		(nnimap-address "imap.gmail.com")
-		(nnimap-stream ssl)
-		(nnimap-expunge 'never)
-		;; @see http://www.gnu.org/software/emacs/manual/html_node/gnus/Expiring-Mail.html
-		;; press 'E' to expire email
-		(nnmail-expiry-target "nnimap+Gmail:[Gmail]/Trash")
-		(nnmail-expiry-wait 90)))
+	    (nntp "nntp.lore.kernel.org")
+	    (nnimap "Gmail"
+		        (nnimap-user "liubolovelife@gmail.com")
+		        (nnimap-inbox "INBOX")
+		        (nnimap-address "imap.gmail.com")
+		        (nnimap-stream ssl)
+		        (nnimap-expunge 'never)
+		        ;; @see http://www.gnu.org/software/emacs/manual/html_node/gnus/Expiring-Mail.html
+		        ;; press 'E' to expire email
+		        (nnmail-expiry-target "nnimap+Gmail:[Gmail]/Trash")
+		        (nnmail-expiry-wait 90)))
       ;; Startup functions
       gnus-save-killed-list nil
       gnus-check-new-newsgroups nil
@@ -62,18 +64,18 @@
       gnus-search-use-parsed-queries t
       ;; Article mode for Gnus
       gnus-visible-headers (rx line-start (or "From"
-					      "Subject"
-					      "Mail-Followup-To"
-					      "Date"
-					      "To"
-					      "Cc"
-					      "Newsgroups"
-					      "User-Agent"
-					      "X-Mailer"
-					      "X-Newsreader")
-			       ":")
+					                          "Subject"
+					                          "Mail-Followup-To"
+					                          "Date"
+					                          "To"
+					                          "Cc"
+					                          "Newsgroups"
+					                          "User-Agent"
+					                          "X-Mailer"
+					                          "X-Newsreader")
+			                   ":")
       gnus-article-sort-functions '((not gnus-article-sort-by-number)
-				    (not gnus-article-sort-by-date))
+				                    (not gnus-article-sort-by-date))
       gnus-article-browse-delete-temp t
       ;; Display more MINE stuff
       gnus-mime-display-multipart-related-as-mixed t
@@ -137,4 +139,5 @@
 (add-hook 'gnus-select-group-hook #'gnus-group-set-timestamp)
 (add-hook 'gnus-summary-mode-hook #'hl-line-mode)
 
+;;; init-mail.el ends here
 (provide 'init-mail)

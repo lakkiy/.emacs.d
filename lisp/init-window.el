@@ -1,7 +1,6 @@
 ;;; -*- lexical-binding: t -*-
 
-
-;;; winum
+;; winum
 (install-package 'winum)
 
 (setq winum-scope 'visible)
@@ -19,14 +18,12 @@
 
 (add-hook 'after-init-hook #'winum-mode)
 
-
-;;; project-x, save window layout by project
+;; project-x, save window layout by project
 (install-package 'project-x "https://github.com/karthink/project-x")
 (with-eval-after-load 'project
   (project-x-mode 1))
 
-
-;;; popper
+;; popper
 (install-package 'popper)
 
 (add-hook 'after-init-hook #'popper-mode)
@@ -63,17 +60,14 @@
      (floor (frame-height) 3)))
   (setq popper-window-height #'my-popper-fit-window-height))
 
-
-;;; ace-window
+;; ace-window
 (install-package 'ace-window)
 (keymap-global-set "M-o" 'ace-window)
 (setq aw-keys '(?a ?o ?e ?u ?i))
 
-
-;;; golden-ratio
+;; golden-ratio
 (install-package 'golden-ratio)
 (define-key mode-specific-map "\\" 'golden-ratio)
-
 
 ;;; init-window.el ends here
 (provide 'init-window)

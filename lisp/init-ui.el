@@ -1,27 +1,44 @@
 ;;; -*- lexical-binding: t -*-
 
+;; theme
+(defvar my/theme 'modus-operandi
+  "The default theme.")
+
+(defvar my/theme-tui 'carbon
+  "The default theme for TUI.")
+
+(defvar after-load-theme-hook nil
+  "Hooks run after `load-theme'.")
+
+(defun my/load-theme (f theme &optional no-confirm no-enable &rest args)
+  (interactive
+   (list
+    (intern (completing-read "Theme: "
+                             (mapcar #'symbol-name
+				                     (custom-available-themes))))))
+  (dolist (theme custom-enabled-themes)
+    (disable-theme theme))
+  (if (featurep (intern (format "%s-theme" theme)))
+      (enable-theme theme)
+    (apply f theme t no-enable args))
+  (run-hooks 'after-load-theme-hook))
+(advice-add 'load-theme :around #'my/load-theme)
+
+(defun my/setup-theme ()
+  (if (display-graphic-p)
+      (load-theme my/theme t)
+    (load-theme my/theme-tui t)))
+
+(if (daemonp)
+    (add-hook 'server-after-make-frame-hook #'my/setup-theme)
+  (add-hook 'after-init-hook #'my/setup-theme))
+
 (install-package 'almost-mono-themes)
 (install-package 'standard-themes)
 (install-package 'kaolin-themes)
 (install-package 'spacemacs-theme)
 
-;;; hl-line, disabled
-(setq hl-line-sticky-flag nil)
-
-;; (when (display-graphic-p)
-;;   (add-hook 'prog-mode-hook #'hl-line-mode)
-;;   (add-hook 'conf-mode-hook #'hl-line-mode))
-
-(defun eat/hl-line-setup ()
-  "Disable `hl-line-mode' if region is active."
-  (when (and (bound-and-true-p hl-line-mode)
-             (region-active-p))
-    (hl-line-unhighlight)))
-
-(with-eval-after-load 'hl-line
-  (add-hook 'post-command-hook #'eat/hl-line-setup))
-
-;;; form-feed
+;; form-feed
 ;;
 ;; =page-break-lines= 在开启 =bklink= 和 =visual-fill-column= 的 org buffer 中在 ^L 上移动会卡死，但是 form-feed 用着没有问题。
 (autoload 'form-feed-mode "form-feed" nil t)
@@ -30,26 +47,27 @@
 (add-hook 'text-mode-hook 'form-feed-mode)
 (add-hook 'special-mode-hook 'form-feed-mode)
 
-;;; minions
+;; minions
 (install-package 'minions)
 (add-hook 'after-init-hook 'minions-mode)
 
-;;; hl-todo
+;; hl-todo
 (install-package 'hl-todo)
 (add-hook 'dired-mode-hook #'hl-todo-mode)
 (add-hook 'prog-mode-hook #'hl-todo-mode)
 (add-hook 'conf-mode-hook #'hl-todo-mode)
 
-;;; default-text-scale
+;; default-text-scale
 (install-package 'default-text-scale)
 (keymap-global-set "C-x C-=" #'default-text-scale-increase)
 (keymap-global-set "C-x C--" #'default-text-scale-decrease)
 
-;;; breadcrumb
+;; breadcrumb
 (install-package 'breadcrumb)
 (setq-default frame-title-format
               '((:eval (breadcrumb-project-crumbs))
                 (:eval (and imenu--index-alist
                             (concat "  ◊  " (breadcrumb-imenu-crumbs))))))
 
+;;; init-ui.el ends here
 (provide 'init-ui)

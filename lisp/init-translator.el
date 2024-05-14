@@ -1,7 +1,6 @@
 ;;; -*- lexical-binding: t -*-
 
-
-;;; go-translate
+;; go-translate
 ;;
 ;; Write to ~/.authinfo
 ;; machine api.deepl.com login auth-key password ****
@@ -34,8 +33,7 @@ Default to translate buffer, or select region."
 
 (add-hook 'gt-buffer-render-init-hook #'visual-fill-column-mode)
 
-
-;;; fanyi
+;; fanyi
 (install-package 'fanyi)
 
 (defun my/translate ()
@@ -51,7 +49,6 @@ Default to translate buffer, or select region."
     '(menu-item "Translate" my/translate))
   menu)
 (add-hook 'context-menu-functions #'my/context-translate)
-
 
 ;;; init-translator.el ends here
 (provide 'init-translator)

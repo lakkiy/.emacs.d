@@ -38,4 +38,5 @@
   (require 'telega-mnz)
   (global-telega-mnz-mode 1))
 
+;;; init-telega.el ends here
 (provide 'init-telega)

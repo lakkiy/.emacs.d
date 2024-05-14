@@ -1,12 +1,39 @@
 ;;; -*- lexical-binding: t -*-
 
-(defvar my/fonts-default        '("Roboto Mono" "Monaco" "Cascadia Code" "Menlo" "Source Code Pro"))
-(defvar my/fonts-variable-pitch '("Bookerly" "Cardo" "Times New Roman" "DejaVu Sans"))
-(defvar my/fonts-cjk            '("LXGW WenKai" "WenQuanYi Micro Hei" "Microsoft Yahei"))
-(defvar my/fonts-unicode        '("Symbola"))
-(defvar my/fonts-emoji          '("Apple Color Emoji" "Segoe UI Symbol" "Noto Color Emoji"))
-(defvar my/font-size-default    13)
+(defvar my/fonts-default
+  '("Roboto Mono"
+    "Monaco"
+    "Cascadia Code"
+    "Menlo"
+    "Source Code Pro")
+  "List of fonts to try when setting the default font.")
 
+(defvar my/fonts-variable-pitch
+  '("Bookerly"
+    "Cardo"
+    "Times New Roman"
+    "DejaVu Sans")
+  "List of fonts to try when setting the variable-pitch font.")
+
+(defvar my/fonts-cjk
+  '("LXGW WenKai"
+    "WenQuanYi Micro Hei"
+    "Microsoft Yahei")
+  "List of fonts to try when setting the CJK font.")
+
+(defvar my/fonts-unicode '("Symbola")
+  "List of fonts to try when setting the Unicode font.")
+
+(defvar my/fonts-emoji
+  '("Apple Color Emoji"
+    "Segoe UI Symbol"
+    "Noto Color Emoji")
+  "List of fonts to try when setting the Emoji font.")
+
+(defvar my/font-size-default 13
+  "Default font size.")
+
+
 (defun font-installed-p (font-list)
   (catch 'font-found
     (dolist (font font-list)
@@ -43,6 +70,7 @@
                          face-font-rescale-alist nil nil #'equal)
               (cdr setting))))))
 
+
 (if (daemonp)
     (add-hook 'server-after-make-frame-hook #'my/setup-font)
   (add-hook 'after-init-hook #'my/setup-font))
@@ -52,4 +80,5 @@
   (setq buffer-face-mode-face '(:family "Sarasa Mono SC"))
   (buffer-face-mode +1))
 
+;;; init-font.el ends here
 (provide 'init-font)

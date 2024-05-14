@@ -1,6 +1,6 @@
 ;;; -*- lexical-binding: t -*-
 
-;;; image
+;; image
 (autoload #'iimg-enable "iimg")
 (add-hook 'text-mode-hook #'iimg-enable)
 (setq iimg-prune-slices-p nil)
@@ -21,7 +21,7 @@
           (delete-file image-file))
       (message "Failed to paste image from clipboard."))))
 
-;;; markdown
+;; markdown
 (install-package 'markdown-mode)
 (install-package 'markdown-toc)
 (add-to-list 'auto-mode-alist '("README\\.md\\'" . gfm-mode))
@@ -40,14 +40,15 @@
     (valign-mode 1)))
 (add-hook 'markdown-mode-hook 'my/markdown-mode-hook)
 
-;;; LaTeX
+;; LaTeX
 (defun my/latex-mode-setup ()
   (when (executable-find "digestif")
     (company-mode 1)
     (eglot-ensure)))
 (add-hook 'latex-mode-hook 'my/latex-mode-setup)
 
-;;; typst
+;; typst
 (install-package 'typst-ts-mode "https://git.sr.ht/~meow_king/typst-ts-mode")
 
+;;; init-text.el ends here
 (provide 'init-text)

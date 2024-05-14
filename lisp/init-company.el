@@ -1,9 +1,10 @@
 ;;; -*- lexical-binding: t -*-
 
-;;; capf
+;; capf
 (setq completion-ignore-case t)
 
-;;; company
+
+;; company
 ;;
 ;; - use C-p/C-n to select prev/next
 ;; - use tab to do complete
@@ -25,7 +26,7 @@
       company-require-match nil
       company-idle-delay 0.1)
 
-;;; Frontend
+;; Frontend
 ;;
 ;; don't need preview frontends with copilot
 ;; use C-h to show doc(maybe use eldoc-box) instead echo- frontend
@@ -39,7 +40,7 @@
       company-format-margin-function #'company-text-icons-margin
       company-text-icons-add-background t)
 
-;;; Backend
+;; Backend
 ;;
 ;; Do not use company-capf with company-yasnippet, it will cause
 ;; completions list messed up.
@@ -58,7 +59,7 @@
       company-dabbrev-code-ignore-case nil
       company-dabbrev-code-everywhere t)
 
-;;; Keybinding
+;; Keybinding
 (with-eval-after-load "company"
   (define-key company-active-map [tab] #'company-complete-selection)
   (define-key company-active-map (kbd "TAB") #'company-complete-selection)
@@ -70,10 +71,8 @@
   (define-key company-active-map (kbd "RET") nil)
   (define-key company-active-map (kbd "SPC") nil))
 
-;;; Do complete manually
-;; (setq company-idle-delay nil)
-
-;;; yasnippet
+
+;; yasnippet
 (install-package 'yasnippet)
 
 (add-hook 'prog-mode-hook #'yas-minor-mode)
@@ -83,7 +82,7 @@
   (let ((inhibit-message t))
     (yas-reload-all)))
 
-;;; copilot
+;; copilot
 (install-package 'copilot "https://github.com/zerolfx/copilot.el")
 
 ;; 由于 `lisp-indent-offset' 的默认值是 nil，在编辑 elisp 时每敲一个字
@@ -113,4 +112,5 @@
   (with-eval-after-load 'meow
     (add-to-list 'copilot-enable-predicates 'meow-insert-mode-p)))
 
+;;; init-company.el ends here
 (provide 'init-company)

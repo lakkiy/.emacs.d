@@ -120,8 +120,8 @@ point reaches the beginning or end of the buffer, stop there."
   (let ((inhibit-read-only t))
     (ansi-color-apply-on-region (point-min) (point-max))))
 
-
-;;; Set PATH and `exec-path'
+
+;; Set PATH and `exec-path'
 ;; https://emacs-china.org/t/emacs-mac-port-profile/2895/29?u=rua
 ;; NOTE: When PATH is changed, run the following command
 ;; $ sh -c 'printf "%s" "$PATH"' > ~/.path
@@ -138,8 +138,8 @@ point reaches the beginning or end of the buffer, stop there."
 (when (file-exists-p "~/.path")
   (add-hook 'after-init-hook #'my/getenv-path))
 
-
-;;; my/ctl-t-map
+
+;; my/ctl-t-map
 ;;
 ;; The original `C-t' is bound to `transpose-chars', which is not very
 ;; useful(I never use it since I use emacs), and `C-t' is only for my
@@ -147,8 +147,8 @@ point reaches the beginning or end of the buffer, stop there."
 (define-prefix-command 'my/ctl-t-map)
 (global-set-key (kbd "C-t") 'my/ctl-t-map)
 
-
-;;; Delete things(don’t send to kill ring
+
+;; Delete things(don’t send to kill ring
 (defun my/delete-to-the-begining ()
   (interactive)
   (delete-region (point-min) (point)))
@@ -171,8 +171,8 @@ point reaches the beginning or end of the buffer, stop there."
     (delete-file (buffer-file-name))
     (kill-this-buffer)))
 
-
-;;; window
+
+;; window
 (keymap-global-set "M-o" 'other-window)
 
 ;; Skip window by setting no-other-window window parameter in
@@ -223,8 +223,8 @@ point reaches the beginning or end of the buffer, stop there."
 (keymap-global-set "C-x |" 'split-window-horizontally-instead)
 (keymap-global-set "C-x _" 'split-window-vertically-instead)
 
-
-;;;; windmove
+
+;; windmove
 ;;
 ;; If the keybinding is conflict with window mamager, try frames-only-mode.
 (keymap-global-set "s-p" 'windmove-up)
@@ -232,8 +232,8 @@ point reaches the beginning or end of the buffer, stop there."
 (keymap-global-set "s-t" 'windmove-right)
 (keymap-global-set "s-n" 'windmove-down)
 
-
-;;;; tab-bar
+
+;; tab-bar
 ;;
 ;; Built-in window layout manager
 ;; NOTE do not bind =tab-bar-switch-to-prev-tab= and
@@ -249,7 +249,7 @@ point reaches the beginning or end of the buffer, stop there."
                                           :face '(:inherit nerd-icons-purple)))
               tab-bar-menu-bar :help "Menu Bar")))
 
-(defun eat/bar-image ()
+(defun my/bar-image ()
   (when (and (display-graphic-p) (image-type-available-p 'pbm))
     (propertize
      " " 'display
@@ -271,7 +271,7 @@ point reaches the beginning or end of the buffer, stop there."
       tab-bar-tab-name-format-function
       (lambda (tab i) "Center, taller, better, stronger xD."
         (let* ((current-tab-p (eq (car tab) 'current-tab))
-               (bar (when current-tab-p (eat/bar-image)))
+               (bar (when current-tab-p (my/bar-image)))
                (name (string-trim (alist-get 'name tab)))
                (space-to-add (max 0 (- tab-bar-tab-name-truncated-max (length name))))
                (left-padding (/ space-to-add 2))
