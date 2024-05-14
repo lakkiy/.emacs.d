@@ -167,19 +167,6 @@ Need pandoc installed."
   (add-to-list 'org-export-backends 'md))
 
 
-;;; bklink; create back link
-(setq bklink-summary-read-only-p t
-      bklink-prune-summary-p nil)
-
-(add-hook 'org-mode-hook #'(lambda ()
-                             (require 'bklink)
-                             (bklink-minor-mode 1)))
-
-(with-eval-after-load 'bklink
-  (keymap-set bklink-minor-mode-map "C-c l" #'bklink-summary-mode)
-  (keymap-set bklink-minor-mode-map "C-c i" #'bklink-insert))
-
-
 ;;; citar
 (install-package 'citar)
 (setq org-cite-global-bibliography '("~/Dropbox/bib/references.bib")

@@ -91,8 +91,20 @@
       xeft-database "~/.xeft/db"
       xeft-default-extension  "org")
 
+;; bklink; create back link
+(setq bklink-summary-read-only-p t
+      bklink-prune-summary-p nil)
+
+(defun my/xeft-setup ()
+  (visual-fill-column-mode 1)
+  (require 'bklink)
+  (bklink-minor-mode 1))
+
 (with-eval-after-load 'xeft
-  (add-hook 'xeft-find-file-hook #'visual-fill-column-mode))
+  (add-hook 'xeft-find-file-hook #'my/xeft-setup))
+(with-eval-after-load 'bklink
+  (keymap-set bklink-minor-mode-map "C-c l" #'bklink-summary-mode)
+  (keymap-set bklink-minor-mode-map "C-c i" #'bklink-insert))
 
 
 ;;; d2
