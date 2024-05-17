@@ -68,7 +68,7 @@
 
    ;;; Below config basicly won't change anymore.
    '("'" . repeat)
-   '("!" . dired-sidebar-toggle-sidebar)
+   '("!" . treemacs)
    '(":" . gptel-menu)
    '("~" . eat-project)
    '("`" . eat)
