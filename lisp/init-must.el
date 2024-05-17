@@ -171,7 +171,7 @@
 (with-eval-after-load 'hl-line
   (add-hook 'post-command-hook #'my/hl-line-setup))
 (when (display-graphic-p)
-  (add-hook 'after-init-hook #'global-hl-line-mode))
+  (add-hook 'prog-mode-hook #'hl-line-mode))
 
 ;; Highlight parenthesises
 (setq show-paren-when-point-in-periphery t
