@@ -91,3 +91,9 @@ so try complete filst, if there nothing to complete then try to jump to next fie
                 (or (apply lookup-key-orig map key accept-default)
                     (when (eq map query-replace-map) 'help)))))
     (apply fn args)))
+
+;; sidebar
+;;
+;; file tree
+(install-package 'dired-sidebar)
+(setq dired-sidebar-theme 'ascii)
