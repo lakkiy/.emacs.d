@@ -42,7 +42,7 @@
 
   (meow-leader-define-key
    '("b" . switch-to-buffer)
-   '("k" . kill-this-buffer)
+   '("k" . kill-current-buffer)
    (cons "p" project-prefix-map)
 
    ;; Use SPC (0-9) for digit arguments.
