@@ -170,8 +170,8 @@
 ;; dape, debug client use DAP
 (install-package 'dape)
 
-;; To use window configuration like gud (gdb-mi)
-(setq dape-buffer-window-arrangement 'gud)
+;; Usually I use left window to show code
+(setq dape-buffer-window-arrangement 'right)
 
 (defun my/dape-setup ()
   (require 'dape)
@@ -190,6 +190,7 @@
   (add-hook 'dape-on-start-hooks (lambda () (save-some-buffers t t)))
 
   ;; Support debug go unit test
+  ;; Also see https://github.com/microsoft/debugpy/wiki/Debugging-over-SSH
   (defun dape-go-test-rdir ()
     "Return the file directory relative to dape's cwd. This is used by Delve debugger."
     (if (string-suffix-p "_test.go" (buffer-name))
