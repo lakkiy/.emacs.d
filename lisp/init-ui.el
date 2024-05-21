@@ -33,11 +33,6 @@
     (add-hook 'server-after-make-frame-hook #'my/setup-theme)
   (add-hook 'after-init-hook #'my/setup-theme))
 
-(install-package 'almost-mono-themes)
-(install-package 'standard-themes)
-(install-package 'kaolin-themes)
-(install-package 'spacemacs-theme)
-
 ;; form-feed
 ;;
 ;; =page-break-lines= 在开启 =bklink= 和 =visual-fill-column= 的 org buffer 中在 ^L 上移动会卡死，但是 form-feed 用着没有问题。
@@ -46,10 +41,6 @@
 (add-hook 'emacs-lisp-mode-hook 'form-feed-mode)
 (add-hook 'text-mode-hook 'form-feed-mode)
 (add-hook 'special-mode-hook 'form-feed-mode)
-
-;; minions
-(install-package 'minions)
-(add-hook 'after-init-hook 'minions-mode)
 
 ;; hl-todo
 (install-package 'hl-todo)

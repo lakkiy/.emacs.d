@@ -97,3 +97,8 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 ;; file tree
 (install-package 'dired-sidebar)
 (setq dired-sidebar-theme 'ascii)
+
+;; minions
+(install-package 'minions)
+(add-hook 'after-init-hook 'minions-mode)
+
