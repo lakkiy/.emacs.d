@@ -55,6 +55,11 @@
     (setq gpt-commit-model-name "gpt-3.5-turbo-16k")
     (add-hook 'git-commit-setup-hook 'gpt-commit-message)))
 
+(install-package 'magit-file-icons)
+
+(with-eval-after-load 'magit
+  (magit-file-icons-mode 1))
+
 ;; diff-hl
 (install-package 'diff-hl)
 
