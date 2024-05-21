@@ -68,7 +68,7 @@
 
    ;;; Below config basicly won't change anymore.
    '("'" . repeat)
-   '("!" . treemacs)
+   '("!" . treemacs-select-window)
    '(":" . gptel-menu)
    '("~" . eat-project)
    '("`" . eat)
