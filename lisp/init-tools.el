@@ -152,22 +152,6 @@
 (with-eval-after-load 'ghelp
   (keymap-global-set "C-h r" #'ghelp-resume))
 
-;; bing ai search
-;;
-;; - Install the cookie editor extension for [[https://microsoftedge.microsoft.com/addons/detail/cookieeditor/neaplmfkghagebokkhpjpoebhdledlfi][Egde]]
-;; - Go to bing.com
-;; - Open the extension
-;; - Click “Export” on the bottom right (This saves your cookies to clipboard)
-;; - Paste your cookies into a file cookies.json
-;; - Set =aichat-bingai-cookies-file= to your cookies.json path
-(install-package 'async-await)
-(install-package 'emacs-aichat "https://github.com/xhcoding/emacs-aichat")
-
-(setq aichat-bingai-cookies-file "~/Dropbox/.bingcookies.json"
-      aichat-bingai-chat-file "~/Sync/aichat.md")
-(autoload #'aichat-bingai-chat "aichat-bingai.el" nil t)
-(autoload #'aichat-bingai-assistant "aichat-bingai.el" nil t)
-
 ;; gptel
 ;;
 ;; store gpt key in ~/.authinfo
