@@ -21,6 +21,8 @@
 (install-package 'treemacs-magit)
 (install-package 'treemacs-tab-bar)
 
+(setq treemacs-recenter-after-file-follow t)
+
 (with-eval-after-load 'treemacs
   (require 'treemacs-magit)
   (require 'treemacs-tab-bar)
