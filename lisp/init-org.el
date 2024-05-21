@@ -122,7 +122,12 @@ otherwise call `org-self-insert-command'."
       org-agenda-hide-tags-regexp "."
       org-agenda-current-time-string
       "⭠ now ─────────────────────────────────────────────────")
+
+;; Do not reorganize-frame
+(setq org-agenda-window-setup 'current-window)
+
 (keymap-global-set "C-c a" 'org-agenda)
+(keymap-global-set "C-c l" 'org-store-link)
 
 
 ;; LaTeX

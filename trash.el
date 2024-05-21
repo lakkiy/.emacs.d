@@ -119,3 +119,11 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 (autoload #'aichat-bingai-chat "aichat-bingai.el" nil t)
 (autoload #'aichat-bingai-assistant "aichat-bingai.el" nil t)
 
+
+;; windmove
+;;
+;; If the keybinding is conflict with window mamager, try frames-only-mode.
+(keymap-global-set "s-p" 'windmove-up)
+(keymap-global-set "s-h" 'windmove-left)
+(keymap-global-set "s-t" 'windmove-right)
+(keymap-global-set "s-n" 'windmove-down)

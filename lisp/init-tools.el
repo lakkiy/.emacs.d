@@ -93,8 +93,7 @@
 (with-eval-after-load 'xeft
   (add-hook 'xeft-find-file-hook #'my/xeft-setup))
 (with-eval-after-load 'bklink
-  (keymap-set bklink-minor-mode-map "C-c l" #'bklink-summary-mode)
-  (keymap-set bklink-minor-mode-map "C-c i" #'bklink-insert))
+  (keymap-set bklink-minor-mode-map "C-t i" #'bklink-insert))
 
 ;; d2
 (install-package 'd2-mode)

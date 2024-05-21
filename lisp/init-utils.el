@@ -224,15 +224,6 @@ point reaches the beginning or end of the buffer, stop there."
 (keymap-global-set "C-x _" 'split-window-vertically-instead)
 
 
-;; windmove
-;;
-;; If the keybinding is conflict with window mamager, try frames-only-mode.
-(keymap-global-set "s-p" 'windmove-up)
-(keymap-global-set "s-h" 'windmove-left)
-(keymap-global-set "s-t" 'windmove-right)
-(keymap-global-set "s-n" 'windmove-down)
-
-
 ;; tab-bar
 ;;
 ;; Built-in window layout manager
