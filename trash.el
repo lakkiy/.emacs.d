@@ -127,3 +127,13 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 (keymap-global-set "s-h" 'windmove-left)
 (keymap-global-set "s-t" 'windmove-right)
 (keymap-global-set "s-n" 'windmove-down)
+
+
+;; my/ctl-t-map
+;;
+;; The original `C-t' is bound to `transpose-chars', which is not very
+;; useful(I never use it since I use emacs), and `C-t' is only for my
+;; personal keymap in dvorak keyboard layout.
+(define-prefix-command 'my/ctl-t-map)
+(global-set-key (kbd "C-t") 'my/ctl-t-map)
+

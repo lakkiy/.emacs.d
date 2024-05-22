@@ -139,15 +139,6 @@ point reaches the beginning or end of the buffer, stop there."
   (add-hook 'after-init-hook #'my/getenv-path))
 
 
-;; my/ctl-t-map
-;;
-;; The original `C-t' is bound to `transpose-chars', which is not very
-;; useful(I never use it since I use emacs), and `C-t' is only for my
-;; personal keymap in dvorak keyboard layout.
-(define-prefix-command 'my/ctl-t-map)
-(global-set-key (kbd "C-t") 'my/ctl-t-map)
-
-
 ;; Delete things(don’t send to kill ring
 (defun my/delete-to-the-begining ()
   (interactive)
