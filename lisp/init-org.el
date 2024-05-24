@@ -229,5 +229,8 @@ Need pandoc installed."
 (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
 (add-hook 'org-mode-hook 'org-modern-indent-mode 90)
 
+;; TODO config font and center
+(install-package 'dslide "https://github.com/positron-solutions/dslide")
+
 ;;; init-org.el ends here
 (provide 'init-org)
