@@ -137,3 +137,17 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 (define-prefix-command 'my/ctl-t-map)
 (global-set-key (kbd "C-t") 'my/ctl-t-map)
 
+
+;; Highlight current line
+(defun my/hl-line-setup ()
+  "Disable `hl-line-mode' if region is active."
+  (when (and (bound-and-true-p hl-line-mode)
+             (region-active-p))
+    (hl-line-unhighlight)))
+(with-eval-after-load 'hl-line
+  (add-hook 'post-command-hook #'my/hl-line-setup))
+(when (display-graphic-p)
+  (add-hook 'prog-mode-hook #'hl-line-mode))
+;; FIXME 打开两个一样的窗口并且都用 hl line 开启， scrool 那个 inactive 的高亮位
+;; 置也会变
+

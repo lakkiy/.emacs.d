@@ -162,17 +162,6 @@
 ;; No Fcitx5 in Emacs PGTK build.
 (setq pgtk-use-im-context-on-new-connection nil)
 
-;; Highlight current line
-(defun my/hl-line-setup ()
-  "Disable `hl-line-mode' if region is active."
-  (when (and (bound-and-true-p hl-line-mode)
-             (region-active-p))
-    (hl-line-unhighlight)))
-(with-eval-after-load 'hl-line
-  (add-hook 'post-command-hook #'my/hl-line-setup))
-(when (display-graphic-p)
-  (add-hook 'prog-mode-hook #'hl-line-mode))
-
 ;; Highlight parenthesises
 (setq show-paren-when-point-in-periphery t
       show-paren-context-when-offscreen 'overlay
