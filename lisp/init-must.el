@@ -223,6 +223,7 @@
   (global-goto-address-mode 1)
   (pixel-scroll-precision-mode 1))
 (add-hook 'after-init-hook #'my/init-func)
+(add-hook 'after-save-hook #'delete-trailing-whitespace)
 
 
 
