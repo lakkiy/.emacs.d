@@ -159,7 +159,8 @@
 ;; machine api.openai-sb.com login apikey password ****
 (install-package 'gptel)
 
-(setq gptel-default-mode 'org-mode)
+(setq gptel-default-mode 'org-mode
+      gptel-org-branching-context t)
 
 (add-hook 'gptel-mode-hook #'visual-fill-column-mode)
 
@@ -168,7 +169,7 @@
     :host "api.openai-sb.com"
     :key (retrieve-authinfo-key "api.openai-sb.com" "apikey")
     :stream t
-    :models '("gpt-3.5-turbo-16k")))
+    :models '("gpt-4")))
 
 (with-eval-after-load 'gptel
   (when (auth-source-search :host "api.openai-sb.com" :user "apikey")
