@@ -158,6 +158,7 @@
 ;; or
 ;; machine api.openai-sb.com login apikey password ****
 (install-package 'gptel)
+(install-package 'gptel-quick "https://github.com/karthink/gptel-quick")
 
 (setq gptel-default-mode 'org-mode
       gptel-org-branching-context t)
