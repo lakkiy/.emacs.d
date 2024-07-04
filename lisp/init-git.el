@@ -49,6 +49,7 @@
 
 (with-eval-after-load 'magit
   (when (auth-source-search :host "api.openai-sb.com" :user "apikey")
+    (require 'gptel)
     (require 'gpt-commit)
     (setq gpt-commit-api-url "https://api.openai-sb.com/v1/chat/completions")
     (setq gpt-commit-openai-key (retrieve-authinfo-key "api.openai-sb.com" "apikey"))
