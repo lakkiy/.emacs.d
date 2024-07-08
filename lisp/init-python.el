@@ -31,14 +31,7 @@
          (venvPath (string-trim-right fn "/"))
          (out-file (expand-file-name "pyrightconfig.json" (project-root (project-current)))))
     (with-temp-file out-file
-      (insert (json-encode (list :reportOptionalMemberAccess: "none"
-                                 :reportOptionalSubscript: "none"
-                                 :reportOptionalIterable: "none"
-                                 :reportAttributeAccessIssue: "none"
-                                 :reportOperatorIssue: "none"
-                                 :reportArgumentType: "none"
-                                 :reportCallIssue: "none"
-                                 :venvPath venvPath
+      (insert (json-encode (list :venvPath venvPath
                                  :venv ".venv"))))
     (message "Configured `%s` to use environment `%s`" out-file pyvenv-virtual-env)))
 
