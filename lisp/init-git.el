@@ -47,13 +47,13 @@
 ;; magit-gptcommit
 (install-package 'gpt-commit)
 
-(with-eval-after-load 'magit
-  (when (auth-source-search :host "api.openai-sb.com" :user "apikey")
-    (require 'gpt-commit)
-    (setq gpt-commit-api-url "https://api.openai-sb.com/v1/chat/completions")
-    (setq gpt-commit-openai-key (retrieve-authinfo-key "api.openai-sb.com" "apikey"))
-    (setq gpt-commit-model-name "gpt-4")
-    (add-hook 'git-commit-setup-hook 'gpt-commit-message)))
+;; NOTE Config this in custom.el, eg
+;; (with-eval-after-load 'magit
+;;   (require 'gpt-commit)
+;;   (setq gpt-commit-api-url "https://api.openai-sb.com/v1/chat/completions")
+;;   (setq gpt-commit-openai-key (retrieve-authinfo-key "api.openai-sb.com" "apikey"))
+;;   (setq gpt-commit-model-name "gpt-4")
+;;   (add-hook 'git-commit-setup-hook 'gpt-commit-message))
 
 (install-package 'magit-file-icons)
 

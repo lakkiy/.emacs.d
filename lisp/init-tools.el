@@ -165,16 +165,12 @@
 
 (add-hook 'gptel-mode-hook #'visual-fill-column-mode)
 
-(defun gptel-openai-sb ()
-  (gptel-make-openai "ChatGPT-SB"
-    :host "api.openai-sb.com"
-    :key (retrieve-authinfo-key "api.openai-sb.com" "apikey")
-    :stream t
-    :models '("gpt-4")))
-
-(with-eval-after-load 'gptel
-  (when (auth-source-search :host "api.openai-sb.com" :user "apikey")
-    (setq-default gptel-backend (gptel-openai-sb))))
+;; NOTE Custom gptel backends in custom.el, eg
+;; (setq gptel-backend (gptel-make-openai "ChatGPT-SB"
+;;                       :host "api.openai-sb.com"
+;;                       :key (retrieve-authinfo-key "api.openai-sb.com" "apikey")
+;;                       :stream t
+;;                       :models '("gpt-4")))
 
 ;; outli
 (install-package 'outli "https://github.com/jdtsmith/outli")
