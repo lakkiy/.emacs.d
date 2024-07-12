@@ -151,27 +151,6 @@
 (with-eval-after-load 'ghelp
   (keymap-global-set "C-h r" #'ghelp-resume))
 
-;; gptel
-;;
-;; store gpt key in ~/.authinfo
-;; machine api.openai.com login apikey password ****
-;; or
-;; machine api.openai-sb.com login apikey password ****
-(install-package 'gptel)
-(install-package 'gptel-quick "https://github.com/karthink/gptel-quick")
-
-(setq gptel-default-mode 'org-mode
-      gptel-org-branching-context t)
-
-(add-hook 'gptel-mode-hook #'visual-fill-column-mode)
-
-;; NOTE Custom gptel backends in custom.el, eg
-;; (setq gptel-backend (gptel-make-openai "ChatGPT-SB"
-;;                       :host "api.openai-sb.com"
-;;                       :key (retrieve-authinfo-key "api.openai-sb.com" "apikey")
-;;                       :stream t
-;;                       :models '("gpt-4")))
-
 ;; outli
 (install-package 'outli "https://github.com/jdtsmith/outli")
 (add-hook 'prog-mode-hook #'(lambda () (unless (file-remote-p default-directory) (outli-mode 1))))

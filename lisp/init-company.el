@@ -82,35 +82,5 @@
   (let ((inhibit-message t))
     (yas-reload-all)))
 
-;; copilot
-(install-package 'copilot "https://github.com/zerolfx/copilot.el")
-
-;; 由于 `lisp-indent-offset' 的默认值是 nil，在编辑 elisp 时每敲一个字
-;; 符都会跳出一个 warning，将其默认值设置为 t 以永不显示这个 warning
-(setq-default copilot--indent-warning-printed-p t
-              copilot-indent-offset-warning-disable t)
-
-(add-hook 'prog-mode-hook 'copilot-mode)
-
-(with-eval-after-load 'copilot
-  ;; 文件超出 `copilot-max-char' 的时候不要弹出一个 warning 的 window
-  (defun my-copilot-get-source-suppress-warning (original-function &rest args)
-    "Advice to suppress display-warning in copilot--get-source."
-    (cl-letf (((symbol-function 'display-warning) (lambda (&rest args) nil)))
-      (apply original-function args)))
-  (advice-add 'copilot--get-source :around #'my-copilot-get-source-suppress-warning)
-
-  (add-to-list 'copilot-major-mode-alist '("go" . "go"))
-  (add-to-list 'copilot-major-mode-alist '("go-ts" . "go"))
-
-  (keymap-set copilot-completion-map "C-g" #'copilot-clear-overlay)
-  (keymap-set copilot-completion-map "C-e" #'copilot-accept-completion)
-  (keymap-set copilot-completion-map "M-p" #'copilot-previous-completion)
-  (keymap-set copilot-completion-map "M-n" #'copilot-next-completion)
-
-  ;; only enable copilot in meow insert mode
-  (with-eval-after-load 'meow
-    (add-to-list 'copilot-enable-predicates 'meow-insert-mode-p)))
-
 ;;; init-company.el ends here
 (provide 'init-company)
