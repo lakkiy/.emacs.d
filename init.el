@@ -18,6 +18,7 @@
 
 (require 'init-package)
 ;; (require 'init-benchmark)
+
 (require 'init-meow)
 (require 'init-ui)
 (require 'init-lib)
@@ -36,7 +37,6 @@
 (require 'init-web)
 
 ;; standalone apps
-;; should work with init-package
 (require 'init-org)
 (require 'init-git)
 (require 'init-text)
