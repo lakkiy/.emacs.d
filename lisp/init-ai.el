@@ -33,19 +33,20 @@
   (with-eval-after-load 'meow
     (add-to-list 'copilot-enable-predicates 'meow-insert-mode-p)))
 
+
 ;; gptel
 ;;
-;; store gpt key in ~/.authinfo
+;; Store gpt key in ~/.authinfo:
 ;; machine api.openai.com login apikey password ****
-;; or
-;; machine api.openai-sb.com login apikey password ****
 ;;
-;; NOTE Custom gptel backends in custom.el, eg
-;; (setq gptel-backend (gptel-make-openai "ChatGPT-SB"
-;;                       :host "api.openai-sb.com"
-;;                       :key (retrieve-authinfo-key "api.openai-sb.com" "apikey")
-;;                       :stream t
-;;                       :models '("gpt-4")))
+;; Or other host proxy to openai:
+;; machine api.openai-sb.com login apikey password ****
+;; And custom gptel backend:
+;; (gptel-make-openai "SB OpenAI"
+;;   :host "api.openai-sb.com"
+;;   :key (retrieve-authinfo-key "api.openai-sb.com" "apikey")
+;;   :stream t
+;;   :models '("gpt-4"))
 (install-package 'gptel)
 (install-package 'gptel-quick "https://github.com/karthink/gptel-quick")
 
@@ -53,6 +54,9 @@
       gptel-org-branching-context t)
 
 (add-hook 'gptel-mode-hook #'visual-fill-column-mode)
+(add-hook 'gptel-post-stream-hook 'gptel-auto-scroll)
+(add-hook 'gptel-post-response-functions 'gptel-end-of-response)
+
 
 ;; magit-gptcommit
 ;;
@@ -64,6 +68,7 @@
 ;;   (setq gpt-commit-model-name "gpt-4")
 ;;   (add-hook 'git-commit-setup-hook 'gpt-commit-message))
 (install-package 'gpt-commit)
+
 
 ;;; init-ai.el ends here
 (provide 'init-ai)

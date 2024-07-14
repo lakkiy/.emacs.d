@@ -33,6 +33,7 @@
 (defvar my/font-size-default 13
   "Default font size.")
 
+
 
 (defun font-installed-p (font-list)
   (catch 'font-found
@@ -70,6 +71,7 @@
                          face-font-rescale-alist nil nil #'equal)
               (cdr setting))))))
 
+
 
 (if (daemonp)
     (add-hook 'server-after-make-frame-hook #'my/setup-font)
@@ -80,5 +82,6 @@
   (setq buffer-face-mode-face '(:family "Sarasa Mono SC"))
   (buffer-face-mode +1))
 
-;;; init-font.el ends here
+
 (provide 'init-font)
+;;; init-font.el ends here

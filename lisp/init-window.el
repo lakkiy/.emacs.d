@@ -18,14 +18,15 @@
 
 (add-hook 'after-init-hook #'winum-mode)
 
+
 ;; project-x, save window layout by project
 (install-package 'project-x "https://github.com/karthink/project-x")
 (with-eval-after-load 'project
   (project-x-mode 1))
 
+
 ;; popper
 (install-package 'popper)
-
 (add-hook 'after-init-hook #'popper-mode)
 
 (setq popper-reference-buffers
@@ -34,25 +35,25 @@
         "\\*Async Shell Command\\*"
         "\\*Compile-Log\\*"
         "\\*Completions\\*"
-        "\\*Warnings\\*"
+        "\\Agenda Commands\\*"
+        help-mode
+        compilation-mode
+        ghelp-page-mode
 
         "^\\*eshell.*\\*$" eshell-mode  ;eshell as a popup
         "^\\*shell.*\\*$"  shell-mode   ;shell as a popup
         "^\\*term.*\\*$"   term-mode    ;term as a popup
-        "\\Agenda Commands\\*"
-
-        ;; help & message
-        help-mode
-        compilation-mode
-
-        ghelp-page-mode
         "^\\*eat.*\\*$" eat-mode))
 
-(with-eval-after-load 'project
-  (setq popper-group-function 'popper-group-by-project))
+(global-set-key (kbd "C-`") 'popper-toggle)
+(global-set-key (kbd "M-`") 'popper-cycle)
+(global-set-key (kbd "C-M-`") 'popper-toggle-type)
 
 (with-eval-after-load 'popper
-  (keymap-global-set "C-M-`" #'popper-toggle-type)
+  (require 'popper-echo)
+  (popper-echo-mode +1)
+  (with-eval-after-load 'project
+    (setq popper-group-function 'popper-group-by-project))
   (defun my-popper-fit-window-height (win)
     "Determine the height of popup window WIN by fitting it to the buffer's content."
     (fit-window-to-buffer
@@ -61,14 +62,17 @@
      (floor (frame-height) 3)))
   (setq popper-window-height #'my-popper-fit-window-height))
 
+
 ;; ace-window
 (install-package 'ace-window)
 (keymap-global-set "M-o" 'ace-window)
 (setq aw-keys '(?a ?o ?e ?u ?i))
 
+
 ;; golden-ratio
 (install-package 'golden-ratio)
 (define-key mode-specific-map "\\" 'golden-ratio)
 
-;;; init-window.el ends here
+
 (provide 'init-window)
+;;; init-window.el ends here

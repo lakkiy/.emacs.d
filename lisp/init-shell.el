@@ -3,24 +3,25 @@
 ;; eshell
 (add-hook 'eshell-mode-hook (lambda () (setq outline-regexp eshell-prompt-regexp)))
 
+
 ;; eat
 ;;
 ;; https://abode.karthinks.com/share/eat-modes.png
 (install-package 'eat)
-(keymap-global-set "C-`" #'eat)
 
+(defun jps-eat-term-name (&optional display)
+  "Set terminal to xterm on remote hosts to ensure that backspace works.
+https://codeberg.org/akib/emacs-eat/issues/119 "
+  (if (file-remote-p default-directory)
+      "xterm-256color"
+    (eat-term-get-suitable-term-name display)))
+
+(setq eat-term-name 'jps-eat-term-name)
 (setq eat-kill-buffer-on-exit t
       eat-enable-directory-tracking t)
 
 (add-hook 'eshell-load-hook 'eat-eshell-mode)
 (add-hook 'eshell-load-hook 'eat-eshell-visual-command-mode)
-
-(defun jps-eat-term-name (&optional display)
-  "Set terminal to xterm on remote hosts to ensure that backspace works https://codeberg.org/akib/emacs-eat/issues/119"
-  (if (file-remote-p default-directory)
-      "xterm-256color"
-    (eat-term-get-suitable-term-name display)))
-(setq eat-term-name 'jps-eat-term-name)
 
 ;; Use char mode in INSERT state, and emacs mode in NORMAL
 ;; state. When switching to INSERT state, move the cursor to the end
@@ -35,5 +36,6 @@
   (advice-add 'eat-semi-char-mode :after 'eat-emacs-mode)
   (add-hook 'eat-mode-hook 'eat-meow-setup))
 
-;;; init-shell.el ends here
+
 (provide 'init-shell)
+;;; init-shell.el ends here
