@@ -52,8 +52,7 @@
 (with-eval-after-load 'popper
   (require 'popper-echo)
   (popper-echo-mode +1)
-  (with-eval-after-load 'project
-    (setq popper-group-function 'popper-group-by-project))
+
   (defun my-popper-fit-window-height (win)
     "Determine the height of popup window WIN by fitting it to the buffer's content."
     (fit-window-to-buffer
