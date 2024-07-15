@@ -58,6 +58,7 @@
    '("0" . meow-digit-argument))
 
   (meow-normal-define-key
+   '("L" . consult-line)
    '("S" . save-buffer)
    '("Q" . flymake-goto-prev-error)
    '("J" . flymake-goto-next-error)
