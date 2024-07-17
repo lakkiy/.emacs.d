@@ -5,6 +5,9 @@
 ;; set to =librime=.
 (install-package 'rime)
 
+;; FIXME set `rime-emacs-module-header-root' to folder contain emacs-module.h
+;; for nix echo system
+
 (if (eq system-type 'darwin)
     (setq rime-librime-root (expand-file-name "librime/dist" user-emacs-directory))
   (setq  rime-share-data-dir "~/.local/share/fcitx5/rime"))

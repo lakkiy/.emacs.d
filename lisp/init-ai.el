@@ -42,11 +42,12 @@
 ;; Or other host proxy to openai:
 ;; machine api.openai-sb.com login apikey password ****
 ;; And custom gptel backend:
-;; (gptel-make-openai "SB OpenAI"
-;;   :host "api.openai-sb.com"
-;;   :key (retrieve-authinfo-key "api.openai-sb.com" "apikey")
-;;   :stream t
-;;   :models '("gpt-4"))
+;; (with-eval-after-load 'gptel
+;;   (setq gptel-backend (gptel-make-openai "SB OpenAI"
+;;                         :host "api.openai-sb.com"
+;;                         :key (retrieve-authinfo-key "api.openai-sb.com" "apikey")
+;;                         :stream t
+;;                         :models '("gpt-4"))))
 (install-package 'gptel)
 (install-package 'gptel-quick "https://github.com/karthink/gptel-quick")
 
