@@ -340,6 +340,7 @@
                     '((nil "^[[:space:]]*\\(message\\|service\\|enum\\)[[:space:]]+\\([[:alnum:]]+\\)" 2))))))
 (install-package 'yaml-mode)
 (install-package 'toml-mode)
+(install-package 'nginx-mode)
 
 ;; Show trailing whitespaces
 (setq whitespace-style '(face trailing))
