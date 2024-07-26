@@ -82,12 +82,23 @@
         ;; 和 treesit 的缩进冲突
         :documentOnTypeFormattingProvider))
 
+;; https://codeberg.org/mekeor/init/src/commit/11e3d86aa18090a5e3a6f0d29373c24373f29aaf/init.el#L813-L842
+;; INFO: Translation:
+;;   | JSON  | Eglot       |
+;;   |-------+-------------|
+;;   | true  | t           |
+;;   | false | :json-false |
+;;   | null  | nil         |
+;;   | {}    | eglot-{}    |
 (setq-default eglot-workspace-configuration
-              '((:gopls
-                 (:ui.completion.usePlaceholders . t)
-                 (:ui.diagnostic.staticcheck . t)
-                 ;; for I have to edit wire.go even ignore it in build time
-                 (:build.buildFlags . ["-tags" "wireinject"]))))
+              '( :gopls ( :buildFlags ["-tags" "wireinject"]
+                          :usePlaceholders t
+                          :staticcheck t)
+                 :pyright ( :checkOnlyOpenFiles t
+                            :typeCheckingMode "basic")
+                 :basedpyright ( :checkOnlyOpenFiles t
+                                 :typeCheckingMode "basic")
+                 ))
 
 (with-eval-after-load 'eglot
   (keymap-set eglot-mode-map "M-RET" #'eglot-code-actions)
