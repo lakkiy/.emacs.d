@@ -332,7 +332,8 @@
 (setq dired-mouse-drag-files t
       dired-dwim-target t
       dired-kill-when-opening-new-dired-buffer t
-      dired-auto-revert-buffer t)
+      dired-auto-revert-buffer t
+      delete-by-moving-to-trash t)
 
 (add-hook 'dired-mode-hook #'dired-hide-details-mode)
 
