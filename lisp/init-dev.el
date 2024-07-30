@@ -365,5 +365,8 @@
 
 (add-hook 'prog-mode-hook #'subword-mode)
 
+(install-package 'just-mode)
+(install-package 'justl)
+
 ;;; init-dev.el ends here
 (provide 'init-dev)
