@@ -1,6 +1,6 @@
 ;;; -*- lexical-binding: t -*-
 
-;; copilot
+;;; copilot
 ;;
 ;; Manually enable copilot, add the following code to custom.el:
 ;; (add-hook 'prog-mode-hook 'copilot-mode)
@@ -33,8 +33,7 @@
   (with-eval-after-load 'meow
     (add-to-list 'copilot-enable-predicates 'meow-insert-mode-p)))
 
-
-;; gptel
+;;; gptel
 ;;
 ;; Store gpt key in ~/.authinfo:
 ;; machine api.openai.com login apikey password ****
@@ -57,19 +56,6 @@
 (add-hook 'gptel-mode-hook #'visual-fill-column-mode)
 (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll)
 (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
-
-
-;; magit-gptcommit
-;;
-;; NOTE Config this in custom.el, eg
-;; (with-eval-after-load 'magit
-;;   (require 'gpt-commit)
-;;   (setq gpt-commit-api-url "https://api.openai-sb.com/v1/chat/completions")
-;;   (setq gpt-commit-openai-key (retrieve-authinfo-key "api.openai-sb.com" "apikey"))
-;;   (setq gpt-commit-model-name "gpt-4")
-;;   (add-hook 'git-commit-setup-hook 'gpt-commit-message))
-(install-package 'gpt-commit)
-
 
 ;;; init-ai.el ends here
 (provide 'init-ai)
