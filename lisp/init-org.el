@@ -43,15 +43,6 @@
 (add-hook 'org-mode-hook #'my/org-mode-setup)
 
 (with-eval-after-load 'org
-  ;; interactive surround
-  (org-surround-markup "*" "/" "_" "=" "+" "$")
-
-  ;; zero space
-  (keymap-set org-mode-map "M-SPC" #'my/insert-zero-width-space)
-  (with-eval-after-load 'ox
-    (add-to-list 'org-export-filter-final-output-functions #'my/org-export-remove-zero-width-space t))
-
-  ;; tempo
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
   (require 'org-tempo))
 
@@ -79,6 +70,22 @@ otherwise call `org-self-insert-command'."
                                    (insert ,key)))
                              (call-interactively #'org-self-insert-command)))
                 collect `(define-key org-mode-map (kbd ,key) #',name))))
+(with-eval-after-load 'org
+  (org-surround-markup "*" "/" "_" "=" "+" "$"))
+
+;;; 中文行内格式化
+;;
+;; 例如：
+;; org-mode 中/斜体/没效果，必须要在前后都加个空格才行，但中文与中文之间加空格是不可以接受的。
+;; 最开始的帖子
+;; https://emacs-china.org/t/org-mode/597
+;; 太 hack 了，经常碰到不适用的情况
+;; https://emacs-china.org/t/org-mode/22313
+;; 最新的帖子
+;; https://emacs-china.org/t/org-mode/26643
+;;
+;; 其他中文相关问题也会写在这里
+;; https://emacs-china.org/t/org-mode-html/7174
 
 (defun my/insert-zero-width-space ()
   (interactive)
@@ -89,9 +96,49 @@ otherwise call `org-self-insert-command'."
   "Remove zero width spaces from TEXT."
   (unless (org-export-derived-backend-p 'org)
     (replace-regexp-in-string "\u200b" "" text)))
+(with-eval-after-load 'ox
+  (add-to-list 'org-export-filter-final-output-functions #'my/org-export-remove-zero-width-space t))
 
-
-;; Capture
+;; 使用 prettify 显示零宽空格
+;; https://github.com/shynur/.emacs.d/blob/c08a83be390cb44f7cbaa0c01bae2dcd77dbaee3/lisp/shynur-lang.el#L35C46-L35C48
+(defun my/display-zero-space ()
+  (setq-local prettify-symbols-alist (push '("\u200b" . ?‸) prettify-symbols-alist))
+  (prettify-symbols-mode 1))
+(add-hook 'org-mode-hook #'my/display-zero-space)
+
+;; TODO 复制时去掉零宽空格
+
+(with-eval-after-load 'org
+  (keymap-set org-mode-map "M-SPC" #'my/insert-zero-width-space)
+
+  ;; From spacemacs chinese layer
+  (define-advice org-html-paragraph
+      (:around (f paragraph contents info) org-html-paragraph-advice)
+    "Join consecutive Chinese lines into a single long line without
+unwanted space when exporting org-mode to html."
+    (let* ((origin-contents contents)
+           (fix-regexp "[[:multibyte:]]")
+           (fixed-contents
+            (replace-regexp-in-string
+             (concat
+              "\\(" fix-regexp "\\) *\n *\\(" fix-regexp "\\)") "\\1\\2" origin-contents)))
+      (funcall f paragraph fixed-contents info))))
+
+;;; Agenda && Capture
+;;
+;; For capture and view tasks.
+
+;; Define tags for tasks context.
+;; https://systemcrafters.net/org-mode-productivity/effective-task-tags-by-context/
+(setq org-tag-alist '(("@feature" . ?f)
+                      ("@error" . ?e)
+                      ;; weekly
+                      ("@reportw" . ?w)
+                      ;; monthly
+                      ("@reportm" . ?m)
+                      ;; quarter
+                      ("@reportq" . ?q)))
+
 (setq org-default-notes-file (concat org-directory "/default-notes.org")
       org-capture-templates
       `(("b" "Blog idea" entry (file "~/Dropbox/org/blog.org") "* %^{title}\n%u\n%?" :prepend t)
@@ -102,8 +149,6 @@ otherwise call `org-self-insert-command'."
          "* %^{Title}\n:PROPERITIES:\n:Created: %T\n:END:" :tree-type week)))
 (keymap-global-set "C-c c" 'org-capture)
 
-
-;; Agenda
 (setq org-todo-keywords '((sequence "TODO(t)" "WIP(i!)" "WAIT(w!)" "|" "DONE(d!)" "CANCELLED(c@/!)"))
       org-todo-keyword-faces '(("TODO"       :foreground "#7c7c75" :weight bold)
                                ("WIP"        :foreground "#0098dd" :weight bold)
@@ -129,8 +174,9 @@ otherwise call `org-self-insert-command'."
 (keymap-global-set "C-c a" 'org-agenda)
 (keymap-global-set "C-c l" 'org-store-link)
 
-
-;; LaTeX
+;;; LaTeX
+;;
+;; For export org to pdf.
 (setq org-latex-compiler "xelatex")
 (setq org-preview-latex-default-process 'dvisvgm)
 (setq org-preview-latex-image-directory "~/.cache/org-latex")
@@ -141,7 +187,9 @@ otherwise call `org-self-insert-command'."
         "rm -fr %b.out %b.log %b.tex auto"))
 (setq org-latex-packages-alist '("\\usepackage[UTF8, fontset=fandol]{ctex}"))
 
-;; babel
+;;; org-babel
+;;
+;; Execute code block in org file.
 
 ;; No confirm when execute code block.
 (setq org-confirm-babel-evaluate nil)
@@ -151,9 +199,9 @@ otherwise call `org-self-insert-command'."
 (install-package 'ob-restclient)
 (install-package 'ob-go)
 
-;; export
+;;; Export to html
 ;;
-;; For now use ~pandoc --embed-resources --standalone~.
+;; For now use '$pandoc --embed-resources --standalone' .
 (defun my/org-export-to-html ()
   "Convert current org buffer to html with image embed.
 Need pandoc installed."
@@ -168,7 +216,9 @@ Need pandoc installed."
 (with-eval-after-load 'org
   (add-to-list 'org-export-backends 'md))
 
-;; citar
+;;; citar
+;;
+;; Insert citation in org-mode.
 (install-package 'citar)
 (setq org-cite-global-bibliography '("~/Dropbox/bib/references.bib")
       org-cite-insert-processor 'citar
@@ -176,7 +226,7 @@ Need pandoc installed."
       org-cite-activate-processor 'citar
       citar-bibliography org-cite-global-bibliography)
 
-;; org-static-blog
+;;; Blog
 (install-package 'org-static-blog)
 (setq org-static-blog-publish-title "mrunhap's blog"
       org-static-blog-publish-url "https://mrunhap.github.io/"
@@ -189,48 +239,39 @@ Need pandoc installed."
         org-static-blog-page-preamble (get-string-from-file "~/p/blog/static/preamble.html")
         org-static-blog-page-postamble (get-string-from-file "~/p/blog/static/postamble.html")))
 
-;; toc-org
-(install-package 'toc-org)
-(autoload 'toc-org-enable "toc-org" nil t)
-(autoload 'toc-org-insert-toc "toc-org" nil t)
-
-;; org-tidy
+;;; Slide
 ;;
-;; hide org-mode property
-(install-package 'org-tidy)
-(add-hook 'org-mode-hook #'org-tidy-mode)
+;; Make slide with org-mode.
 
-;; org-appear
-;;
-;; toggles visibility of hidden org-mode element parts upon entering and leaving an element
+;; TODO config font and center
+(install-package 'dslide "https://github.com/positron-solutions/dslide")
+
+;;; Look And Feel
+
+;; Toggles visibility of hidden org-mode element parts upon entering and leaving an element.
 (install-package 'org-appear)
 (setq org-hide-emphasis-markers t)
 (add-hook 'org-mode-hook #'org-appear-mode)
 
 ;; org-modern
 (install-package 'org-modern)
-(install-package 'org-modern-indent "https://github.com/jdtsmith/org-modern-indent")
-
-;; org modern
 (setq org-modern-star ["›"]
       ;; Enable this will break code block indentation.
       org-modern-block-fringe nil
       ;; use valign instead
       org-modern-table nil)
 
-;; org modern indent
-(setq org-modern-hide-stars nil
-      org-modern-block-name '("" . ""))
-
 (defun my/setup-org-modern ()
   (setq-local line-spacing 0.15)
   (org-modern-mode))
 (add-hook 'org-mode-hook 'my/setup-org-modern)
 (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+
+;; Make `org-indent-mode' work with org-modern
+(install-package 'org-modern-indent "https://github.com/jdtsmith/org-modern-indent")
+(setq org-modern-hide-stars nil
+      org-modern-block-name '("" . ""))
 (add-hook 'org-mode-hook 'org-modern-indent-mode 90)
 
-;; TODO config font and center
-(install-package 'dslide "https://github.com/positron-solutions/dslide")
-
-;;; init-org.el ends here
 (provide 'init-org)
+;;; init-org.el ends here

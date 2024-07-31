@@ -151,3 +151,9 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 ;; FIXME 打开两个一样的窗口并且都用 hl line 开启， scrool 那个 inactive 的高亮位
 ;; 置也会变
 
+
+;; NOTE 会卡住编辑，不太好用
+;; Hide org-mode property.
+(install-package 'org-tidy)
+(setq org-tidy-properties-style 'invisible)
+(add-hook 'org-mode-hook #'org-tidy-mode)
