@@ -2,9 +2,10 @@
 
 ;;; tabnine
 (install-package 'tabnine)
-(add-hook 'kill-emacs-hook #'tabnine-kill-process)
 
 (with-eval-after-load 'tabnine
+  (add-hook 'kill-emacs-hook #'tabnine-kill-process)
+
   (defun +tabnine-disable-predicate()
     (or (meow-motion-mode-p)
         (meow-normal-mode-p)))
