@@ -1,5 +1,22 @@
 ;;; -*- lexical-binding: t -*-
 
+;;; tabnine
+(install-package 'tabnine)
+(add-hook 'kill-emacs-hook #'tabnine-kill-process)
+
+(with-eval-after-load 'tabnine
+  (defun +tabnine-disable-predicate()
+    (or (meow-motion-mode-p)
+        (meow-normal-mode-p)))
+  (add-to-list 'tabnine-disable-predicates #'+tabnine-disable-predicate)
+
+  (define-key tabnine-completion-map (kbd "TAB") nil)
+  (define-key tabnine-completion-map (kbd "<tab>") nil)
+  (define-key tabnine-completion-map (kbd "C-e") #'tabnine-accept-completion)
+  (define-key tabnine-completion-map (kbd "C-g") #'tabnine-clear-overlay)
+  (define-key tabnine-completion-map (kbd "M-p") #'tabnine-next-completion)
+  (define-key tabnine-completion-map (kbd "M-n") #'tabnine-previous-completion))
+
 ;;; copilot
 ;;
 ;; Manually enable copilot, add the following code to custom.el:
