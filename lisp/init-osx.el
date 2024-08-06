@@ -21,4 +21,4 @@
       ;; Don't open a file in a new frame
       ns-pop-up-frames nil)
 
-(provide 'init-osx)
+;;; init-osx.el ends here

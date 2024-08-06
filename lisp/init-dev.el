@@ -369,4 +369,3 @@
 (install-package 'justl)
 
 ;;; init-dev.el ends here
-(provide 'init-dev)

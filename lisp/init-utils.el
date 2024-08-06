@@ -282,6 +282,4 @@ point reaches the beginning or end of the buffer, stop there."
 (with-eval-after-load 'tab-bar
   (tab-bar-history-mode 1))
 
-
 ;;; init-utils.el ends here
-(provide 'init-utils)

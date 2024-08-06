@@ -30,6 +30,4 @@
   (treemacs-load-theme "nerd-icons")
   (treemacs-set-scope-type 'Tabs))
 
-
 ;;; init-dired ends here
-(provide 'init-dired)

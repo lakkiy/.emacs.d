@@ -61,4 +61,3 @@
                             (concat "  ◊  " (breadcrumb-imenu-crumbs))))))
 
 ;;; init-ui.el ends here
-(provide 'init-ui)

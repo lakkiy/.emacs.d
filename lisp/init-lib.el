@@ -18,4 +18,4 @@
 (install-package 'valign)
 (setq valign-fancy-bar t)
 
-(provide 'init-lib)
+;;; init-lib.el ends here

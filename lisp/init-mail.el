@@ -140,4 +140,3 @@
 (add-hook 'gnus-summary-mode-hook #'hl-line-mode)
 
 ;;; init-mail.el ends here
-(provide 'init-mail)

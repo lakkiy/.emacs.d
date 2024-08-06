@@ -49,4 +49,3 @@ Default to translate buffer, or select region."
 (add-hook 'context-menu-functions #'my/context-translate)
 
 ;;; init-translator.el ends here
-(provide 'init-translator)

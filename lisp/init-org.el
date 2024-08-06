@@ -273,5 +273,4 @@ Need pandoc installed."
       org-modern-block-name '("" . ""))
 (add-hook 'org-mode-hook 'org-modern-indent-mode 90)
 
-(provide 'init-org)
 ;;; init-org.el ends here

@@ -36,6 +36,4 @@ https://codeberg.org/akib/emacs-eat/issues/119 "
   (advice-add 'eat-semi-char-mode :after 'eat-emacs-mode)
   (add-hook 'eat-mode-hook 'eat-meow-setup))
 
-
-(provide 'init-shell)
 ;;; init-shell.el ends here

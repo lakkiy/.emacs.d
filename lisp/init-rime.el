@@ -41,4 +41,3 @@
   (keymap-set rime-mode-map "M-j" 'rime-force-enable))
 
 ;;; init-rime.el ends here
-(provide 'init-rime)

@@ -1,52 +1,62 @@
 ;;; -*- lexical-binding: t -*-
 
+;;; Init
+;;
 ;; --debug-init implies `debug-on-error'.
 (setq debug-on-error init-file-debug)
-
-(dolist (dir '("lisp" "lisp/lang" "site-lisp"))
-  (push (expand-file-name dir user-emacs-directory) load-path))
-
 (setq custom-theme-directory (expand-file-name "themes" user-emacs-directory))
+(push (expand-file-name "site-lisp" user-emacs-directory) load-path)
 
-;; Custom file
+(defun my-load-relative (file)
+  "Load FILE relative to user-emacs-directory."
+  (let ((rfile (expand-file-name file user-emacs-directory)))
+    (when (file-exists-p rfile)
+      (load rfile nil t))))
+
+;;; Custom file
 (setq custom-file (locate-user-emacs-file "custom.el"))
 (when (file-exists-p custom-file) (load custom-file :no-error :no-message))
 
-(require 'init-must)
-(require 'init-utils)
-(require 'init-font)
+;;; Built-in config
+(my-load-relative "lisp/init-must.el")
+(my-load-relative "lisp/init-utils.el")
+(my-load-relative "lisp/init-font.el")
+(my-load-relative "lisp/init-package.el")
 
-(require 'init-package)
-;; (require 'init-benchmark)
+;;; Benchmark
+;; (require 'benchmark-init)
+;; (add-hook 'after-init-hook 'benchmark-init/deactivate)
+;; (benchmark-init/activate)
 
-(require 'init-meow)
-(require 'init-ui)
-(require 'init-lib)
-(require 'init-tools)
-(require 'init-minibuffer)
-(require 'init-window)
-(require 'init-company)
-(require 'init-rime)
+;;; Configs
+(my-load-relative "lisp/init-meow.el")
+(my-load-relative "lisp/init-ui.el")
+(my-load-relative "lisp/init-lib.el")
+(my-load-relative "lisp/init-tools.el")
+(my-load-relative "lisp/init-minibuffer.el")
+(my-load-relative "lisp/init-window.el")
+(my-load-relative "lisp/init-company.el")
+(my-load-relative "lisp/init-rime.el")
 
-(require 'init-dev)
-(require 'init-lisp)
-(require 'init-go)
-(require 'init-python)
-(require 'init-c)
-(require 'init-nix)
-(require 'init-web)
+(my-load-relative "lisp/init-dev.el")
+(my-load-relative "lisp/init-lisp.el")
+(my-load-relative "lisp/init-go.el")
+(my-load-relative "lisp/init-python.el")
+(my-load-relative "lisp/init-c.el")
+(my-load-relative "lisp/init-nix.el")
+(my-load-relative "lisp/init-web.el")
 
 ;; standalone apps
-(require 'init-org)
-(require 'init-git)
-(require 'init-text)
-(require 'init-mail)
-(require 'init-spell)
-(require 'init-shell)
-(require 'init-telega)
-(require 'init-dired)
-(require 'init-translator)
-(require 'init-ai)
+(my-load-relative "lisp/init-org.el")
+(my-load-relative "lisp/init-git.el")
+(my-load-relative "lisp/init-text.el")
+(my-load-relative "lisp/init-mail.el")
+(my-load-relative "lisp/init-spell.el")
+(my-load-relative "lisp/init-shell.el")
+(my-load-relative "lisp/init-telega.el")
+(my-load-relative "lisp/init-dired.el")
+(my-load-relative "lisp/init-translator.el")
+(my-load-relative "lisp/init-ai.el")
 
 (when (eq system-type 'darwin)
-  (require 'init-osx))
+  (my-load-relative "lisp/init-osx.el"))

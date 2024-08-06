@@ -51,4 +51,3 @@
 (add-hook 'python-base-mode-hook 'code-cells-mode-maybe)
 
 ;;; init-python.el ends here
-(provide 'init-python)

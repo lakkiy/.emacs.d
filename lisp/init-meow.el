@@ -177,4 +177,4 @@
    '("w" . meow-next-word)
    '("W" . meow-next-symbol)))
 
-(provide 'init-meow)
+;;; init-meow.el ends here

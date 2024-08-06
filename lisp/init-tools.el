@@ -160,4 +160,3 @@
 (install-package 'pgmacs "https://github.com/emarsden/pgmacs")
 
 ;;; init-tools.el ends here
-(provide 'init-tools)

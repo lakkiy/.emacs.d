@@ -14,4 +14,3 @@
 (install-package 'jit-spell)
 
 ;;; init-spell.el ends here
-(provide 'init-spell)

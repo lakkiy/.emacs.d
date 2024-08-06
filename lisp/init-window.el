@@ -72,6 +72,4 @@
 (install-package 'golden-ratio)
 (define-key mode-specific-map "\\" 'golden-ratio)
 
-
-(provide 'init-window)
 ;;; init-window.el ends here

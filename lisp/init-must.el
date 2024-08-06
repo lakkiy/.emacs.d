@@ -374,6 +374,4 @@
   ;; to the previous result
   (keymap-substitute isearch-mode-map #'isearch-delete-chac #'isearch-del-chac))
 
-
 ;;; init-must.el ends here
-(provide 'init-must)

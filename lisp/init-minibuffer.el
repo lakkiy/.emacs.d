@@ -98,4 +98,3 @@
   (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode))
 
 ;;; init-minibuffer.el ends here
-(provide 'init-minibuffer)

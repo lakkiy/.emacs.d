@@ -82,6 +82,4 @@
   (setq buffer-face-mode-face '(:family "Sarasa Mono SC"))
   (buffer-face-mode +1))
 
-
-(provide 'init-font)
 ;;; init-font.el ends here

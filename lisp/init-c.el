@@ -4,4 +4,3 @@
       c-basic-offset 4)
 
 ;;; init-c.el ends here
-(provide 'init-c)

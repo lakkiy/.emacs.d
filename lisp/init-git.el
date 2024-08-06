@@ -89,4 +89,3 @@
                    '(diff-hl-margin-mode nil)))))
 
 ;;; init-git.el ends here
-(provide 'init-git)

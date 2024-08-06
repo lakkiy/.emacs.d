@@ -83,4 +83,3 @@
     (yas-reload-all)))
 
 ;;; init-company.el ends here
-(provide 'init-company)

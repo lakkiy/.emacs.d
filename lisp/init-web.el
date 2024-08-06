@@ -4,4 +4,3 @@
 (setq-default js-indent-level 2)
 
 ;;; init-web.el ends here
-(provide 'init-web)

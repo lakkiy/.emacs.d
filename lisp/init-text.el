@@ -51,4 +51,3 @@
 (install-package 'typst-ts-mode "https://git.sr.ht/~meow_king/typst-ts-mode")
 
 ;;; init-text.el ends here
-(provide 'init-text)
