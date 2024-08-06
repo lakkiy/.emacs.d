@@ -325,7 +325,7 @@
       indent-bars-zigzag nil
       indent-bars-color-by-depth nil
       indent-bars-highlight-current-depth '(:blend 0.5)
-      indent-bars-display-on-blank-lines t)
+      indent-bars-display-on-blank-lines nil)
 
 (with-eval-after-load 'indent-bars
   (when (treesit-available-p)
