@@ -1,7 +1,8 @@
 ;;; -*- lexical-binding: t -*-
 
 (defvar my/fonts-default
-  '("Roboto Mono"
+  '("Latin Modern Mono"
+    "Roboto Mono"
     "Monaco"
     "Cascadia Code"
     "Menlo"
