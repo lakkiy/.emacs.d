@@ -1,7 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
+;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 (setq mac-option-modifier 'meta
       mac-command-modifier 'super)

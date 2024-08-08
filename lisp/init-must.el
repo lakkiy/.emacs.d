@@ -4,23 +4,16 @@
 ;; more than this to make UTF-8 the default coding system:
 (set-language-environment "UTF-8")
 
-;; Speed up process data
-(setq read-process-output-max (* 4 1024 1024)
-      process-adaptive-read-buffering nil)
+;; Set-language-environment sets default-input-method, which is unwanted.
+(setq default-input-method nil)
 
 ;; Suppress GUI features and more
 (setq use-file-dialog nil
       use-dialog-box nil
       suggest-key-bindings nil
-      initial-major-mode 'fundamental-mode
-      inhibit-x-resources t
       inhibit-default-init t
-      inhibit-startup-screen t
       inhibit-startup-message t
-      inhibit-startup-buffer-menu t
-      warning-suppress-log-types '((comp))
       server-client-instructions nil)
-(fset #'display-startup-echo-area-message #'ignore)
 
 ;; Pixelwise resize
 (setq window-resize-pixelwise t
@@ -36,28 +29,6 @@
 ;; for the key passphrase.
 (setq epg-pinentry-mode 'loopback)
 
-;; Optimize for long line
-;; https://emacs-china.org/t/topic/25811/9?u=rua
-(setq-default bidi-display-reordering 'left-to-right)
-(setq bidi-inhibit-bpa t
-      long-line-threshold 1000
-      large-hscroll-threshold 1000
-      syntax-wholeline-max 1000)
-(add-hook 'after-init-hook #'global-so-long-mode)
-
-;; No backup files
-(setq make-backup-files nil
-      auto-save-default nil)
-
-;; No lock files
-(setq create-lockfiles nil)
-
-;; Always load the newest file
-(setq load-prefer-newer t)
-
-;; No gc for font caches
-(setq inhibit-compacting-font-caches t)
-
 ;; Improve display
 (setq display-raw-bytes-as-hex t
       redisplay-skip-fontification-on-input t)
@@ -67,6 +38,174 @@
 
 ;; No eyes distraction
 (setq blink-cursor-mode nil)
+
+;; Dont move points out of eyes
+(setq mouse-yank-at-point t)
+
+(setq-default fill-column 80)
+
+;; No tabs
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
+
+;; Tab to complete
+(setq tab-always-indent 'complete)
+
+;; Sane defaults
+(setq use-short-answers t)
+
+;; Inhibit switching out from `y-or-n-p' and `read-char-choice'
+(setq y-or-n-p-use-read-key t
+      read-char-choice-use-read-key t)
+
+;; Enable the disabled narrow commands
+(put 'narrow-to-defun  'disabled nil)
+(put 'narrow-to-page   'disabled nil)
+(put 'narrow-to-region 'disabled nil)
+;; mouse-1 on a button should follow the link
+(put 'default-button 'follow-link t)
+
+;; Enable the disabled dired commands
+(put 'dired-find-alternate-file 'disabled nil)
+
+;; Enable the disabled `list-timers', `list-threads' commands
+(put 'list-timers 'disabled nil)
+(put 'list-threads 'disabled nil)
+
+;; No Fcitx5 in Emacs PGTK build.
+(setq pgtk-use-im-context-on-new-connection nil)
+
+;; Undo window change
+(setq winner-dont-bind-my-keys t)
+(add-hook 'after-init-hook #'winner-mode)
+
+;; Back to the previous position
+(add-hook 'after-init-hook #'save-place-mode)
+
+;; Needed by `webpaste'
+(setq browse-url-generic-program
+      (or (executable-find "firefox")
+          (when (eq system-type 'darwin) "open")
+          (when (eq system-type 'gnu/linux) "xdg-open")))
+
+;; Buffer manager
+(fset 'list-buffers 'ibuffer)
+(setq-default ibuffer-show-empty-filter-groups nil)
+
+;; Better word wrapping for CJK characters
+(setq word-wrap-by-category t)
+(setq sentence-end-double-space nil)
+
+;; Emacs 28: Hide commands in M-x which do not work in the current mode.
+(setq read-extended-command-predicate #'command-completion-default-include-p)
+
+;; Save minibuffer history
+(setq history-length 1000)
+(add-hook 'after-init-hook #'savehist-mode)
+
+;; Echo current unfinished command immediately.
+(setq echo-keystrokes 0.1)
+
+(defun my/init-func ()
+  (context-menu-mode 1)
+  (global-auto-revert-mode 1)
+  (global-goto-address-mode 1)
+  (pixel-scroll-precision-mode 1))
+(add-hook 'after-init-hook #'my/init-func)
+(add-hook 'after-save-hook #'delete-trailing-whitespace)
+
+(setq outline-minor-mode-cycle t
+      outline-minor-mode-highlight t)
+
+(setq completion-styles '(basic partial-completion)
+      completion-category-overrides '((file (styles basic partial-completion))))
+
+(setq require-final-newline t
+      visible-cursor t
+      vc-follow-symlinks t)
+
+(setq display-line-numbers-width 3)
+
+(keymap-global-unset "C-h h")
+(keymap-global-unset "M-z")
+(when (display-graphic-p)
+  (global-unset-key (kbd "C-z"))
+  (global-unset-key (kbd "C-x C-z")))
+
+;;; Performance
+
+;; Increase how much is read from processes in a single chunk (default is 4kb).
+(setq read-process-output-max (* 4 1024 1024)
+      process-adaptive-read-buffering nil)
+
+;; Reduce rendering/line scan work by not rendering cursors or regions in
+;; non-focused windows.
+(setq-default cursor-in-non-selected-windows nil)
+
+;; Disable warnings from the legacy advice API. They aren't useful.
+(setq ad-redefinition-action 'accept)
+
+;; Disable compiliation warnings
+(setq warning-suppress-log-types '((comp)))
+
+;; Ignore warnings about "existing variables being aliased".
+(setq warning-suppress-types '((defvaralias) (lexical-binding)))
+
+;; Don't ping things that look like domain names.
+(setq ffap-machine-p-known 'reject)
+
+;; Font compacting can be very resource-intensive, especially when rendering
+;; icon fonts on Windows. This will increase memory usage.
+(setq inhibit-compacting-font-caches t)
+
+;; A second, case-insensitive pass over `auto-mode-alist' is time wasted.
+;; No second pass of case-insensitive search over auto-mode-alist.
+(setq auto-mode-case-fold nil)
+
+;; Optimize for long line
+;; https://emacs-china.org/t/topic/25811/9?u=rua
+(setq long-line-threshold 1000
+      large-hscroll-threshold 1000
+      syntax-wholeline-max 1000)
+(add-hook 'after-init-hook #'global-so-long-mode)
+
+;; Disable bidirectional text scanning for a modest performance boost.
+(setq-default bidi-display-reordering 'left-to-right
+              bidi-paragraph-direction 'left-to-right)
+
+;; Give up some bidirectional functionality for slightly faster re-display.
+(setq bidi-inhibit-bpa t)
+
+;; Reduce *Message* noise at startup. An empty scratch buffer (or the
+;; dashboard) is more than enough, and faster to display.
+(setq inhibit-startup-screen t
+      inhibit-startup-echo-area-message user-login-name)
+(setq initial-buffer-choice nil
+      inhibit-startup-buffer-menu t
+      inhibit-x-resources t)
+
+;; Remove "For information about GNU Emacs..." message at startup
+(fset #'display-startup-echo-area-message #'ignore)
+
+;; Shave seconds off startup time by starting the scratch buffer in
+;; `fundamental-mode'
+(setq initial-major-mode 'fundamental-mode
+      initial-scratch-message nil)
+
+;;; autosave, backup, lockfiles
+
+;; No backup files
+(setq make-backup-files nil
+      auto-save-default nil)
+
+;; No lock files
+(setq create-lockfiles nil)
+
+;; Most of time I will do save manually.
+(setq auto-save-visited-interval 10)
+(add-hook 'after-init-hook #'auto-save-visited-mode)
+
+;;; scroll
 
 ;; Smooth scroll & friends
 (setq scroll-step 2
@@ -104,38 +243,11 @@
 (defalias 'scroll-up-command '+pixel-scroll-interpolate-down)
 (defalias 'scroll-down-command '+pixel-scroll-interpolate-up)
 
-;; Dont move points out of eyes
-(setq mouse-yank-at-point t)
+;;; electric-pair
+(add-hook 'prog-mode-hook #'electric-pair-local-mode)
+(setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
 
-(setq-default fill-column 80)
-
-;; No tabs
-(setq-default indent-tabs-mode nil)
-(setq-default tab-width 4)
-
-;; Tab to complete
-(setq tab-always-indent 'complete)
-
-;; Sane defaults
-(setq use-short-answers t)
-
-;; Inhibit switching out from `y-or-n-p' and `read-char-choice'
-(setq y-or-n-p-use-read-key t
-      read-char-choice-use-read-key t)
-
-;; Enable the disabled narrow commands
-(put 'narrow-to-defun  'disabled nil)
-(put 'narrow-to-page   'disabled nil)
-(put 'narrow-to-region 'disabled nil)
-;; mouse-1 on a button should follow the link
-(put 'default-button 'follow-link t)
-
-;; Enable the disabled dired commands
-(put 'dired-find-alternate-file 'disabled nil)
-
-;; Enable the disabled `list-timers', `list-threads' commands
-(put 'list-timers 'disabled nil)
-(put 'list-threads 'disabled nil)
+;;; help
 
 ;; Quick editing in `describe-variable'
 (with-eval-after-load 'help-fns
@@ -149,45 +261,9 @@
                   (describe-keymap variable)
                 (apply oldfun variable buffer frame))))
 
-;; Most of time I will do save manually.
-(setq auto-save-visited-interval 10)
-(add-hook 'after-init-hook #'auto-save-visited-mode)
-
-;; Don't pass case-insensitive to `auto-mode-alist'
-(setq auto-mode-case-fold nil)
-
-;; Don't ping things that look like domain names.
-(setq ffap-machine-p-known 'reject)
-
-;; No Fcitx5 in Emacs PGTK build.
-(setq pgtk-use-im-context-on-new-connection nil)
-
-;; Highlight parenthesises
-(setq show-paren-when-point-in-periphery t
-      show-paren-context-when-offscreen 'overlay
-      show-paren-when-point-inside-paren t
-      show-paren-context-when-offscreen t)
-(add-hook 'after-init-hook #'show-paren-mode)
-
-;; Undo window change
-(setq winner-dont-bind-my-keys t)
-(add-hook 'after-init-hook #'winner-mode)
-
-;; Back to the previous position
-(add-hook 'after-init-hook #'save-place-mode)
-
-;; Needed by `webpaste'
-(setq browse-url-generic-program
-      (or (executable-find "firefox")
-          (when (eq system-type 'darwin) "open")
-          (when (eq system-type 'gnu/linux) "xdg-open")))
-
-;; Buffer manager
-(fset 'list-buffers 'ibuffer)
-(setq-default ibuffer-show-empty-filter-groups nil)
-
-;; Enable `repeat-mode' to reduce key sequence length
+;;; repeat
 ;;
+;; Enable `repeat-mode' to reduce key sequence length
 ;; If we have been idle for `repeat-exit-timeout' seconds, exit the repeated
 ;; state.
 (setq repeat-mode t
@@ -195,18 +271,7 @@
       repeat-exit-timeout 3
       repeat-exit-key (kbd "RET"))
 
-;; Better word wrapping for CJK characters
-(setq word-wrap-by-category t)
-(setq sentence-end-double-space nil)
-
-;; Emacs 28: Hide commands in M-x which do not work in the current mode.
-(setq read-extended-command-predicate #'command-completion-default-include-p)
-
-;; Save minibuffer history
-(setq history-length 1000)
-(add-hook 'after-init-hook #'savehist-mode)
-
-;; Recently opened files
+;;; recentf
 (keymap-global-set "C-x C-r" #'recentf-open-files)
 (add-hook 'after-init-hook #'recentf-mode)
 (setq recentf-max-saved-items 1000
@@ -214,44 +279,16 @@
       recentf-exclude `(,tramp-file-name-regexp
                         "COMMIT_EDITMSG"))
 
-;; Echo current unfinished command immediately.
-(setq echo-keystrokes 0.1)
+;;; paren
+;;
+;; Highlight parenthesises
+(setq show-paren-when-point-in-periphery t
+      show-paren-context-when-offscreen 'overlay
+      show-paren-when-point-inside-paren t
+      show-paren-context-when-offscreen t)
+(add-hook 'after-init-hook #'show-paren-mode)
 
-(defun my/init-func ()
-  (context-menu-mode 1)
-  (global-auto-revert-mode 1)
-  (global-goto-address-mode 1)
-  (pixel-scroll-precision-mode 1))
-(add-hook 'after-init-hook #'my/init-func)
-(add-hook 'after-save-hook #'delete-trailing-whitespace)
-
-
-
-(setq outline-minor-mode-cycle t
-      outline-minor-mode-highlight t)
-
-(setq completion-styles '(basic partial-completion)
-      completion-category-overrides '((file (styles basic partial-completion))))
-
-(setq require-final-newline t
-      cursor-in-non-selected-windows nil
-      visible-cursor t
-      vc-follow-symlinks t)
-
-(setq display-line-numbers-width 3)
-
-;; electric-pair
-(add-hook 'prog-mode-hook #'electric-pair-local-mode)
-(setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
-
-(keymap-global-unset "C-h h")
-(keymap-global-unset "M-z")
-(when (display-graphic-p)
-  (global-unset-key (kbd "C-z"))
-  (global-unset-key (kbd "C-x C-z")))
-
-
-;; tramp
+;;; tramp
 (setq-default vc-handled-backends '(Git))
 
 (setq tramp-verbose 0
@@ -297,8 +334,7 @@
   ;; the list by the special value ‘tramp-own-remote-path’.
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 
-
-;; project
+;;; project
 (setq project-vc-ignores '("target/" "bin/" "obj/")
       project-vc-extra-root-markers '(".project"
                                       "go.mod"
@@ -324,8 +360,7 @@
       (mapcan #'my/project-files-in-directory
               (or dirs (list (project-root project)))))))
 
-
-;; dired
+;;; dired
 (setq mouse-drag-and-drop-region t
       mouse-drag-and-drop-region-cross-program t)
 
@@ -344,8 +379,7 @@
   (define-key dired-mode-map (kbd "h") #'dired-up-directory)
   (define-key dired-mode-map [mouse-2] #'dired-find-file))
 
-
-;; isearch
+;;; isearch
 (setq isearch-lazy-count t
       isearch-lazy-highlight t
       lazy-highlight-buffer t
