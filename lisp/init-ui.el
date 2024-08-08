@@ -1,15 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-;; theme
-(defvar my/theme 'modus-operandi
-  "The default theme.")
-
-(defvar my/theme-tui 'carbon
-  "The default theme for TUI.")
-
-(defvar after-load-theme-hook nil
-  "Hooks run after `load-theme'.")
-
 (defun my/load-theme (f theme &optional no-confirm no-enable &rest args)
   (interactive
    (list

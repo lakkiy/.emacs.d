@@ -18,6 +18,7 @@
 (when (file-exists-p custom-file) (load custom-file :no-error :no-message))
 
 ;;; Built-in config
+(my-load-relative "lisp/init-var.el")
 (my-load-relative "lisp/init-must.el")
 (my-load-relative "lisp/init-utils.el")
 (my-load-relative "lisp/init-font.el")
