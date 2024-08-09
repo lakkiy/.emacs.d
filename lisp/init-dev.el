@@ -367,5 +367,6 @@
 
 (install-package 'just-mode)
 (install-package 'justl)
+(install-package 'rust-mode)
 
 ;;; init-dev.el ends here
