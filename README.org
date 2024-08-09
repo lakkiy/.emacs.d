@@ -23,12 +23,12 @@ C-h v:
 
 * Dep
 
-*git* 
+*git*
 
 ** Optional
 - =curl=
 - =direnv=
-- =rg= 
+- =rg=
 - =kubectl= for kubel
 - =d2= text to diagram
 - =delta= for magit-delta
@@ -41,7 +41,7 @@ C-h v:
 - =librime= Chinese input method, also see emacs-rime
 - =M-x copilot-install-server= to use copilot in emacs
 - Nerd font to display icon(M-x nerd-icons-install-fonts or install manually)
-- ltex-ls org, markdown 
+- ltex-ls org, markdown
 - digestif LaTeX
 
 *** Programming language specific
@@ -66,7 +66,7 @@ Tramp
 ** Golang
 
 ** Python
-pyright ruff  
+pyright ruff
 
 *** venv
 
@@ -79,9 +79,32 @@ pyright ruff
 ** AI & Translator
 
 Write to =~/.authinfo=
-#+begin_src 
+#+begin_src
 machine api.deepl.com login auth-key password ****
 machine api.openai.com login apikey password ****
+#+end_src
+
+* Debug
+
+** Python
+
+- Use ~dape~
+
+M-x ~dape~ and use ~debugpy~ adapter.
+
+Add ~:python "project/.venv/bin/python"~ to use virtual enviroment.
+
+- ~pdb~
+
+Or use M-x ~pdb~: ~python -m pdb main.py~.
+
+- ~pdb.set_trace()~
+
+Just add this to program and run:
+
+#+begin_src python
+import pdb
+pdb.set_trace()
 #+end_src
 
 * FAQ

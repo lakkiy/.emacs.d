@@ -5,7 +5,8 @@
       python-indent-guess-indent-offset nil)
 
 ;; venv
-(install-package 'pyvenv)
+(install-package 'pet)
+(add-hook 'python-base-mode-hook 'pet-mode -10)
 
 ;; Two ways to make pyright work with installed package.
 ;;
