@@ -31,7 +31,7 @@
     "Noto Color Emoji")
   "List of fonts to try when setting the Emoji font.")
 
-(defvar my/font-size-default 13
+(defvar my/font-size-default 17
   "Default font size.")
 
 (defvar my/theme 'modus-operandi
