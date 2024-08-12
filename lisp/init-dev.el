@@ -368,5 +368,7 @@
 (install-package 'just-mode)
 (install-package 'justl)
 (install-package 'rust-mode)
+(install-package 'racket-mode)
+(install-package 'ob-racket "https://github.com/hasu/emacs-ob-racket")
 
 ;;; init-dev.el ends here

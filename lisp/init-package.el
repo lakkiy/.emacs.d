@@ -17,5 +17,6 @@
       (unless (package-installed-p pkg)
         (package-refresh-contents))
       (package-install pkg))))
+(install-package 'sicp)
 
 ;;; init-package.el ends here
