@@ -6,7 +6,12 @@
 
 ;; venv
 (install-package 'pet)
-(add-hook 'python-base-mode-hook 'pet-mode -10)
+
+;; Have performance issue with over tramp, and seems don't work with conda.
+(defun my/maybe-enable-pet-mode ()
+  (unless (file-remote-p default-directory)
+    (pet-mode 1)))
+(add-hook 'python-base-mode-hook 'my/maybe-enable-pet-mode -10)
 
 ;; Two ways to make pyright work with installed package.
 ;;
@@ -26,7 +31,6 @@
   "Write a `pyrightconfig.json' file at the root of a project with
 `venvPath` and `venv`."
   (interactive)
-  (call-interactively #'pyvenv-activate)
   (let* ((json-encoding-pretty-print t)
          (fn (tramp-file-local-name python-shell-virtualenv-root))
          (venvPath (string-trim-right fn "/"))
