@@ -50,4 +50,7 @@
                 (:eval (and imenu--index-alist
                             (concat "  ◊  " (breadcrumb-imenu-crumbs))))))
 
+(install-package 'solaire-mode)
+(add-hook 'after-init-hook #'solaire-global-mode)
+
 ;;; init-ui.el ends here
