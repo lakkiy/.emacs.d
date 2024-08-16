@@ -1,37 +1,45 @@
 ;;; -*- lexical-binding: t -*-
 
-;; fontify-patch
+;;; fontify-patch
+;;
+;; fontifying buffers (or strings) that contain patch diffs
 (install-package 'fontify-patch "https://github.com/whame/fontify-patch")
 (add-hook 'gnus-part-display-hook 'fontify-patch-buffer)
 
-;; w3m, read html mail
+;;; w3m
+;;
+;;read html mail
 (install-package 'w3m)
 (when (executable-find "w3m")
   (setq mm-text-html-renderer 'w3m))
 
-;; message
+;;; message
 ;;
 ;; https://man.sr.ht/lists.sr.ht/etiquette.md#wrap-lines
-;; 在邮件中使用 =auto-fill-column= 进行硬折行。
-(setq message-kill-buffer-on-exit t
-      message-mail-alias-type 'ecomplete
-      user-full-name "Liu Bo"
-      user-mail-address "liubolovelife@gmail.com"
-      message-signature user-full-name
-      smtpmail-smtp-user user-mail-address
-      send-mail-function #'smtpmail-send-it
-      message-send-mail-function #'message-use-send-mail-function
+
+;; basic user informaiton
+(setq user-full-name "Liu Bo"
+      user-mail-address "liubolovelife@gmail.com")
+
+;; smtp server for send mail
+;; `send-mail-function' and `message-send-mail-function' will auto configured
+(setq smtpmail-smtp-user user-mail-address
       smtpmail-smtp-server "smtp.gmail.com"
       smtpmail-smtp-service 587)
 
+;; misc config for message
+(setq message-signature nil
+      message-kill-buffer-on-exit t
+      message-mail-alias-type 'ecomplete)
+
 (defun my/message-mode-setup ()
+  (setq-local fill-column 72)
   (auto-fill-mode)
   (when (executable-find "ltex-ls")
     (eglot-ensure)))
 (add-hook 'message-mode-hook #'my/message-mode-setup)
 
-
-;; gnus
+;;; gnus
 (setq gnus-use-cache t
       gnus-use-scoring nil
       gnus-suppress-duplicates t
