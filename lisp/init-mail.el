@@ -35,6 +35,7 @@
 (defun my/message-mode-setup ()
   (setq-local fill-column 72)
   (auto-fill-mode)
+  (variable-pitch-mode 1)
   (when (executable-find "ltex-ls")
     (eglot-ensure)))
 (add-hook 'message-mode-hook #'my/message-mode-setup)
@@ -146,5 +147,6 @@
 
 (add-hook 'gnus-select-group-hook #'gnus-group-set-timestamp)
 (add-hook 'gnus-summary-mode-hook #'hl-line-mode)
+(add-hook 'gnus-article-mode-hook #'variable-pitch-mode)
 
 ;;; init-mail.el ends here
