@@ -354,6 +354,7 @@
 (install-package 'nginx-mode)
 
 ;; Show trailing whitespaces
+;; https://list.orgmode.org/orgmode/Zqjm0hyy5DjFNrgm@swain.home.arpa/
 (setq whitespace-style '(face trailing))
 (add-hook 'prog-mode-hook #'whitespace-mode)
 (add-hook 'conf-mode-hook #'whitespace-mode)
