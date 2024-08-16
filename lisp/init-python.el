@@ -1,7 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
 ;; Disable readline based native completion
-(setq python-shell-completion-native-enable nil
+(setq python-shell-dedicated 'project
       python-indent-guess-indent-offset nil)
 
 ;; venv
