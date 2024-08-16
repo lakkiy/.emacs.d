@@ -124,6 +124,10 @@ unwanted space when exporting org-mode to html."
               "\\(" fix-regexp "\\) *\n *\\(" fix-regexp "\\)") "\\1\\2" origin-contents)))
       (funcall f paragraph fixed-contents info))))
 
+(install-package 'pangu-spacing)
+(setq pangu-spacing-real-insert-separtor t)
+(add-hook 'org-mode-hook #'pangu-spacing-mode)
+
 ;;; Agenda && Capture
 ;;
 ;; For capture and view tasks.
