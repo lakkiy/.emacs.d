@@ -273,4 +273,7 @@ Need pandoc installed."
       org-modern-block-name '("" . ""))
 (add-hook 'org-mode-hook 'org-modern-indent-mode 90)
 
+(install-package 'org-variable-pitch)
+(add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
+
 ;;; init-org.el ends here
