@@ -4,15 +4,6 @@
 (setq python-shell-dedicated 'project
       python-indent-guess-indent-offset nil)
 
-;; venv
-(install-package 'pet)
-
-;; Have performance issue with over tramp, and seems don't work with conda.
-(defun my/maybe-enable-pet-mode ()
-  (unless (file-remote-p default-directory)
-    (pet-mode 1)))
-(add-hook 'python-base-mode-hook 'my/maybe-enable-pet-mode -10)
-
 ;; Two ways to make pyright work with installed package.
 ;;
 ;; 1. Use venv.
@@ -40,8 +31,21 @@
                                  :venv ".venv"))))
     (message "Configured `%s` to use environment `%s`" out-file pyvenv-virtual-env)))
 
+;;; venv
+(install-package 'pet)
 
-;; ruff, lint and format python code(use apheleia to do format in emacs
+;; Have performance issue with over tramp, and seems don't work with conda.
+(defun my/maybe-enable-pet-mode ()
+  (unless (file-remote-p default-directory)
+    (pet-mode 1)))
+(add-hook 'python-base-mode-hook 'my/maybe-enable-pet-mode -10)
+
+;;; pytest
+(install-package 'python-pytest)
+
+;;; ruff
+;;
+;; lint and format python code(use apheleia to do format in emacs
 (install-package 'flymake-ruff)
 
 (defun my/flymake-ruff-maybe-enable ()
@@ -49,7 +53,7 @@
     (flymake-ruff-load)))
 (add-hook 'python-base-mode-hook 'my/flymake-ruff-maybe-enable)
 
-;; jupyter
+;;; jupyter
 ;;
 ;; Better with jupytext and pandoc installed.
 (install-package 'code-cells)
