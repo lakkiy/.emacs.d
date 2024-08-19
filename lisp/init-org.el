@@ -15,6 +15,7 @@
  ;; Use return to open link.
  org-return-follows-link t
  ;; perf
+ ;; https://emacs-china.org/t/org-babel/18699/12?u=rua
  org-modules nil
  ;; Fold all contents on opening a org file.
  org-startup-folded t
@@ -199,6 +200,24 @@ unwanted space when exporting org-mode to html."
 (setq org-confirm-babel-evaluate nil)
 
 (add-hook 'org-babel-after-execute #'org-redisplay-inline-images)
+
+;; https://emacs-china.org/t/org-babel/18699/10?u=rua
+(defun my/org-babel-execute-src-block (&optional _arg info _params)
+  "Load language if needed"
+  (let* ((lang (nth 0 info))
+         (sym (if (member (downcase lang) '("c" "cpp" "c++")) 'C (intern lang)))
+         (backup-languages org-babel-load-languages))
+    ;; - (LANG . nil) 明确禁止的语言，不加载。
+    ;; - (LANG . t) 已加载过的语言，不重复载。
+    (unless (assoc sym backup-languages)
+      (condition-case err
+          (progn
+            (org-babel-do-load-languages 'org-babel-load-languages (list (cons sym t)))
+            (setq-default org-babel-load-languages (append (list (cons sym t)) backup-languages)))
+        (file-missing
+         (setq-default org-babel-load-languages backup-languages)
+         err)))))
+(advice-add 'org-babel-execute-src-block :before #'my/org-babel-execute-src-block )
 
 (install-package 'ob-restclient)
 (install-package 'ob-go)
