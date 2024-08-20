@@ -219,6 +219,9 @@ unwanted space when exporting org-mode to html."
          err)))))
 (advice-add 'org-babel-execute-src-block :before #'my/org-babel-execute-src-block )
 
+(install-package 'corg "https://github.com/isamert/corg.el")
+(add-hook 'org-mode-hook #'corg-setup)
+
 (install-package 'ob-restclient)
 (install-package 'ob-go)
 
