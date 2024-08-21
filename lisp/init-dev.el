@@ -1,7 +1,18 @@
 ;;; -*- lexical-binding: t -*-
 
-
-;; lint
+;; gud; The unified debugger
+(add-hook 'gud-mode-hook #'gud-tooltip-mode)
+(setq gud-highlight-current-line t)
+
+;; compile, custome compile buffer when `project-compile'
+(setq compilation-always-kill t ; kill compilation process before starting another
+      compilation-ask-about-save nil    ; save all buffers on `compile'
+      compilation-scroll-output 'first-error)
+
+;; comment
+(setq comment-empty-lines t)
+
+;;; flymake
 (add-hook 'prog-mode-hook #'flymake-mode)
 (add-hook 'emacs-lisp-mode-hook #'(lambda ()
                                     (flymake-mode -1)))
@@ -32,8 +43,7 @@
           (lambda ()
             (add-hook 'eldoc-documentation-functions 'flymake-eldoc-function nil t)))
 
-
-;; jump
+;;; xref
 (add-hook 'xref-after-return-hook #'recenter)
 (add-hook 'xref-after-jump-hook #'recenter)
 
@@ -53,7 +63,7 @@
   (setq xref-search-program (cond ((executable-find "rg") 'ripgrep)
                                   (t 'grep))))
 
-;; dumb-jump
+;;; dumb-jump
 ;;
 ;; As default xref backend function.
 (install-package 'dumb-jump)
@@ -65,11 +75,8 @@
       dumb-jump-force-searcher 'rg)
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 
-
-;; jump & complete
+;;; eglot
 
-;; eglot, lsp client
-(install-package 'eglot-hierarchy "https://github.com/dolmens/eglot-hierarchy")
 (setq eglot-events-buffer-size 0
       eglot-autoshutdown t
       eglot-sync-connect nil ;; don't block of LSP connection attempts
@@ -111,7 +118,13 @@
   (add-to-list 'eglot-server-programs '(markdown-mode . ("ltex-ls")))
   (add-to-list 'eglot-server-programs '(message-mode . ("ltex-ls"))))
 
-;; citre, ctags/gtag jump and complete
+(install-package 'eglot-hierarchy "https://github.com/dolmens/eglot-hierarchy")
+(install-package 'eglot-booster "https://github.com/jdtsmith/eglot-booster")
+(when (executable-find "emacs-lsp-booster")
+  (setq eglot-booster-no-remote-boost t)
+  (add-hook 'after-init-hook #'eglot-booster-mode))
+
+;;; citre
 ;;
 ;; Use ctags/gtag to jump and complete.
 (install-package 'citre)
@@ -140,7 +153,8 @@
 (with-eval-after-load 'citre-peek
   (keymap-set citre-peek-keymap "M-l r" 'citre-peek-through-references))
 
-
+;;; apheleia
+;;
 ;; formatter
 (install-package 'apheleia)
 
@@ -167,18 +181,7 @@
     (setf (alist-get 'go-mode apheleia-mode-alist) '(goimports))
     (setf (alist-get 'go-ts-mode apheleia-mode-alist) '(goimports))))
 
-;; compile, custome compile buffer when `project-compile'
-(setq compilation-always-kill t ; kill compilation process before starting another
-      compilation-ask-about-save nil    ; save all buffers on `compile'
-      compilation-scroll-output 'first-error)
-
-
-;; debugger
-;; gud; The unified debugger
-(add-hook 'gud-mode-hook #'gud-tooltip-mode)
-(setq gud-highlight-current-line t)
-
-;; dape, debug client use DAP
+;;; dape
 (install-package 'dape)
 
 ;; Usually I use left window to show code
@@ -232,15 +235,11 @@
                  :program dape-go-test-rdir
                  :args dape-go-test-name)))
 
-
-;; direnv, load environment variables
+;;; direnv
 (install-package 'envrc)
 (add-hook 'after-init-hook #'envrc-global-mode)
 
-;; comment
-(setq comment-empty-lines t)
-
-;; treesit, syntax highlight
+;;; treesit
 (setq treesit-language-source-alist
       '((gomod . ("https://github.com/camdencheek/tree-sitter-gomod.git"))
         (toml . ("https://github.com/ikatyang/tree-sitter-toml"))
@@ -256,7 +255,7 @@
   (push '(python-mode . python-ts-mode) major-mode-remap-alist)
   (push '(go-mode . go-ts-mode) major-mode-remap-alist))
 
-;; hideshow, code folding
+;;; hideshow
 (add-hook 'prog-mode-hook #'hs-minor-mode)
 
 (defconst hideshow-folded-face '((t (:inherit 'font-lock-comment-face :box t))))
@@ -293,7 +292,7 @@
 
 (setq hs-set-up-overlay #'hideshow-folded-overlay-fn)
 
-;; pnui, struct editing
+;;; pnui
 (install-package 'puni)
 ;; (:bind
 ;;  "M-r" 'puni-splice
@@ -302,14 +301,14 @@
 ;;  "C-{" 'puni-barf-backward
 ;;  "C-}" 'puni-barf-forward)
 
-;; eldoc-box, show eldoc in box
+;;; eldoc-box
 (setq eldoc-idle-delay 1
       eldoc-documentation-function 'eldoc-documentation-compose)
 (install-package 'eldoc-box)
 (setq eldoc-box-only-multi-line t)
 (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode)
 
-;; indent-tabrs, show indent level for yaml, python
+;;; indent-tabrs
 (install-package 'indent-bars "https://github.com/jdtsmith/indent-bars.git")
 
 (add-hook 'python-base-mode-hook #'indent-bars-mode)
@@ -337,11 +336,11 @@
 				                             dictionary dictionary_comprehension
 				                             parenthesized_expression subscript)))))
 
-;; devdocs
+;;; devdocs
 (install-package 'devdocs)
 (keymap-global-set "C-h D" #'devdocs-lookup)
 
-;; require langs
+;;; misc
 (install-package 'protobuf-mode)
 
 (with-eval-after-load "protobuf-mode"
