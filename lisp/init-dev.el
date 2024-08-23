@@ -369,7 +369,6 @@
 (install-package 'justl)
 (install-package 'rust-mode)
 (install-package 'racket-mode)
-(install-package 'ob-racket "https://github.com/hasu/emacs-ob-racket")
 (install-package 'nix-mode)
 
 (setq c-default-style "linux"
