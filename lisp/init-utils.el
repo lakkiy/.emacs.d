@@ -259,7 +259,7 @@ point reaches the beginning or end of the buffer, stop there."
                (left-padding (/ space-to-add 2))
                (right-padding (- space-to-add left-padding)))
           (concat
-           bar
+           ;; bar
            (propertize (concat ;; (propertize " " 'display '(raise 0.3))
                         (make-string left-padding ?\s)
                         name
@@ -281,5 +281,18 @@ point reaches the beginning or end of the buffer, stop there."
 
 (with-eval-after-load 'tab-bar
   (tab-bar-history-mode 1))
+
+;; https://www.emacs.dyerdwelling.family/emacs/20240817082349-emacs--syncing-tab-bar-to-theme/
+(defun my/sync-tab-bar-to-theme ()
+  "Synchronize tab-bar faces with the current theme."
+  (interactive)
+  (let ((default-bg (face-background 'default))
+        (default-fg (face-foreground 'default))
+        (inactive-fg (face-foreground 'mode-line-inactive)))
+    (custom-set-faces
+     `(tab-bar ((t (:inherit default :background ,default-bg :foreground ,default-fg))))
+     `(tab-bar-tab ((t (:inherit default :background ,default-fg :foreground ,default-bg))))
+     `(tab-bar-tab-inactive ((t (:inherit default :background ,default-bg :foreground ,inactive-fg)))))))
+(add-hook 'after-load-theme-hook #'my/sync-tab-bar-to-theme)
 
 ;;; init-utils.el ends here
