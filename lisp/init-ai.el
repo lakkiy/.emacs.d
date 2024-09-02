@@ -70,9 +70,6 @@
 
 (setq gptel-default-mode 'org-mode
       gptel-org-branching-context t)
-
 (add-hook 'gptel-mode-hook #'visual-fill-column-mode)
-(add-hook 'gptel-post-stream-hook 'gptel-auto-scroll)
-(add-hook 'gptel-post-response-functions 'gptel-end-of-response)
 
 ;;; init-ai.el ends here
