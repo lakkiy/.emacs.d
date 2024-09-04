@@ -39,6 +39,9 @@
 (setq magit-diff-refine-hunk t
       magit-diff-paint-whitespace nil)
 
+(with-eval-after-load 'magit
+  (require 'gptel-commit))
+
 ;;; delta
 (install-package 'magit-delta)
 
