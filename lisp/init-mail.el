@@ -147,6 +147,5 @@
 
 (add-hook 'gnus-select-group-hook #'gnus-group-set-timestamp)
 (add-hook 'gnus-summary-mode-hook #'hl-line-mode)
-(add-hook 'gnus-article-mode-hook #'variable-pitch-mode)
 
 ;;; init-mail.el ends here
