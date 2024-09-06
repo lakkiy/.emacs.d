@@ -8,6 +8,7 @@
 (setq package-enable-at-startup nil)
 ;; gptel need newest org mode
 (setq package-install-upgrade-built-in t)
+(setq package-quickstart t)
 (package-initialize)
 
 (defun install-package (pkg &optional url)
