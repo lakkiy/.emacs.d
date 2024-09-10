@@ -222,7 +222,6 @@ unwanted space when exporting org-mode to html."
 (install-package 'corg "https://github.com/isamert/corg.el")
 (add-hook 'org-mode-hook #'corg-setup)
 
-(install-package 'ob-restclient)
 (install-package 'ob-go)
 
 ;;; Export to html

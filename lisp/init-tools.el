@@ -132,18 +132,6 @@
 ;; k8s
 (install-package 'kubel)
 
-;; restclient
-(install-package 'restclient)
-
-(add-to-list 'auto-mode-alist '("\\.rest\\'" . restclient-mode))
-
-(defun restclient-buffer ()
-  "Work with `rest' in the *restclient* buffer."
-  (interactive)
-  (with-current-buffer (get-buffer-create "*restclient*")
-    (restclient-mode)
-    (pop-to-buffer (current-buffer))))
-
 ;; ghelp
 (install-package 'ghelp "https://github.com/casouri/ghelp.git")
 (autoload #'ghelp-describe "ghelp")
@@ -158,5 +146,7 @@
 ;; database
 (install-package 'pg)
 (install-package 'pgmacs "https://github.com/emarsden/pgmacs")
+
+(install-package 'verb)
 
 ;;; init-tools.el ends here
