@@ -266,10 +266,10 @@
 ;; Enable `repeat-mode' to reduce key sequence length
 ;; If we have been idle for `repeat-exit-timeout' seconds, exit the repeated
 ;; state.
-(setq repeat-mode t
-      repeat-keep-prefix t
+(setq repeat-keep-prefix t
       repeat-exit-timeout 3
       repeat-exit-key (kbd "RET"))
+(add-hook 'after-init-hook #'repeat-mode)
 
 ;;; recentf
 (keymap-global-set "C-x C-r" #'recentf-open-files)
@@ -292,7 +292,6 @@
 (setq-default vc-handled-backends '(Git))
 
 (setq tramp-verbose 0
-      tramp-terminal-type "tramp"
       tramp-default-method "ssh")
 
 ;; Set remote-file-name-inhibit-cache to nil if remote files are not
@@ -326,7 +325,7 @@
   "Open the current file as root."
   (interactive)
   (sudo-find-file (file-truename buffer-file-name)))
-  (keymap-global-set "C-x C-z" #'sudo-this-file)
+(keymap-global-set "C-x C-z" #'sudo-this-file)
 
 (with-eval-after-load 'tramp
   ;; ‘Private Directories’ are the settings of the $PATH environment,
@@ -343,6 +342,18 @@
                                       "pyproject.toml"
                                       "pyrightconfig.json"
                                       "package.json"))
+
+(defun my/project-try-local (dir)
+  "Determine if DIR is a non-Git project."
+  (catch 'ret
+    (let ((pr-flags '((".project")
+                      ("go.mod" "Cargo.toml" "project.clj" "pom.xml" "package.json") ;; higher priority
+                      ("Makefile" "README.org" "README.md"))))
+      (dolist (current-level pr-flags)
+        (dolist (f current-level)
+          (when-let ((root (locate-dominating-file dir f)))
+            (throw 'ret (cons 'local root))))))))
+(setq project-find-functions '(my/project-try-local project-try-vc))
 
 (with-eval-after-load 'project
   ;; Use fd in `project-find-file'
