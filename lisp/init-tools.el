@@ -1,5 +1,8 @@
 ;;; -*- lexical-binding: t -*-
 
+(autoload #'color-outline-mode "color-outline.el" nil t)
+(add-hook 'prog-mode-hook #'color-outline-mode)
+
 ;; gcmh
 (install-package 'gcmh)
 (setq gcmh-high-cons-threshold (* 128 1024 1024))
@@ -113,22 +116,6 @@
 (setq atomic-chrome-buffer-open-style 'frame)
 (add-hook 'after-init-hook #'atomic-chrome-start-server)
 
-;; pdf-tools
-(install-package 'pdf-tools)
-
-(autoload #'pdf-view-mode "pdf-tools")
-(add-to-list 'auto-mode-alist '("\\.pdf\\'" . pdf-view-mode))
-
-(setq-default pdf-view-display-size 'fit-page)
-;; Enable hiDPI support, but at the cost of memory! See politza/pdf-tools#51
-(setq pdf-view-use-scaling t
-      pdf-view-use-imagemagick nil)
-
-(with-eval-after-load "pdf-tools"
-  (pdf-tools-install-noverify)
-  (keymap-substitute pdf-view-mode-map #'scroll-up-command #'pdf-view-scroll-up-or-next-page)
-  (keymap-substitute pdf-view-mode-map #'scroll-down-command #'pdf-view-scroll-down-or-previous-page))
-
 ;; k8s
 (install-package 'kubel)
 
@@ -138,14 +125,6 @@
 (keymap-global-set "C-h C-h" #'ghelp-describe)
 (with-eval-after-load 'ghelp
   (keymap-global-set "C-h r" #'ghelp-resume))
-
-;; outli
-(install-package 'outli "https://github.com/jdtsmith/outli")
-(add-hook 'prog-mode-hook #'(lambda () (unless (file-remote-p default-directory) (outli-mode 1))))
-
-;; database
-(install-package 'pg)
-(install-package 'pgmacs "https://github.com/emarsden/pgmacs")
 
 (install-package 'verb)
 

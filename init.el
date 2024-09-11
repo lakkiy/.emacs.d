@@ -44,7 +44,6 @@
 (my-load-relative "lisp/init-go.el")
 (my-load-relative "lisp/init-python.el")
 
-;; standalone apps
 (my-load-relative "lisp/init-org.el")
 (my-load-relative "lisp/init-git.el")
 (my-load-relative "lisp/init-text.el")

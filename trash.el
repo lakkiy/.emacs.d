@@ -157,3 +157,27 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 (install-package 'org-tidy)
 (setq org-tidy-properties-style 'invisible)
 (add-hook 'org-mode-hook #'org-tidy-mode)
+
+;; database
+(install-package 'pg)
+(install-package 'pgmacs "https://github.com/emarsden/pgmacs")
+
+;; pdf-tools
+(install-package 'pdf-tools)
+
+(autoload #'pdf-view-mode "pdf-tools")
+(add-to-list 'auto-mode-alist '("\\.pdf\\'" . pdf-view-mode))
+
+(setq-default pdf-view-display-size 'fit-page)
+;; Enable hiDPI support, but at the cost of memory! See politza/pdf-tools#51
+(setq pdf-view-use-scaling t
+      pdf-view-use-imagemagick nil)
+
+(with-eval-after-load "pdf-tools"
+  (pdf-tools-install-noverify)
+  (keymap-substitute pdf-view-mode-map #'scroll-up-command #'pdf-view-scroll-up-or-next-page)
+  (keymap-substitute pdf-view-mode-map #'scroll-down-command #'pdf-view-scroll-down-or-previous-page))
+
+;; jit lock error in go ts mode after save file
+(install-package 'outli "https://github.com/jdtsmith/outli")
+(add-hook 'prog-mode-hook #'(lambda () (unless (file-remote-p default-directory) (outli-mode 1))))
