@@ -309,7 +309,7 @@
 (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode)
 
 ;;; indent-tabrs
-(install-package 'indent-bars "https://github.com/jdtsmith/indent-bars.git")
+(install-package 'indent-bars)
 
 (add-hook 'python-base-mode-hook #'indent-bars-mode)
 (add-hook 'yaml-mode-hook #'indent-bars-mode)
