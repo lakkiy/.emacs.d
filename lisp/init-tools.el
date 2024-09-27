@@ -80,9 +80,7 @@
 
 ;; xeft
 (install-package 'xeft)
-(setq xeft-directory "~/Dropbox/org/roam"
-      xeft-database "~/.xeft/db"
-      xeft-default-extension  "org")
+(setq xeft-directory "~/Dropbox/org/roam")
 
 ;; bklink; create back link
 (setq bklink-summary-read-only-p t
@@ -117,7 +115,7 @@
 (add-hook 'after-init-hook #'atomic-chrome-start-server)
 
 ;; k8s
-(install-package 'kubel)
+(install-package 'kubed)
 
 ;; ghelp
 (install-package 'ghelp "https://github.com/casouri/ghelp.git")
