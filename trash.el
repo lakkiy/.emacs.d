@@ -181,3 +181,16 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 ;; jit lock error in go ts mode after save file
 (install-package 'outli "https://github.com/jdtsmith/outli")
 (add-hook 'prog-mode-hook #'(lambda () (unless (file-remote-p default-directory) (outli-mode 1))))
+
+;; 加上之后 project find file 不忽略 gitigrone 的文件了
+(defun my/project-try-local (dir)
+  "Determine if DIR is a non-Git project."
+  (catch 'ret
+    (let ((pr-flags '((".project")
+                      ("go.mod" "Cargo.toml" "project.clj" "pom.xml" "package.json") ;; higher priority
+                      ("Makefile" "README.org" "README.md"))))
+      (dolist (current-level pr-flags)
+        (dolist (f current-level)
+          (when-let ((root (locate-dominating-file dir f)))
+            (throw 'ret (cons 'local root))))))))
+(setq project-find-functions '(my/project-try-local project-try-vc))

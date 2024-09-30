@@ -343,18 +343,6 @@
                                       "pyrightconfig.json"
                                       "package.json"))
 
-(defun my/project-try-local (dir)
-  "Determine if DIR is a non-Git project."
-  (catch 'ret
-    (let ((pr-flags '((".project")
-                      ("go.mod" "Cargo.toml" "project.clj" "pom.xml" "package.json") ;; higher priority
-                      ("Makefile" "README.org" "README.md"))))
-      (dolist (current-level pr-flags)
-        (dolist (f current-level)
-          (when-let ((root (locate-dominating-file dir f)))
-            (throw 'ret (cons 'local root))))))))
-(setq project-find-functions '(my/project-try-local project-try-vc))
-
 (with-eval-after-load 'project
   ;; Use fd in `project-find-file'
   (when (executable-find "fd")
