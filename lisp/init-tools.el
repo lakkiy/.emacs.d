@@ -126,4 +126,6 @@
 
 (install-package 'verb)
 
+(install-package 'jwt)
+
 ;;; init-tools.el ends here
