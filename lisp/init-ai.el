@@ -71,4 +71,10 @@
       gptel-org-branching-context t)
 (add-hook 'gptel-mode-hook #'visual-fill-column-mode)
 
+(install-package 'aider "https://github.com/tninja/aider.el")
+(setq aider-args '("--no-auto-commits" "--deepseek" "--cache-prompts"))
+(with-eval-after-load 'aider
+  (setenv "DEEPSEEK_API_KEY" (retrieve-authinfo-key "api.deepseek.com" "apikey")))
+
+
 ;;; init-ai.el ends here

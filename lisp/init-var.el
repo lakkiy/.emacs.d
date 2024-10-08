@@ -16,6 +16,7 @@
 
 (defvar my/fonts-cjk
   '("LXGW WenKai"
+    "FZYouSong GBK"
     "WenQuanYi Micro Hei"
     "Microsoft Yahei")
   "List of fonts to try when setting the CJK font.")
