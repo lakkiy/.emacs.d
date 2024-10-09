@@ -34,10 +34,9 @@
 (my-load-relative "lisp/init-ui.el")
 (my-load-relative "lisp/init-lib.el")
 (my-load-relative "lisp/init-tools.el")
-(my-load-relative "lisp/init-minibuffer.el")
 (my-load-relative "lisp/init-window.el")
-(my-load-relative "lisp/init-company.el")
-(my-load-relative "lisp/init-rime.el")
+(my-load-relative "lisp/init-chinese.el")
+(my-load-relative "lisp/init-completion.el")
 
 (my-load-relative "lisp/init-dev.el")
 (my-load-relative "lisp/init-lisp.el")

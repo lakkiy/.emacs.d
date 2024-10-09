@@ -194,3 +194,18 @@ so try complete filst, if there nothing to complete then try to jump to next fie
           (when-let ((root (locate-dominating-file dir f)))
             (throw 'ret (cons 'local root))))))))
 (setq project-find-functions '(my/project-try-local project-try-vc))
+
+;; NOTE use rime-regexp
+(install-package 'pinyinlib)
+
+;; https://emacs-china.org/t/vertico/17913
+(defun completion--regex-pinyin (str)
+  (orderless-regexp (pinyinlib-build-regexp-string str)))
+(with-eval-after-load 'orderless
+  (require 'pinyinlib)
+  (add-to-list 'orderless-matching-styles 'completion--regex-pinyin))
+
+;; NOTE 如果只在 minibuffer 中使用 orderless 会导致 rime-regexp 无法正常工作
+(defun sanityinc/use-orderless-in-minibuffer ()
+  (setq-local completion-styles '(substring orderless)))
+(add-hook 'minibuffer-setup-hook #'sanityinc/use-orderless-in-minibuffer)

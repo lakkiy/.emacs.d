@@ -40,4 +40,19 @@
   (define-key rime-active-mode-map [tab] 'rime-inline-ascii)
   (keymap-set rime-mode-map "M-j" 'rime-force-enable))
 
-;;; init-rime.el ends here
+(with-eval-after-load 'rime
+  (require 'rime-regexp)
+  (rime-regexp-mode 1)
+
+  (defun isearch-function-with-rime ()
+    `(lambda (string &optional bound noerror count)
+       (funcall (if ,isearch-forward
+                    're-search-forward
+                  're-search-backward)
+                (rime-regexp-build-regexp-string string) bound noerror count)))
+  (setq isearch-search-fun-function 'isearch-function-with-rime)
+
+  ;; TODO make this support xeft
+  )
+
+;;; init-chinese.el ends here
