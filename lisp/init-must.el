@@ -109,8 +109,7 @@
 (defun my/init-func ()
   (context-menu-mode 1)
   (global-auto-revert-mode 1)
-  (global-goto-address-mode 1)
-  (pixel-scroll-precision-mode 1))
+  (global-goto-address-mode 1))
 (add-hook 'after-init-hook #'my/init-func)
 (add-hook 'after-save-hook #'delete-trailing-whitespace)
 
@@ -205,15 +204,10 @@
 (setq auto-save-visited-interval 10)
 (add-hook 'after-init-hook #'auto-save-visited-mode)
 
-;;; scroll
+;;; Scrolling
 
-;; Smooth scroll & friends
-(setq scroll-step 2
-      scroll-margin 2
-      hscroll-step 2
-      hscroll-margin 2
-      scroll-conservatively 101
-      scroll-preserve-screen-position 'always)
+(setq scroll-up-aggressively 0.01
+      scroll-down-aggressively 0.01)
 
 ;; The nano style for truncated long lines.
 (setq auto-hscroll-mode 'current-line)
@@ -225,23 +219,46 @@
 (setq mouse-wheel-scroll-amount '(2 ((shift) . hscroll))
       mouse-wheel-scroll-amount-horizontal 2)
 
-;; Smooth scroll up & down
+;; smooth scroll up & down
 (setq pixel-scroll-precision-interpolate-page t)
+(add-hook 'after-init-hook #'pixel-scroll-precision-mode)
 
-(defun +pixel-scroll-interpolate-down (&optional lines)
+(defun pixel-recenter (&optional arg redisplay)
+  "Similar to `recenter' but with pixel scrolling.
+ARG and REDISPLAY are identical to the original function."
+  ;; See the links in line 6676 in window.c for
+  (when-let* ((current-pixel (pixel-posn-y-at-point))
+              (target-pixel (if (numberp arg)
+                                (* (line-pixel-height) arg)
+                              (* 0.5 (window-body-height nil t))))
+              (distance-in-pixels 0)
+              (pixel-scroll-precision-interpolation-total-time
+               (/ pixel-scroll-precision-interpolation-total-time 2.0)))
+    (setq target-pixel
+          (if (<= 0 target-pixel)
+              target-pixel
+            (- (window-body-height nil t) (abs target-pixel))))
+    (setq distance-in-pixels (- target-pixel current-pixel))
+    (condition-case err
+        (pixel-scroll-precision-interpolate distance-in-pixels nil 1)
+      (error (message "[pixel-recenter] %s" (error-message-string err))))
+    (when redisplay (redisplay t))))
+
+(defun pixel-scroll-down (&optional lines)
   (interactive)
   (if lines
       (pixel-scroll-precision-interpolate (* -1 lines (pixel-line-height)))
     (pixel-scroll-interpolate-down)))
 
-(defun +pixel-scroll-interpolate-up (&optional lines)
+(defun pixel-scroll-up (&optional lines)
   (interactive)
   (if lines
       (pixel-scroll-precision-interpolate (* lines (pixel-line-height))))
   (pixel-scroll-interpolate-up))
 
-(defalias 'scroll-up-command '+pixel-scroll-interpolate-down)
-(defalias 'scroll-down-command '+pixel-scroll-interpolate-up)
+(defalias 'scroll-up-command 'pixel-scroll-interpolate-down)
+(defalias 'scroll-down-command 'pixel-scroll-interpolate-up)
+(defalias 'recenter 'pixel-recenter)
 
 ;;; electric-pair
 (add-hook 'prog-mode-hook #'electric-pair-local-mode)
