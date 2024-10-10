@@ -8,19 +8,17 @@
 ;; TODO auto 从 librime 仓库下载相应的预编译包
 ;; TODO change emacs rime install id and sync dir
 
+(defun parent-directory (dir n)
+  "Return the N-th parent directory of DIR."
+  (let ((parent dir))
+    (dotimes (_ n parent)
+      (setq parent (file-name-directory (directory-file-name parent))))))
+
 (if (eq system-type 'darwin)
     (progn
       ;; a folder contain emacs-module.h
       (setq rime-emacs-module-header-root
-            (concat
-             (file-name-directory
-              (directory-file-name
-               (file-name-directory
-                (directory-file-name
-                 (file-name-directory
-                  (directory-file-name
-                   (file-name-directory invocation-directory)))))))
-             "include"))
+            (expand-file-name "include" (parent-directory invocation-directory 3)))
       (setq rime-librime-root (expand-file-name "librime/dist" user-emacs-directory)))
   (setq rime-share-data-dir "~/.local/share/fcitx5/rime"))
 
