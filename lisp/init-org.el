@@ -74,61 +74,6 @@ otherwise call `org-self-insert-command'."
 (with-eval-after-load 'org
   (org-surround-markup "*" "/" "_" "=" "+" "$"))
 
-;;; 中文行内格式化
-;;
-;; 例如：
-;; org-mode 中/斜体/没效果，必须要在前后都加个空格才行，但中文与中文之间加空格是不可以接受的。
-;; 最开始的帖子
-;; https://emacs-china.org/t/org-mode/597
-;; 太 hack 了，经常碰到不适用的情况
-;; https://emacs-china.org/t/org-mode/22313
-;; 最新的帖子
-;; https://emacs-china.org/t/org-mode/26643
-;;
-;; 其他中文相关问题也会写在这里
-;; https://emacs-china.org/t/org-mode-html/7174
-
-(defun my/insert-zero-width-space ()
-  (interactive)
-  (insert-char ?\u200B))
-
-;; 导出时（导出为 org 时除外），去除零宽空格
-(defun my/org-export-remove-zero-width-space (text _backend _info)
-  "Remove zero width spaces from TEXT."
-  (unless (org-export-derived-backend-p 'org)
-    (replace-regexp-in-string "\u200b" "" text)))
-(with-eval-after-load 'ox
-  (add-to-list 'org-export-filter-final-output-functions #'my/org-export-remove-zero-width-space t))
-
-;; 使用 prettify 显示零宽空格
-;; https://github.com/shynur/.emacs.d/blob/c08a83be390cb44f7cbaa0c01bae2dcd77dbaee3/lisp/shynur-lang.el#L35C46-L35C48
-(defun my/display-zero-space ()
-  (setq-local prettify-symbols-alist (push '("\u200b" . ?‸) prettify-symbols-alist))
-  (prettify-symbols-mode 1))
-(add-hook 'org-mode-hook #'my/display-zero-space)
-
-;; TODO 复制时去掉零宽空格
-
-(with-eval-after-load 'org
-  (keymap-set org-mode-map "M-SPC" #'my/insert-zero-width-space)
-
-  ;; From spacemacs chinese layer
-  (define-advice org-html-paragraph
-      (:around (f paragraph contents info) org-html-paragraph-advice)
-    "Join consecutive Chinese lines into a single long line without
-unwanted space when exporting org-mode to html."
-    (let* ((origin-contents contents)
-           (fix-regexp "[[:multibyte:]]")
-           (fixed-contents
-            (replace-regexp-in-string
-             (concat
-              "\\(" fix-regexp "\\) *\n *\\(" fix-regexp "\\)") "\\1\\2" origin-contents)))
-      (funcall f paragraph fixed-contents info))))
-
-(install-package 'pangu-spacing)
-(setq pangu-spacing-real-insert-separtor t)
-(add-hook 'org-mode-hook #'pangu-spacing-mode)
-
 ;;; Agenda && Capture
 ;;
 ;; For capture and view tasks.
