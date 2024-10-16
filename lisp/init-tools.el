@@ -125,7 +125,7 @@
   (keymap-global-set "C-h r" #'ghelp-resume))
 
 (install-package 'verb)
-
 (install-package 'jwt)
+(install-package 'uniline)
 
 ;;; init-tools.el ends here
