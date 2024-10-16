@@ -41,8 +41,7 @@
 (add-hook 'after-init-hook #'nerd-icons-completion-mode)
 (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup)
 
-
-;; consult
+;;; consult
 (install-package 'consult)
 (install-package 'embark-consult)
 (install-package 'consult-dir)
@@ -98,8 +97,7 @@
 ;; capf
 (setq completion-ignore-case t)
 
-
-;; company
+;;; company
 ;;
 ;; - use C-p/C-n to select prev/next
 ;; - use tab to do complete
@@ -166,8 +164,7 @@
   (define-key company-active-map (kbd "RET") nil)
   (define-key company-active-map (kbd "SPC") nil))
 
-
-;; yasnippet
+;;; yasnippet
 (install-package 'yasnippet)
 
 (add-hook 'prog-mode-hook #'yas-minor-mode)

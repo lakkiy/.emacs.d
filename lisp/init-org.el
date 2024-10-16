@@ -201,8 +201,8 @@ Need pandoc installed."
 (setq org-static-blog-publish-title "mrunhap's blog"
       org-static-blog-publish-url "https://mrunhap.github.io/"
       org-static-blog-publish-directory "~/p/blog/"
-      org-static-blog-posts-directory "~/Dropbox/blog/posts/"
-      org-static-blog-drafts-directory "~/Dropbox/blog/drafts/"
+      org-static-blog-posts-directory "~/Dropbox/my/blog/posts/"
+      org-static-blog-drafts-directory "~/Dropbox/my/blog/drafts/"
       org-static-blog-enable-tags t)
 (with-eval-after-load 'org-static-blog
   (setq org-static-blog-page-header (get-string-from-file "~/p/blog/static/header.html")

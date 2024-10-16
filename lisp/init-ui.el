@@ -1,30 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-(setq modus-themes-fringes nil)
-
-(defun my/load-theme (f theme &optional no-confirm no-enable &rest args)
-  (interactive
-   (list
-    (intern (completing-read "Theme: "
-                             (mapcar #'symbol-name
-				                     (custom-available-themes))))))
-  (dolist (theme custom-enabled-themes)
-    (disable-theme theme))
-  (if (featurep (intern (format "%s-theme" theme)))
-      (enable-theme theme)
-    (apply f theme t no-enable args))
-  (run-hooks 'after-load-theme-hook))
-(advice-add 'load-theme :around #'my/load-theme)
-
-(defun my/setup-theme ()
-  (if (display-graphic-p)
-      (load-theme my/theme t)
-    (load-theme my/theme-tui t)))
-
-(if (daemonp)
-    (add-hook 'server-after-make-frame-hook #'my/setup-theme)
-  (add-hook 'after-init-hook #'my/setup-theme))
-
 ;; form-feed
 ;;
 ;; =page-break-lines= 在开启 =bklink= 和 =visual-fill-column= 的 org buffer 中在 ^L 上移动会卡死，但是 form-feed 用着没有问题。

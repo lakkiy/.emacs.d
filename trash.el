@@ -209,3 +209,11 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 (defun sanityinc/use-orderless-in-minibuffer ()
   (setq-local completion-styles '(substring orderless)))
 (add-hook 'minibuffer-setup-hook #'sanityinc/use-orderless-in-minibuffer)
+
+;; NOTE 目前测试没问题， tramp 后颜色正常显示
+;; 不知道为什么现在在 tramp 上执行 vc-region-history
+;; 乱码或者颜色不对，例如 ^[33m，目前先用这个函数救急
+(defun display-ansi-colors ()
+  (interactive)
+  (let ((inhibit-read-only t))
+    (ansi-color-apply-on-region (point-min) (point-max))))
