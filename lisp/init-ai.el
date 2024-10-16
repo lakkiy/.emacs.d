@@ -24,7 +24,7 @@
 ;; (add-hook 'prog-mode-hook 'copilot-mode)
 
 (install-package 'copilot "https://github.com/zerolfx/copilot.el")
-(install-package 'copilot-chat "https://github.com/chep/copilot-chat.el")
+(install-package 'copilot-chat)
 
 ;; 由于 `lisp-indent-offset' 的默认值是 nil，在编辑 elisp 时每敲一个字
 ;; 符都会跳出一个 warning，将其默认值设置为 t 以永不显示这个 warning
