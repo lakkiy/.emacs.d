@@ -85,12 +85,34 @@
 (with-eval-after-load 'ghelp
   (keymap-global-set "C-h r" #'ghelp-resume))
 
+;;; uniline
+;;
+;; https://emacs-china.org/t/unline-emacs-package/28112/5?u=rua
+(install-package 'uniline)
+
+(setq meow--kbd-forward-char "<right>"
+      meow--kbd-backward-char "<left>"
+      meow--kbd-forward-line "<down>"
+      meow--kbd-backward-line "<up>")
+
+(eval-after-load "uniline"
+  (keymap-set uniline-mode-map "C-c /" 'uniline-hydra-choose-body)
+  (keymap-set uniline-mode-map "C-c u" 'uniline--set-brush-0)
+  (keymap-set uniline-mode-map "C-c -" 'uniline--set-brush-1)
+  (keymap-set uniline-mode-map "C-c +" 'uniline--set-brush-2)
+  (keymap-set uniline-mode-map "C-c =" 'uniline--set-brush-3)
+  (keymap-set uniline-mode-map "C-c #" 'uniline--set-brush-block)
+  (keymap-set uniline-mode-map "-" nil)
+  (keymap-set uniline-mode-map "+" nil)
+  (keymap-set uniline-mode-map "#" nil)
+  (keymap-set uniline-mode-map "=" nil))
+
+
 ;;; misc
 (install-package 'csv-mode)
 (install-package 'kubed)
 (install-package 'verb)
 (install-package 'jwt)
-(install-package 'uniline)
 (install-package 'sicp)
 
 ;;; init-tools.el ends here
