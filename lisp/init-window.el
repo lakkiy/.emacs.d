@@ -18,13 +18,6 @@
 
 (add-hook 'after-init-hook #'winum-mode)
 
-
-;; project-x, save window layout by project
-(install-package 'project-x "https://github.com/karthink/project-x")
-(with-eval-after-load 'project
-  (project-x-mode 1))
-
-
 ;; popper
 (install-package 'popper)
 (add-hook 'after-init-hook #'popper-mode)
@@ -66,10 +59,5 @@
 (install-package 'ace-window)
 (keymap-global-set "M-o" 'ace-window)
 (setq aw-keys '(?a ?o ?e ?u ?i))
-
-
-;; golden-ratio
-(install-package 'golden-ratio)
-(define-key mode-specific-map "\\" 'golden-ratio)
 
 ;;; init-window.el ends here

@@ -214,7 +214,7 @@ Need pandoc installed."
 ;; Make slide with org-mode.
 
 ;; TODO config font and center
-(install-package 'dslide "https://github.com/positron-solutions/dslide")
+(install-package 'dslide)
 
 ;;; Look And Feel
 

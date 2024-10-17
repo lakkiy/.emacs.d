@@ -336,10 +336,6 @@
 				                             dictionary dictionary_comprehension
 				                             parenthesized_expression subscript)))))
 
-;;; devdocs
-(install-package 'devdocs)
-(keymap-global-set "C-h D" #'devdocs-lookup)
-
 ;;; misc
 (install-package 'protobuf-mode)
 

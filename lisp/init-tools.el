@@ -95,7 +95,7 @@
       meow--kbd-forward-line "<down>"
       meow--kbd-backward-line "<up>")
 
-(eval-after-load "uniline"
+(with-eval-after-load "uniline"
   (keymap-set uniline-mode-map "C-c /" 'uniline-hydra-choose-body)
   (keymap-set uniline-mode-map "C-c u" 'uniline--set-brush-0)
   (keymap-set uniline-mode-map "C-c -" 'uniline--set-brush-1)

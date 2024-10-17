@@ -38,18 +38,7 @@
 
 (with-eval-after-load 'rime
   (require 'rime-regexp)
-  (rime-regexp-mode 1)
-
-  (defun isearch-function-with-rime ()
-    `(lambda (string &optional bound noerror count)
-       (funcall (if ,isearch-forward
-                    're-search-forward
-                  're-search-backward)
-                (rime-regexp-build-regexp-string string) bound noerror count)))
-  (setq isearch-search-fun-function 'isearch-function-with-rime)
-
-  ;; TODO make this support xeft
-  )
+  (rime-regexp-mode 1))
 
 ;;; org 中文行内格式化
 ;;
