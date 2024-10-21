@@ -1,6 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
 (install-package 'meow)
+(install-package 'meow-tree-sitter)
 
 (setq meow-esc-delay 0.001
       meow-keypad-leader-dispatch "C-c"
@@ -26,7 +27,10 @@
 
   (meow-setup-dvorak)
   (meow-setup-indicator)
-  (meow-global-mode 1))
+  (meow-global-mode 1)
+
+  (when (treesit-available-p)
+    (meow-tree-sitter-register-defaults)))
 
 (add-hook 'after-init-hook #'my/meow-setup)
 
