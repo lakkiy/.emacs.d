@@ -49,6 +49,13 @@
 (keymap-global-set "C-c '" #'separedit)
 
 ;;; xeft
+;;
+;; When build on m mac, use /opt/homebrew as prefix
+;; tar xf xapian-core.tar.xz
+;; cd xapian-core/
+;; ./configure --prefix=/opt
+;; make
+;; make install
 (install-package 'xeft)
 (setq xeft-directory "~/Dropbox/org/roam")
 

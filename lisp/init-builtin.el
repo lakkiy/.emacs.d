@@ -621,6 +621,9 @@ point reaches the beginning or end of the buffer, stop there."
 (add-hook 'dired-mode-hook #'dired-hide-details-mode)
 
 (with-eval-after-load 'dired
+  ;; https://github.com/d12frosted/homebrew-emacs-plus/issues/383
+  (when (eq system-type 'darwin)
+    (setq insert-directory-program "gls"))
   (setq dired-listing-switches
         "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
   (keymap-set dired-mode-map "C-c C-p" #'wdired-change-to-wdired-mode)
