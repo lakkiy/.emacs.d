@@ -23,7 +23,7 @@
 ;; Manually enable copilot, add the following code to custom.el:
 ;; (add-hook 'prog-mode-hook 'copilot-mode)
 
-(install-package 'copilot "https://github.com/zerolfx/copilot.el")
+(install-package 'copilot)
 (install-package 'copilot-chat)
 
 ;; 由于 `lisp-indent-offset' 的默认值是 nil，在编辑 elisp 时每敲一个字

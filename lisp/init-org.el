@@ -198,8 +198,8 @@ Need pandoc installed."
 
 ;;; Blog
 (install-package 'org-static-blog)
-(setq org-static-blog-publish-title "mrunhap's blog"
-      org-static-blog-publish-url "https://mrunhap.github.io/"
+(setq org-static-blog-publish-title ""
+      org-static-blog-publish-url "https://lakkiy.github.io/"
       org-static-blog-publish-directory "~/p/blog/"
       org-static-blog-posts-directory "~/Dropbox/my/blog/posts/"
       org-static-blog-drafts-directory "~/Dropbox/my/blog/drafts/"

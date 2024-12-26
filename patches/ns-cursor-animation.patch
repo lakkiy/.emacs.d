@@ -1,5 +1,5 @@
 From 3702e9995fc74e80e82cd894269fc5443379e927 Mon Sep 17 00:00:00 2001
-From: mrunhap <liubolovelife@gmail.com>
+From: lakkiy <liubolovelife@gmail.com>
 Date: Fri, 2 Aug 2024 10:18:31 +0800
 Subject: [PATCH] cursor-animation for ns
 
@@ -18,7 +18,7 @@ index a07829a36e..ca20614192 100644
    NSRect ns_userRect;
 +  CALayer *cursor_layer;
  }
- 
+
  /* AppKit-side interface */
 diff --git a/src/nsterm.m b/src/nsterm.m
 index b56c587bc6..d44362b345 100644
@@ -30,22 +30,22 @@ index b56c587bc6..d44362b345 100644
  #include <IOSurface/IOSurface.h>
 +#include <QuartzCore/QuartzCore.h>
  #endif
- 
+
  static EmacsMenu *dockMenu;
 @@ -3064,6 +3065,9 @@ Note that CURSOR_WIDTH is meaningful only for (h)bar cursors.
        return;
      }
- 
+
 +  if (!active_p)
 +      return;
 +
    get_phys_cursor_geometry (w, glyph_row, phys_cursor_glyph, &fx, &fy, &h);
- 
+
    /* The above get_phys_cursor_geometry call set w->phys_cursor_width
 @@ -3101,44 +3105,22 @@ Note that CURSOR_WIDTH is meaningful only for (h)bar cursors.
    /* Prevent the cursor from being drawn outside the text area.  */
    r = NSIntersectionRect (r, ns_row_rect (w, glyph_row, TEXT_AREA));
- 
+
 -  ns_focus (f, NULL, 0);
 -
 -  NSGraphicsContext *ctx = [NSGraphicsContext currentContext];
@@ -57,7 +57,7 @@ index b56c587bc6..d44362b345 100644
 -#endif
 -
    [FRAME_CURSOR_COLOR (f) set];
- 
+
 -  switch (cursor_type)
 +  EmacsView *view = FRAME_NS_VIEW (f);
 +  CALayer *cursor_layer = view->cursor_layer;
@@ -97,12 +97,12 @@ index b56c587bc6..d44362b345 100644
 +  cursor_layer.frame = r;
 +  [CATransaction commit];
  }
- 
- 
+
+
 @@ -9290,6 +9272,17 @@ - (instancetype) initWithEmacsFrame: (struct frame *) f
        [[self contentView] addSubview:view];
        [self makeFirstResponder:view];
- 
+
 +       /* Overlay a canvas view on top of EmacsView.  */
 +      NSView *canvasView = [[NSView alloc] initWithFrame:view.bounds];
 +      canvasView.wantsLayer = YES;
@@ -117,6 +117,5 @@ index b56c587bc6..d44362b345 100644
  #if !defined (NS_IMPL_COCOA) || MAC_OS_X_VERSION_MIN_REQUIRED <= 1090
  #if MAC_OS_X_VERSION_MAX_ALLOWED > 1090
        if ([self respondsToSelector: @selector(useOptimizedDrawing:)])
--- 
+--
 2.44.1
-
