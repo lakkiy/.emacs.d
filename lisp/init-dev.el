@@ -118,7 +118,6 @@
   (add-to-list 'eglot-server-programs '(markdown-mode . ("ltex-ls")))
   (add-to-list 'eglot-server-programs '(message-mode . ("ltex-ls"))))
 
-(install-package 'eglot-hierarchy "https://github.com/dolmens/eglot-hierarchy")
 (install-package 'eglot-booster "https://github.com/jdtsmith/eglot-booster")
 (when (executable-find "emacs-lsp-booster")
   (setq eglot-booster-no-remote-boost t)
