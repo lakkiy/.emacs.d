@@ -40,8 +40,7 @@
       magit-diff-paint-whitespace nil
       magit-format-file-function #'magit-format-file-nerd-icons)
 
-(with-eval-after-load 'magit
-  (require 'gptel-commit))
+(autoload #'gptel-commit "gptel-commit.el" nil t)
 
 ;;; delta
 (install-package 'magit-delta)
