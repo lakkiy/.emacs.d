@@ -11,21 +11,14 @@
 
 ;; hl-todo
 (install-package 'hl-todo)
-(add-hook 'dired-mode-hook #'hl-todo-mode)
-(add-hook 'prog-mode-hook #'hl-todo-mode)
-(add-hook 'conf-mode-hook #'hl-todo-mode)
+
+;; NOTE 在 emacs-lisp-mode-hook 中启动的话会，在第一次安装 emacs package 生成 gcmh 的 autoload 文件的时候会运行 emacs-lisp-mode-hook 然后报错 void-function hl-todo-mode
+(add-hook 'after-init-hook #'global-hl-todo-mode)
 
 ;; default-text-scale
 (install-package 'default-text-scale)
 (keymap-global-set "C-x C-=" #'default-text-scale-increase)
 (keymap-global-set "C-x C--" #'default-text-scale-decrease)
-
-;; breadcrumb
-(install-package 'breadcrumb)
-(setq-default frame-title-format
-              '((:eval (breadcrumb-project-crumbs))
-                (:eval (and imenu--index-alist
-                            (concat "  ◊  " (breadcrumb-imenu-crumbs))))))
 
 (install-package 'solaire-mode)
 (add-hook 'after-init-hook #'solaire-global-mode)

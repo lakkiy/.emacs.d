@@ -37,7 +37,8 @@
 (keymap-global-set "C-x g" #'magit-status)
 
 (setq magit-diff-refine-hunk t
-      magit-diff-paint-whitespace nil)
+      magit-diff-paint-whitespace nil
+      magit-format-file-function #'magit-format-file-nerd-icons)
 
 (with-eval-after-load 'magit
   (require 'gptel-commit))
@@ -47,12 +48,6 @@
 
 (when (executable-find "delta")
   (add-hook 'magit-mode-hook #'magit-delta-mode))
-
-;;; icon
-(install-package 'magit-file-icons)
-
-(with-eval-after-load 'magit
-  (magit-file-icons-mode 1))
 
 ;;; diff-hl
 (install-package 'diff-hl)

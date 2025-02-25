@@ -69,7 +69,9 @@
 
 (setq gptel-default-mode 'org-mode
       gptel-org-branching-context t)
-(add-hook 'gptel-mode-hook #'visual-fill-column-mode)
+(with-eval-after-load 'gptel
+  (add-hook 'gptel-mode-hook #'visual-fill-column-mode))
+
 
 (install-package 'aider "https://github.com/tninja/aider.el")
 (setq aider-args '("--no-auto-commits" "--deepseek" "--cache-prompts"))

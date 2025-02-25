@@ -807,24 +807,30 @@ point reaches the beginning or end of the buffer, stop there."
 (add-hook 'after-load-theme-hook #'my/sync-tab-bar-to-theme)
 
 ;;; package.el
+(require 'package)
+
+;; Install into separate package dirs for each Emacs version, to prevent bytecode incompatibility
+(setq package-user-dir
+      (expand-file-name (format "elpa-%s.%s" emacs-major-version emacs-minor-version)
+                        user-emacs-directory))
+
 (setq package-archives
       '(("gnu"    . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
 	    ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
         ("melpa"  . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
-;; To prevent initializing twice
 (setq package-enable-at-startup nil)
-;; gptel need newest org mode
-(setq package-install-upgrade-built-in t)
-(setq package-quickstart t)
 (package-initialize)
+
+(defvar package-refreshed nil
+  "Flag to indicate whether package-refresh-contents has been called.")
 
 (defun install-package (pkg &optional url)
   (unless (package-installed-p pkg)
+    (unless package-refreshed
+      (package-refresh-contents)
+      (setq package-refreshed t))
     (if url
         (package-vc-install url)
-      (unless (package-installed-p pkg)
-        (package-refresh-contents))
       (package-install pkg))))
-
 
 ;;; init-builtin.el ends here

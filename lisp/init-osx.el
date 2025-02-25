@@ -3,6 +3,10 @@
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 ;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
+;; Have to enable menu bar on mac port, otherwise emacs lost focus.
+(when (not (display-graphic-p))
+  (menu-bar-mode 1))
+
 (setq mac-option-modifier 'meta
       mac-command-modifier 'super)
 
