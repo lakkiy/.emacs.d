@@ -5,7 +5,6 @@
 
 (setq meow-esc-delay 0.001
       meow-keypad-leader-dispatch "C-c"
-      meow-keypad-start-keys nil
       meow-replace-state-name-list
       '((normal . "N")
         (beacon . "B")
