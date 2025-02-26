@@ -1,37 +1,24 @@
-;;; init-builtin.el -*- lexical-binding: t; -*-
+;;; init-builtin.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
-;;; var
-(defvar my/fonts-default
-  '("Monaco"
-    "Cascadia Code"
-    "Menlo"
-    "Source Code Pro")
+;;; Variables
+;;
+;; NOTE Custom these in pre-init.el
+(defvar my/fonts-default '("Monaco" "Cascadia Code" "Menlo" "Source Code Pro")
   "List of fonts to try when setting the default font.")
 
-(defvar my/fonts-variable-pitch
-  '("Bookerly"
-    "Cardo"
-    "Times New Roman"
-    "DejaVu Sans")
+(defvar my/fonts-variable-pitch '("Bookerly" "Cardo" "Times New Roman" "DejaVu Sans")
   "List of fonts to try when setting the variable-pitch font.")
 
-(defvar my/fonts-cjk
-  '("LXGW WenKai"
-    "FZYouSong GBK"
-    "WenQuanYi Micro Hei"
-    "Microsoft Yahei")
+(defvar my/fonts-cjk '("LXGW WenKai" "FZYouSong GBK" "WenQuanYi Micro Hei" "Microsoft Yahei")
   "List of fonts to try when setting the CJK font.")
 
 (defvar my/fonts-unicode '("Symbola")
   "List of fonts to try when setting the Unicode font.")
 
-(defvar my/fonts-emoji
-  '("Apple Color Emoji"
-    "Segoe UI Symbol"
-    "Noto Color Emoji")
+(defvar my/fonts-emoji '("Apple Color Emoji" "Segoe UI Symbol" "Noto Color Emoji")
   "List of fonts to try when setting the Emoji font.")
 
-(defvar my/font-size-default 17
+(defvar my/font-size-default 14
   "Default font size.")
 
 (defvar my/theme 'modus-operandi
@@ -43,8 +30,8 @@
 (defvar after-load-theme-hook nil
   "Hooks run after `load-theme'.")
 
-;;; disable stupid things
-
+;;; Disable stupid things
+;;
 ;; Reduce *Message* noise at startup. An empty scratch buffer (or the
 ;; dashboard) is more than enough, and faster to display.
 (setq inhibit-startup-message t
@@ -54,10 +41,19 @@
       inhibit-x-resources t
       inhibit-default-init t
       server-client-instructions nil
-      suggest-key-bindings nil)
+      suggest-key-bindings nil
+      x-gtk-use-system-tooltips nil
+      x-gtk-use-native-input t
+      x-gtk-resize-child-frames 'resize-mode)
 
 ;; Remove "For information about GNU Emacs..." message at startup
 (fset #'display-startup-echo-area-message #'ignore)
+
+;; Disable warnings from the legacy advice API. They aren't useful.
+(setq ad-redefinition-action 'accept)
+
+;; Ignore warnings about "existing variables being aliased".
+(setq warning-suppress-types '((defvaralias) (lexical-binding)))
 
 ;; Suppress GUI features and more
 (setq use-file-dialog nil
@@ -69,114 +65,94 @@
 ;; No eyes distraction
 (setq blink-cursor-mode nil)
 
-;; Sane defaults
-(setq use-short-answers t)
-
-;; Inhibit switching out from `y-or-n-p' and `read-char-choice'
-(setq y-or-n-p-use-read-key t
+;; Allow for shorter responses: "y" for yes and "n" for no.
+(setq use-short-answers t
+      read-answer-short t
+      ;; 直接读取单个字符（如 y 或 n），不需要 enter 确认
+      y-or-n-p-use-read-key t
       read-char-choice-use-read-key t)
 
+;; Never show the hello file
 (keymap-global-unset "C-h h")
+
+;; Do not hide emacs
 (keymap-global-unset "M-z")
-(when (display-graphic-p)
-  (global-unset-key (kbd "C-z"))
-  (global-unset-key (kbd "C-x C-z")))
+(global-unset-key (kbd "C-z"))
+(global-unset-key (kbd "C-x C-z"))
 
-;;; better default
-(setq initial-buffer-choice nil
-      initial-major-mode 'fundamental-mode)
-
-;; Pixelwise resize
-(setq window-resize-pixelwise t
-      frame-resize-pixelwise t)
+;;; Better default
+;;
+;; By default, Emacs "updates" its ui more often than it needs to
+(setq idle-update-delay 1.0)
 
 ;; Dont move points out of eyes
 (setq mouse-yank-at-point t)
 
+;; We often split terminals and editor windows or place them side-by-side,
+;; making use of the additional horizontal space.
 (setq-default fill-column 80)
 
-;; Linux specific
-(setq x-gtk-use-system-tooltips nil
-      x-gtk-use-native-input t
-      x-gtk-resize-child-frames 'resize-mode
-      x-underline-at-descent-line t)
-
-;; Enable the disabled narrow commands
-(put 'narrow-to-defun  'disabled nil)
-(put 'narrow-to-page   'disabled nil)
-(put 'narrow-to-region 'disabled nil)
-;; mouse-1 on a button should follow the link
-(put 'default-button 'follow-link t)
-
-;; Enable the disabled dired commands
-(put 'dired-find-alternate-file 'disabled nil)
+;; Position underlines at the descent line instead of the baseline.
+(setq x-underline-at-descent-line t)
 
 ;; No Fcitx5 in Emacs PGTK build.
 (setq pgtk-use-im-context-on-new-connection nil)
 
-(setq outline-minor-mode-cycle t
-      outline-minor-mode-highlight t)
-
-(setq completion-styles '(basic partial-completion)
-      completion-category-overrides '((file (styles basic partial-completion))))
-
-;; Buffer manager
-(fset 'list-buffers 'ibuffer)
-(setq-default ibuffer-show-empty-filter-groups nil)
-
-;; Better word wrapping for CJK characters
+;; Better word wrapping for CJK characters, continue wrapped lines at whitespace
+;; rather than breaking in the middle of a word.
 (setq word-wrap-by-category t)
+
+;; Disable the obsolete practice of end-of-line spacing from the
+;; typewriter era.
 (setq sentence-end-double-space nil)
-
-;; Emacs 28: Hide commands in M-x which do not work in the current mode.
-(setq read-extended-command-predicate #'command-completion-default-include-p)
-
-;;; modern editor config
-
-;; Contrary to what many Emacs users have in their configs, you don't need
-;; more than this to make UTF-8 the default coding system:
-(set-language-environment "UTF-8")
-;; Set-language-environment sets default-input-method, which is unwanted.
-(setq default-input-method nil)
-
-;; No tabs
-(setq-default indent-tabs-mode nil)
-(setq-default tab-width 4)
-
-;; Tab to complete
-(setq tab-always-indent 'complete)
-
-;; Back to the previous position
-(add-hook 'after-init-hook #'save-place-mode)
-
-;; Needed by `webpaste'
-(setq browse-url-generic-program
-      (or (when (eq system-type 'darwin) "open")
-          (when (eq system-type 'gnu/linux) "xdg-open")))
-
-;; Save minibuffer history
-(setq history-length 1000)
-(add-hook 'after-init-hook #'savehist-mode)
 
 ;; Echo current unfinished command immediately.
 (setq echo-keystrokes 0.1)
 
-(add-hook 'after-init-hook #'context-menu-mode)
-(add-hook 'after-init-hook #'global-auto-revert-mode)
-(add-hook 'after-init-hook #'global-goto-address-mode)
-(add-hook 'after-save-hook #'delete-trailing-whitespace)
+;; Allow nested minibuffers
+(setq enable-recursive-minibuffers t)
 
-(setq require-final-newline t
-      visible-cursor t
+;; Keep the cursor out of the read-only portions of the.minibuffer
+(setq minibuffer-prompt-properties
+      '(read-only t intangible t cursor-intangible t face minibuffer-prompt))
+(add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+
+;; Disable truncation of printed s-expressions in the message buffer
+(setq eval-expression-print-length nil
+      eval-expression-print-level nil)
+
+;; Delete by moving to trash in interactive mode
+(setq delete-by-moving-to-trash (not noninteractive))
+
+;; Disable the warning "X and Y are the same file". Ignoring this warning is
+;; acceptable since it will redirect you to the existing buffer regardless.
+(setq find-file-suppress-same-file-warnings t)
+
+;; Resolve symlinks when opening files, so that any operations are conducted
+;; from the file's true directory (like `find-file').
+(setq find-file-visit-truename t
       vc-follow-symlinks t)
 
-(setq display-line-numbers-width 3)
+;; According to the POSIX, a line is defined as "a sequence of zero or
+;; more non-newline characters followed by a terminating newline".
+(setq require-final-newline t)
 
-;;; performance
+;;; Performance
+;;
+;; Improve Emacs' responsiveness by delaying syntax highlighting during input
+;; but may reduce visual feedback.
+(setq redisplay-skip-fontification-on-input t)
 
-;; Improve display
-(setq display-raw-bytes-as-hex t
-      redisplay-skip-fontification-on-input t)
+;; Resizing the Emacs frame can be costly when changing the font. Disable this
+;; to improve startup times with fonts larger than the system default.
+(setq frame-resize-pixelwise t)
+;; However, do not resize windows pixelwise, as this can cause crashes in some
+;; cases when resizing too many windows at once or rapidly.
+(setq window-resize-pixelwise nil)
+
+;; Do not use `emacs-lisp-mode' on startup
+(setq initial-buffer-choice nil
+      initial-major-mode 'fundamental-mode)
 
 ;; Increase how much is read from processes in a single chunk (default is 4kb).
 (setq read-process-output-max (* 4 1024 1024)
@@ -185,15 +161,7 @@
 ;; Reduce rendering/line scan work by not rendering cursors or regions in
 ;; non-focused windows.
 (setq-default cursor-in-non-selected-windows nil)
-
-;; Disable warnings from the legacy advice API. They aren't useful.
-(setq ad-redefinition-action 'accept)
-
-;; Disable compiliation warnings
-(setq warning-suppress-log-types '((comp)))
-
-;; Ignore warnings about "existing variables being aliased".
-(setq warning-suppress-types '((defvaralias) (lexical-binding)))
+(setq highlight-nonselected-windows nil)
 
 ;; Don't ping things that look like domain names.
 (setq ffap-machine-p-known 'reject)
@@ -206,7 +174,12 @@
 ;; No second pass of case-insensitive search over auto-mode-alist.
 (setq auto-mode-case-fold nil)
 
-;; Optimize for long line
+;; Hide commands in M-x which do not work in the current mode, reduce command
+;; completion overhead.
+(setq read-extended-command-predicate #'command-completion-default-include-p)
+
+;; Long line
+;;
 ;; https://emacs-china.org/t/topic/25811/9?u=rua
 (setq long-line-threshold 1000
       large-hscroll-threshold 1000
@@ -220,35 +193,141 @@
 ;; Give up some bidirectional functionality for slightly faster re-display.
 (setq bidi-inhibit-bpa t)
 
-;;; autosave, backup, lockfiles
+;;; Modern editor behavior
+;;;; Coding system
+;; Contrary to what many Emacs users have in their configs, you don't need
+;; more than this to make UTF-8 the default coding system:
+(set-language-environment "UTF-8")
+;; Set-language-environment sets default-input-method, which is unwanted.
+(setq default-input-method nil)
 
-;; No backup files
-(setq make-backup-files nil
-      auto-save-default nil)
+;;;; TAB
+;;
+;; Prefer spaces over tabs. Spaces offer a more consistent default compared to
+;; 8-space tabs. This setting can be adjusted on a per-mode basis as needed.
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
 
-;; No lock files
-(setq create-lockfiles nil)
+;; First indent current line, or try to complete if the line was already
+;; indented.
+(setq tab-always-indent 'complete)
 
-;; Most of time I will do save manually.
+;;;; Save place
+;;
+;; `save-place-mode' enables Emacs to remember the last location within a file
+;; upon reopening. This feature is particularly beneficial for resuming work at
+;; the precise point where you previously left off.
+(add-hook 'after-init-hook #'save-place-mode)
+
+;;;; Save minibuffer history
+;;
+;; `savehist-mode' is an Emacs feature that preserves the minibuffer history
+;; between sessions. It saves the history of inputs in the minibuffer, such as
+;; commands, search strings, and other prompts, to a file. This allows users to
+;; retain their minibuffer history across Emacs restarts.
+(setq history-length 1000)
+
+(add-hook 'after-init-hook #'savehist-mode)
+
+;;;; Auto revert
+;;
+;; Auto-revert in Emacs is a feature that automatically updates the
+;; contents of a buffer to reflect changes made to the underlying file
+;; on disk.
+(setq revert-without-query (list ".")  ; Do not prompt
+      auto-revert-stop-on-user-input nil
+      ;; Revert other buffers (e.g, Dired)
+      global-auto-revert-non-file-buffers t)
+
+(add-hook 'after-init-hook #'global-auto-revert-mode)
+
+;;;; Auto insert pair
+;;
+;; 自动插入/删除配对括号
+;;
+;; Not to pair when:
+;; same char is next
+;; next to a word
+;; insert the second of "" or of ((
+(setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
+
+(add-hook 'prog-mode-hook #'electric-pair-local-mode)
+
+;;;; Auto save changed file
+;;
+;; But most of time I will do save manually.
 (setq auto-save-visited-interval 10)
+
 (add-hook 'after-init-hook #'auto-save-visited-mode)
 
-;;; scrolling
+;;;; Line number
+(setq display-line-numbers-width 3)
 
-(setq scroll-up-aggressively 0.01
-      scroll-down-aggressively 0.01)
+;; 需要的时候手动开启
+;; (add-hook 'after-init-hook #'display-line-numbers-mode)
+
+;;;; Enable right click menu
+(add-hook 'after-init-hook #'context-menu-mode)
+
+;;;; Delete trailing whitespace after save file
+(add-hook 'after-save-hook #'delete-trailing-whitespace)
+
+;;;; Disable auto-save/backup/lock files
+;;
+;; Avoid generating backups or lockfiles to prevent creating world-readable
+;; copies of files.
+(setq make-backup-files nil
+      auto-save-default nil
+      create-lockfiles nil)
+
+;;;; Open recent file
+;;
+;; `recentf' is an Emacs package that maintains a list of recently
+;; accessed files, making it easier to reopen files you have worked on
+;; recently.
+(setq recentf-max-saved-items 1000 ;; default is 20
+      recentf-auto-cleanup 'never
+      recentf-exclude `(,tramp-file-name-regexp
+                        "COMMIT_EDITMSG"
+                        "^/\\(?:ssh\\|su\\|sudo\\)?:"))
+
+(keymap-global-set "C-x C-r" #'recentf-open-files)
+
+(add-hook 'after-init-hook #'(lambda()
+                               (let ((inhibit-message t))
+                                 (recentf-mode 1))))
+
+
+;;;; Scrolling
+;;
+;; 每次滚动 1 行
+(setq scroll-step 1)
+
+;; 跳过部分语法高亮计算，提高滚动速度
+(setq fast-but-imprecise-scrolling t)
+
+;; 滚动超出缓冲区时，将光标移动到顶部或底部，而不是报错。
+(setq scroll-error-top-bottom t)
+
+;; 滚动时保持屏幕相对位置不变，避免屏幕跳动。
+(setq scroll-preserve-screen-position t)
+
+;; 光标移动超过窗口边缘 10 行时，才会重新居中窗口（默认为 0 直接重新居中）
+(setq scroll-conservatively 10)
 
 ;; The nano style for truncated long lines.
 (setq auto-hscroll-mode 'current-line)
 
-;; Disable auto vertical scroll for tall lines
+;; 禁用自动垂直滚动，以解决编辑超长行时的光标滞后和屏幕跳动问题
 (setq auto-window-vscroll nil)
 
-;; Use shift + mouse wheel to scrll horizontally.
-(setq mouse-wheel-scroll-amount '(2 ((shift) . hscroll))
+;; Horizontal scrolling, use shift + mouse wheel to scrll horizontally.
+(setq hscroll-margin 2
+      hscroll-step 1
+      mouse-wheel-scroll-amount '(2 ((shift) . hscroll))
       mouse-wheel-scroll-amount-horizontal 2)
 
-;; smooth scroll up & down
+;; Smooth scroll up & down
 (setq pixel-scroll-precision-interpolate-page t)
 (add-hook 'after-init-hook #'pixel-scroll-precision-mode)
 
@@ -267,7 +346,26 @@
 (defalias 'scroll-up-command 'pixel-scroll-interpolate-down)
 (defalias 'scroll-down-command 'pixel-scroll-interpolate-up)
 
-;;; path
+;;;; Highlight url/mail address, click to go
+;;
+;; Also needed by `webpaste'
+(setq browse-url-generic-program
+      (or (when (eq system-type 'darwin) "open")
+          (when (eq system-type 'gnu/linux) "xdg-open")))
+
+(add-hook 'after-init-hook #'global-goto-address-mode)
+
+;;;; Show parenthesises
+;;
+;; Highlight parenthesises
+(setq show-paren-context-when-offscreen 'overlay
+      show-paren-when-point-inside-paren t
+      show-paren-when-point-in-periphery t
+      show-paren-context-when-offscreen t)
+(add-hook 'after-init-hook #'show-paren-mode)
+
+
+;;; Find external programs
 ;;
 ;; Set PATH and `exec-path'
 ;; https://emacs-china.org/t/emacs-mac-port-profile/2895/29?u=rua
@@ -286,7 +384,7 @@
 (when (file-exists-p "~/.path")
   (add-hook 'after-init-hook #'my/getenv-path))
 
-;;; font & theme
+;;; Font & Theme
 (defun font-installed-p (font-list)
   (catch 'font-found
     (dolist (font font-list)
@@ -356,7 +454,7 @@
   (setq buffer-face-mode-face '(:family "Sarasa Mono SC"))
   (buffer-face-mode +1))
 
-;;; useful funcs
+;;; Useful funcs
 (defun my/url-get-title (url &optional descr)
   "Takes a URL and returns the value of the <title> HTML tag.
    This function uses curl if available, and falls back to url-retrieve if not.
@@ -492,11 +590,43 @@ point reaches the beginning or end of the buffer, stop there."
     (delete-file (buffer-file-name))
     (kill-current-buffer)))
 
-;;; electric-pair
-(add-hook 'prog-mode-hook #'electric-pair-local-mode)
-(setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
+;;; Packages
+;;;; Outline
+(setq outline-minor-mode-cycle t
+      outline-minor-mode-highlight t)
 
-;;; help
+;;;; Ibuffer
+(fset 'list-buffers 'ibuffer)
+(setq-default ibuffer-show-empty-filter-groups nil)
+(setq ibuffer-formats
+      '((mark modified read-only locked
+              " " (name 40 40 :left :elide)
+			  " " (size 8 -1 :right)
+			  " " (mode 18 18 :left :elide) " " filename-and-process)
+	    (mark " " (name 16 -1) " " filename)))
+
+
+;;;; Ediff
+;;
+;; Configure Ediff to use a single frame and split windows horizontally
+(setq ediff-window-setup-function #'ediff-setup-windows-plain
+      ediff-split-window-function #'split-window-horizontally)
+
+;;;; Smerge
+(add-hook 'find-file-hook #'(lambda ()
+                              (save-excursion
+                                (goto-char (point-min))
+                                (when (re-search-forward "^<<<<<<< " nil t)
+                                  (smerge-mode 1)))))
+
+(with-eval-after-load 'smerge-mode
+  (keymap-set smerge-mode-map "C-c c" #'smerge-keep-current)
+  (keymap-set smerge-mode-map "C-c a" #'smerge-smerge-keep-all)
+  (keymap-set smerge-mode-map "M-r" #'smerge-refine)
+  (keymap-set smerge-mode-map "M-n" #'smerge-next)
+  (keymap-set smerge-mode-map "M-p" #'smerge-prev))
+
+;;;; Help
 
 ;; Quick editing in `describe-variable'
 (with-eval-after-load 'help-fns
@@ -510,7 +640,13 @@ point reaches the beginning or end of the buffer, stop there."
                   (describe-keymap variable)
                 (apply oldfun variable buffer frame))))
 
-;;; repeat
+;;;; Icomplete
+;;
+;; Do not delay displaying completion candidates in `fido-mode' or
+;; `fido-vertical-mode'
+(setq icomplete-compute-delay 0.01)
+
+;;;; Repeat
 ;;
 ;; Enable `repeat-mode' to reduce key sequence length
 ;; If we have been idle for `repeat-exit-timeout' seconds, exit the repeated
@@ -520,24 +656,18 @@ point reaches the beginning or end of the buffer, stop there."
       repeat-exit-key (kbd "RET"))
 (add-hook 'after-init-hook #'repeat-mode)
 
-;;; recentf
-(keymap-global-set "C-x C-r" #'recentf-open-files)
-(add-hook 'after-init-hook #'recentf-mode)
-(setq recentf-max-saved-items 1000
-      recentf-auto-cleanup 'never
-      recentf-exclude `(,tramp-file-name-regexp
-                        "COMMIT_EDITMSG"))
-
-;;; paren
+;;;; Compilation
 ;;
-;; Highlight parenthesises
-(setq show-paren-when-point-in-periphery t
-      show-paren-context-when-offscreen 'overlay
-      show-paren-when-point-inside-paren t
-      show-paren-context-when-offscreen t)
-(add-hook 'after-init-hook #'show-paren-mode)
+;; `compile'
+(setq compilation-always-kill t
+      compilation-ask-about-save nil
+      compilation-scroll-output 'first-error)
 
-;;; tramp
+;; Disable compiliation warnings
+(setq warning-suppress-log-types '((comp)))
+
+
+;;;; Tramp
 (setq-default vc-handled-backends '(Git))
 
 (setq tramp-verbose 0
@@ -582,7 +712,7 @@ point reaches the beginning or end of the buffer, stop there."
   ;; the list by the special value ‘tramp-own-remote-path’.
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 
-;;; project
+;;;; Project
 (setq project-vc-ignores '("target/" "bin/" "obj/")
       project-vc-extra-root-markers '(".project"
                                       "go.mod"
@@ -608,15 +738,14 @@ point reaches the beginning or end of the buffer, stop there."
       (mapcan #'my/project-files-in-directory
               (or dirs (list (project-root project)))))))
 
-;;; dired
+;;;; Dired
 (setq mouse-drag-and-drop-region t
       mouse-drag-and-drop-region-cross-program t)
 
 (setq dired-mouse-drag-files t
       dired-dwim-target t
       dired-kill-when-opening-new-dired-buffer t
-      dired-auto-revert-buffer t
-      delete-by-moving-to-trash t)
+      dired-auto-revert-buffer t)
 
 (add-hook 'dired-mode-hook #'dired-hide-details-mode)
 
@@ -630,7 +759,7 @@ point reaches the beginning or end of the buffer, stop there."
   (define-key dired-mode-map (kbd "h") #'dired-up-directory)
   (define-key dired-mode-map [mouse-2] #'dired-find-file))
 
-;;; isearch
+;;;; Isearch
 (setq isearch-lazy-count t
       isearch-lazy-highlight t
       lazy-highlight-buffer t
@@ -659,7 +788,7 @@ point reaches the beginning or end of the buffer, stop there."
   ;; to the previous result
   (keymap-substitute isearch-mode-map #'isearch-delete-chac #'isearch-del-chac))
 
-;;; which-key
+;;;; Which-key
 ;;
 ;; Allow C-h to trigger which-key before it is done automatically
 (setq which-key-show-early-on-C-h t)
@@ -670,63 +799,7 @@ point reaches the beginning or end of the buffer, stop there."
 
 (add-hook 'after-init-hook #'which-key-mode)
 
-;;; window
-
-;; Undo window change
-(setq winner-dont-bind-my-keys t)
-(add-hook 'after-init-hook #'winner-mode)
-
-(keymap-global-set "M-o" 'other-window)
-
-;; Skip window by setting no-other-window window parameter in
-;; display-buffer-alist for specific buffer(like dired-sidebar).
-
-;; When splitting window, show (other-buffer) in the new window
-(defun split-window-func-with-other-buffer (split-function)
-  (lambda (&optional arg)
-    "Split this window and switch to the new window with other-buffer unless ARG is provided."
-    (interactive "P")
-    (funcall split-function)
-    (let ((target-window (next-window)))
-      (unless arg
-        (set-window-buffer target-window (other-buffer))
-        (select-window target-window)))))
-
-(keymap-global-set "C-x 2" (split-window-func-with-other-buffer 'split-window-vertically))
-(keymap-global-set "C-x 3" (split-window-func-with-other-buffer 'split-window-horizontally))
-
-(defun sanityinc/toggle-delete-other-windows ()
-  "Delete other windows in frame if any, or restore previous window config."
-  (interactive)
-  (if (and winner-mode
-           (equal (selected-window) (next-window)))
-      (winner-undo)
-    (delete-other-windows)))
-
-(keymap-global-set "C-x 1" 'sanityinc/toggle-delete-other-windows)
-
-(defun split-window-horizontally-instead ()
-  "Kill any other windows and re-split such that the current window is on the top half of the frame."
-  (interactive)
-  (let ((other-buffer (and (next-window) (window-buffer (next-window)))))
-    (delete-other-windows)
-    (split-window-horizontally)
-    (when other-buffer
-      (set-window-buffer (next-window) other-buffer))))
-
-(defun split-window-vertically-instead ()
-  "Kill any other windows and re-split such that the current window is on the left half of the frame."
-  (interactive)
-  (let ((other-buffer (and (next-window) (window-buffer (next-window)))))
-    (delete-other-windows)
-    (split-window-vertically)
-    (when other-buffer
-      (set-window-buffer (next-window) other-buffer))))
-
-(keymap-global-set "C-x |" 'split-window-horizontally-instead)
-(keymap-global-set "C-x _" 'split-window-vertically-instead)
-
-;;; tab-bar
+;;;; Tab bar
 ;;
 ;; Built-in window layout manager
 ;; NOTE do not bind =tab-bar-switch-to-prev-tab= and
@@ -806,10 +879,174 @@ point reaches the beginning or end of the buffer, stop there."
      `(tab-bar-tab-inactive ((t (:inherit default :background ,default-bg :foreground ,inactive-fg)))))))
 (add-hook 'after-load-theme-hook #'my/sync-tab-bar-to-theme)
 
-;;; package.el
-(require 'package)
+;;;; Flymake
+(add-hook 'prog-mode-hook #'flymake-mode)
+(add-hook 'emacs-lisp-mode-hook #'(lambda ()
+                                    (flymake-mode -1)))
 
-;; Install into separate package dirs for each Emacs version, to prevent bytecode incompatibility
+(setq-default flymake-diagnostic-functions nil)
+
+(defvar sekiro-flymake-mode-line-format `(:eval (sekiro-flymake-mode-line-format)))
+(put 'sekiro-flymake-mode-line-format 'risky-local-variable t)
+(defun sekiro-flymake-mode-line-format ()
+  (let* ((counter (string-to-number
+                   (nth 1
+                        (cadr
+                         (flymake--mode-line-counter :error)))))
+         (sekiro-flymake (when (> counter 0)
+                           'compilation-error)))
+    (propertize
+     "危"
+     'face
+     sekiro-flymake)))
+
+(with-eval-after-load 'flymake
+  (keymap-set flymake-mode-map "M-p" #'flymake-goto-prev-error)
+  (keymap-set flymake-mode-map "M-n" #'flymake-goto-next-error)
+  (add-to-list 'mode-line-misc-info
+               `(flymake-mode (" [" sekiro-flymake-mode-line-format "] "))))
+
+(add-hook 'flymake-mode-hook
+          (lambda ()
+            (add-hook 'eldoc-documentation-functions 'flymake-eldoc-function nil t)))
+
+;;;; Xref
+;;
+;; Enable completion in the minibuffer instead of the definitions buffer
+(setq xref-show-definitions-function #'xref-show-definitions-completing-read
+      xref-show-xrefs-function #'xref-show-definitions-completing-read)
+
+;; Fix massed xref cross multiple project.
+(setq xref-history-storage 'xref-window-local-history)
+
+(add-hook 'xref-after-return-hook #'recenter)
+(add-hook 'xref-after-jump-hook #'recenter)
+(keymap-global-unset "C-<down-mouse-1>")
+(keymap-global-set "C-<mouse-1>" #'xref-find-definitions-at-mouse)
+
+(with-eval-after-load 'xref
+  (setq xref-search-program (cond ((executable-find "rg") 'ripgrep)
+                                  (t 'grep))))
+
+;;;; Eglot
+(setq eglot-autoshutdown t
+      eglot-sync-connect nil ;; don't block of LSP connection attempts
+      eglot-extend-to-xref t ;; make eglot manage file out of project by `xref-find-definitions'
+      eglot-ignored-server-capabilites
+      '(:documentHighlightProvider
+        :documentFormattingProvider
+        :documentRangeFormattingProvider
+        :documentLinkProvider
+        ;; 和 treesit 的缩进冲突
+        :documentOnTypeFormattingProvider))
+
+;; Eglot optimization
+(setq jsonrpc-event-hook nil)
+(setq eglot-events-buffer-size 0)
+(setq eglot-report-progress nil)  ; Prevent Eglot minibuffer spam
+
+;; Eglot optimization: Disable `eglot-events-buffer' to maintain consistent
+;; performance in long-running Emacs sessions. By default, it retains 2,000,000
+;; lines, and each new event triggers pretty-printing of the entire buffer,
+;; leading to a gradual performance decline.
+(setq eglot-events-buffer-config '(:size 0 :format full))
+
+
+;; https://codeberg.org/mekeor/init/src/commit/11e3d86aa18090a5e3a6f0d29373c24373f29aaf/init.el#L813-L842
+;; INFO: Translation:
+;;   | JSON  | Eglot       |
+;;   |-------+-------------|
+;;   | true  | t           |
+;;   | false | :json-false |
+;;   | null  | nil         |
+;;   | {}    | eglot-{}    |
+(setq-default eglot-workspace-configuration
+              '( :gopls ( :buildFlags ["-tags" "wireinject"]
+                          :usePlaceholders t
+                          :staticcheck t)
+                 :pyright ( :checkOnlyOpenFiles t
+                            :typeCheckingMode "basic")
+                 :basedpyright ( :checkOnlyOpenFiles t
+                                 :typeCheckingMode "basic")
+                 ))
+
+(with-eval-after-load 'eglot
+  (keymap-set eglot-mode-map "M-RET" #'eglot-code-actions)
+  (keymap-set eglot-mode-map "C-c r" #'eglot-rename)
+  (keymap-set eglot-mode-map "M-'"   #'eglot-find-implementation)
+
+  (add-to-list 'eglot-server-programs '(sql-mode . ("sqls" "-config" "~/.config/sqls/config.yaml")))
+  (add-to-list 'eglot-server-programs '(typst-ts-mode . ("typst-lsp")))
+  (add-to-list 'eglot-server-programs '(org-mode . ("ltex-ls")))
+  (add-to-list 'eglot-server-programs '(markdown-mode . ("ltex-ls")))
+  (add-to-list 'eglot-server-programs '(message-mode . ("ltex-ls"))))
+
+;;; Window
+;;
+;; The native border "uses" a pixel of the fringe on the rightmost
+;; splits, whereas `window-divider-mode' does not.
+(setq window-divider-default-bottom-width 1
+      window-divider-default-places t
+      window-divider-default-right-width 1)
+
+;; Undo window change
+(setq winner-dont-bind-my-keys t)
+(add-hook 'after-init-hook #'winner-mode)
+
+(keymap-global-set "M-o" 'other-window)
+
+;; Skip window by setting no-other-window window parameter in
+;; display-buffer-alist for specific buffer(like dired-sidebar).
+
+;; When splitting window, show (other-buffer) in the new window
+(defun split-window-func-with-other-buffer (split-function)
+  (lambda (&optional arg)
+    "Split this window and switch to the new window with other-buffer unless ARG is provided."
+    (interactive "P")
+    (funcall split-function)
+    (let ((target-window (next-window)))
+      (unless arg
+        (set-window-buffer target-window (other-buffer))
+        (select-window target-window)))))
+
+(keymap-global-set "C-x 2" (split-window-func-with-other-buffer 'split-window-vertically))
+(keymap-global-set "C-x 3" (split-window-func-with-other-buffer 'split-window-horizontally))
+
+(defun sanityinc/toggle-delete-other-windows ()
+  "Delete other windows in frame if any, or restore previous window config."
+  (interactive)
+  (if (and winner-mode
+           (equal (selected-window) (next-window)))
+      (winner-undo)
+    (delete-other-windows)))
+
+(keymap-global-set "C-x 1" 'sanityinc/toggle-delete-other-windows)
+
+(defun split-window-horizontally-instead ()
+  "Kill any other windows and re-split such that the current window is on the top half of the frame."
+  (interactive)
+  (let ((other-buffer (and (next-window) (window-buffer (next-window)))))
+    (delete-other-windows)
+    (split-window-horizontally)
+    (when other-buffer
+      (set-window-buffer (next-window) other-buffer))))
+
+(defun split-window-vertically-instead ()
+  "Kill any other windows and re-split such that the current window is on the left half of the frame."
+  (interactive)
+  (let ((other-buffer (and (next-window) (window-buffer (next-window)))))
+    (delete-other-windows)
+    (split-window-vertically)
+    (when other-buffer
+      (set-window-buffer (next-window) other-buffer))))
+
+(keymap-global-set "C-x |" 'split-window-horizontally-instead)
+(keymap-global-set "C-x _" 'split-window-vertically-instead)
+
+;;; package.el
+;;
+;; Install into separate package dirs for each Emacs version, to prevent
+;; bytecode incompatibility
 (setq package-user-dir
       (expand-file-name (format "elpa-%s.%s" emacs-major-version emacs-minor-version)
                         user-emacs-directory))
@@ -818,6 +1055,8 @@ point reaches the beginning or end of the buffer, stop there."
       '(("gnu"    . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
 	    ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
         ("melpa"  . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
+
+(setq package-quickstart t)
 (setq package-enable-at-startup nil)
 (package-initialize)
 

@@ -1,21 +1,18 @@
-;;; -*- lexical-binding: t -*-
+;;; init.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
-;;; Init
+;;; Load pre init
 ;;
-;; --debug-init implies `debug-on-error'.
-(setq debug-on-error init-file-debug)
-(setq custom-theme-directory (expand-file-name "themes" user-emacs-directory))
-(push (expand-file-name "site-lisp" user-emacs-directory) load-path)
-
 (defun my-load-relative (file)
   "Load FILE relative to user-emacs-directory."
   (let ((rfile (expand-file-name file user-emacs-directory)))
     (when (file-exists-p rfile)
-      (load rfile nil t))))
+      (load rfile nil t t))))
+(my-load-relative "pre-init.el")
 
-;;; Custom file
+;;; Load path
 (setq custom-file (locate-user-emacs-file "custom.el"))
-(when (file-exists-p custom-file) (load custom-file :no-error :no-message))
+(setq custom-theme-directory (expand-file-name "themes" user-emacs-directory))
+(push (expand-file-name "site-lisp" user-emacs-directory) load-path)
 
 ;;; Built-in config
 (my-load-relative "lisp/init-builtin.el")
@@ -52,3 +49,9 @@
 
 (when (eq system-type 'darwin)
   (my-load-relative "lisp/init-osx.el"))
+
+;;; Load post init
+(my-load-relative "post-init.el")
+
+(provide 'init)
+;;; init.el ends here

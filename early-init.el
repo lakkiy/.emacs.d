@@ -1,4 +1,10 @@
-;;; early-init.el -*- lexical-binding: t; -*-
+;;; early-init.el --- before Emacs create frame -*- no-byte-compile: t; lexical-binding: t; -*-
+
+;; Prefer loading newer compiled files
+(setq load-prefer-newer t)
+
+;; --debug-init implies `debug-on-error'.
+(setq debug-on-error init-file-debug)
 
 ;; Defer garbage collection further back in the startup process
 (setq gc-cons-threshold most-positive-fixnum
@@ -31,11 +37,6 @@
                     (delete-dups (append file-name-handler-alist
                                          old-file-name-handler-alist))))
             t))
-
-;; In noninteractive sessions, prioritize non-byte-compiled source files to
-;; prevent the use of stale byte-code. Otherwise, it saves us a little IO time
-;; to skip the mtime checks on every *.elc file.
-(setq load-prefer-newer noninteractive)
 
 ;; Faster to disable these here (before they've been initialized)
 (push '(menu-bar-lines . 0) default-frame-alist)

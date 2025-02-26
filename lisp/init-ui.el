@@ -12,7 +12,6 @@
 ;; hl-todo
 (install-package 'hl-todo)
 
-;; NOTE 在 emacs-lisp-mode-hook 中启动的话会，在第一次安装 emacs package 生成 gcmh 的 autoload 文件的时候会运行 emacs-lisp-mode-hook 然后报错 void-function hl-todo-mode
 (add-hook 'after-init-hook #'global-hl-todo-mode)
 
 ;; default-text-scale

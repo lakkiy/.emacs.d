@@ -1,37 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-;;; ediff
-(defvar local-ediff-saved-window-conf nil)
-(defun eat/ediff-save-window-conf ()
-  (setq local-ediff-saved-window-conf (current-window-configuration)))
-
-(defun eat/ediff-restore-window-conf ()
-  (when (window-configuration-p local-ediff-saved-window-conf)
-    (set-window-configuration local-ediff-saved-window-conf)))
-
-(setq ediff-window-setup-function #'ediff-setup-windows-plain
-      ediff-highlight-all-diffs t
-      ediff-split-window-function 'split-window-horizontally
-      ediff-merge-split-window-function 'split-window-horizontally)
-(with-eval-after-load 'ediff
-  ;; Restore window config after quitting ediff
-  (add-hook 'ediff-before-setup-hook #'eat/ediff-save-window-conf)
-  (add-hook 'ediff-quit-hook #'eat/ediff-restore-window-conf))
-
-;;; smerge
-(add-hook 'find-file-hook #'(lambda ()
-                              (save-excursion
-                                (goto-char (point-min))
-                                (when (re-search-forward "^<<<<<<< " nil t)
-                                  (smerge-mode 1)))))
-
-(with-eval-after-load 'smerge-mode
-  (keymap-set smerge-mode-map "C-c c" #'smerge-keep-current)
-  (keymap-set smerge-mode-map "C-c a" #'smerge-smerge-keep-all)
-  (keymap-set smerge-mode-map "M-r" #'smerge-refine)
-  (keymap-set smerge-mode-map "M-n" #'smerge-next)
-  (keymap-set smerge-mode-map "M-p" #'smerge-prev))
-
 ;;; magit
 (install-package 'magit)
 (keymap-global-set "C-x g" #'magit-status)

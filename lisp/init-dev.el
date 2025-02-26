@@ -4,64 +4,14 @@
 (add-hook 'gud-mode-hook #'gud-tooltip-mode)
 (setq gud-highlight-current-line t)
 
-;; compile, custome compile buffer when `project-compile'
-(setq compilation-always-kill t ; kill compilation process before starting another
-      compilation-ask-about-save nil    ; save all buffers on `compile'
-      compilation-scroll-output 'first-error)
-
 ;; comment
 (setq comment-empty-lines t)
 
-;;; flymake
-(add-hook 'prog-mode-hook #'flymake-mode)
-(add-hook 'emacs-lisp-mode-hook #'(lambda ()
-                                    (flymake-mode -1)))
-
-(setq-default flymake-diagnostic-functions nil)
-
-(defvar sekiro-flymake-mode-line-format `(:eval (sekiro-flymake-mode-line-format)))
-(put 'sekiro-flymake-mode-line-format 'risky-local-variable t)
-(defun sekiro-flymake-mode-line-format ()
-  (let* ((counter (string-to-number
-                   (nth 1
-                        (cadr
-                         (flymake--mode-line-counter :error)))))
-         (sekiro-flymake (when (> counter 0)
-                           'compilation-error)))
-    (propertize
-     "危"
-     'face
-     sekiro-flymake)))
-
-(with-eval-after-load 'flymake
-  (keymap-set flymake-mode-map "M-p" #'flymake-goto-prev-error)
-  (keymap-set flymake-mode-map "M-n" #'flymake-goto-next-error)
-  (add-to-list 'mode-line-misc-info
-               `(flymake-mode (" [" sekiro-flymake-mode-line-format "] "))))
-
-(add-hook 'flymake-mode-hook
-          (lambda ()
-            (add-hook 'eldoc-documentation-functions 'flymake-eldoc-function nil t)))
-
-;;; xref
-(add-hook 'xref-after-return-hook #'recenter)
-(add-hook 'xref-after-jump-hook #'recenter)
-
-(keymap-global-unset "C-<down-mouse-1>")
-(keymap-global-set "C-<mouse-1>" #'xref-find-definitions-at-mouse)
-
-(setq xref-show-xrefs-function #'xref-show-definitions-completing-read
-      xref-show-definitions-function #'xref-show-definitions-completing-read
-      ;; Fix massed xref cross multiple project.
-      xref-history-storage 'xref-window-local-history)
-
-(with-eval-after-load 'xref
-  ;; Emacs 28+
-  ;;
-  ;; `project-find-regexp' can be faster when setting `xref-search-program' to
-  ;;  `ripgrep'.
-  (setq xref-search-program (cond ((executable-find "rg") 'ripgrep)
-                                  (t 'grep))))
+;;; eglot-booster
+(install-package 'eglot-booster "https://github.com/jdtsmith/eglot-booster")
+(when (executable-find "emacs-lsp-booster")
+  (setq eglot-booster-no-remote-boost t)
+  (add-hook 'after-init-hook #'eglot-booster-mode))
 
 ;;; dumb-jump
 ;;
@@ -74,54 +24,6 @@
       ;; in a git project, and git-grep just don't work at all.
       dumb-jump-force-searcher 'rg)
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
-
-;;; eglot
-
-(setq eglot-events-buffer-size 0
-      eglot-autoshutdown t
-      eglot-sync-connect nil ;; don't block of LSP connection attempts
-      eglot-extend-to-xref t ;; make eglot manage file out of project by `xref-find-definitions'
-      eglot-ignored-server-capabilites
-      '(:documentHighlightProvider
-        :documentFormattingProvider
-        :documentRangeFormattingProvider
-        :documentLinkProvider
-        ;; 和 treesit 的缩进冲突
-        :documentOnTypeFormattingProvider))
-
-;; https://codeberg.org/mekeor/init/src/commit/11e3d86aa18090a5e3a6f0d29373c24373f29aaf/init.el#L813-L842
-;; INFO: Translation:
-;;   | JSON  | Eglot       |
-;;   |-------+-------------|
-;;   | true  | t           |
-;;   | false | :json-false |
-;;   | null  | nil         |
-;;   | {}    | eglot-{}    |
-(setq-default eglot-workspace-configuration
-              '( :gopls ( :buildFlags ["-tags" "wireinject"]
-                          :usePlaceholders t
-                          :staticcheck t)
-                 :pyright ( :checkOnlyOpenFiles t
-                            :typeCheckingMode "basic")
-                 :basedpyright ( :checkOnlyOpenFiles t
-                                 :typeCheckingMode "basic")
-                 ))
-
-(with-eval-after-load 'eglot
-  (keymap-set eglot-mode-map "M-RET" #'eglot-code-actions)
-  (keymap-set eglot-mode-map "C-c r" #'eglot-rename)
-  (keymap-set eglot-mode-map "M-'"   #'eglot-find-implementation)
-
-  (add-to-list 'eglot-server-programs '(sql-mode . ("sqls" "-config" "~/.config/sqls/config.yaml")))
-  (add-to-list 'eglot-server-programs '(typst-ts-mode . ("typst-lsp")))
-  (add-to-list 'eglot-server-programs '(org-mode . ("ltex-ls")))
-  (add-to-list 'eglot-server-programs '(markdown-mode . ("ltex-ls")))
-  (add-to-list 'eglot-server-programs '(message-mode . ("ltex-ls"))))
-
-(install-package 'eglot-booster "https://github.com/jdtsmith/eglot-booster")
-(when (executable-find "emacs-lsp-booster")
-  (setq eglot-booster-no-remote-boost t)
-  (add-hook 'after-init-hook #'eglot-booster-mode))
 
 ;;; citre
 ;;

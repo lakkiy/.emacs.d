@@ -20,9 +20,9 @@
 
 ;;; copilot
 ;;
-;; Manually enable copilot, add the following code to custom.el:
+;; Manually enable copilot, add the following code to post-init.el:
 ;; (add-hook 'prog-mode-hook 'copilot-mode)
-
+;;
 (install-package 'copilot)
 (install-package 'copilot-chat)
 
