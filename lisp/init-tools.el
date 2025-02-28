@@ -121,5 +121,6 @@
 (install-package 'verb)
 (install-package 'jwt)
 (install-package 'sicp)
+(install-package 'speed-type)
 
 ;;; init-tools.el ends here
