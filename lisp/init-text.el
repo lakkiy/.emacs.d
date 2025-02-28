@@ -1,4 +1,4 @@
-;;; -*- lexical-binding: t -*-
+;;; init-text.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
 ;;; image
 (autoload #'iimg-enable "iimg")

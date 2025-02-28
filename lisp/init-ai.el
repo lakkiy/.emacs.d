@@ -1,22 +1,4 @@
-;;; -*- lexical-binding: t -*-
-
-;;; tabnine
-(install-package 'tabnine)
-
-(with-eval-after-load 'tabnine
-  (add-hook 'kill-emacs-hook #'tabnine-kill-process)
-
-  (defun +tabnine-disable-predicate()
-    (or (meow-motion-mode-p)
-        (meow-normal-mode-p)))
-  (add-to-list 'tabnine-disable-predicates #'+tabnine-disable-predicate)
-
-  (define-key tabnine-completion-map (kbd "TAB") nil)
-  (define-key tabnine-completion-map (kbd "<tab>") nil)
-  (define-key tabnine-completion-map (kbd "C-e") #'tabnine-accept-completion)
-  (define-key tabnine-completion-map (kbd "C-g") #'tabnine-clear-overlay)
-  (define-key tabnine-completion-map (kbd "M-p") #'tabnine-next-completion)
-  (define-key tabnine-completion-map (kbd "M-n") #'tabnine-previous-completion))
+;;; init-ai.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
 ;;; copilot
 ;;

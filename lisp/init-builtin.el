@@ -34,10 +34,11 @@
 ;;
 ;; Reduce *Message* noise at startup. An empty scratch buffer (or the
 ;; dashboard) is more than enough, and faster to display.
-(setq inhibit-startup-message t
+(setq inhibit-splash-screen t
       inhibit-startup-screen t
-      inhibit-startup-echo-area-message user-login-name
+      inhibit-startup-message t
       inhibit-startup-buffer-menu t
+      inhibit-startup-echo-area-message user-login-name
       inhibit-x-resources t
       inhibit-default-init t
       server-client-instructions nil
@@ -55,7 +56,8 @@
 ;; Ignore warnings about "existing variables being aliased".
 (setq warning-suppress-types '((defvaralias) (lexical-binding)))
 
-;; Suppress GUI features and more
+;; Disable GUIs because they are inconsistent across systems, desktop
+;; environments, and themes, and they don't match the look of Emacs.
 (setq use-file-dialog nil
       use-dialog-box nil)
 
@@ -85,8 +87,11 @@
 ;; By default, Emacs "updates" its ui more often than it needs to
 (setq idle-update-delay 1.0)
 
-;; Dont move points out of eyes
-(setq mouse-yank-at-point t)
+;; Ensures that empty lines within the commented region are also commented out.
+;; This prevents unintended visual gaps and maintains a consistent appearance,
+;; ensuring that comments apply uniformly to all lines, including those that are
+;; otherwise empty.
+(setq comment-empty-lines t)
 
 ;; We often split terminals and editor windows or place them side-by-side,
 ;; making use of the additional horizontal space.
@@ -98,8 +103,7 @@
 ;; No Fcitx5 in Emacs PGTK build.
 (setq pgtk-use-im-context-on-new-connection nil)
 
-;; Better word wrapping for CJK characters, continue wrapped lines at whitespace
-;; rather than breaking in the middle of a word.
+;; Better word wrapping for CJK characters
 (setq word-wrap-by-category t)
 
 ;; Disable the obsolete practice of end-of-line spacing from the
@@ -150,7 +154,8 @@
 ;; cases when resizing too many windows at once or rapidly.
 (setq window-resize-pixelwise nil)
 
-;; Do not use `emacs-lisp-mode' on startup
+;; Shave seconds off startup time by starting the scratch buffer in
+;; `fundamental-mode'
 (setq initial-buffer-choice nil
       initial-major-mode 'fundamental-mode)
 
@@ -194,41 +199,6 @@
 (setq bidi-inhibit-bpa t)
 
 ;;; Modern editor behavior
-;;;; Coding system
-;; Contrary to what many Emacs users have in their configs, you don't need
-;; more than this to make UTF-8 the default coding system:
-(set-language-environment "UTF-8")
-;; Set-language-environment sets default-input-method, which is unwanted.
-(setq default-input-method nil)
-
-;;;; TAB
-;;
-;; Prefer spaces over tabs. Spaces offer a more consistent default compared to
-;; 8-space tabs. This setting can be adjusted on a per-mode basis as needed.
-(setq-default indent-tabs-mode nil)
-(setq-default tab-width 4)
-
-;; First indent current line, or try to complete if the line was already
-;; indented.
-(setq tab-always-indent 'complete)
-
-;;;; Save place
-;;
-;; `save-place-mode' enables Emacs to remember the last location within a file
-;; upon reopening. This feature is particularly beneficial for resuming work at
-;; the precise point where you previously left off.
-(add-hook 'after-init-hook #'save-place-mode)
-
-;;;; Save minibuffer history
-;;
-;; `savehist-mode' is an Emacs feature that preserves the minibuffer history
-;; between sessions. It saves the history of inputs in the minibuffer, such as
-;; commands, search strings, and other prompts, to a file. This allows users to
-;; retain their minibuffer history across Emacs restarts.
-(setq history-length 1000)
-
-(add-hook 'after-init-hook #'savehist-mode)
-
 ;;;; Auto revert
 ;;
 ;; Auto-revert in Emacs is a feature that automatically updates the
@@ -260,17 +230,20 @@
 
 (add-hook 'after-init-hook #'auto-save-visited-mode)
 
-;;;; Line number
-(setq display-line-numbers-width 3)
+;;;; Coding system
+;;
+;; Explicitly set the prefered coding systems to avoid annoying prompt
+;; from emacs (especially on Microsoft Windows)
+(prefer-coding-system 'utf-8)
 
-;; 需要的时候手动开启
-;; (add-hook 'after-init-hook #'display-line-numbers-mode)
+;; Contrary to what many Emacs users have in their configs, you don't need
+;; more than this to make UTF-8 the default coding system:
+(set-language-environment "UTF-8")
+;; Set-language-environment sets default-input-method, which is unwanted.
+(setq default-input-method nil)
 
-;;;; Enable right click menu
-(add-hook 'after-init-hook #'context-menu-mode)
-
-;;;; Delete trailing whitespace after save file
-(add-hook 'after-save-hook #'delete-trailing-whitespace)
+;;;; Delete selection
+(add-hook 'after-init-hook #'delete-selection-mode)
 
 ;;;; Disable auto-save/backup/lock files
 ;;
@@ -279,6 +252,12 @@
 (setq make-backup-files nil
       auto-save-default nil
       create-lockfiles nil)
+
+;;;; Delete trailing whitespace after save file
+(add-hook 'after-save-hook #'delete-trailing-whitespace)
+
+;;;; Enable right click menu
+(add-hook 'after-init-hook #'context-menu-mode)
 
 ;;;; Open recent file
 ;;
@@ -297,6 +276,24 @@
                                (let ((inhibit-message t))
                                  (recentf-mode 1))))
 
+
+;;;; Highlight url/mail address, click to go
+;;
+;; Also needed by `webpaste'
+(setq browse-url-generic-program
+      (or (when (eq system-type 'darwin) "open")
+          (when (eq system-type 'gnu/linux) "xdg-open")))
+
+(add-hook 'after-init-hook #'global-goto-address-mode)
+
+;;;; Line number
+(setq display-line-numbers-width 3)
+
+;; 需要的时候手动开启
+;; (add-hook 'after-init-hook #'display-line-numbers-mode)
+
+;;;; Subword
+(add-hook 'prog-mode-hook #'subword-mode)
 
 ;;;; Scrolling
 ;;
@@ -346,14 +343,12 @@
 (defalias 'scroll-up-command 'pixel-scroll-interpolate-down)
 (defalias 'scroll-down-command 'pixel-scroll-interpolate-up)
 
-;;;; Highlight url/mail address, click to go
+;;;; Save place
 ;;
-;; Also needed by `webpaste'
-(setq browse-url-generic-program
-      (or (when (eq system-type 'darwin) "open")
-          (when (eq system-type 'gnu/linux) "xdg-open")))
-
-(add-hook 'after-init-hook #'global-goto-address-mode)
+;; `save-place-mode' enables Emacs to remember the last location within a file
+;; upon reopening. This feature is particularly beneficial for resuming work at
+;; the precise point where you previously left off.
+(add-hook 'after-init-hook #'save-place-mode)
 
 ;;;; Show parenthesises
 ;;
@@ -364,6 +359,27 @@
       show-paren-context-when-offscreen t)
 (add-hook 'after-init-hook #'show-paren-mode)
 
+
+;;;; Save minibuffer history
+;;
+;; `savehist-mode' is an Emacs feature that preserves the minibuffer history
+;; between sessions. It saves the history of inputs in the minibuffer, such as
+;; commands, search strings, and other prompts, to a file. This allows users to
+;; retain their minibuffer history across Emacs restarts.
+(setq history-length 1000)
+
+(add-hook 'after-init-hook #'savehist-mode)
+
+;;;; TAB
+;;
+;; Prefer spaces over tabs. Spaces offer a more consistent default compared to
+;; 8-space tabs. This setting can be adjusted on a per-mode basis as needed.
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
+
+;; First indent current line, or try to complete if the line was already
+;; indented.
+(setq tab-always-indent 'complete)
 
 ;;; Find external programs
 ;;
@@ -591,20 +607,59 @@ point reaches the beginning or end of the buffer, stop there."
     (kill-current-buffer)))
 
 ;;; Packages
-;;;; Outline
-(setq outline-minor-mode-cycle t
-      outline-minor-mode-highlight t)
+;;;; C
+(setq c-default-style "linux"
+      c-basic-offset 4)
 
-;;;; Ibuffer
-(fset 'list-buffers 'ibuffer)
-(setq-default ibuffer-show-empty-filter-groups nil)
-(setq ibuffer-formats
-      '((mark modified read-only locked
-              " " (name 40 40 :left :elide)
-			  " " (size 8 -1 :right)
-			  " " (mode 18 18 :left :elide) " " filename-and-process)
-	    (mark " " (name 16 -1) " " filename)))
+;;;; Compilation
+;;
+;; `compile'
+(setq compilation-always-kill t
+      compilation-ask-about-save nil
+      compilation-scroll-output 'first-error)
 
+;; Disable compiliation warnings
+(setq warning-suppress-log-types '((comp)))
+
+
+;;;; Comint
+;;
+;; `comint-mode' 是 Emacs 中用于实现交互式命令行缓冲区的基础模式（例如 shell、M-x term 等）
+(setq comint-prompt-read-only t)
+(setq comint-buffer-maximum-size 2048)
+
+;;;; Dired
+(setq mouse-drag-and-drop-region t
+      mouse-drag-and-drop-region-cross-program t)
+
+(setq dired-dwim-target t
+      dired-vc-rename-file t
+      dired-mouse-drag-files t
+      dired-auto-revert-buffer t
+      dired-recursive-copies 'always
+      dired-create-destination-dirs 'ask
+      dired-deletion-confirmer 'y-or-n-p
+      dired-kill-when-opening-new-dired-buffer t
+      dired-clean-confirm-killing-deleted-buffers nil)
+
+(setq dired-omit-verbose nil)
+(setq dired-omit-files (rx string-start
+                           (or ".DS_Store"
+                               ".cache"
+                               ".vscode"
+                               "__pycache__"
+                               ".ccls-cache" ".clangd")
+                           string-end))
+
+(add-hook 'dired-mode-hook #'dired-omit-mode)
+(add-hook 'dired-mode-hook #'dired-hide-details-mode)
+
+(with-eval-after-load 'dired
+  (setq dired-listing-switches
+        "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
+  (keymap-set dired-mode-map "C-c C-p" #'wdired-change-to-wdired-mode)
+  (define-key dired-mode-map (kbd "h") #'dired-up-directory)
+  (define-key dired-mode-map [mouse-2] #'dired-find-file))
 
 ;;;; Ediff
 ;;
@@ -612,19 +667,95 @@ point reaches the beginning or end of the buffer, stop there."
 (setq ediff-window-setup-function #'ediff-setup-windows-plain
       ediff-split-window-function #'split-window-horizontally)
 
-;;;; Smerge
-(add-hook 'find-file-hook #'(lambda ()
-                              (save-excursion
-                                (goto-char (point-min))
-                                (when (re-search-forward "^<<<<<<< " nil t)
-                                  (smerge-mode 1)))))
 
-(with-eval-after-load 'smerge-mode
-  (keymap-set smerge-mode-map "C-c c" #'smerge-keep-current)
-  (keymap-set smerge-mode-map "C-c a" #'smerge-smerge-keep-all)
-  (keymap-set smerge-mode-map "M-r" #'smerge-refine)
-  (keymap-set smerge-mode-map "M-n" #'smerge-next)
-  (keymap-set smerge-mode-map "M-p" #'smerge-prev))
+;;;; Eldoc
+(setq eldoc-idle-delay 1
+      eldoc-documentation-function 'eldoc-documentation-compose)
+
+
+;;;; Eglot
+(setq eglot-autoshutdown t
+      eglot-sync-connect nil ;; don't block of LSP connection attempts
+      eglot-extend-to-xref t ;; make eglot manage file out of project by `xref-find-definitions'
+      eglot-ignored-server-capabilites
+      '(:documentHighlightProvider
+        :documentFormattingProvider
+        :documentRangeFormattingProvider
+        :documentLinkProvider
+        ;; 和 treesit 的缩进冲突
+        :documentOnTypeFormattingProvider))
+
+;; Eglot optimization
+(setq jsonrpc-event-hook nil)
+(setq eglot-events-buffer-size 0)
+(setq eglot-report-progress nil)  ; Prevent Eglot minibuffer spam
+
+;; Eglot optimization: Disable `eglot-events-buffer' to maintain consistent
+;; performance in long-running Emacs sessions. By default, it retains 2,000,000
+;; lines, and each new event triggers pretty-printing of the entire buffer,
+;; leading to a gradual performance decline.
+(setq eglot-events-buffer-config '(:size 0 :format full))
+
+
+;; https://codeberg.org/mekeor/init/src/commit/11e3d86aa18090a5e3a6f0d29373c24373f29aaf/init.el#L813-L842
+;; INFO: Translation:
+;;   | JSON  | Eglot       |
+;;   |-------+-------------|
+;;   | true  | t           |
+;;   | false | :json-false |
+;;   | null  | nil         |
+;;   | {}    | eglot-{}    |
+(setq-default eglot-workspace-configuration
+              '( :gopls ( :buildFlags ["-tags" "wireinject"]
+                          :usePlaceholders t
+                          :staticcheck t)
+                 :pyright ( :checkOnlyOpenFiles t
+                            :typeCheckingMode "basic")
+                 :basedpyright ( :checkOnlyOpenFiles t
+                                 :typeCheckingMode "basic")
+                 ))
+
+(with-eval-after-load 'eglot
+  (keymap-set eglot-mode-map "M-RET" #'eglot-code-actions)
+  (keymap-set eglot-mode-map "C-c r" #'eglot-rename)
+  (keymap-set eglot-mode-map "M-'"   #'eglot-find-implementation)
+
+  (add-to-list 'eglot-server-programs '(sql-mode . ("sqls" "-config" "~/.config/sqls/config.yaml")))
+  (add-to-list 'eglot-server-programs '(typst-ts-mode . ("typst-lsp")))
+  (add-to-list 'eglot-server-programs '(org-mode . ("ltex-ls")))
+  (add-to-list 'eglot-server-programs '(markdown-mode . ("ltex-ls")))
+  (add-to-list 'eglot-server-programs '(message-mode . ("ltex-ls"))))
+
+;;;; Flymake
+(add-hook 'prog-mode-hook #'flymake-mode)
+(add-hook 'emacs-lisp-mode-hook #'(lambda ()
+                                    (flymake-mode -1)))
+
+(setq-default flymake-diagnostic-functions nil)
+
+(defvar sekiro-flymake-mode-line-format `(:eval (sekiro-flymake-mode-line-format)))
+(put 'sekiro-flymake-mode-line-format 'risky-local-variable t)
+(defun sekiro-flymake-mode-line-format ()
+  (let* ((counter (string-to-number
+                   (nth 1
+                        (cadr
+                         (flymake--mode-line-counter :error)))))
+         (sekiro-flymake (when (> counter 0)
+                           'compilation-error)))
+    (propertize
+     "危"
+     'face
+     sekiro-flymake)))
+
+(with-eval-after-load 'flymake
+  (keymap-set flymake-mode-map "M-p" #'flymake-goto-prev-error)
+  (keymap-set flymake-mode-map "M-n" #'flymake-goto-next-error)
+  (add-to-list 'mode-line-misc-info
+               `(flymake-mode (" [" sekiro-flymake-mode-line-format "] "))))
+
+(add-hook 'flymake-mode-hook
+          (lambda ()
+            (add-hook 'eldoc-documentation-functions 'flymake-eldoc-function nil t)))
 
 ;;;; Help
 
@@ -640,11 +771,178 @@ point reaches the beginning or end of the buffer, stop there."
                   (describe-keymap variable)
                 (apply oldfun variable buffer frame))))
 
+;;;; Hl-line
+;;
+;; Restrict `hl-line-mode' highlighting to the current window, reducing visual
+;; clutter and slightly improving `hl-line-mode' performance.
+(setq hl-line-sticky-flag nil)
+(setq global-hl-line-sticky-flag nil)
+
+(defun my/hl-line-setup ()
+  "Disable `hl-line-mode' if region is active."
+  (when (and (bound-and-true-p hl-line-mode)
+             (region-active-p))
+    (hl-line-unhighlight)))
+(with-eval-after-load 'hl-line
+  (add-hook 'post-command-hook #'my/hl-line-setup))
+(add-hook 'prog-mode-hook #'global-hl-line-mode)
+
+;;;; Hide show
+(defconst hideshow-folded-face '((t (:inherit 'font-lock-comment-face :box t))))
+
+(defface hideshow-border-face
+  '((((background light))
+     :background "rosy brown" :extend t)
+    (t
+     :background "sandy brown" :extend t))
+  "Face used for hideshow fringe."
+  :group 'hideshow)
+
+(define-fringe-bitmap 'hideshow-folded-fringe
+  (vector #b00000000
+          #b00000000
+          #b00000000
+          #b11000011
+          #b11100111
+          #b01111110
+          #b00111100
+          #b00011000))
+
+(defun hideshow-folded-overlay-fn (ov)
+  "Display a folded region indicator with the number of folded lines."
+  (when (eq 'code (overlay-get ov 'hs))
+    (let* ((nlines (count-lines (overlay-start ov) (overlay-end ov)))
+           (info (format " (%d)..." nlines)))
+      ;; fringe indicator
+      (overlay-put ov 'before-string (propertize " "
+                                                 'display '(left-fringe hideshow-folded-fringe
+                                                                        hideshow-border-face)))
+      ;; folding indicator
+      (overlay-put ov 'display (propertize info 'face hideshow-folded-face)))))
+
+(setq hs-set-up-overlay #'hideshow-folded-overlay-fn)
+
+(add-hook 'prog-mode-hook #'hs-minor-mode)
+
+;;;; Isearch
+(setq isearch-lazy-count t
+      isearch-lazy-highlight t
+      lazy-highlight-buffer t
+      ;; Don't be stingy with history; default is to keep just 16 entries
+      search-ring-max 200
+      regexp-search-ring-max 200
+      ;; Record isearch in minibuffer history, so C-x ESC ESC can repeat it.
+      isearch-resume-in-command-history t
+      ;; M-< and M-> move to the first/last occurrence of the current search string.
+      isearch-allow-motion t
+      isearch-motion-changes-direction t
+      ;; space matches any sequence of characters in a line.
+      isearch-regexp-lax-whitespace t
+      search-whitespace-regexp ".*?")
+
+(keymap-global-set "C-s" #'isearch-forward-regexp)
+(keymap-global-set "C-r" #'isearch-backward-regexp)
+
+(with-eval-after-load "isearch"
+  (define-advice isearch-occur (:after (_regexp &optional _nlines))
+    "Exit isearch after calling."
+    (isearch-exit))
+
+  (keymap-set isearch-mode-map "C-c C-o" #'isearch-occur)
+  ;; DEL during isearch should edit the search string, not jump back
+  ;; to the previous result
+  (keymap-substitute isearch-mode-map #'isearch-delete-chac #'isearch-del-chac))
+
+;;;; Ispell
+;;
+;; In Emacs 30 and newer, disable Ispell completion to avoid annotation errors
+;; when no `ispell' dictionary is set.
+(setq text-mode-ispell-word-completion nil)
+
+(setq ispell-silently-savep t)
+
+;;;; Ibuffer
+(fset 'list-buffers 'ibuffer)
+(setq-default ibuffer-show-empty-filter-groups nil)
+(setq ibuffer-formats
+      '((mark modified read-only locked
+              " " (name 40 40 :left :elide)
+			  " " (size 8 -1 :right)
+			  " " (mode 18 18 :left :elide) " " filename-and-process)
+	    (mark " " (name 16 -1) " " filename)))
+
 ;;;; Icomplete
 ;;
 ;; Do not delay displaying completion candidates in `fido-mode' or
 ;; `fido-vertical-mode'
 (setq icomplete-compute-delay 0.01)
+
+;;;; GUD
+(setq gud-highlight-current-line t)
+(add-hook 'gud-mode-hook #'gud-tooltip-mode)
+
+;;;; Outline
+(setq outline-minor-mode-cycle t
+      outline-minor-mode-highlight t)
+
+;;;; Python
+;;
+;; Do not notify the user each time Python tries to guess the indentation offset
+(setq python-indent-guess-indent-offset nil
+      python-shell-dedicated 'project)
+
+;; Two ways to make pyright work with installed package.
+;;
+;; 1. Use venv.
+;; pyright need to know venvPath so that it can find the python packages
+;; or raise error like "import can't be resolved"
+;;
+;; 2. Use pdm.
+;; Packages installed with pdm under __pypackages__/<version>/lib/,
+;; update pyproject.toml to make pyright work with it, for example:
+;; [tool.pyright]
+;; extraPaths = ["__pypackages__/3.8/lib/", "src/]
+;; https://pdm-project.org/en/latest/usage/pep582/#emacs
+;;
+;; (also check basedpyright and delance)
+(defun pyrightconfig-write ()
+  "Write a `pyrightconfig.json' file at the root of a project with
+`venvPath` and `venv`."
+  (interactive)
+  (let* ((json-encoding-pretty-print t)
+         (fn (tramp-file-local-name python-shell-virtualenv-root))
+         (venvPath (string-trim-right fn "/"))
+         (out-file (expand-file-name "pyrightconfig.json" (project-root (project-current)))))
+    (with-temp-file out-file
+      (insert (json-encode (list :venvPath venvPath
+                                 :venv ".venv"))))
+    (message "Configured `%s` to use environment `%s`" out-file pyvenv-virtual-env)))
+
+;;;; Project
+(setq project-vc-ignores '("target/" "bin/" "obj/")
+      project-vc-extra-root-markers '(".project"
+                                      "go.mod"
+                                      "Cargo.toml"
+                                      "project.clj"
+                                      "pyproject.toml"
+                                      "pyrightconfig.json"
+                                      "package.json"))
+
+(with-eval-after-load 'project
+  ;; Use fd in `project-find-file'
+  (when (executable-find "fd")
+    (defun my/project-files-in-directory (dir)
+      "Use `fd' to list files in DIR."
+      (let* ((default-directory dir)
+             (localdir (file-local-name (expand-file-name dir)))
+             (command (format "fd -c never -H -t f -0 . %s" localdir)))
+        (project--remote-file-names
+         (sort (split-string (shell-command-to-string command) "\0" t)
+               #'string<))))
+    (cl-defmethod project-files ((project (head local)) &optional dirs)
+      "Override `project-files' to use `fd' in local projects."
+      (mapcan #'my/project-files-in-directory
+              (or dirs (list (project-root project)))))))
 
 ;;;; Repeat
 ;;
@@ -656,16 +954,25 @@ point reaches the beginning or end of the buffer, stop there."
       repeat-exit-key (kbd "RET"))
 (add-hook 'after-init-hook #'repeat-mode)
 
-;;;; Compilation
-;;
-;; `compile'
-(setq compilation-always-kill t
-      compilation-ask-about-save nil
-      compilation-scroll-output 'first-error)
+;;;; Simple.el
+(add-hook 'prog-mode-hook
+          #'(lambda ()
+              (setq-local comment-auto-fill-only-comments t)
+              (turn-on-auto-fill)))
 
-;; Disable compiliation warnings
-(setq warning-suppress-log-types '((comp)))
+;;;; Smerge
+(add-hook 'find-file-hook #'(lambda ()
+                              (save-excursion
+                                (goto-char (point-min))
+                                (when (re-search-forward "^<<<<<<< " nil t)
+                                  (smerge-mode 1)))))
 
+(with-eval-after-load 'smerge-mode
+  (keymap-set smerge-mode-map "C-c c" #'smerge-keep-current)
+  (keymap-set smerge-mode-map "C-c a" #'smerge-smerge-keep-all)
+  (keymap-set smerge-mode-map "M-r" #'smerge-refine)
+  (keymap-set smerge-mode-map "M-n" #'smerge-next)
+  (keymap-set smerge-mode-map "M-p" #'smerge-prev))
 
 ;;;; Tramp
 (setq-default vc-handled-backends '(Git))
@@ -711,93 +1018,6 @@ point reaches the beginning or end of the buffer, stop there."
   ;; as given in your ‘~/.profile’.  This entry is represented in
   ;; the list by the special value ‘tramp-own-remote-path’.
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
-
-;;;; Project
-(setq project-vc-ignores '("target/" "bin/" "obj/")
-      project-vc-extra-root-markers '(".project"
-                                      "go.mod"
-                                      "Cargo.toml"
-                                      "project.clj"
-                                      "pyproject.toml"
-                                      "pyrightconfig.json"
-                                      "package.json"))
-
-(with-eval-after-load 'project
-  ;; Use fd in `project-find-file'
-  (when (executable-find "fd")
-    (defun my/project-files-in-directory (dir)
-      "Use `fd' to list files in DIR."
-      (let* ((default-directory dir)
-             (localdir (file-local-name (expand-file-name dir)))
-             (command (format "fd -c never -H -t f -0 . %s" localdir)))
-        (project--remote-file-names
-         (sort (split-string (shell-command-to-string command) "\0" t)
-               #'string<))))
-    (cl-defmethod project-files ((project (head local)) &optional dirs)
-      "Override `project-files' to use `fd' in local projects."
-      (mapcan #'my/project-files-in-directory
-              (or dirs (list (project-root project)))))))
-
-;;;; Dired
-(setq mouse-drag-and-drop-region t
-      mouse-drag-and-drop-region-cross-program t)
-
-(setq dired-mouse-drag-files t
-      dired-dwim-target t
-      dired-kill-when-opening-new-dired-buffer t
-      dired-auto-revert-buffer t)
-
-(add-hook 'dired-mode-hook #'dired-hide-details-mode)
-
-(with-eval-after-load 'dired
-  ;; https://github.com/d12frosted/homebrew-emacs-plus/issues/383
-  (when (eq system-type 'darwin)
-    (setq insert-directory-program "gls"))
-  (setq dired-listing-switches
-        "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
-  (keymap-set dired-mode-map "C-c C-p" #'wdired-change-to-wdired-mode)
-  (define-key dired-mode-map (kbd "h") #'dired-up-directory)
-  (define-key dired-mode-map [mouse-2] #'dired-find-file))
-
-;;;; Isearch
-(setq isearch-lazy-count t
-      isearch-lazy-highlight t
-      lazy-highlight-buffer t
-      ;; Don't be stingy with history; default is to keep just 16 entries
-      search-ring-max 200
-      regexp-search-ring-max 200
-      ;; Record isearch in minibuffer history, so C-x ESC ESC can repeat it.
-      isearch-resume-in-command-history t
-      ;; M-< and M-> move to the first/last occurrence of the current search string.
-      isearch-allow-motion t
-      isearch-motion-changes-direction t
-      ;; space matches any sequence of characters in a line.
-      isearch-regexp-lax-whitespace t
-      search-whitespace-regexp ".*?")
-
-(keymap-global-set "C-s" #'isearch-forward-regexp)
-(keymap-global-set "C-r" #'isearch-backward-regexp)
-
-(with-eval-after-load "isearch"
-  (define-advice isearch-occur (:after (_regexp &optional _nlines))
-    "Exit isearch after calling."
-    (isearch-exit))
-
-  (keymap-set isearch-mode-map "C-c C-o" #'isearch-occur)
-  ;; DEL during isearch should edit the search string, not jump back
-  ;; to the previous result
-  (keymap-substitute isearch-mode-map #'isearch-delete-chac #'isearch-del-chac))
-
-;;;; Which-key
-;;
-;; Allow C-h to trigger which-key before it is done automatically
-(setq which-key-show-early-on-C-h t)
-;; make sure which-key doesn't show normally but refreshes quickly after it is
-;; triggered.
-(setq which-key-idle-delay 10000)
-(setq which-key-idle-secondary-delay 0.05)
-
-(add-hook 'after-init-hook #'which-key-mode)
 
 ;;;; Tab bar
 ;;
@@ -879,36 +1099,24 @@ point reaches the beginning or end of the buffer, stop there."
      `(tab-bar-tab-inactive ((t (:inherit default :background ,default-bg :foreground ,inactive-fg)))))))
 (add-hook 'after-load-theme-hook #'my/sync-tab-bar-to-theme)
 
-;;;; Flymake
-(add-hook 'prog-mode-hook #'flymake-mode)
-(add-hook 'emacs-lisp-mode-hook #'(lambda ()
-                                    (flymake-mode -1)))
+;;;; Which-key
+;;
+;; Allow C-h to trigger which-key before it is done automatically
+(setq which-key-show-early-on-C-h t)
+;; make sure which-key doesn't show normally but refreshes quickly after it is
+;; triggered.
+(setq which-key-idle-delay 10000)
+(setq which-key-idle-secondary-delay 0.05)
 
-(setq-default flymake-diagnostic-functions nil)
+(add-hook 'after-init-hook #'which-key-mode)
 
-(defvar sekiro-flymake-mode-line-format `(:eval (sekiro-flymake-mode-line-format)))
-(put 'sekiro-flymake-mode-line-format 'risky-local-variable t)
-(defun sekiro-flymake-mode-line-format ()
-  (let* ((counter (string-to-number
-                   (nth 1
-                        (cadr
-                         (flymake--mode-line-counter :error)))))
-         (sekiro-flymake (when (> counter 0)
-                           'compilation-error)))
-    (propertize
-     "危"
-     'face
-     sekiro-flymake)))
-
-(with-eval-after-load 'flymake
-  (keymap-set flymake-mode-map "M-p" #'flymake-goto-prev-error)
-  (keymap-set flymake-mode-map "M-n" #'flymake-goto-next-error)
-  (add-to-list 'mode-line-misc-info
-               `(flymake-mode (" [" sekiro-flymake-mode-line-format "] "))))
-
-(add-hook 'flymake-mode-hook
-          (lambda ()
-            (add-hook 'eldoc-documentation-functions 'flymake-eldoc-function nil t)))
+;;;; White spcae
+;;
+;; Show trailing whitespaces
+;; https://list.orgmode.org/orgmode/Zqjm0hyy5DjFNrgm@swain.home.arpa/
+(setq whitespace-style '(face trailing))
+(add-hook 'prog-mode-hook #'whitespace-mode)
+(add-hook 'conf-mode-hook #'whitespace-mode)
 
 ;;;; Xref
 ;;
@@ -927,59 +1135,6 @@ point reaches the beginning or end of the buffer, stop there."
 (with-eval-after-load 'xref
   (setq xref-search-program (cond ((executable-find "rg") 'ripgrep)
                                   (t 'grep))))
-
-;;;; Eglot
-(setq eglot-autoshutdown t
-      eglot-sync-connect nil ;; don't block of LSP connection attempts
-      eglot-extend-to-xref t ;; make eglot manage file out of project by `xref-find-definitions'
-      eglot-ignored-server-capabilites
-      '(:documentHighlightProvider
-        :documentFormattingProvider
-        :documentRangeFormattingProvider
-        :documentLinkProvider
-        ;; 和 treesit 的缩进冲突
-        :documentOnTypeFormattingProvider))
-
-;; Eglot optimization
-(setq jsonrpc-event-hook nil)
-(setq eglot-events-buffer-size 0)
-(setq eglot-report-progress nil)  ; Prevent Eglot minibuffer spam
-
-;; Eglot optimization: Disable `eglot-events-buffer' to maintain consistent
-;; performance in long-running Emacs sessions. By default, it retains 2,000,000
-;; lines, and each new event triggers pretty-printing of the entire buffer,
-;; leading to a gradual performance decline.
-(setq eglot-events-buffer-config '(:size 0 :format full))
-
-
-;; https://codeberg.org/mekeor/init/src/commit/11e3d86aa18090a5e3a6f0d29373c24373f29aaf/init.el#L813-L842
-;; INFO: Translation:
-;;   | JSON  | Eglot       |
-;;   |-------+-------------|
-;;   | true  | t           |
-;;   | false | :json-false |
-;;   | null  | nil         |
-;;   | {}    | eglot-{}    |
-(setq-default eglot-workspace-configuration
-              '( :gopls ( :buildFlags ["-tags" "wireinject"]
-                          :usePlaceholders t
-                          :staticcheck t)
-                 :pyright ( :checkOnlyOpenFiles t
-                            :typeCheckingMode "basic")
-                 :basedpyright ( :checkOnlyOpenFiles t
-                                 :typeCheckingMode "basic")
-                 ))
-
-(with-eval-after-load 'eglot
-  (keymap-set eglot-mode-map "M-RET" #'eglot-code-actions)
-  (keymap-set eglot-mode-map "C-c r" #'eglot-rename)
-  (keymap-set eglot-mode-map "M-'"   #'eglot-find-implementation)
-
-  (add-to-list 'eglot-server-programs '(sql-mode . ("sqls" "-config" "~/.config/sqls/config.yaml")))
-  (add-to-list 'eglot-server-programs '(typst-ts-mode . ("typst-lsp")))
-  (add-to-list 'eglot-server-programs '(org-mode . ("ltex-ls")))
-  (add-to-list 'eglot-server-programs '(markdown-mode . ("ltex-ls")))
-  (add-to-list 'eglot-server-programs '(message-mode . ("ltex-ls"))))
 
 ;;; Window
 ;;
@@ -1042,34 +1197,5 @@ point reaches the beginning or end of the buffer, stop there."
 
 (keymap-global-set "C-x |" 'split-window-horizontally-instead)
 (keymap-global-set "C-x _" 'split-window-vertically-instead)
-
-;;; package.el
-;;
-;; Install into separate package dirs for each Emacs version, to prevent
-;; bytecode incompatibility
-(setq package-user-dir
-      (expand-file-name (format "elpa-%s.%s" emacs-major-version emacs-minor-version)
-                        user-emacs-directory))
-
-(setq package-archives
-      '(("gnu"    . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-	    ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
-        ("melpa"  . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
-
-(setq package-quickstart t)
-(setq package-enable-at-startup nil)
-(package-initialize)
-
-(defvar package-refreshed nil
-  "Flag to indicate whether package-refresh-contents has been called.")
-
-(defun install-package (pkg &optional url)
-  (unless (package-installed-p pkg)
-    (unless package-refreshed
-      (package-refresh-contents)
-      (setq package-refreshed t))
-    (if url
-        (package-vc-install url)
-      (package-install pkg))))
 
 ;;; init-builtin.el ends here

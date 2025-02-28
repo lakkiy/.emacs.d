@@ -1,4 +1,4 @@
-;;; -*- lexical-binding: t -*-
+;;; init-ui.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
 ;; form-feed
 ;;

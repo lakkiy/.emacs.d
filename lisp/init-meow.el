@@ -1,4 +1,4 @@
-;;; -*- lexical-binding: t -*-
+;;; init-meow.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
 (install-package 'meow)
 (install-package 'meow-tree-sitter)

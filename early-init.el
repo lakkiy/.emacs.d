@@ -15,6 +15,16 @@
 ;; initialization, so we must prevent Emacs from doing it early!
 (setq package-enable-at-startup nil)
 
+;; Faster to disable these here (before they've been initialized)
+(push '(menu-bar-lines . 0) default-frame-alist)
+(push '(tool-bar-lines . 0) default-frame-alist)
+(push '(vertical-scroll-bars) default-frame-alist)
+
+;; Resizing the Emacs frame can be a terribly expensive part of changing the
+;; font. By inhibiting this, we easily halve startup times with fonts that are
+;; larger than the system default.
+(setq frame-inhibit-implied-resize t)
+
 (let ((old-file-name-handler-alist file-name-handler-alist))
   ;; `file-name-handler-alist' is consulted on each `require', `load' and
   ;; various path/io functions. You get a minor speed up by unsetting this.
@@ -37,18 +47,5 @@
                     (delete-dups (append file-name-handler-alist
                                          old-file-name-handler-alist))))
             t))
-
-;; Faster to disable these here (before they've been initialized)
-(push '(menu-bar-lines . 0) default-frame-alist)
-(push '(tool-bar-lines . 0) default-frame-alist)
-(push '(vertical-scroll-bars) default-frame-alist)
-
-;; Disable native compilation
-(setq native-comp-jit-compilation nil)
-
-;; Resizing the Emacs frame can be a terribly expensive part of changing the
-;; font. By inhibiting this, we easily halve startup times with fonts that are
-;; larger than the system default.
-(setq frame-inhibit-implied-resize t)
 
 ;;; early-init.el ends here

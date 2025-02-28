@@ -1,4 +1,4 @@
-;;; -*- lexical-binding: t -*-
+;;; init-git.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
 ;;; magit
 (install-package 'magit)

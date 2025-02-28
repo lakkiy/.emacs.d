@@ -1,4 +1,4 @@
-;;; -*- lexical-binding: t -*-
+;;; init-window.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
 ;; winum
 (install-package 'winum)

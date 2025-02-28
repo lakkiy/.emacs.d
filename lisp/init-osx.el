@@ -1,7 +1,7 @@
-;;; -*- lexical-binding: t -*-
+;;; init-osx.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 ;; Have to enable menu bar on mac port, otherwise emacs lost focus.
 (when (not (display-graphic-p))
@@ -9,6 +9,9 @@
 
 (setq mac-option-modifier 'meta
       mac-command-modifier 'super)
+
+;; https://github.com/d12frosted/homebrew-emacs-plus/issues/383
+(setq insert-directory-program "gls")
 
 ;; `save-buffers-kill-emacs' will shutdown emacs daemon.
 (global-set-key [(super q)] #'save-buffers-kill-terminal)

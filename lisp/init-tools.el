@@ -1,4 +1,4 @@
-;;; -*- lexical-binding: t -*-
+;;; init-tools.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
 (autoload #'color-outline-mode "color-outline.el" nil t)
 (add-hook 'prog-mode-hook #'color-outline-mode)

@@ -1,4 +1,4 @@
-;;; -*- lexical-binding: t -*-
+;;; init-shell.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
 ;; eshell
 (add-hook 'eshell-mode-hook (lambda () (setq outline-regexp eshell-prompt-regexp)))

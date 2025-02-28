@@ -1,4 +1,4 @@
-;;; -*- lexical-binding: t -*-
+;;; init-completion.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
 ;; orderless
 (install-package 'orderless)

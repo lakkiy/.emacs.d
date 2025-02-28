@@ -1,11 +1,4 @@
-;;; -*- lexical-binding: t -*-
-
-;; gud; The unified debugger
-(add-hook 'gud-mode-hook #'gud-tooltip-mode)
-(setq gud-highlight-current-line t)
-
-;; comment
-(setq comment-empty-lines t)
+;;; init-dev.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
 ;;; eglot-booster
 (install-package 'eglot-booster "https://github.com/jdtsmith/eglot-booster")
@@ -157,42 +150,6 @@
   (push '(go-mode . go-ts-mode) major-mode-remap-alist))
 
 ;;; hideshow
-(add-hook 'prog-mode-hook #'hs-minor-mode)
-
-(defconst hideshow-folded-face '((t (:inherit 'font-lock-comment-face :box t))))
-
-(defface hideshow-border-face
-  '((((background light))
-     :background "rosy brown" :extend t)
-    (t
-     :background "sandy brown" :extend t))
-  "Face used for hideshow fringe."
-  :group 'hideshow)
-
-(define-fringe-bitmap 'hideshow-folded-fringe
-  (vector #b00000000
-          #b00000000
-          #b00000000
-          #b11000011
-          #b11100111
-          #b01111110
-          #b00111100
-          #b00011000))
-
-(defun hideshow-folded-overlay-fn (ov)
-  "Display a folded region indicator with the number of folded lines."
-  (when (eq 'code (overlay-get ov 'hs))
-    (let* ((nlines (count-lines (overlay-start ov) (overlay-end ov)))
-           (info (format " (%d)..." nlines)))
-      ;; fringe indicator
-      (overlay-put ov 'before-string (propertize " "
-                                                 'display '(left-fringe hideshow-folded-fringe
-                                                                        hideshow-border-face)))
-      ;; folding indicator
-      (overlay-put ov 'display (propertize info 'face hideshow-folded-face)))))
-
-(setq hs-set-up-overlay #'hideshow-folded-overlay-fn)
-
 ;;; pnui
 (install-package 'puni)
 ;; (:bind
@@ -203,8 +160,6 @@
 ;;  "C-}" 'puni-barf-forward)
 
 ;;; eldoc-box
-(setq eldoc-idle-delay 1
-      eldoc-documentation-function 'eldoc-documentation-compose)
 (install-package 'eldoc-box)
 (setq eldoc-box-only-multi-line t)
 (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode)
@@ -238,6 +193,14 @@
 				                             parenthesized_expression subscript)))))
 
 ;;; misc
+(install-package 'yaml-mode)
+(install-package 'toml-mode)
+(install-package 'nginx-mode)
+(install-package 'just-mode)
+(install-package 'justl)
+(install-package 'rust-mode)
+(install-package 'racket-mode)
+(install-package 'nix-mode)
 (install-package 'protobuf-mode)
 
 (with-eval-after-load "protobuf-mode"
@@ -245,30 +208,5 @@
             (lambda ()
               (setq imenu-generic-expression
                     '((nil "^[[:space:]]*\\(message\\|service\\|enum\\)[[:space:]]+\\([[:alnum:]]+\\)" 2))))))
-(install-package 'yaml-mode)
-(install-package 'toml-mode)
-(install-package 'nginx-mode)
-
-;; Show trailing whitespaces
-;; https://list.orgmode.org/orgmode/Zqjm0hyy5DjFNrgm@swain.home.arpa/
-(setq whitespace-style '(face trailing))
-(add-hook 'prog-mode-hook #'whitespace-mode)
-(add-hook 'conf-mode-hook #'whitespace-mode)
-
-(add-hook 'prog-mode-hook
-          #'(lambda ()
-              (setq-local comment-auto-fill-only-comments t)
-              (turn-on-auto-fill)))
-
-(add-hook 'prog-mode-hook #'subword-mode)
-
-(install-package 'just-mode)
-(install-package 'justl)
-(install-package 'rust-mode)
-(install-package 'racket-mode)
-(install-package 'nix-mode)
-
-(setq c-default-style "linux"
-      c-basic-offset 4)
 
 ;;; init-dev.el ends here

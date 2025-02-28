@@ -1,15 +1,6 @@
-;;; -*- lexical-binding: t -*-
+;;; init-dired.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 ;;
 ;; NOETS: for subtree, press i in dired.
-
-;; icon
-;; (install-package 'nerd-icons-dired)
-;;
-;; (defun my/dired-enable-icon ()
-;;   (unless (file-remote-p default-directory)
-;;     (nerd-icons-dired-mode 1)))
-;;
-;; (add-hook 'dired-mode-hook #'my/dired-enable-icon)
 
 ;; rsyncc
 (install-package 'dired-rsync)

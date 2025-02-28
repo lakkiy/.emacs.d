@@ -1,4 +1,4 @@
-;;; -*- lexical-binding: t -*-
+;;; init-chinese.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 ;;
 ;; If install emacs with nix:
 ;; Set =rime-emacs-module-header-root= to =emacs/include=.

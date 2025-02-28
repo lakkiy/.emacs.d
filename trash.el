@@ -107,6 +107,12 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 
 
 ;; Highlight current line
+;;
+;; Restrict `hl-line-mode' highlighting to the current window, reducing visual
+;; clutter and slightly improving `hl-line-mode' performance.
+(setq hl-line-sticky-flag nil)
+(setq global-hl-line-sticky-flag nil)
+
 (defun my/hl-line-setup ()
   "Disable `hl-line-mode' if region is active."
   (when (and (bound-and-true-p hl-line-mode)
@@ -116,9 +122,6 @@ so try complete filst, if there nothing to complete then try to jump to next fie
   (add-hook 'post-command-hook #'my/hl-line-setup))
 (when (display-graphic-p)
   (add-hook 'prog-mode-hook #'hl-line-mode))
-;; FIXME 打开两个一样的窗口并且都用 hl line 开启， scrool 那个 inactive 的高亮位
-;; 置也会变
-
 
 ;; NOTE 会卡住编辑，不太好用
 ;; Hide org-mode property.
@@ -185,3 +188,22 @@ so try complete filst, if there nothing to complete then try to jump to next fie
   (interactive)
   (let ((inhibit-read-only t))
     (ansi-color-apply-on-region (point-min) (point-max))))
+
+;;; tabnine
+(install-package 'tabnine)
+
+(with-eval-after-load 'tabnine
+  (add-hook 'kill-emacs-hook #'tabnine-kill-process)
+
+  (defun +tabnine-disable-predicate()
+    (or (meow-motion-mode-p)
+        (meow-normal-mode-p)))
+  (add-to-list 'tabnine-disable-predicates #'+tabnine-disable-predicate)
+
+  (define-key tabnine-completion-map (kbd "TAB") nil)
+  (define-key tabnine-completion-map (kbd "<tab>") nil)
+  (define-key tabnine-completion-map (kbd "C-e") #'tabnine-accept-completion)
+  (define-key tabnine-completion-map (kbd "C-g") #'tabnine-clear-overlay)
+  (define-key tabnine-completion-map (kbd "M-p") #'tabnine-next-completion)
+  (define-key tabnine-completion-map (kbd "M-n") #'tabnine-previous-completion))
+

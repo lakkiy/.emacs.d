@@ -17,7 +17,31 @@
 ;;; Built-in config
 (my-load-relative "lisp/init-builtin.el")
 
+;;; package.el
+;;
+;; Install into separate package dirs for each Emacs version, to prevent
+;; bytecode incompatibility
+(setq package-user-dir (expand-file-name (format "elpa-%s.%s" emacs-major-version emacs-minor-version)
+                                         user-emacs-directory)
+      package-archives '(("gnu"    . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+                         ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
+                         ("melpa"  . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/"))
+      package-refreshed nil
+      package-quickstart t
+      package-enable-at-startup nil)
+(package-initialize)
+
+(defun install-package (pkg &optional url)
+  (unless (package-installed-p pkg)
+    (unless package-refreshed
+      (package-refresh-contents)
+      (setq package-refreshed t))
+    (if url
+        (package-vc-install url)
+      (package-install pkg))))
+
 ;;; Benchmark
+;; (install-package 'benchmark-init)
 ;; (require 'benchmark-init)
 ;; (add-hook 'after-init-hook 'benchmark-init/deactivate)
 ;; (benchmark-init/activate)
@@ -40,7 +64,6 @@
 (my-load-relative "lisp/init-git.el")
 (my-load-relative "lisp/init-text.el")
 (my-load-relative "lisp/init-mail.el")
-(my-load-relative "lisp/init-spell.el")
 (my-load-relative "lisp/init-shell.el")
 (my-load-relative "lisp/init-telega.el")
 (my-load-relative "lisp/init-dired.el")
@@ -53,5 +76,4 @@
 ;;; Load post init
 (my-load-relative "post-init.el")
 
-(provide 'init)
 ;;; init.el ends here

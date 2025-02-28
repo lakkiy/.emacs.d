@@ -1,35 +1,4 @@
-;;; -*- lexical-binding: t -*-
-
-;; Disable readline based native completion
-(setq python-shell-dedicated 'project
-      python-indent-guess-indent-offset nil)
-
-;; Two ways to make pyright work with installed package.
-;;
-;; 1. Use venv.
-;; pyright need to know venvPath so that it can find the python packages
-;; or raise error like "import can't be resolved"
-;;
-;; 2. Use pdm.
-;; Packages installed with pdm under __pypackages__/<version>/lib/,
-;; update pyproject.toml to make pyright work with it, for example:
-;; [tool.pyright]
-;; extraPaths = ["__pypackages__/3.8/lib/", "src/]
-;; https://pdm-project.org/en/latest/usage/pep582/#emacs
-;;
-;; (also check basedpyright and delance)
-(defun pyrightconfig-write ()
-  "Write a `pyrightconfig.json' file at the root of a project with
-`venvPath` and `venv`."
-  (interactive)
-  (let* ((json-encoding-pretty-print t)
-         (fn (tramp-file-local-name python-shell-virtualenv-root))
-         (venvPath (string-trim-right fn "/"))
-         (out-file (expand-file-name "pyrightconfig.json" (project-root (project-current)))))
-    (with-temp-file out-file
-      (insert (json-encode (list :venvPath venvPath
-                                 :venv ".venv"))))
-    (message "Configured `%s` to use environment `%s`" out-file pyvenv-virtual-env)))
+;;; init-python.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
 ;;; venv
 (install-package 'pet)

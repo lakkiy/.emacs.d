@@ -1,4 +1,4 @@
-;;; -*- lexical-binding: t -*-
+;;; init-lisp.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
 (setq-default lexical-binding t)
 

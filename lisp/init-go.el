@@ -1,4 +1,4 @@
-;;; -*- lexical-binding: t -*-
+;;; init-go.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
 ;; Install or update tools
 (defvar go--tools '("golang.org/x/tools/gopls"

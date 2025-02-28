@@ -1,4 +1,4 @@
-;;; -*- lexical-binding: t -*-
+;;; init-org.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
 (setq
  org-ellipsis " ▾ "

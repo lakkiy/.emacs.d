@@ -1,4 +1,4 @@
-;;; -*- lexical-binding: t -*-
+;;; init-translator.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
 ;;; go-translate
 ;;

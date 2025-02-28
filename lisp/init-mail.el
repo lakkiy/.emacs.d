@@ -1,4 +1,4 @@
-;;; -*- lexical-binding: t -*-
+;;; init-mail.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
 ;;; fontify-patch
 ;;
@@ -37,7 +37,7 @@
   (auto-fill-mode)
   (variable-pitch-mode 1)
   (when (executable-find "ltex-ls")
-    (eglot-ensure)))
+    (eglot)))
 (add-hook 'message-mode-hook #'my/message-mode-setup)
 
 ;;; gnus
