@@ -4,19 +4,13 @@
 (install-package 'meow-tree-sitter)
 
 (setq meow-esc-delay 0.001
-      meow-keypad-leader-dispatch "C-c"
-      meow-replace-state-name-list
-      '((normal . "N")
-        (beacon . "B")
-        (insert . "I")
-        (motion . "M")
-        (keypad . "K")))
+      meow-keypad-leader-dispatch "C-x")
 
 (defun my/meow-setup ()
   (require 'meow)
 
   (meow-thing-register 'angle '(pair ("<") (">")) '(pair ("<") (">")))
-  (add-to-list 'meow-char-thing-table '(?a . angle))
+  (add-to-list 'meow-char-thing-table '(?h . angle))
   (meow-thing-register 'backquote '(regexp "`" "`") '(regexp "`" "`"))
   (add-to-list 'meow-char-thing-table '(?` . backquote))
 

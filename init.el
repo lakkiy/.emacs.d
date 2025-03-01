@@ -26,11 +26,12 @@
       package-archives '(("gnu"    . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
                          ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
                          ("melpa"  . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/"))
-      package-refreshed nil
-      package-quickstart t
-      package-enable-at-startup nil)
+
+      package-quickstart t)
+(setq package-enable-at-startup nil)
 (package-initialize)
 
+(defvar package-refreshed nil)
 (defun install-package (pkg &optional url)
   (unless (package-installed-p pkg)
     (unless package-refreshed
