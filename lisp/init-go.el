@@ -42,6 +42,7 @@
 (install-package 'go-impl)
 (install-package 'gotest)
 (install-package 'go-tag)
+(install-package 'go-playground)
 
 (install-package 'flymake-go-staticcheck)
 (when (executable-find "staticcheck")
