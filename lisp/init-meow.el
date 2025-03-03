@@ -4,7 +4,7 @@
 (install-package 'meow-tree-sitter)
 
 (setq meow-esc-delay 0.001
-      meow-keypad-leader-dispatch "C-x")
+      meow-keypad-leader-dispatch "C-c")
 
 (defun my/meow-setup ()
   (require 'meow)
