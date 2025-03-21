@@ -672,6 +672,16 @@ point reaches the beginning or end of the buffer, stop there."
 (setq eldoc-idle-delay 1
       eldoc-documentation-function 'eldoc-documentation-compose)
 
+;; https://emacs-china.org/t/elisp/29204/7?u=rua
+;; make eldoc display documentation too
+(define-advice elisp-get-fnsym-args-string (:around (orig-fun sym &rest r) docstring)
+  "If SYM is a function, append its docstring."
+  (concat
+   (apply orig-fun sym r)
+   (let* ((doc (and (fboundp sym) (documentation sym 'raw)))
+          (oneline (and doc (substring doc 0 (string-match "\n" doc)))))
+     (and oneline
+          (concat "  |  " (propertize oneline 'face 'italic))))))
 
 ;;;; Eglot
 (setq eglot-autoshutdown t
