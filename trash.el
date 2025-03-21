@@ -66,11 +66,6 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 (install-package 'dired-sidebar)
 (setq dired-sidebar-theme 'ascii)
 
-;; minions
-(install-package 'minions)
-(add-hook 'after-init-hook 'minions-mode)
-
-
 ;; bing ai search
 ;;
 ;; - Install the cookie editor extension for [[https://microsoftedge.microsoft.com/addons/detail/cookieeditor/neaplmfkghagebokkhpjpoebhdledlfi][Egde]]
@@ -206,4 +201,3 @@ so try complete filst, if there nothing to complete then try to jump to next fie
   (define-key tabnine-completion-map (kbd "C-g") #'tabnine-clear-overlay)
   (define-key tabnine-completion-map (kbd "M-p") #'tabnine-next-completion)
   (define-key tabnine-completion-map (kbd "M-n") #'tabnine-previous-completion))
-

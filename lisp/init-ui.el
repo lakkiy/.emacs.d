@@ -22,4 +22,10 @@
 (install-package 'solaire-mode)
 (add-hook 'after-init-hook #'solaire-global-mode)
 
+;; minions
+;;
+;; hide mode line minor mode
+(install-package 'minions)
+(add-hook 'after-init-hook #'minions-mode)
+
 ;;; init-ui.el ends here
