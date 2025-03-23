@@ -57,8 +57,7 @@
 
 (install-package 'aidermacs)
 (setq aidermacs-default-model "deepseek/deepseek-chat")
-(with-eval-after-load 'aideremacs
-  (setenv "DEEPSEEK_API_KEY" (retrieve-authinfo-key "api.deepseek.com" "apikey")))
+(setenv "DEEPSEEK_API_KEY" (retrieve-authinfo-key "api.deepseek.com" "apikey"))
 
 
 ;;; init-ai.el ends here

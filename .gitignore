@@ -70,3 +70,5 @@ emacs.pdmp
 devdocs
 network-security.data
 org-persist
+.aider*
+.env
