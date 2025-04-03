@@ -1,5 +1,20 @@
 ;;; init-ai.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
+;;; minuet
+;;
+;; For default `minuet-openai-fim-compatible-options', make sure env
+;; DEEPSEEK_API_KEY was set.
+;; Manually enable copilot, add the following code to post-init.el:
+;; (add-hook 'prog-mode-hook #'minuet-auto-suggestion-mode)
+;;
+(install-package 'minuet)
+
+(with-eval-after-load 'minuet
+  (keymap-set minuet-active-mode-map "C-g" #'minuet-dismiss-suggestion)
+  (keymap-set minuet-active-mode-map "C-e" #'minuet-accept-suggestion)
+  (keymap-set minuet-active-mode-map "M-p" #'minuet-previous-suggestion)
+  (keymap-set minuet-active-mode-map "M-n" #'minuet-next-suggestion))
+
 ;;; copilot
 ;;
 ;; Manually enable copilot, add the following code to post-init.el:
