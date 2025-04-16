@@ -41,7 +41,6 @@
 
 (setq webpaste-paste-confirmation t
       webpaste-add-to-killring t
-      webpaste-provider-priority '("paste.mozilla.org")
       webpaste-open-in-browser nil)
 
 ;;; separedit
