@@ -121,5 +121,6 @@
 (install-package 'jwt)
 (install-package 'sicp)
 (install-package 'speed-type)
+(install-package 'elcord)
 
 ;;; init-tools.el ends here
