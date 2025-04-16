@@ -1,6 +1,8 @@
 ;;; init-osx.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
-(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+;; FIXME 文字不一起变色的话会看不见
+;; (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 ;; Have to enable menu bar on mac port, otherwise emacs lost focus.
