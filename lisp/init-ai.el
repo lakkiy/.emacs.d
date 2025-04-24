@@ -21,7 +21,6 @@
 ;; (add-hook 'prog-mode-hook 'copilot-mode)
 ;;
 (install-package 'copilot)
-(install-package 'copilot-chat)
 
 ;; 由于 `lisp-indent-offset' 的默认值是 nil，在编辑 elisp 时每敲一个字
 ;; 符都会跳出一个 warning，将其默认值设置为 t 以永不显示这个 warning
@@ -52,16 +51,6 @@
 ;;
 ;; Store gpt key in ~/.authinfo:
 ;; machine api.openai.com login apikey password ****
-;;
-;; Or other host proxy to openai:
-;; machine api.openai-sb.com login apikey password ****
-;; And custom gptel backend:
-;; (with-eval-after-load 'gptel
-;;   (setq gptel-backend (gptel-make-openai "SB OpenAI"
-;;                         :host "api.openai-sb.com"
-;;                         :key (retrieve-authinfo-key "api.openai-sb.com" "apikey")
-;;                         :stream t
-;;                         :models '("gpt-4"))))
 (install-package 'gptel)
 
 (setq gptel-default-mode 'org-mode
