@@ -122,5 +122,6 @@
 (install-package 'sicp)
 (install-package 'speed-type)
 (install-package 'elcord)
+(install-package 'dwim-shell-command)
 
 ;;; init-tools.el ends here
