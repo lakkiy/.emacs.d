@@ -137,7 +137,9 @@
 (setq treesit-language-source-alist
       '((gomod . ("https://github.com/camdencheek/tree-sitter-gomod.git"))
         (toml . ("https://github.com/ikatyang/tree-sitter-toml"))
-        (yaml . ("https://github.com/ikatyang/tree-sitter-yaml")))
+        (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))
+        (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" nil "tsx/src"))
+        (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" nil "typescript/src")))
       go-ts-mode-indent-offset 4)
 
 (with-eval-after-load 'go-ts-mode

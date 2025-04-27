@@ -59,6 +59,7 @@
 (my-load-relative "lisp/init-lisp.el")
 (my-load-relative "lisp/init-go.el")
 (my-load-relative "lisp/init-python.el")
+(my-load-relative "lisp/init-web.el")
 
 (my-load-relative "lisp/init-org.el")
 (my-load-relative "lisp/init-git.el")
