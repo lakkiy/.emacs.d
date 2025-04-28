@@ -6,6 +6,11 @@
   (setq eglot-booster-no-remote-boost t)
   (add-hook 'after-init-hook #'eglot-booster-mode))
 
+;;; breadcrumb
+;;
+;; Display function name on header
+(install-package 'breadcrumb)
+
 ;;; dumb-jump
 ;;
 ;; As default xref backend function.
