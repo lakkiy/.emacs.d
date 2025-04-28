@@ -63,13 +63,28 @@
 (setq bklink-summary-read-only-p t
       bklink-prune-summary-p nil)
 
-(defun my/xeft-setup ()
+(defun my-xeft-init-org-note ()
+  (interactive)
+  "Auto-insert org header when creating a new xeft note if appropriate."
+  (when (and (eq major-mode 'org-mode)
+             (< (count-lines (point-min) (point-max)) 3))
+    (save-excursion
+      (goto-char (point-min))
+      (let ((title (string-trim (thing-at-point 'line t))))
+        ;; 只有当第一行不是 #+TITLE 才改，防止误伤已有笔记
+        (unless (string-prefix-p "#+TITLE:" title)
+          (erase-buffer)
+          (insert (format "#+TITLE: %s\n\n* References\n" title))
+          (save-buffer))))))
+
+(defun my-xeft-setup ()
+  (my-xeft-init-org-note)
   (visual-fill-column-mode 1)
   (require 'bklink)
   (bklink-minor-mode 1))
 
 (with-eval-after-load 'xeft
-  (add-hook 'xeft-find-file-hook #'my/xeft-setup))
+  (add-hook 'xeft-find-file-hook #'my-xeft-setup))
 (with-eval-after-load 'bklink
   (keymap-set bklink-minor-mode-map "C-t i" #'bklink-insert))
 
