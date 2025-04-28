@@ -79,7 +79,6 @@
 
 (defun my-xeft-setup ()
   (my-xeft-init-org-note)
-  (visual-fill-column-mode 1)
   (require 'bklink)
   (bklink-minor-mode 1))
 
