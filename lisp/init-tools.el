@@ -56,7 +56,8 @@
 ;; make
 ;; make install
 (install-package 'xeft)
-(setq xeft-directory "~/Dropbox/org/roam")
+(setq xeft-directory "~/Dropbox/org/roam"
+      xeft-default-extension "org")
 
 ;; bklink; create back link
 (setq bklink-summary-read-only-p t
