@@ -25,56 +25,87 @@
 ;;; Code:
 (require 'gptel)
 
+
 (defconst gptel-commit-prompt
-  "The user provides the result of running `git diff --cached`. You suggest a conventional commit message. Don't add anything else to the response. The following describes conventional commits.
+  "Please write a commit message for the following `git diff --cached` output, following **GNU Emacs commit conventions**.
 
-# Conventional Commits 1.0.0
+**Requirements:**
 
-## Summary
+- The message should contain only printable UTF-8 (ASCII if possible) characters.
+- No 'Signed-off-by' or similar metadata lines.
+- Write in American English.
 
-The Conventional Commits specification is a lightweight convention on top of commit messages.
-It provides an easy set of rules for creating an explicit commit history;
-which makes it easier to write automated tools on top of.
-This convention dovetails with [SemVer](http://semver.org),
-by describing the features, fixes, and breaking changes made in commit messages.
+**Format:**
 
-The commit message should be structured as follows:
+1. **Summary line:**
+   - One concise, unindented sentence describing what the change does (not what it did), in present tense.
+   - The first letter is capitalized.
+   - Do **not** end with a period.
+   - **Preferably 50 characters or less** (soft limit), but may exceed if necessary.
+   - If the summary line starts with '; ', the message will be skipped by ChangeLog tools (normally not needed for regular code commits!).
 
----
+2. **Blank line**
 
-```
-<type>[optional scope]: <description>
+3. **ChangeLog entries:**
+   - List each changed file and function/variable, one per line (multiple related entries can be grouped).
+   - Format:
+     * file/name.ext (function1, function2): Full sentence describing the change.
+   - Use present tense.
+   - Sentences start with a capital and end with a period.
+   - If relevant to a bug, include '(Bug#NNNNN)' at the proper place.
+   - **Hard line length limit: 78 characters per line** (absolutely must not exceed, except for a single very long word, which is rare and up to 140 chars).
+   - **Soft line length recommendation: 63 characters per line**.
+   - If an entry exceeds 63 characters, break at a space (without indenting the continuation).
+   - Lines after the first in an entry should not be indented.
+   - Do not include files like NEWS or MAINTAINERS unless they are critical.
 
-[optional body]
+**Example 1:**
 
-[optional footer(s)]
-```
----
+Improve error handling in foo.el
 
-<br />
-The commit contains the following structural elements, to communicate intent to the
-consumers of your library:
+* lisp/foo.el (my-func): Check for nil arg.
+* src/bar.c (bar_func): Fix memory leak.
+  Improve docstring.  (Bug#12345)
 
-1. **fix:** a commit of the _type_ `fix` patches a bug in your codebase (this correlates with [`PATCH`](http://semver.org/#summary) in Semantic Versioning).
-1. **feat:** a commit of the _type_ `feat` introduces a new feature to the codebase (this correlates with [`MINOR`](http://semver.org/#summary) in Semantic Versioning).
-1. **BREAKING CHANGE:** a commit that has a footer `BREAKING CHANGE:`, or appends a `!` after the type/scope, introduces a breaking API change (correlating with [`MAJOR`](http://semver.org/#summary) in Semantic Versioning).
-A BREAKING CHANGE can be part of commits of any _type_.
-1. _types_ other than `fix:` and `feat:` are allowed, for example [@commitlint/config-conventional](https://github.com/conventional-changelog/commitlint/tree/master/%40commitlint/config-conventional) (based on the [Angular convention](https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelines)) recommends `build:`, `chore:`,
-  `ci:`, `docs:`, `style:`, `refactor:`, `perf:`, `test:`, and others.
-1. _footers_ other than `BREAKING CHANGE: <description>` may be provided and follow a convention similar to
-  [git trailer format](https://git-scm.com/docs/git-interpret-trailers).
+**Example 2:**
 
-Additional types are not mandated by the Conventional Commits specification, and have no implicit effect in Semantic Versioning (unless they include a BREAKING CHANGE).
-<br /><br />
-A scope may be provided to a commit's type, to provide additional contextual information and is contained within parenthesis, e.g., `feat(parser): add ability to parse arrays`.")
+Port Grep argument autodetection to Android
+
+* lisp/progmodes/grep.el (grep-hello-file): On Android, copy
+sample text to a real directory.
+
+Now, for the following `git diff --cached`, generate only a properly formatted commit message. Do not add any explanation or commentary."
+  )
+
+(defvar gptel-commit-diff-excludes
+  '("pnpm-lock.yaml"
+    "pnpm.lock"
+    "ent/**/*.go")
+  "List of file globs to exclude from commit diff analysis.")
+
+(defun gptel--excluded-file-p (filename)
+  "Check if FILENAME matches any pattern in `gptel-commit-diff-excludes`."
+  (cl-some (lambda (pat) (string-match-p (wildcard-to-regexp pat) filename))
+           gptel-commit-diff-excludes))
+
+(defun gptel-commit--filtered-diff ()
+  "Return staged diff with excluded files filtered out."
+  (let* ((all-lines (magit-git-lines "diff" "--cached"))
+         (result '())
+         (skip nil))
+    (dolist (line all-lines (nreverse result))
+      (if (string-match "^diff --git a/\\(.+\\) b/" line)
+          (setq skip (gptel--excluded-file-p (match-string 1 line))))
+      (unless skip
+        (push line result)))))
 
 ;;;###autoload
 (defun gptel-commit ()
-  "Generate commit message with gptel and insert it into the buffer."
+  "Generate commit message with gptel, ignoring unwanted files."
   (interactive)
-  (let* ((lines (magit-git-lines "diff" "--cached"))
-         (changes (string-join lines "\n")))
+  (let ((changes (string-join (gptel-commit--filtered-diff) "\n")))
     (gptel-request changes :system gptel-commit-prompt)))
 
 (provide 'gptel-commit)
+
 ;;; gptel-commit.el ends here
