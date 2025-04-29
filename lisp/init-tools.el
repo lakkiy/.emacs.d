@@ -66,6 +66,8 @@
 ;; TODO icon, marginalia like find-file, preview
 (defun xeft-search ()
   (interactive)
+  (unless (featurep 'xeft)
+    (require 'xeft))
   (let* ((files (funcall xeft-file-list-function))
          (choices
           (mapcar (lambda (file)
