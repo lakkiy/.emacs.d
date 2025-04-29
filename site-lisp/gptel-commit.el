@@ -25,57 +25,60 @@
 ;;; Code:
 (require 'gptel)
 
-
 (defconst gptel-commit-prompt
   "Please write a commit message for the following `git diff --cached` output, following **GNU Emacs commit conventions**.
 
-**Requirements:**
+**General requirements:**
 
-- The message should contain only printable UTF-8 (ASCII if possible) characters.
-- No 'Signed-off-by' or similar metadata lines.
-- Write in American English.
+- Message must contain only printable UTF-8 (ASCII if possible) characters.
+- Write in American English, use present tense.
+- Do NOT add lines like 'Signed-off-by' or any other metadata.
 
 **Format:**
 
 1. **Summary line:**
-   - One concise, unindented sentence describing what the change does (not what it did), in present tense.
-   - The first letter is capitalized.
-   - Do **not** end with a period.
-   - **Preferably 50 characters or less** (soft limit), but may exceed if necessary.
-   - If the summary line starts with '; ', the message will be skipped by ChangeLog tools (normally not needed for regular code commits!).
+   - One concise, unindented line describing what the change does (not what it did).
+   - Use present tense.
+   - Start with a capital letter, and do not end with a period.
+   - Preferably no longer than 50 characters.
 
 2. **Blank line**
 
 3. **ChangeLog entries:**
-   - List each changed file and function/variable, one per line (multiple related entries can be grouped).
-   - Format:
-     * file/name.ext (function1, function2): Full sentence describing the change.
-   - Use present tense.
+   - Each entry starts with an asterisk, file name, and in parentheses a comma-separated list of each affected function/variable; then a colon and a complete sentence describing the change.
+     Example:
+     * lisp/foo.el (func1, func2): Describe the change.
    - Sentences start with a capital and end with a period.
-   - If relevant to a bug, include '(Bug#NNNNN)' at the proper place.
-   - **Hard line length limit: 78 characters per line** (absolutely must not exceed, except for a single very long word, which is rare and up to 140 chars).
-   - **Soft line length recommendation: 63 characters per line**.
-   - If an entry exceeds 63 characters, break at a space (without indenting the continuation).
-   - Lines after the first in an entry should not be indented.
-   - Do not include files like NEWS or MAINTAINERS unless they are critical.
+   - If a change affects multiple functions or variables **in the same file in a similar way**, combine them into one entry (group them all in the parentheses) and use a single description.
+   - If a change affects functions/variables in different files in a similar way, you may combine entries for those files for brevity.
+   - Do not write a separate entry for each minor similar change if they can be grouped.
+   - If related to a bug, add '(Bug#12345)' at the appropriate place.
+   - **Hard line length limit: 78 characters** for any line (never exceed, except single long words, up to 140 chars).
+   - **Soft line length suggestion: 63 characters**; if a line is longer, break at a space to continue on the next line (with no extra indentation).
+   - Do not include files like NEWS or MAINTAINERS unless absolutely necessary.
 
-**Example 1:**
+**Examples:**
 
-Improve error handling in foo.el
+Fix error handling in foo.el
 
-* lisp/foo.el (my-func): Check for nil arg.
+* lisp/foo.el (my-func, other-func): Check for nil arg.
 * src/bar.c (bar_func): Fix memory leak.
   Improve docstring.  (Bug#12345)
-
-**Example 2:**
 
 Port Grep argument autodetection to Android
 
 * lisp/progmodes/grep.el (grep-hello-file): On Android, copy
 sample text to a real directory.
 
-Now, for the following `git diff --cached`, generate only a properly formatted commit message. Do not add any explanation or commentary."
-  )
+Update clipboard support
+
+* lisp/menu-bar.el (clipboard-yank, clipboard-kill-ring-save)
+(clipboard-kill-region): Replace option gui-select-enable-clipboard with
+select-enable-clipboard.
+* lisp/eshell/esh-io.el (eshell-virtual-targets)
+(eshell-clipboard-append): Likewise.  (Bug#25145)
+
+Now, for the following `git diff --cached`, generate a **single formatted commit message** only: do not output any explanation, extra commentary, or repeated boilerplate; follow the above guidance and examples.")
 
 (defvar gptel-commit-diff-excludes
   '("pnpm-lock.yaml"
