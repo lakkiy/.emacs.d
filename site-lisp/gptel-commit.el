@@ -25,7 +25,12 @@
 ;;; Code:
 (require 'gptel)
 
-(defconst gptel-commit-prompt
+(defvar gptel-commit-system-message
+  "You are a commit message generator living in Emacs.
+Your job is to analyze a given `git diff --cached` output and produce a commit message.
+Only output the commit message. No boilerplate, no markdown.")
+
+(defvar gptel-commit-prompt
   "Please write a commit message for the following `git diff --cached` output, following **GNU Emacs commit conventions**.
 
 **General requirements:**
@@ -60,7 +65,7 @@
    - **Soft line length suggestion: 63 characters**; if a line is longer, break at a space to continue on the next line (with no extra indentation).
    - Do not include files like NEWS or MAINTAINERS unless absolutely necessary.
 
-**Examples(split with ---):**
+**Examples(separated by `---`):**
 
 Fix error handling in foo.el
 
@@ -88,36 +93,79 @@ Fix error handling in foo.el
 
 ---
 
-Now, for the following `git diff --cached`, generate a **single formatted commit message** only: do not output any explanation, extra commentary, or repeated boilerplate; follow the above guidance and examples.")
+Now, for the following `git diff --cached`, generate a **single formatted commit message** only: do not output any explanation, extra commentary, or repeated boilerplate; follow the above guidance and examples.
+
+THE FILE DIFFS:
+```
+%s
+```
+")
+
+(defvar gptel-commit-after-insert-hook nil
+  "Hook run when gptel insert commit message.")
+
+;; This is a free model and enough to generate commit message for now.
+;;
+;; (gptel-make-openai "OpenRouter"
+;;   :host "openrouter.ai"
+;;   :endpoint "/api/v1/chat/completions"
+;;   :stream t
+;;   :key "KEY"
+;;   :models '(qwen/qwen3-30b-a3b:free))
+(defvar gptel-commit-backend gptel-backend
+  "The backend used specifically for generating commit messages with `gptel-commit`.
+This can be set to a lightweight or free model (e.g., via OpenRouter),
+so it won't interfere with your default `gptel` usage for general chat.")
 
 (defvar gptel-commit-diff-excludes
   '("pnpm-lock.yaml"
-    "pnpm.lock"
+    "*.lock"
     "ent/**/*.go")
   "List of file globs to exclude from commit diff analysis.")
 
+(defun gptel--wildcard-to-regexp (glob)
+  "Convert shell glob GLOB to a regular expression."
+  (let ((glob (replace-regexp-in-string "\\.\\*" ".*" glob)))
+    (wildcard-to-regexp glob)))
+
 (defun gptel--excluded-file-p (filename)
   "Check if FILENAME matches any pattern in `gptel-commit-diff-excludes`."
-  (cl-some (lambda (pat) (string-match-p (wildcard-to-regexp pat) filename))
+  (cl-some (lambda (pat)
+             (string-match-p (gptel--wildcard-to-regexp pat) filename))
            gptel-commit-diff-excludes))
 
 (defun gptel-commit--filtered-diff ()
-  "Return staged diff with excluded files filtered out."
-  (let* ((all-lines (magit-git-lines "diff" "--cached"))
-         (result '())
-         (skip nil))
-    (dolist (line all-lines (nreverse result))
-      (if (string-match "^diff --git a/\\(.+\\) b/" line)
-          (setq skip (gptel--excluded-file-p (match-string 1 line))))
-      (unless skip
-        (push line result)))))
+  "Return a filtered diff string of staged changes, excluding patterns."
+  (let* ((files (split-string
+                 (shell-command-to-string "git diff --name-only --cached")
+                 "\n" t))
+         (included-files (cl-remove-if #'gptel--excluded-file-p files))
+         (diffs '()))
+    (dolist (file included-files)
+      (let ((diff (shell-command-to-string (format "git diff --cached -- %s" file))))
+        (when (not (string-empty-p diff))
+          (push (format "===== %s =====\n%s" file diff) diffs))))
+    (string-join (nreverse diffs) "\n\n")))
+
+(defun gptel-commit-fill-paragraph ()
+  (interactive)
+  (with-current-buffer "COMMIT_EDITMSG"
+    (save-excursion
+      (goto-char (point-min))
+      (forward-line 2)
+      (fill-paragraph))))
 
 ;;;###autoload
 (defun gptel-commit ()
   "Generate commit message with gptel, ignoring unwanted files."
   (interactive)
-  (let ((changes (string-join (gptel-commit--filtered-diff) "\n")))
-    (gptel-request changes :system gptel-commit-prompt)))
+  (let ((changes (gptel-commit--filtered-diff))
+        (gptel-backend gptel-commit-backend))
+    (if (string-empty-p changes)
+        (message "No staged changes to commit.")
+      (gptel-request (format gptel-commit-prompt changes)
+        :system gptel-commit-system-message)
+      (run-hooks 'gptel-commit-after-insert-hook))))
 
 (provide 'gptel-commit)
 
