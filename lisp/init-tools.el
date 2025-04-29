@@ -63,6 +63,37 @@
 (setq bklink-summary-read-only-p t
       bklink-prune-summary-p nil)
 
+;; TODO icon, marginalia like find-file, preview
+(defun xeft-search ()
+  (interactive)
+  (let* ((files (funcall xeft-file-list-function))
+         (choices
+          (mapcar (lambda (file)
+                    (cons (with-temp-buffer
+                            (insert-file-contents file nil 0 300)
+                            (goto-char (point-min))
+                            (let ((title (funcall xeft-title-function file)))
+                              (if (and title (not (string-empty-p title)))
+                                  title
+                                (file-name-nondirectory file))))
+                          file))
+                  files))
+         (choice (completing-read "Xeft: " choices nil nil)))
+    (let* ((exist-cons (assoc choice choices))
+           (file-path (if exist-cons
+                          (cdr exist-cons)
+                        (expand-file-name (funcall xeft-filename-fn choice) xeft-directory))))
+      (unless (file-exists-p file-path)
+        (when (y-or-n-p (format "Create file `%s'? " choice))
+          (find-file file-path)
+          (insert choice "\n\n")
+          (save-buffer)
+          (xeft--front-page-cache-refresh)
+          (run-hooks 'xeft-find-file-hook)))
+      (when (file-exists-p file-path)
+        (find-file file-path)
+        (run-hooks 'xeft-find-file-hook)))))
+
 (defun my-xeft-init-org-note ()
   (interactive)
   "Auto-insert org header when creating a new xeft note if appropriate."

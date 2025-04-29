@@ -1,5 +1,18 @@
 ;;; init-ai.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
+;;; gptel
+;;
+;; Store gpt key in ~/.authinfo:
+;; machine api.openai.com login apikey password ****
+(install-package 'gptel)
+
+(setq gptel-default-mode 'org-mode
+      gptel-org-branching-context t)
+(with-eval-after-load 'gptel
+  (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll)
+  (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
+  (add-hook 'gptel-mode-hook #'visual-fill-column-mode))
+
 ;;; minuet
 ;;
 ;; For default `minuet-openai-fim-compatible-options', make sure env
@@ -46,18 +59,6 @@
   ;; only enable copilot in meow insert mode
   (with-eval-after-load 'meow
     (add-to-list 'copilot-enable-predicates 'meow-insert-mode-p)))
-
-;;; gptel
-;;
-;; Store gpt key in ~/.authinfo:
-;; machine api.openai.com login apikey password ****
-(install-package 'gptel)
-
-(setq gptel-default-mode 'org-mode
-      gptel-org-branching-context t)
-(with-eval-after-load 'gptel
-  (add-hook 'gptel-mode-hook #'visual-fill-column-mode))
-
 
 (install-package 'aider)
 (setq aider-args '("--no-auto-commits" "--cache-prompts" "--model" "deepseek/deepseek-chat"))
