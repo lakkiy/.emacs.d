@@ -40,7 +40,10 @@
    - One concise, unindented line describing what the change does (not what it did).
    - Use present tense.
    - Start with a capital letter, and do not end with a period.
-   - Preferably no longer than 50 characters.
+   - Preferably no longer than 50 characters; must not exceed 78 characters.
+   - In most cases, use a brief English description, not a ChangeLog-style entry.
+   - Only if the change affects a single file and the result remains concise, you *may* write the summary line as a ChangeLog entry (starting with `* file/name (function): ...`). Avoid this if it would make the summary line too long or harder to read.
+   - If the summary line starts with `; ` (semicolon and a space), this commit will be ignored when automatically generating the ChangeLog (this is mainly for trivial or non-code changes, such as documentation edits).
 
 2. **Blank line**
 
@@ -57,7 +60,7 @@
    - **Soft line length suggestion: 63 characters**; if a line is longer, break at a space to continue on the next line (with no extra indentation).
    - Do not include files like NEWS or MAINTAINERS unless absolutely necessary.
 
-**Examples:**
+**Examples(split with ---):**
 
 Fix error handling in foo.el
 
@@ -65,18 +68,25 @@ Fix error handling in foo.el
 * src/bar.c (bar_func): Fix memory leak.
   Improve docstring.  (Bug#12345)
 
-Port Grep argument autodetection to Android
+---
 
-* lisp/progmodes/grep.el (grep-hello-file): On Android, copy
-sample text to a real directory.
+; Fix typos in documentation
 
-Update clipboard support
+* doc/emacs/commands.texi: Fix minor spelling errors.
 
-* lisp/menu-bar.el (clipboard-yank, clipboard-kill-ring-save)
-(clipboard-kill-region): Replace option gui-select-enable-clipboard with
-select-enable-clipboard.
-* lisp/eshell/esh-io.el (eshell-virtual-targets)
-(eshell-clipboard-append): Likewise.  (Bug#25145)
+---
+
+; Merge from savannah/emacs-30
+
+---
+
+* etc/NEWS: Presentational fixes and improvements.
+
+---
+
+; * doc/emacs/maintaining.texi (VC-Aware Project Backend): Copyedit.
+
+---
 
 Now, for the following `git diff --cached`, generate a **single formatted commit message** only: do not output any explanation, extra commentary, or repeated boilerplate; follow the above guidance and examples.")
 
