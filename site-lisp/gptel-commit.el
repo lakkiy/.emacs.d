@@ -28,7 +28,7 @@
 (defvar gptel-commit-system-message
   "You are a commit message generator living in Emacs.
 Your job is to analyze a given `git diff --cached` output and produce a commit message.
-Only output the commit message. No boilerplate, no markdown.")
+Only output the commit message. No boilerplate, no markdown, no reasoning.")
 
 (defvar gptel-commit-prompt
   "Please write a commit message for the following `git diff --cached` output, following **GNU Emacs commit conventions**.
@@ -64,34 +64,6 @@ Only output the commit message. No boilerplate, no markdown.")
    - **Hard line length limit: 78 characters** for any line (never exceed, except single long words, up to 140 chars).
    - **Soft line length suggestion: 63 characters**; if a line is longer, break at a space to continue on the next line (with no extra indentation).
    - Do not include files like NEWS or MAINTAINERS unless absolutely necessary.
-
-**Examples(separated by `---`):**
-
-Fix error handling in foo.el
-
-* lisp/foo.el (my-func, other-func): Check for nil arg.
-* src/bar.c (bar_func): Fix memory leak.
-  Improve docstring.  (Bug#12345)
-
----
-
-; Fix typos in documentation
-
-* doc/emacs/commands.texi: Fix minor spelling errors.
-
----
-
-; Merge from savannah/emacs-30
-
----
-
-* etc/NEWS: Presentational fixes and improvements.
-
----
-
-; * doc/emacs/maintaining.texi (VC-Aware Project Backend): Copyedit.
-
----
 
 Now, for the following `git diff --cached`, generate a **single formatted commit message** only: do not output any explanation, extra commentary, or repeated boilerplate; follow the above guidance and examples.
 
