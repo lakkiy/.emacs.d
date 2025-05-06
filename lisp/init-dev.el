@@ -86,6 +86,9 @@
 ;; Usually I use left window to show code
 (setq dape-buffer-window-arrangement 'right)
 
+;; Mode-line serves no purpose in REPL window.
+(add-hook 'dape-repl-mode-hook #'hide-mode-line-mode)
+
 (defun my/dape-setup ()
   (require 'dape)
   ;; Global bindings for setting breakpoints with mouse
