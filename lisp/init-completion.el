@@ -117,7 +117,7 @@
 
 (setq company-minimum-prefix-length 2
       company-require-match nil
-      company-idle-delay 0.1)
+      company-idle-delay 0.2)
 
 ;; Frontend
 ;;
@@ -166,6 +166,12 @@
 
 ;;; yasnippet
 (install-package 'yasnippet)
+
+;; 设置 yasnippet 的提示策略：
+;; - yas-no-prompt：如果只有一个候选 snippet，自动展开，不弹出选择；
+;; - yas-completing-prompt：如果有多个候选，使用 Emacs 的 completing-read 接口提示选择；
+;;     兼容 ido/ivy/vertico 等补全框架；
+(setq yas-prompt-functions '(yas-no-prompt yas-completing-prompt))
 
 (add-hook 'prog-mode-hook #'yas-minor-mode)
 (add-hook 'conf-mode-hook #'yas-minor-mode)
