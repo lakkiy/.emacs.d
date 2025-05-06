@@ -77,7 +77,7 @@ otherwise call `org-self-insert-command'."
 ;;; Agenda && Capture
 ;;
 ;; For capture and view tasks.
-
+;;
 ;; Define tags for tasks context.
 ;; https://systemcrafters.net/org-mode-productivity/effective-task-tags-by-context/
 (setq org-tag-alist '(("@feature" . ?f)
@@ -96,15 +96,16 @@ otherwise call `org-self-insert-command'."
         ("i" "Inbox" entry (file "~/Dropbox/org/inbox.org") "* TODO %?\n:PROPERITIES:\n:Created: %T\n:END:")
         ("n" "Note" entry (file "~/Dropbox/org/roam/Notes.org") "* %^{title}\n%u\n%?" :prepend t)
         ("w" "Work" entry (file+olp+datetree "~/Dropbox/org/Work.org")
-         "* %^{Title}\n:PROPERITIES:\n:Created: %T\n:END:" :tree-type week)))
+         "* TODO %^{Title}\nSCHEDULED: %t\n:PROPERTIES:\n:Created: %T\n:END:\n%?" :tree-type week)))
 (keymap-global-set "C-c c" 'org-capture)
 
 (setq org-todo-keywords '((sequence "TODO(t)" "WIP(i!)" "WAIT(w!)" "|" "DONE(d!)" "CANCELLED(c@/!)"))
-      org-todo-keyword-faces '(("TODO"       :foreground "#7c7c75" :weight bold)
-                               ("WIP"        :foreground "#0098dd" :weight bold)
-                               ("WAIT"       :foreground "#9f7efe" :weight bold)
-                               ("DONE"       :foreground "#50a14f" :weight bold)
-                               ("CANCELLED"  :foreground "#ff6480" :weight bold)))
+      org-todo-keyword-faces '(("TODO"      . (:foreground "firebrick"     :weight bold))
+                               ("WIP"       . (:foreground "dark orange"   :weight bold))
+                               ("WAIT"      . (:foreground "deep sky blue" :weight bold))
+                               ("DONE"      . (:foreground "forest green"  :weight bold))
+                               ("CANCELLED" . (:foreground "gray50"        :weight bold :strike-through t))))
+
 ;; Save when I change a workflow state.
 (add-hook 'org-trigger-hook 'save-buffer)
 
@@ -117,6 +118,11 @@ otherwise call `org-self-insert-command'."
       org-agenda-hide-tags-regexp "."
       org-agenda-current-time-string
       "⭠ now ─────────────────────────────────────────────────")
+
+(setq org-agenda-custom-commands
+      '(("w" "Work Only"
+         ((agenda ""))
+         ((org-agenda-files '("~/Dropbox/org/Work.org"))))))
 
 ;; Do not reorganize-frame
 (setq org-agenda-window-setup 'current-window)
@@ -226,6 +232,7 @@ Need pandoc installed."
 ;; org-modern
 (install-package 'org-modern)
 (setq org-modern-star ["›"]
+      org-modern-todo nil
       ;; Enable this will break code block indentation.
       org-modern-block-fringe nil
       ;; use valign instead
