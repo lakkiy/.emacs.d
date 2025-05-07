@@ -25,7 +25,19 @@
 ;; minions
 ;;
 ;; hide mode line minor mode
+;;
+;; Emacs 启动流程
+;; ├── before-init-hook 设置临时变量、调试信息
+;; │
+;; ├── 加载 init.el
+;; │   └── (use-package xxx)
+;; │
+;; ├── after-init-hook 启动非 UI 的功能（如 server-mode）
+;; │
+;; ├── window-setup-hook 启动 UI 相关功能（如 minions、modeline）
+;; │
+;; └── emacs-startup-hook 最后阶段的初始化或统计任务
 (install-package 'minions)
-(add-hook 'after-init-hook #'minions-mode)
+(add-hook 'emacs-startup-hook #'minions-mode)
 
 ;;; init-ui.el ends here
