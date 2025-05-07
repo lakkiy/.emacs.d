@@ -25,17 +25,18 @@
 ;;; Code:
 (require 'gptel)
 
-(defvar gptel-commit-system-message
-  "You are a commit message generator living in Emacs.
-Your job is to analyze a given `git diff --cached` output and produce a commit message.
-Only output the commit message. No boilerplate, no markdown, no reasoning.")
-
 (defvar gptel-commit-prompt
-  "Please write a commit message for the following `git diff --cached` output, following **GNU Emacs commit conventions**.
+  "You are an expert at writing Git commits. Your job is to write a short clear commit message that summarizes the changes, following **GNU Emacs commit conventions**.
+
+If you can accurately express the change in just the subject line, don't include anything in the message body. Only use the body when it is providing *useful* information.
+
+Don't repeat information from the subject line in the message body.
+
+Only return the commit message in your response. Do not include any additional meta-commentary about the task. Do not include the raw diff output in the commit message.
 
 **General requirements:**
 
-- Message must contain only printable UTF-8 (ASCII if possible) characters.
+- Message must contain only printable UTF-8 characters (ASCII if possible).
 - Write in American English, use present tense.
 - Do NOT add lines like 'Signed-off-by' or any other metadata.
 
@@ -43,16 +44,15 @@ Only output the commit message. No boilerplate, no markdown, no reasoning.")
 
 1. **Summary line:**
    - One concise, unindented line describing what the change does (not what it did).
-   - Use present tense.
-   - Start with a capital letter, and do not end with a period.
+   - Start with a capital letter and do not end with a period.
    - Preferably no longer than 50 characters; must not exceed 78 characters.
    - In most cases, use a brief English description, not a ChangeLog-style entry.
    - Only if the change affects a single file and the result remains concise, you *may* write the summary line as a ChangeLog entry (starting with `* file/name (function): ...`). Avoid this if it would make the summary line too long or harder to read.
-   - If the summary line starts with `; ` (semicolon and a space), this commit will be ignored when automatically generating the ChangeLog (this is mainly for trivial or non-code changes, such as documentation edits).
+   - If the summary line starts with ;  (semicolon and a space), it will be *excluded* from the generated ChangeLog. Use this *only for trivial or non-functional changes*, such as typos, comment tweaks, or edits to files like etc/NEWS.
 
 2. **Blank line**
 
-3. **ChangeLog entries:**
+3. **ChangeLog entries(optional, omit it entirely if not useful):**
    - Each entry starts with an asterisk, file name, and in parentheses a comma-separated list of each affected function/variable; then a colon and a complete sentence describing the change.
      Example:
      * lisp/foo.el (func1, func2): Describe the change.
@@ -60,18 +60,11 @@ Only output the commit message. No boilerplate, no markdown, no reasoning.")
    - If a change affects multiple functions or variables **in the same file in a similar way**, combine them into one entry (group them all in the parentheses) and use a single description.
    - If a change affects functions/variables in different files in a similar way, you may combine entries for those files for brevity.
    - Do not write a separate entry for each minor similar change if they can be grouped.
-   - If related to a bug, add '(Bug#12345)' at the appropriate place.
    - **Hard line length limit: 78 characters** for any line (never exceed, except single long words, up to 140 chars).
    - **Soft line length suggestion: 63 characters**; if a line is longer, break at a space to continue on the next line (with no extra indentation).
-   - Do not include files like NEWS or MAINTAINERS unless absolutely necessary.
-
-Now, for the following `git diff --cached`, generate a **single formatted commit message** only: do not output any explanation, extra commentary, or repeated boilerplate; follow the above guidance and examples.
-
-THE FILE DIFFS:
-```
-%s
-```
-")
+   - Do not include files like NEWS or MAINTAINERS unless absolutely necessary."
+  "A prompt adapted from Zed (https://github.com/zed-industries/zed/blob/main/crates/git_ui/src/commit_message_prompt.txt)
+  and Emacs(https://github.com/emacs-mirror/emacs/blob/fa05cfd4455f2883d16992e5f1323a8945956987/CONTRIBUTE#L194).")
 
 (defvar gptel-commit-after-insert-hook nil
   "Hook run when gptel insert commit message.")
@@ -135,8 +128,7 @@ so it won't interfere with your default `gptel` usage for general chat.")
         (gptel-backend gptel-commit-backend))
     (if (string-empty-p changes)
         (message "No staged changes to commit.")
-      (gptel-request (format gptel-commit-prompt changes)
-        :system gptel-commit-system-message)
+      (gptel-request changes :system gptel-commit-prompt)
       (run-hooks 'gptel-commit-after-insert-hook))))
 
 (provide 'gptel-commit)
