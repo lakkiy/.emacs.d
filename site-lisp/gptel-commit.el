@@ -49,10 +49,9 @@ Summary lines should be ≤50 characters when possible (hard limit 78), and body
 
 3. **(Optional) Descriptive body:**
    - Insert **only if** the summary cannot fully describe the change or if more context or rationale is needed.
-   - Use one or more paragraphs to describe *why* the change was made.
+   - The body *must be* written as one or more paragraphs, *must not be* lists.
 
 4. **(Optional) ChangeLog entries:**
-   - Include if it adds useful, structured documentation.
    - Each entry starts with an asterisk, file name, and in parentheses a comma-separated list of each affected function/variable; then a colon and a complete sentence describing the change, example:
      * lisp/foo.el (func1, func2): Describe the change.
    - Sentences start with a capital and end with a period.
