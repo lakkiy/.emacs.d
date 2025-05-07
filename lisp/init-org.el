@@ -110,6 +110,10 @@ otherwise call `org-self-insert-command'."
 (add-hook 'org-trigger-hook 'save-buffer)
 
 (setq org-agenda-files (list org-directory)
+      ;; 显示当天完成的 schedule 和 deadline 任务
+      org-agenda-start-with-log-mode t
+      ;; 不要同一天显示两条
+      org-agenda-skip-scheduled-if-done t
       org-agenda-prefix-format '((agenda . " %i %-12:c%?-12t% s")
                                  (todo   . " ")
                                  (tags   . " %i %-12:c")
