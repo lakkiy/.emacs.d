@@ -40,4 +40,10 @@
 (install-package 'minions)
 (add-hook 'emacs-startup-hook #'minions-mode)
 
+;; auto-dark
+;;
+;; Not work on mac for now
+;; https://github.com/LionyxML/auto-dark-emacs/issues/58
+(install-package 'auto-dark)
+
 ;;; init-ui.el ends here
