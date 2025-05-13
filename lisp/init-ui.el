@@ -46,4 +46,7 @@
 ;; https://github.com/LionyxML/auto-dark-emacs/issues/58
 (install-package 'auto-dark)
 
+(install-package 'nerd-icons-grep "https://github.com/hron/nerd-icons-grep")
+(setq grep-use-headings t)
+
 ;;; init-ui.el ends here
