@@ -13,6 +13,7 @@
   (add-to-list 'meow-char-thing-table '(?h . angle))
   (meow-thing-register 'backquote '(regexp "`" "`") '(regexp "`" "`"))
   (add-to-list 'meow-char-thing-table '(?` . backquote))
+  (add-to-list 'meow-mode-state-list '(xeft-mode . motion))
 
   ;; Optimize flymake for meow.
   (add-hook 'meow-insert-exit-hook (lambda () (setq flymake-no-changes-timeout 0.5)))
