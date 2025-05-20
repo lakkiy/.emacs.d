@@ -201,3 +201,10 @@ so try complete filst, if there nothing to complete then try to jump to next fie
   (define-key tabnine-completion-map (kbd "C-g") #'tabnine-clear-overlay)
   (define-key tabnine-completion-map (kbd "M-p") #'tabnine-next-completion)
   (define-key tabnine-completion-map (kbd "M-n") #'tabnine-previous-completion))
+
+;;; delta
+;; 搞的 magit 太卡了
+(install-package 'magit-delta)
+
+(when (executable-find "delta")
+  (add-hook 'magit-mode-hook #'magit-delta-mode))

@@ -10,12 +10,6 @@
 
 (autoload #'gptel-commit "gptel-commit.el" nil t)
 
-;;; delta
-(install-package 'magit-delta)
-
-(when (executable-find "delta")
-  (add-hook 'magit-mode-hook #'magit-delta-mode))
-
 ;;; diff-hl
 (install-package 'diff-hl)
 
