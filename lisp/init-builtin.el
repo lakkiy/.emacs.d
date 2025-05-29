@@ -752,6 +752,7 @@ COMMAND is a string as advertised by the server. No arguments are passed."
   (keymap-set eglot-mode-map "C-c r" #'eglot-rename)
   (keymap-set eglot-mode-map "M-'"   #'eglot-find-implementation)
 
+  (add-to-list 'eglot-server-programs '(web-mode . ("svelteserver" "--stdio")))
   (add-to-list 'eglot-server-programs '(sql-mode . ("sqls" "-config" "~/.config/sqls/config.yaml")))
   (add-to-list 'eglot-server-programs '(typst-ts-mode . ("typst-lsp")))
   (add-to-list 'eglot-server-programs '(org-mode . ("ltex-ls")))
