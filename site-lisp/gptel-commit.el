@@ -33,10 +33,11 @@ Format:
 1. Subject line
    - One concise, unindented line describing what the change does (not what it did).
    - ≤50 characters if possible (hard limit 78).
-   - Imperative mood, start with capital letter, no trailing period.
+   - Imperative mood, start with capital letter, **do not end with a period**.
 2. Blank line
 3. Optional body
-   - Only if context or rationale can’t fit in subject.
+   - **Only include** if important context or rationale (why) cannot fit in the subject.
+   - Body should explain **why** the change was made, not repeat the subject.
    - Wrap at 72 characters (hard limit 78), written in one or more paragraphs.
 4. ChangeLog entries
    - One `* file/path (func1, func2): Description.` per file (or grouped).
@@ -44,6 +45,8 @@ Format:
    - Omit entries for trivial docs/comments/NEWS updates.
 
 Rules:
+- Subject must not end with a period or punctuation.
+- Do not include a body unless necessary to explain rationale.
 - Don’t repeat the subject in the body.
 - Don’t include raw diffs or meta-commentary.
 - Use ChangeLog-style entries only if multiple files/functions are involved;
