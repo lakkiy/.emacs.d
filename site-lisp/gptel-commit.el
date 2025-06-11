@@ -132,8 +132,54 @@ so it won't interfere with your default `gptel` usage for general chat.")
         (gptel-backend gptel-commit-backend))
     (if (string-empty-p changes)
         (message "No staged changes to commit.")
-      (gptel-request changes :system gptel-commit-prompt)
+      (with-current-buffer "COMMIT_EDITMSG"
+        (gptel-request prompt :system gptel-commit-prompt))
       (run-hooks 'gptel-commit-after-insert-hook))))
+
+(defvar gptel-commit-rationale-buffer "*GPTel Commit Rationale*"
+  "Buffer name for entering rationale for commit message generation.")
+
+(defun gptel-commit--submit-rationale ()
+  "Submit the rationale buffer content and proceed with GPTel commit generation."
+  (interactive)
+  (let ((rationale (string-trim (buffer-string))))
+    (kill-buffer gptel-commit-rationale-buffer)
+    (gptel-commit--generate-message rationale)))
+
+(defun gptel-commit--cancel-rationale ()
+  "Cancel rationale input and abort GPTel commit generation."
+  (interactive)
+  (kill-buffer gptel-commit-rationale-buffer)
+  (message "GPTel commit generation canceled."))
+
+(defun gptel-commit--generate-message (rationale)
+  "Generate commit message using GPTel with optional RATIONALE."
+  (let* ((changes (gptel-commit--filtered-diff))
+         (prompt (if (string-empty-p rationale)
+                     changes
+                   (format "IMPORTANT: The following line explains **WHY** these changes were made. Prioritize this rationale when generating the commit message:\n\n%s\n\nHere are the actual code change diffs:\n%s"
+                           rationale changes)))
+         (gptel-backend gptel-commit-backend))
+    (if (string-empty-p changes)
+        (message "No staged changes to commit.")
+      (with-current-buffer "COMMIT_EDITMSG"
+        (gptel-request prompt :system gptel-commit-prompt))
+      (run-hooks 'gptel-commit-after-insert-hook))))
+
+(define-derived-mode gptel-commit-rationale-mode text-mode "GPTel-Commit-Rationale"
+  "Mode for entering commit rationale before GPTel generates commit message."
+  (local-set-key (kbd "C-c C-c") #'gptel-commit--submit-rationale)
+  (local-set-key (kbd "C-c C-k") #'gptel-commit--cancel-rationale)
+  (message "Enter rationale for commit. Press C-c C-c when done, or C-c C-k to cancel."))
+
+;;;###autoload
+(defun gptel-rationale-commit ()
+  "Prompt user for rationale and generate commit message with GPTel."
+  (interactive)
+  (with-current-buffer (get-buffer-create gptel-commit-rationale-buffer)
+    (erase-buffer)
+    (gptel-commit-rationale-mode)
+    (pop-to-buffer (current-buffer))))
 
 (provide 'gptel-commit)
 
