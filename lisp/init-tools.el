@@ -39,9 +39,9 @@
 ;;; pastebin
 (install-package 'webpaste)
 
-(setq webpaste-paste-confirmation t
-      webpaste-add-to-killring t
-      webpaste-open-in-browser nil)
+(setq webpaste-add-to-killring t
+      webpaste-paste-raw-text t
+      webpaste-provider-priority '("paste.rs"))
 
 ;;; separedit
 (install-package 'separedit)
