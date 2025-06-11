@@ -606,6 +606,21 @@ point reaches the beginning or end of the buffer, stop there."
     (delete-file (buffer-file-name))
     (kill-current-buffer)))
 
+;; https://emacsredux.com/blog/2025/06/01/let-s-make-keyboard-quit-smarter
+(defun real-keyboard-quit ()
+  "Smater version of the built-in `keyboard-quit'.
+
+The generic `keyboard-quit' does not do the expected thing when
+the minibuffer is open.  Whereas we want it to close the
+minibuffer, even without explicitly focusing it."
+  (interactive)
+  (if (active-minibuffer-window)
+      (if (minibufferp)
+          (minibuffer-keyboard-quit)
+        (abort-recursive-edit))
+    (keyboard-quit)))
+(global-set-key [remap keyboard-quit] #'real-keyboard-quit)
+
 ;;; Packages
 ;;;; C
 (setq c-default-style "linux"

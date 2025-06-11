@@ -133,7 +133,7 @@ so it won't interfere with your default `gptel` usage for general chat.")
     (if (string-empty-p changes)
         (message "No staged changes to commit.")
       (with-current-buffer "COMMIT_EDITMSG"
-        (gptel-request prompt :system gptel-commit-prompt))
+        (gptel-request changes :system gptel-commit-prompt))
       (run-hooks 'gptel-commit-after-insert-hook))))
 
 (defvar gptel-commit-rationale-buffer "*GPTel Commit Rationale*"

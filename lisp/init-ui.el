@@ -46,7 +46,10 @@
 ;; https://github.com/LionyxML/auto-dark-emacs/issues/58
 (install-package 'auto-dark)
 
-(install-package 'nerd-icons-grep "https://github.com/hron/nerd-icons-grep")
+;;; nerd-icons-grep
+;;
+;; This setting is a pre-requirement, so an icon can be displayed near each heading
 (setq grep-use-headings t)
+(install-package 'nerd-icons-grep)
 
 ;;; init-ui.el ends here
