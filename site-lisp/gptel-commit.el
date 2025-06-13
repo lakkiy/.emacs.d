@@ -37,11 +37,6 @@ Set to nil if your backend doesn't support streaming."
   :type 'boolean
   :group 'gptel-commit)
 
-(defcustom gptel-commit-auto-fill t
-  "Whether to auto-fill paragraphs after generating commit message."
-  :type 'boolean
-  :group 'gptel-commit)
-
 (defvar gptel-commit-prompt
   "You are an expert at writing Git commit messages.
 Generate **only** the commit message, nothing else.
@@ -55,7 +50,7 @@ Critical Rules:
    - Subject line (≤50 chars, imperative, capitalize, NO period)
    - Blank line
    - Optional body (ONLY if rationale needed, wrap at 72 chars)
-   - ChangeLog entries
+   - ChangeLog entries (wrap at 72 chars)
 
 3. Special prefixes:
    - If change is trivial (typo/comment/docs), prefix with `; `
@@ -63,7 +58,8 @@ Critical Rules:
 
 Decision tree:
 - Single file + simple change → Format 1
-- Multiple files OR complex change → Format 2
+- Single file + complex change → Format 2
+- Multiple files → Format 2
 - Trivial change → Add `; ` prefix
 
 Examples:
@@ -110,6 +106,9 @@ so it won't interfere with your default `gptel` usage for general chat.")
 (defvar gptel-commit-rationale-buffer "*GPTel Commit Rationale*"
   "Buffer name for entering rationale for commit message generation.")
 
+(defvar gptel-commit--insert-position nil
+  "Position where commit message should be inserted.")
+
 (defun gptel--wildcard-to-regexp (glob)
   "Convert shell glob GLOB to a regular expression."
   (let ((glob (replace-regexp-in-string "\\.\\*" ".*" glob)))
@@ -146,56 +145,51 @@ so it won't interfere with your default `gptel` usage for general chat.")
     (when (buffer-live-p buffer)
       (with-current-buffer buffer
         (save-excursion
-          (goto-char (point-max))
-          (insert response))))))
+          (goto-char gptel-commit--insert-position)
+          (insert response)
+          (setq gptel-commit--insert-position (point)))))))
 
 (defun gptel-commit--setup-request-args ()
-  "Setup request arguments based on streaming preference."
-  (if gptel-commit-stream
-      (list :callback #'gptel-commit--stream-callback
-            :stream t)
-    nil))
+  "Setup request arguments based on gptel-commit configuration."
+  (list :callback #'gptel-commit--handle-response))
 
-(defun gptel-commit--post-process ()
-  "Post-process generated commit message."
-  (when (and gptel-commit-auto-fill gptel-commit--current-buffer)
-    (with-current-buffer gptel-commit--current-buffer
-      (save-excursion
-        (goto-char (point-min))
-        ;; Skip subject line
-        (forward-line 1)
-        (while (not (eobp))
-          (unless (looking-at "^$")
-            (fill-paragraph))
-          (forward-line 1))))))
+(defun gptel-commit--handle-response (response info)
+  "Handle the response from gptel.
+RESPONSE is the generated commit message or chunk.
+INFO is a plist with additional information."
+  (when-let* ((buffer gptel-commit--current-buffer))
+    (when (buffer-live-p buffer)
+      (with-current-buffer buffer
+        (cond
+         ((and gptel-commit-stream (stringp response))
+          (save-excursion
+            (goto-char gptel-commit--insert-position)
+            (insert response)
+            (setq gptel-commit--insert-position (point))))
+         ((and (not gptel-commit-stream) (stringp response))
+          (goto-char (point-min))
+          (insert response))
+         ((and gptel-commit-stream (not (stringp response)))
+          (run-hooks 'gptel-commit-after-insert-hook))))))
+  (when (and (not gptel-commit-stream) (stringp response))
+    (run-hooks 'gptel-commit-after-insert-hook)))
 
 (defun gptel-commit--generate-message (rationale)
-  "Generate commit message with optional RATIONALE."
+  "Generate a commit message based on staged changes and optional RATIONALE."
   (let* ((changes (gptel-commit--filtered-diff))
          (prompt (if (and rationale (not (string-empty-p rationale)))
                      (format "Context: %s\n\nChanges:\n%s" rationale changes)
                    changes))
          (gptel-backend gptel-commit-backend)
          (buffer (gptel-commit--find-commit-buffer)))
-    (if (string-empty-p changes)
-        (message "No staged changes to commit.")
-      (setq gptel-commit--current-buffer buffer)
-      (with-current-buffer buffer
-        ;; Clear buffer if streaming
-        (when gptel-commit-stream
-          (erase-buffer))
-        ;; Make request
-        (apply #'gptel-request prompt
-               :system gptel-commit-prompt
-               (gptel-commit--setup-request-args)))
-      ;; Run hooks after a delay for non-streaming mode
-      (if gptel-commit-stream
-          (run-hooks 'gptel-commit-after-insert-hook)
-        (run-with-timer 0.5 nil
-                        (lambda ()
-                          (run-hooks 'gptel-commit-after-insert-hook)))))))
+    (setq gptel-commit--current-buffer buffer)
+    (with-current-buffer buffer
+      (setq gptel-commit--insert-position (point))
+      (gptel-request prompt
+        :system gptel-commit-prompt
+        :stream gptel-commit-stream
+        :callback #'gptel-commit--handle-response))))
 
-;; Rationale mode and functions
 (define-derived-mode gptel-commit-rationale-mode text-mode "GPTel-Commit-Rationale"
   "Mode for entering commit rationale before GPTel generates commit message."
   (local-set-key (kbd "C-c C-c") #'gptel-commit--submit-rationale)
@@ -208,9 +202,10 @@ so it won't interfere with your default `gptel` usage for general chat.")
     (insert ";;; WHY are you making these changes? (optional)\n")
     (insert ";;; Press C-c C-c to generate commit message, C-c C-k to cancel\n")
     (insert ";;; Leave empty to generate without rationale\n")
-    (insert ";;; ────────────────────────────────────────────────────────\n\n")
+    (insert ";;; ────────────────────────────────────────────────────────\n")
     (add-text-properties (point-min) (point)
                          '(face font-lock-comment-face read-only t))
+    (insert "\n")
     (goto-char (point-max))))
 
 (defun gptel-commit--submit-rationale ()
@@ -220,19 +215,20 @@ so it won't interfere with your default `gptel` usage for general chat.")
                     (buffer-substring-no-properties
                      (save-excursion
                        (goto-char (point-min))
-                       (forward-line 4)
+                       (while (and (not (eobp))
+                                   (get-text-property (point) 'read-only))
+                         (forward-char))
                        (point))
                      (point-max)))))
-    (kill-buffer gptel-commit-rationale-buffer)
+    (quit-window t)
     (gptel-commit--generate-message rationale)))
 
 (defun gptel-commit--cancel-rationale ()
   "Cancel rationale input and abort GPTel commit generation."
   (interactive)
-  (kill-buffer gptel-commit-rationale-buffer)
+  (quit-window t)
   (message "GPTel commit generation canceled."))
 
-;; Public functions
 ;;;###autoload
 (defun gptel-commit ()
   "Generate commit message with gptel."
@@ -243,11 +239,9 @@ so it won't interfere with your default `gptel` usage for general chat.")
 (defun gptel-rationale-commit ()
   "Prompt user for rationale and generate commit message with GPTel."
   (interactive)
-  ;; Save the current buffer context if in a commit buffer
   (when (or (get-buffer "COMMIT_EDITMSG")
             (derived-mode-p 'text-mode 'git-commit-mode))
     (setq gptel-commit--current-buffer (current-buffer)))
-
   (let ((buffer (get-buffer-create gptel-commit-rationale-buffer)))
     (with-current-buffer buffer
       (gptel-commit-rationale-mode)
@@ -270,21 +264,6 @@ so it won't interfere with your default `gptel` usage for general chat.")
       (gptel-rationale-commit)
     (user-error "Not in a commit message buffer")))
 
-;;;###autoload
-(defun gptel-commit-fill-paragraph ()
-  "Fill paragraph in commit message."
-  (interactive)
-  (when-let* ((buffer (get-buffer "COMMIT_EDITMSG")))
-    (with-current-buffer buffer
-      (save-excursion
-        (goto-char (point-min))
-        (forward-line 2)
-        (fill-paragraph)))))
-
-;; Add post-processing to hook
-(add-hook 'gptel-commit-after-insert-hook #'gptel-commit--post-process)
-
-;; Key bindings suggestions (users can add to their config)
 (with-eval-after-load 'magit
   (define-key git-commit-mode-map (kbd "C-c g") #'gptel-commit-magit)
   (define-key git-commit-mode-map (kbd "C-c G") #'gptel-rationale-commit-magit))
