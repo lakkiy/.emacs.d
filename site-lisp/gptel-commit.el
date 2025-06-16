@@ -41,49 +41,40 @@ Set to nil if your backend doesn't support streaming."
   "You are an expert at writing Git commit messages.
 Generate **only** the commit message, nothing else.
 
-Critical Rules:
-1. For single-file changes with a simple modification:
-   - Output ONLY: `* file.el (func): Description.`
-   - NO subject line, NO body, JUST the ChangeLog entry
+DECISION PROCESS:
+1. Count changed files
+2. If 1 file: check if change is simple or complex
+3. Apply the appropriate format
 
-2. For multi-file changes or complex modifications:
-   - Subject line (≤50 chars, imperative, capitalize, NO period)
-   - Blank line
-   - Optional body (ONLY if rationale needed, wrap at 72 chars)
-   - ChangeLog entries (wrap at 72 chars)
+FORMAT RULES:
 
-3. Special prefixes:
-   - If change is trivial (typo/comment/docs), prefix with `; `
-   - Example: `; * file.el: Fix typo.`
+A. Single File + Simple Change (one clear purpose):
+   * path/to/file: Description. (≤72 chars)
 
-Decision tree:
-- Single file + simple change → Format 1
-- Single file + complex change → Format 2
-- Multiple files → Format 2
-- Trivial change → Add `; ` prefix
+   NO subject line, NO blank lines, JUST this one line.
 
-Examples:
+B. Single File + Complex Change (multiple purposes/major refactor):
+   Subject line (≤50 chars, imperative mood, NO period)
 
-Single file, simple change:
+   Optional body paragraph explaining why (wrap at 72 chars).
 
-* configure.ac: Detect Android API 36.
+   * path/to/file (func1, func2): Description.
 
-Multiple files:
+C. Multiple Files (2+ files changed):
+   Subject line (≤50 chars, imperative mood, NO period)
 
-New user option: vc-allow-async-diff
+   Optional body paragraph explaining why (wrap at 72 chars).
 
-Centralize the control for whether 'vc-diff' is asynchronous
-across the backends, while also allowing 'vc-BACKEND-diff' to be
-called asynchronously when needed.  Previously in bug#21969.
+   * path/to/file1 (func1): Description.
+   * path/to/file2 (func2): Another description.
 
-* lisp/vc/vc.el (vc-allow-async-diff): New user option.
+D. Trivial Changes:
+   Add `; ` prefix for typos/comments/docs.
+   Example: `; * file: Fix typo.`
 
-* lisp/vc/vc.el (vc-version-diff, vc-diff, vc-diff-mergebase)
-(vc-root-diff): Obey it.
-
-Single file, trivial change:
-
-; * src/w32dwrite.c: Minor coding style adjustments."
+SIMPLE vs COMPLEX (single file):
+- Simple: one function, one clear fix/addition
+- Complex: multiple functions, refactoring, or architectural change"
   "A prompt adapted from Emacs.")
 
 (defvar gptel-commit-after-insert-hook nil
