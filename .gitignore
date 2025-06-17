@@ -1,3 +1,5 @@
+.claude
+*.eld
 post-init.el
 pre-init.el
 network-security.eld
