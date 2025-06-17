@@ -60,10 +60,4 @@
   (with-eval-after-load 'meow
     (add-to-list 'copilot-enable-predicates 'meow-insert-mode-p)))
 
-(install-package 'aider)
-(setq aider-args '("--no-auto-commits" "--cache-prompts" "--model" "deepseek/deepseek-chat"))
-(with-eval-after-load 'aider
-  (setenv "DEEPSEEK_API_KEY" (retrieve-authinfo-key "api.deepseek.com" "apikey")))
-
-
 ;;; init-ai.el ends here

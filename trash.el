@@ -208,3 +208,9 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 
 (when (executable-find "delta")
   (add-hook 'magit-mode-hook #'magit-delta-mode))
+
+(install-package 'aider)
+(setq aider-args '("--no-auto-commits" "--cache-prompts" "--model" "deepseek/deepseek-chat"))
+(with-eval-after-load 'aider
+  (setenv "DEEPSEEK_API_KEY" (retrieve-authinfo-key "api.deepseek.com" "apikey")))
+
