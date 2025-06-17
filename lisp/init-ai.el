@@ -13,6 +13,10 @@
   (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
   (add-hook 'gptel-mode-hook #'visual-fill-column-mode))
 
+;;; claude-code
+;;
+(install-package 'claude-code "https://github.com/stevemolitor/claude-code.el")
+
 ;;; minuet
 ;;
 ;; For default `minuet-openai-fim-compatible-options', make sure env
