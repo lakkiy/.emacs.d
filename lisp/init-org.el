@@ -178,6 +178,7 @@ otherwise call `org-self-insert-command'."
 (add-hook 'org-mode-hook #'corg-setup)
 
 (install-package 'ob-go)
+(install-package 'ob-nix)
 
 ;;; Export to html
 ;;
