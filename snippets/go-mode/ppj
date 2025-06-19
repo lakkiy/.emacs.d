@@ -2,5 +2,9 @@
 # name: pretty print json
 # key: ppj
 # --
-b, _ := json.MarshalIndent($1, "", "  ")
-fmt.Println(string(b))
+var buf bytes.Buffer
+encoder := json.NewEncoder(&buf)
+encoder.SetEscapeHTML(false)
+encoder.SetIndent("", "  ")
+encoder.Encode($1)
+fmt.Println(buf.String())
