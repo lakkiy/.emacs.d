@@ -34,7 +34,6 @@
       markdown-fontify-code-blocks-natively t)
 
 (defun my/markdown-mode-hook ()
-  (variable-pitch-mode 1)
   (visual-fill-column-mode 1)
   (when (executable-find "ltex-ls")
     (eglot-ensure))
