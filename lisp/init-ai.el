@@ -17,6 +17,8 @@
 ;;
 (install-package 'claude-code "https://github.com/stevemolitor/claude-code.el")
 
+(add-hook 'after-init-hook 'claude-code-mode)
+
 ;;; minuet
 ;;
 ;; For default `minuet-openai-fim-compatible-options', make sure env

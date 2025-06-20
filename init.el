@@ -7,7 +7,7 @@
   (let ((rfile (expand-file-name file user-emacs-directory)))
     (when (file-exists-p rfile)
       (load rfile nil t t))))
-(my-load-relative "pre-init.el")
+(my-load-relative "before-init.el")
 
 ;;; Load path
 (setq custom-file (locate-user-emacs-file "custom.el"))
@@ -73,6 +73,6 @@
   (my-load-relative "lisp/init-osx.el"))
 
 ;;; Load post init
-(my-load-relative "post-init.el")
+(my-load-relative "after-init.el")
 
 ;;; init.el ends here
