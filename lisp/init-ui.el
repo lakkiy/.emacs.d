@@ -1,5 +1,8 @@
 ;;; init-ui.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
+;; Favorite theme
+(install-package 'spacemacs-theme)
+
 ;; form-feed
 ;;
 ;; =page-break-lines= 在开启 =bklink= 和 =visual-fill-column= 的 org buffer 中在 ^L 上移动会卡死，但是 form-feed 用着没有问题。
