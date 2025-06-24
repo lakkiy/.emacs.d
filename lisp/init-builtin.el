@@ -18,7 +18,7 @@
 (defvar my/fonts-emoji '("Apple Color Emoji" "Segoe UI Symbol" "Noto Color Emoji")
   "List of fonts to try when setting the Emoji font.")
 
-(defvar my/font-size-default 14
+(defvar my/font-size-default 12
   "Default font size.")
 
 (defvar my/theme 'modus-operandi
