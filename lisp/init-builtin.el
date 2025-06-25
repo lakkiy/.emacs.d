@@ -473,6 +473,19 @@
   (buffer-face-mode +1))
 
 ;;; Useful funcs
+
+;; https://coredumped.dev/2025/06/18/making-tramp-go-brrrr./
+(defun memoize-remote (key cache orig-fn &rest args)
+  "Memoize a value if the key is a remote path."
+  (if (and key
+           (file-remote-p key))
+      (if-let* ((current (assoc key (symbol-value cache))))
+          (cdr current)
+        (let ((current (apply orig-fn args)))
+          (set cache (cons (cons key current) (symbol-value cache)))
+          current))
+    (apply orig-fn args)))
+
 (defun my/url-get-title (url &optional descr)
   "Takes a URL and returns the value of the <title> HTML tag.
    This function uses curl if available, and falls back to url-retrieve if not.
@@ -980,6 +993,16 @@ COMMAND is a string as advertised by the server. No arguments are passed."
       (mapcan #'my/project-files-in-directory
               (or dirs (list (project-root project)))))))
 
+;; Memoize current project
+(defvar project-current-cache nil)
+(defun memoize-project-current (orig &optional prompt directory)
+  (memoize-remote (or directory
+                      project-current-directory-override
+                      default-directory)
+                  'project-current-cache orig prompt directory))
+(with-eval-after-load 'project
+  (advice-add 'project-current :around #'memoize-project-current))
+
 ;;;; Repeat
 ;;
 ;; Enable `repeat-mode' to reduce key sequence length
@@ -1011,10 +1034,7 @@ COMMAND is a string as advertised by the server. No arguments are passed."
   (keymap-set smerge-mode-map "M-p" #'smerge-prev))
 
 ;;;; Tramp
-(setq-default vc-handled-backends '(Git))
-
-(setq tramp-verbose 0
-      tramp-default-method "ssh")
+(setq tramp-verbose 0)
 
 ;; Set remote-file-name-inhibit-cache to nil if remote files are not
 ;; independently updated outside TRAMP’s control. That cache cleanup
@@ -1027,9 +1047,23 @@ COMMAND is a string as advertised by the server. No arguments are passed."
 ;;  remote file.
 (setq remote-file-name-inhibit-locks t)
 
-;; Speed up complete
-(setq tramp-completion-reread-directory-timeout nil
-      tramp-auto-save-directory temporary-file-directory)
+;; https://coredumped.dev/2025/06/18/making-tramp-go-brrrr./
+(setq tramp-use-scp-direct-remote-copying t
+      tramp-copy-size-limit 1000000
+      remote-file-name-inhibit-auto-save-visited t)
+
+(connection-local-set-profile-variables
+ 'remote-direct-async-process
+ '((tramp-direct-async-process . t)))
+
+(connection-local-set-profiles
+ '(:application tramp :protocol "scp")
+ 'remote-direct-async-process)
+
+(with-eval-after-load 'tramp
+  (with-eval-after-load 'compile
+    (remove-hook 'compilation-mode-hook
+                 #'tramp-compile-disable-ssh-controlmaster-options)))
 
 (defun sudo-find-file (file)
   "Open FILE as root."
@@ -1134,6 +1168,20 @@ COMMAND is a string as advertised by the server. No arguments are passed."
      `(tab-bar-tab ((t (:inherit default :background ,default-fg :foreground ,default-bg))))
      `(tab-bar-tab-inactive ((t (:inherit default :background ,default-bg :foreground ,inactive-fg)))))))
 (add-hook 'after-load-theme-hook #'my/sync-tab-bar-to-theme)
+
+;;;; vc
+(setq-default vc-handled-backends '(Git))
+
+;; memoize vc-git-root
+(defvar vc-git-root-cache nil)
+(defun memoize-vc-git-root (orig file)
+  (let ((value (memoize-remote (file-name-directory file) 'vc-git-root-cache orig file)))
+    ;; sometimes vc-git-root returns nil even when there is a root there
+    (when (null (cdr (car vc-git-root-cache)))
+      (setq vc-git-root-cache (cdr vc-git-root-cache)))
+    value))
+(with-eval-after-load 'vc
+  (advice-add 'vc-git-root :around #'memoize-vc-git-root))
 
 ;;;; Which-key
 ;;

@@ -8,7 +8,34 @@
       magit-diff-paint-whitespace nil
       magit-format-file-function #'magit-format-file-nerd-icons)
 
-(autoload #'gptel-commit "gptel-commit.el" nil t)
+;; optimize tramp
+;;
+;; https://coredumped.dev/2025/06/18/making-tramp-go-brrrr./
+(setq magit-tramp-pipe-stty-settings 'pty)
+
+;; don't show the diff by default in the commit buffer. Use `C-c C-d' to display it
+(setq magit-commit-show-diff nil)
+
+;; don't show git variables in magit branch
+(setq magit-branch-direct-configure nil)
+
+;; don't automatically refresh the status buffer after running a git command
+(setq magit-refresh-status-buffer nil)
+
+;; Memoize magit top level
+(defvar magit-toplevel-cache nil)
+(defun memoize-magit-toplevel (orig &optional directory)
+  (memoize-remote (or directory default-directory)
+                  'magit-toplevel-cache orig directory))
+(with-eval-after-load 'magit
+  (advice-add 'magit-toplevel :around #'memoize-magit-toplevel))
+
+;;; gptel-commit
+(install-package 'gptel-commit "https://github.com/lakkiy/gptel-commit")
+
+(with-eval-after-load 'magit
+  (define-key git-commit-mode-map (kbd "C-c g") #'gptel-commit)
+  (define-key git-commit-mode-map (kbd "C-c G") #'gptel-commit-rationale))
 
 ;;; diff-hl
 (install-package 'diff-hl)
