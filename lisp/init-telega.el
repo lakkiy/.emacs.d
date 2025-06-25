@@ -17,9 +17,6 @@
 					                     :symbol ""
 					                     :replace "\\1\\2...")))
 
-(when (eq system-type 'darwin)
-  (setq telega-server-libs-prefix "~/p/td/tdlib"))
-
 (add-hook 'telega-root-mode-hook 'hl-line-mode)
 (add-hook 'telega-chat-mode-hook 'company-mode)
 
