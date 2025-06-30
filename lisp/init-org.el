@@ -209,16 +209,17 @@ Need pandoc installed."
 
 ;;; Blog
 (install-package 'org-static-blog)
-(setq org-static-blog-publish-title ""
-      org-static-blog-publish-url "https://lakkiy.github.io/"
+(setq org-export-with-toc nil
+      org-static-blog-publish-title ""
+      org-static-blog-publish-url "https://lakki.is"
       org-static-blog-publish-directory "~/p/blog/"
       org-static-blog-posts-directory "~/Dropbox/my/blog/posts/"
-      org-static-blog-drafts-directory "~/Dropbox/my/blog/drafts/"
-      org-static-blog-enable-tags t)
+      org-static-blog-drafts-directory "~/Dropbox/my/blog/drafts/")
 (with-eval-after-load 'org-static-blog
   (setq org-static-blog-page-header (get-string-from-file "~/p/blog/static/header.html")
         org-static-blog-page-preamble (get-string-from-file "~/p/blog/static/preamble.html")
-        org-static-blog-page-postamble (get-string-from-file "~/p/blog/static/postamble.html")))
+        org-static-blog-page-postamble (get-string-from-file "~/p/blog/static/postamble.html")
+        org-static-blog-index-front-matteri (get-string-from-file "~/p/blog/static/index-front.html")))
 
 ;;; Slide
 ;;
