@@ -13,6 +13,13 @@
   (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
   (add-hook 'gptel-mode-hook #'visual-fill-column-mode))
 
+;;; gptel-commit
+(install-package 'gptel-commit)
+
+(with-eval-after-load 'magit
+  (define-key git-commit-mode-map (kbd "C-c g") #'gptel-commit)
+  (define-key git-commit-mode-map (kbd "C-c G") #'gptel-commit-rationale))
+
 ;;; claude-code
 ;;
 (install-package 'claude-code "https://github.com/stevemolitor/claude-code.el")

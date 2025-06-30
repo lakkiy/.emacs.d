@@ -30,13 +30,6 @@
 (with-eval-after-load 'magit
   (advice-add 'magit-toplevel :around #'memoize-magit-toplevel))
 
-;;; gptel-commit
-(install-package 'gptel-commit "https://github.com/lakkiy/gptel-commit")
-
-(with-eval-after-load 'magit
-  (define-key git-commit-mode-map (kbd "C-c g") #'gptel-commit)
-  (define-key git-commit-mode-map (kbd "C-c G") #'gptel-commit-rationale))
-
 ;;; diff-hl
 (install-package 'diff-hl)
 
