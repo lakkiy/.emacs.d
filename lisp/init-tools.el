@@ -96,7 +96,7 @@
         (find-file file-path)
         (run-hooks 'xeft-find-file-hook)))))
 
-(defun my-xeft-init-org-note ()
+(defun lakki.is/xeft-init-org-note ()
   (interactive)
   "Auto-insert org header when creating a new xeft note if appropriate."
   (when (and (eq major-mode 'org-mode)
@@ -110,13 +110,13 @@
           (insert (format "#+TITLE: %s\n\n* References\n" title))
           (save-buffer))))))
 
-(defun my-xeft-setup ()
-  (my-xeft-init-org-note)
+(defun lakki.is/xeft-setup ()
+  (lakki.is/xeft-init-org-note)
   (require 'bklink)
   (bklink-minor-mode 1))
 
 (with-eval-after-load 'xeft
-  (add-hook 'xeft-find-file-hook #'my-xeft-setup))
+  (add-hook 'xeft-find-file-hook #'lakki.is/xeft-setup))
 (with-eval-after-load 'bklink
   (keymap-set bklink-minor-mode-map "C-t i" #'bklink-insert))
 

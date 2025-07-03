@@ -55,11 +55,11 @@
 
 (with-eval-after-load 'copilot
   ;; 文件超出 `copilot-max-char' 的时候不要弹出一个 warning 的 window
-  (defun my-copilot-get-source-suppress-warning (original-function &rest args)
+  (defun lakki.is/copilot-get-source-suppress-warning (original-function &rest args)
     "Advice to suppress display-warning in copilot--get-source."
     (cl-letf (((symbol-function 'display-warning) (lambda (&rest args) nil)))
       (apply original-function args)))
-  (advice-add 'copilot--get-source :around #'my-copilot-get-source-suppress-warning)
+  (advice-add 'copilot--get-source :around #'lakki.is/copilot-get-source-suppress-warning)
 
   (add-to-list 'copilot-major-mode-alist '("go" . "go"))
   (add-to-list 'copilot-major-mode-alist '("go-ts" . "go"))

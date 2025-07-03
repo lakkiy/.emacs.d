@@ -109,11 +109,11 @@
 (add-hook 'after-init-hook 'global-company-mode)
 
 ;; Basic config.
-(defun my-company-capf--candidates (func &rest args)
+(defun lakki.is/company-capf--candidates (func &rest args)
   "Try default completion styles."
   (let ((completion-styles '(basic partial-completion)))
     (apply func args)))
-(advice-add 'company-capf--candidates :around 'my-company-capf--candidates)
+(advice-add 'company-capf--candidates :around 'lakki.is/company-capf--candidates)
 
 (setq company-minimum-prefix-length 2
       company-require-match nil
