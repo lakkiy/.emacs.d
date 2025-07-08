@@ -55,4 +55,12 @@
 (setq grep-use-headings t)
 (install-package 'nerd-icons-grep)
 
+;;; flyover
+(install-package 'flyover)
+
+(setq flyover-checkers '(flymake))
+
+(add-hook 'flymake-mode-hook #'flyover-mode)
+
+
 ;;; init-ui.el ends here
