@@ -214,3 +214,11 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 (with-eval-after-load 'aider
   (setenv "DEEPSEEK_API_KEY" (retrieve-authinfo-key "api.deepseek.com" "apikey")))
 
+
+;;; flyover
+;; 竟然强制安装 flycheck
+(install-package 'flyover)
+
+(setq flyover-checkers '(flymake))
+
+(add-hook 'flymake-mode-hook #'flyover-mode)
