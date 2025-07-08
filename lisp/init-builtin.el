@@ -782,6 +782,9 @@ COMMAND is a string as advertised by the server. No arguments are passed."
 
 (setq-default flymake-diagnostic-functions nil)
 
+;; https://www.reddit.com/r/emacs/comments/1ltp2j0/comment/n1u4rv1/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
+(setq flymake-show-diagnostics-at-end-of-line 'fancy)
+
 (defvar sekiro-flymake-mode-line-format `(:eval (sekiro-flymake-mode-line-format)))
 (put 'sekiro-flymake-mode-line-format 'risky-local-variable t)
 (defun sekiro-flymake-mode-line-format ()
