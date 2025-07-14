@@ -24,6 +24,14 @@
 ;;
 (install-package 'claude-code "https://github.com/stevemolitor/claude-code.el")
 
+;; make the Claude window appear in a persistent side window on the right side
+;; of with 33% width
+(add-to-list 'display-buffer-alist
+             '("^\\*claude"
+               (display-buffer-in-side-window)
+               (side . right)
+               (window-width . 90)))
+
 (add-hook 'after-init-hook 'claude-code-mode)
 
 ;;; minuet

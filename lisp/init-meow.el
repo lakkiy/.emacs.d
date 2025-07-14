@@ -64,13 +64,13 @@
    '("}" . tab-bar-switch-to-next-tab)
    '("-" . avy-goto-char-timer)
    '("\\" . golden-ratio)
+   '(":" . gptel-menu)
+   '("~" . eat-project)
+   '("`" . eat)
 
    ;;; Below config basicly won't change anymore.
    '("'" . repeat)
    '("!" . treemacs-select-window)
-   '(":" . gptel-menu)
-   '("~" . eat-project)
-   '("`" . eat)
    '("_" . xeft)
    '("@" . hs-toggle-hiding)
    '("q" . delete-window)
