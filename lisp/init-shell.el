@@ -6,7 +6,40 @@
 
 ;; eat
 ;;
-;; https://abode.karthinks.com/share/eat-modes.png
+;;                               ┌─────────────────────────────┐
+;;                               │        Char Mode            │
+;;                               │  (Full Terminal Emulation)  │
+;;                               │                             │
+;;                               │  • ALL keys to terminal     │
+;;                               │  • No Emacs keys work       │
+;;                               └─────────────────────────────┘
+;;                               ▲ │           ▲               ▲
+;;                               │ │           │               │
+;;                       C-c M-d │ │ M-RET     │               │ C-c M-d
+;;                               │ ▼           │               │
+;;  ┌─────────────────────────────┐            │             ┌─────────────────────────────┐
+;;  │      Semi-char Mode         │            │             │        Line Mode            │
+;;  │        (Default)            │            │             │      (Comint-style)         │
+;;  │                             │            │             │                             │
+;;  │  All keys except:           │            │             │  • Line editing             │
+;;  │  • C-\  • C-c  • C-x        │ ◀────────────────────▶   │  • History (↑↓)             │
+;;  │  • C-g  • C-h  • C-M-c      │      C-c C-j / C-c C-l   │  • Tab completion           │
+;;  │  • C-u  • M-x  • C-q        │            │             │  • Enter sends line         │
+;;  │  • M-:  • M-!  • M-&        │            │             │                             │
+;;  └─────────────────────────────┘    C-c M-d │             └─────────────────────────────┘
+;;                              ▲ │            │              ▲ │
+;;                      C-c C-j │ │ C-c C-e    │      C-c C-l │ │ C-c C-e
+;;                              │ ▼            │              │ ▼
+;;                               ┌─────────────────────────────┐
+;;                               │        Emacs Mode           │
+;;                               │    (Read-only buffer)       │
+;;                               │                             │
+;;                               │  • All Emacs keys work      │
+;;                               │  • Buffer is read-only      │
+;;                               │  • Free cursor movement     │
+;;                               │  • Search with C-s/C-r      │
+;;                               │  • Copy text only           │
+;;                               └─────────────────────────────┘
 (install-package 'eat)
 
 ;; https://codeberg.org/akib/emacs-eat/issues/119
