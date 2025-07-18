@@ -42,10 +42,7 @@
 ;;                               └─────────────────────────────┘
 (install-package 'eat)
 
-;; https://codeberg.org/akib/emacs-eat/issues/119
 (setq eat-term-name "xterm-256color")
-(setq eat-kill-buffer-on-exit t
-      eat-enable-directory-tracking t)
 
 (add-hook 'eshell-load-hook 'eat-eshell-mode)
 (add-hook 'eshell-load-hook 'eat-eshell-visual-command-mode)
