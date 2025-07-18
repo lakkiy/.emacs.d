@@ -36,7 +36,8 @@
         "^\\*eshell.*\\*$" eshell-mode  ;eshell as a popup
         "^\\*shell.*\\*$"  shell-mode   ;shell as a popup
         "^\\*term.*\\*$"   term-mode    ;term as a popup
-        "^\\*eat.*\\*$" eat-mode))
+        "^\\*eat.*\\*$" ;; eat-mode popper eat buffer but not claude-code
+        ))
 
 (global-set-key (kbd "C-`") 'popper-toggle)
 (global-set-key (kbd "M-`") 'popper-cycle)
