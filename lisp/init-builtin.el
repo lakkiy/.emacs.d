@@ -143,6 +143,8 @@
 
 (global-set-key [remap keyboard-quit] 'keyboard-escape-quit)
 
+(setq native-comp-async-report-warnings-errors 'silent)
+
 ;;; Performance
 ;;
 ;; Improve Emacs' responsiveness by delaying syntax highlighting during input
