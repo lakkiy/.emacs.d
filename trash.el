@@ -222,3 +222,19 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 (setq flyover-checkers '(flymake))
 
 (add-hook 'flymake-mode-hook #'flyover-mode)
+
+;; 从没用过，不好配置，而且还可能用 gptel-aibo 代替
+;;; minuet
+;;
+;; For default `minuet-openai-fim-compatible-options', make sure env
+;; DEEPSEEK_API_KEY was set.
+;; Manually enable copilot, add the following code to post-init.el:
+;; (add-hook 'prog-mode-hook #'minuet-auto-suggestion-mode)
+;;
+(install-package 'minuet)
+
+(with-eval-after-load 'minuet
+  (keymap-set minuet-active-mode-map "C-g" #'minuet-dismiss-suggestion)
+  (keymap-set minuet-active-mode-map "C-e" #'minuet-accept-suggestion)
+  (keymap-set minuet-active-mode-map "M-p" #'minuet-previous-suggestion)
+  (keymap-set minuet-active-mode-map "M-n" #'minuet-next-suggestion))
