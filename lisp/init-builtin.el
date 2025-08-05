@@ -441,8 +441,6 @@
                          face-font-rescale-alist nil nil #'equal)
               (cdr setting))))))
 
-(setq modus-themes-fringes nil)
-
 (defun my/load-theme (f theme &optional no-confirm no-enable &rest args)
   (interactive
    (list
