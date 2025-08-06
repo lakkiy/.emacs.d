@@ -52,7 +52,8 @@
 ;; of buffer.
 (defun eat-meow-setup ()
   (add-hook 'meow-normal-mode-hook 'eat-emacs-mode nil t)
-  (add-hook 'meow-insert-mode-hook 'eat-char-mode nil t))
+  ;; `eat-char-mode' 无法使用 emacs-rime
+  (add-hook 'meow-insert-mode-hook 'eat-line-mode nil t))
 
 (with-eval-after-load "eat"
   (define-key eat-char-mode-map (kbd "C-y") 'eat-yank)
