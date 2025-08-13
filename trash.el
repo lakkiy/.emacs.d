@@ -238,3 +238,18 @@ so try complete filst, if there nothing to complete then try to jump to next fie
   (keymap-set minuet-active-mode-map "C-e" #'minuet-accept-suggestion)
   (keymap-set minuet-active-mode-map "M-p" #'minuet-previous-suggestion)
   (keymap-set minuet-active-mode-map "M-n" #'minuet-next-suggestion))
+
+;; claude-code-ide 看起来更好用
+;;; claude-code
+;;
+(install-package 'claude-code "https://github.com/stevemolitor/claude-code.el")
+
+;; make the Claude window appear in a persistent side window on the right side
+;; of with 33% width
+(add-to-list 'display-buffer-alist
+             '("^\\*claude"
+               (display-buffer-in-side-window)
+               (side . right)
+               (window-width . 90)))
+
+(add-hook 'after-init-hook 'claude-code-mode)

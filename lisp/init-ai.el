@@ -20,20 +20,6 @@
   (define-key git-commit-mode-map (kbd "C-c g") #'gptel-commit)
   (define-key git-commit-mode-map (kbd "C-c G") #'gptel-commit-rationale))
 
-;;; claude-code
-;;
-(install-package 'claude-code "https://github.com/stevemolitor/claude-code.el")
-
-;; make the Claude window appear in a persistent side window on the right side
-;; of with 33% width
-(add-to-list 'display-buffer-alist
-             '("^\\*claude"
-               (display-buffer-in-side-window)
-               (side . right)
-               (window-width . 90)))
-
-(add-hook 'after-init-hook 'claude-code-mode)
-
 ;;; copilot
 ;;
 ;; Manually enable copilot, add the following code to post-init.el:
@@ -65,5 +51,16 @@
   ;; only enable copilot in meow insert mode
   (with-eval-after-load 'meow
     (add-to-list 'copilot-enable-predicates 'meow-insert-mode-p)))
+
+;;; claude-code-ide
+(install-package 'claude-code-ide "https://github.com/manzaltu/claude-code-ide.el")
+
+(setq claude-code-ide-terminal-backend 'eat)
+
+(global-set-key (kbd "C-c C-'") #'claude-code-ide-menu)
+
+(with-eval-after-load 'claude-code-ide
+  ;; Enable Emacs MCP tools
+  (claude-code-ide-emacs-tools-setup))
 
 ;;; init-ai.el ends here

@@ -52,8 +52,9 @@
 ;; of buffer.
 (defun eat-meow-setup ()
   (add-hook 'meow-normal-mode-hook 'eat-emacs-mode nil t)
-  ;; `eat-char-mode' 无法使用 emacs-rime
-  (add-hook 'meow-insert-mode-hook 'eat-line-mode nil t))
+  ;; FIXME `eat-char-mode' 无法使用 emacs-rime， line mode 可以但是无法把字符发
+  ;; 送给终端，semi-char mode 可以开启 rime 但是打不了中文
+  (add-hook 'meow-insert-mode-hook 'eat-char-mode nil t))
 
 (with-eval-after-load "eat"
   (define-key eat-char-mode-map (kbd "C-y") 'eat-yank)
