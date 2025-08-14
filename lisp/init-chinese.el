@@ -19,7 +19,8 @@
       ;; a folder contain emacs-module.h
       (setq rime-emacs-module-header-root
             (expand-file-name "include" (parent-directory invocation-directory 3)))
-      (setq rime-librime-root (expand-file-name "librime/dist" user-emacs-directory)))
+      ;; brew install librime
+      (setq rime-librime-root "/opt/homebrew"))
   (setq rime-share-data-dir "~/.local/share/fcitx5/rime"))
 
 (setq rime-disable-predicates '(meow-normal-mode-p
