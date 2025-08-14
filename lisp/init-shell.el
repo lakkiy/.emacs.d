@@ -47,19 +47,26 @@
 (add-hook 'eshell-load-hook 'eat-eshell-mode)
 (add-hook 'eshell-load-hook 'eat-eshell-visual-command-mode)
 
-;; Use char mode in INSERT state, and emacs mode in NORMAL
-;; state. When switching to INSERT state, move the cursor to the end
-;; of buffer.
-(defun eat-meow-setup ()
+(defun lakki/eat-meow-setup ()
   (add-hook 'meow-normal-mode-hook 'eat-emacs-mode nil t)
-  ;; FIXME `eat-char-mode' 无法使用 emacs-rime， line mode 可以但是无法把字符发
-  ;; 送给终端，semi-char mode 可以开启 rime 但是打不了中文
   (add-hook 'meow-insert-mode-hook 'eat-char-mode nil t))
+
+(defun lakki/eat-toggle-rime ()
+  "切换输入法并自动切换 eat mode"
+  (interactive)
+  (if current-input-method
+      (progn
+        (deactivate-input-method)
+        (eat-char-mode))
+    (progn
+      (activate-input-method "rime")
+      (eat-line-mode))))
 
 (with-eval-after-load "eat"
   (define-key eat-char-mode-map (kbd "C-y") 'eat-yank)
-  ;; Replace semi-char mode with emacs mode
+  (define-key eat-char-mode-map (kbd "C-\\") 'lakki/eat-toggle-rime)
+  (define-key eat-line-mode-map (kbd "C-\\") 'lakki/eat-toggle-rime)
   (advice-add 'eat-semi-char-mode :after 'eat-emacs-mode)
-  (add-hook 'eat-mode-hook 'eat-meow-setup))
+  (add-hook 'eat-mode-hook 'lakki/eat-meow-setup))
 
 ;;; init-shell.el ends here
