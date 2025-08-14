@@ -2,7 +2,7 @@
 
 ;;; Variables
 ;;
-;; NOTE Custom these in pre-init.el
+;; NOTE Custom these in before-init.el
 (defvar my/fonts-default '("Monaco" "Cascadia Code" "Menlo" "Source Code Pro"))
 (defvar my/fonts-variable-pitch '("Bookerly" "Cardo" "Times New Roman" "DejaVu Sans"))
 (defvar my/fonts-cjk '("LXGW WenKai" "FZYouSong GBK" "WenQuanYi Micro Hei" "Microsoft Yahei"))
