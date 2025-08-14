@@ -3,32 +3,16 @@
 ;;; Variables
 ;;
 ;; NOTE Custom these in pre-init.el
-(defvar my/fonts-default '("Monaco" "Cascadia Code" "Menlo" "Source Code Pro")
-  "List of fonts to try when setting the default font.")
+(defvar my/fonts-default '("Monaco" "Cascadia Code" "Menlo" "Source Code Pro"))
+(defvar my/fonts-variable-pitch '("Bookerly" "Cardo" "Times New Roman" "DejaVu Sans"))
+(defvar my/fonts-cjk '("LXGW WenKai" "FZYouSong GBK" "WenQuanYi Micro Hei" "Microsoft Yahei"))
+(defvar my/fonts-symbol '("Apple Symbols"))
+(defvar my/fonts-emoji '("Apple Color Emoji" "Segoe UI Symbol" "Noto Color Emoji"))
+(defvar my/font-size-default 12)
 
-(defvar my/fonts-variable-pitch '("Bookerly" "Cardo" "Times New Roman" "DejaVu Sans")
-  "List of fonts to try when setting the variable-pitch font.")
-
-(defvar my/fonts-cjk '("LXGW WenKai" "FZYouSong GBK" "WenQuanYi Micro Hei" "Microsoft Yahei")
-  "List of fonts to try when setting the CJK font.")
-
-(defvar my/fonts-unicode '("Symbola")
-  "List of fonts to try when setting the Unicode font.")
-
-(defvar my/fonts-emoji '("Apple Color Emoji" "Segoe UI Symbol" "Noto Color Emoji")
-  "List of fonts to try when setting the Emoji font.")
-
-(defvar my/font-size-default 12
-  "Default font size.")
-
-(defvar my/theme 'modus-operandi
-  "The default theme.")
-
-(defvar my/theme-tui 'modus-vivendi
-  "The default theme for TUI.")
-
-(defvar after-load-theme-hook nil
-  "Hooks run after `load-theme'.")
+(defvar my/theme 'modus-operandi)
+(defvar my/theme-tui 'modus-vivendi)
+(defvar after-load-theme-hook nil)
 
 ;;; Disable stupid things
 ;;
@@ -415,11 +399,11 @@
   (let* ((my/font-default        (font-installed-p my/fonts-default))
          (my/font-variable-pitch (font-installed-p my/fonts-variable-pitch))
          (my/font-cjk            (font-installed-p my/fonts-cjk))
-         (my/font-unicode        (font-installed-p my/fonts-unicode))
+         (my/font-symbol        (font-installed-p my/fonts-symbol))
          (my/font-emoji          (font-installed-p my/fonts-emoji))
-         (my/font-rescale-alist  `((,my/font-cjk     . 0.95)
-                                   (,my/font-emoji   . 0.9)
-                                   (,my/font-unicode . 0.95)
+         (my/font-rescale-alist  `((,my/font-cjk    . 0.95)
+                                   (,my/font-emoji  . 0.9)
+                                   (,my/font-symbol . 0.95)
                                    (,my/font-variable-pitch . 1.2))))
     (set-face-attribute 'default nil :height (* 10 my/font-size-default))
     (when my/font-default
@@ -427,10 +411,10 @@
       (set-face-attribute 'fixed-pitch nil :font my/font-default))
     (when my/font-variable-pitch
       (set-face-font 'variable-pitch my/font-variable-pitch))
-    (when my/font-unicode
-      (set-fontset-font t 'unicode my/font-unicode))
     (when my/font-emoji
       (set-fontset-font t 'emoji   my/font-emoji))
+    (when my/font-symbol
+      (set-fontset-font t 'symbol my/font-symbol))
     (when my/font-cjk
       (set-fontset-font t 'kana     my/font-cjk)
       (set-fontset-font t 'han      my/font-cjk)
