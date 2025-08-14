@@ -2,13 +2,9 @@
 ;;
 ;; NOETS: for subtree, press i in dired.
 
-;; rsyncc
-(install-package 'dired-rsync)
-(with-eval-after-load 'dired
-  (define-key dired-mode-map (kbd "C-c C-r") 'dired-rsync))
-
 ;;; dirvish
 (install-package 'dirvish)
+
 (add-hook 'after-init-hook #'dirvish-override-dired-mode)
 
 (setq dirvish-attributes '(vc-state subtree-state nerd-icons)
@@ -38,6 +34,8 @@
   (define-key dirvish-mode-map (kbd "M-j") #'dirvish-fd-jump)
   (define-key dirvish-mode-map (kbd "<mouse-1>") #'dirvish-subtree-toggle-or-open)
   (define-key dirvish-mode-map (kbd "<mouse-2>") #'dired-mouse-find-file-other-window)
-  (define-key dirvish-mode-map (kbd "<mouse-3>") #'dired-mouse-find-file))
+  (define-key dirvish-mode-map (kbd "<mouse-3>") #'dired-mouse-find-file)
+
+  (define-key dirvish-mode-map (kbd "r") #'dirvish-rsync-switches-menu))
 
 ;;; init-dired ends here

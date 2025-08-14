@@ -253,3 +253,9 @@ so try complete filst, if there nothing to complete then try to jump to next fie
                (window-width . 90)))
 
 (add-hook 'after-init-hook 'claude-code-mode)
+
+;; rsync
+;; 用 dirvish-rsync 替代原生的 dired-rsync
+(install-package 'dired-rsync)
+(with-eval-after-load 'dired
+  (define-key dired-mode-map (kbd "C-c C-r") 'dired-rsync))
