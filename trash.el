@@ -259,3 +259,21 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 (install-package 'dired-rsync)
 (with-eval-after-load 'dired
   (define-key dired-mode-map (kbd "C-c C-r") 'dired-rsync))
+
+;;;; Hl-line
+;;
+;; 太遮挡视线了
+;;
+;; Restrict `hl-line-mode' highlighting to the current window, reducing visual
+;; clutter and slightly improving `hl-line-mode' performance.
+(setq hl-line-sticky-flag nil)
+(setq global-hl-line-sticky-flag nil)
+
+(defun my/hl-line-setup ()
+  "Disable `hl-line-mode' if region is active."
+  (when (and (bound-and-true-p hl-line-mode)
+             (region-active-p))
+    (hl-line-unhighlight)))
+(with-eval-after-load 'hl-line
+  (add-hook 'post-command-hook #'my/hl-line-setup))
+(add-hook 'prog-mode-hook #'hl-line-mode)

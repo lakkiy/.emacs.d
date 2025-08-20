@@ -48,6 +48,9 @@
 ;; Not work on mac for now
 ;; https://github.com/LionyxML/auto-dark-emacs/issues/58
 (install-package 'auto-dark)
+(setq auto-dark-themes `((,my/theme-dark) (,my/theme)))
+(add-hook 'after-init-hook #'auto-dark-mode)
+(add-hook 'auto-dark-dark-mode-hook #'lakki.is/wombat-white-cursor)
 
 ;;; nerd-icons-grep
 ;;

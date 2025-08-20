@@ -10,9 +10,14 @@
 (defvar my/fonts-emoji '("Apple Color Emoji" "Segoe UI Symbol" "Noto Color Emoji"))
 (defvar my/font-size-default 12)
 
-(defvar my/theme 'modus-operandi)
-(defvar my/theme-tui 'modus-vivendi)
+(defvar my/theme 'leuven)
+(defvar my/theme-dark 'wombat)
 (defvar after-load-theme-hook nil)
+
+(defun lakki.is/wombat-white-cursor ()
+  (when (eq (car custom-enabled-themes) 'wombat)
+    (set-cursor-color "white")))
+(add-hook 'after-load-theme-hook #'lakki.is/wombat-white-cursor)
 
 ;;; Disable stupid things
 ;;
@@ -440,9 +445,7 @@
 (advice-add 'load-theme :around #'my/load-theme)
 
 (defun my/setup-theme ()
-  (if (display-graphic-p)
-      (load-theme my/theme t)
-    (load-theme my/theme-tui t)))
+  (load-theme my/theme t))
 
 (if (daemonp)
     (progn
@@ -806,22 +809,6 @@ COMMAND is a string as advertised by the server. No arguments are passed."
                        (keymapp (symbol-value variable)))
                   (describe-keymap variable)
                 (apply oldfun variable buffer frame))))
-
-;;;; Hl-line
-;;
-;; Restrict `hl-line-mode' highlighting to the current window, reducing visual
-;; clutter and slightly improving `hl-line-mode' performance.
-(setq hl-line-sticky-flag nil)
-(setq global-hl-line-sticky-flag nil)
-
-(defun my/hl-line-setup ()
-  "Disable `hl-line-mode' if region is active."
-  (when (and (bound-and-true-p hl-line-mode)
-             (region-active-p))
-    (hl-line-unhighlight)))
-(with-eval-after-load 'hl-line
-  (add-hook 'post-command-hook #'my/hl-line-setup))
-(add-hook 'prog-mode-hook #'global-hl-line-mode)
 
 ;;;; Hide show
 (defconst hideshow-folded-face '((t (:inherit 'font-lock-comment-face :box t))))
