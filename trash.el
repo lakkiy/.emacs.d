@@ -277,3 +277,7 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 (with-eval-after-load 'hl-line
   (add-hook 'post-command-hook #'my/hl-line-setup))
 (add-hook 'prog-mode-hook #'hl-line-mode)
+
+;; 会让我的画面跳来跳去
+;; https://www.reddit.com/r/emacs/comments/1ltp2j0/comment/n1u4rv1/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
+(setq flymake-show-diagnostics-at-end-of-line 'fancy)
