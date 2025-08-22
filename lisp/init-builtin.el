@@ -130,7 +130,20 @@
 ;; more non-newline characters followed by a terminating newline".
 (setq require-final-newline t)
 
-(global-set-key [remap keyboard-quit] 'keyboard-escape-quit)
+;; https://emacsredux.com/blog/2025/06/01/let-s-make-keyboard-quit-smarter
+(defun lakki.is/keyboard-quit ()
+  "Smater version of the built-in `keyboard-quit'.
+
+The generic `keyboard-quit' does not do the expected thing when
+the minibuffer is open.  Whereas we want it to close the
+minibuffer, even without explicitly focusing it."
+  (interactive)
+  (if (active-minibuffer-window)
+      (if (minibufferp)
+          (minibuffer-keyboard-quit)
+        (abort-recursive-edit))
+    (keyboard-quit)))
+(global-set-key [remap keyboard-quit] 'lakki.is/keyboard-quit)
 
 (setq native-comp-async-report-warnings-errors 'silent)
 
