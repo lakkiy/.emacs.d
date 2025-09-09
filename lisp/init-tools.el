@@ -171,5 +171,6 @@
 (install-package 'speed-type)
 (install-package 'elcord)
 (install-package 'dwim-shell-command)
+(install-package 'show-font)
 
 ;;; init-tools.el ends here
