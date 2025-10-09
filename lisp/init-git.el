@@ -6,7 +6,8 @@
 
 (setq magit-diff-refine-hunk t
       magit-diff-paint-whitespace nil
-      magit-format-file-function #'magit-format-file-nerd-icons)
+      magit-format-file-function #'magit-format-file-nerd-icons
+      magit-show-long-lines-warning nil)
 
 ;; optimize tramp
 ;;
