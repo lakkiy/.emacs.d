@@ -1,5 +1,10 @@
 ;;; early-init.el --- before Emacs create frame -*- no-byte-compile: t; lexical-binding: t; -*-
 
+;; Avoid raising the *Messages* buffer if anything is still without
+;; lexical bindings
+(setq warning-minimum-level :error)
+(setq warning-suppress-types '((lexical-binding)))
+
 ;; Prefer loading newer compiled files
 (setq load-prefer-newer t)
 
