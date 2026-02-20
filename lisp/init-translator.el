@@ -5,7 +5,7 @@
 ;; Write to ~/.authinfo
 ;; machine api.deepl.com login auth-key password ****
 ;; machine api.openai.com login apikey password ****
-(install-package 'go-translate)
+(install-package 'gt)
 
 (setq gt-langs '(en zh))
 
