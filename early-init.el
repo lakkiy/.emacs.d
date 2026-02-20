@@ -1,5 +1,9 @@
 ;;; early-init.el --- before Emacs create frame -*- no-byte-compile: t; lexical-binding: t; -*-
 
+;; If you have nix installed on mac, but brew install emacs-plus
+;; (setq native-comp-driver-options
+;;       (list (concat "-B/Library/Developer/CommandLineTools/usr/bin/")))
+
 ;; Avoid raising the *Messages* buffer if anything is still without
 ;; lexical bindings
 (setq warning-minimum-level :error)

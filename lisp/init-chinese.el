@@ -18,7 +18,7 @@
     (progn
       ;; a folder contain emacs-module.h
       (setq rime-emacs-module-header-root
-            (expand-file-name "include" (parent-directory invocation-directory 3)))
+            (expand-file-name "Resources/include" (parent-directory invocation-directory 1)))
       ;; brew install librime
       (setq rime-librime-root "/opt/homebrew"))
   (setq rime-share-data-dir "~/.local/share/fcitx5/rime"))
