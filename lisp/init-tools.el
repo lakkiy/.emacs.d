@@ -172,5 +172,6 @@
 (install-package 'elcord)
 (install-package 'dwim-shell-command)
 (install-package 'show-font)
+(install-package 'emacs-tramp-rpc "https://github.com/ArthurHeymans/emacs-tramp-rpc")
 
 ;;; init-tools.el ends here
