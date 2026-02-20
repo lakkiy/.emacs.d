@@ -1,3 +1,4 @@
+tramp-rpc
 .claude
 *.eld
 after-init.el
