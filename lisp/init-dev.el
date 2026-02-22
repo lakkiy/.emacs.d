@@ -188,7 +188,11 @@
         (toml . ("https://github.com/ikatyang/tree-sitter-toml"))
         (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))
         (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" nil "tsx/src"))
-        (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" nil "typescript/src")))
+        (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" nil "typescript/src"))
+        (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript"))
+        (css . ("https://github.com/tree-sitter/tree-sitter-css"))
+        (svelte . ("https://github.com/tree-sitter-grammars/tree-sitter-svelte"))
+        (jsdoc . ("https://github.com/tree-sitter/tree-sitter-jsdoc.git" nil "src")))
       go-ts-mode-indent-offset 4)
 
 (with-eval-after-load 'go-ts-mode
