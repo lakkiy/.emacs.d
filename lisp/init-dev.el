@@ -1,56 +1,10 @@
 ;;; init-dev.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
-;;; eglot-booster
-(install-package 'eglot-booster "https://github.com/jdtsmith/eglot-booster")
-(when (executable-find "emacs-lsp-booster")
-  (setq eglot-booster-no-remote-boost t)
-  (add-hook 'after-init-hook #'eglot-booster-mode))
+;;; treesit
 
-;;; lsp-bridge
-(install-package 'lsp-bridge "https://github.com/manateelazycat/lsp-bridge")
-(install-package 'flymake-bridge "https://github.com/liuyinz/flymake-bridge")
-
-;; NOTE otherwise this may cause lsp-bridge-ref buffer didn't show
-(setq window-resize-pixelwise nil)
-
-(setq acm-enable-tabnine nil ;; default is t
-      lsp-bridge-c-lsp-server "ccls")
-
-(defun my/lsp-bridge-mode-setup ()
-  (interactive)
-  (flymake-bridge-setup)
-  ;; Disable corfu since lsp-bridge use acm.
-  (ignore-errors
-    (company-mode -1)
-    (corfu-mode -1))
-  ;; Use tab to jump to next field but do complete when there's acm complete.
-  (with-eval-after-load 'yasnippet
-    (define-key yas-keymap (kbd "<tab>") 'acm-complete-or-expand-yas-snippet)
-    (define-key yas-keymap (kbd "TAB") 'acm-complete-or-expand-yas-snippet)))
-
-(with-eval-after-load 'lsp-bridge
-  (add-hook 'lsp-bridge-mode-hook #'my/lsp-bridge-mode-setup)
-
-  (keymap-set lsp-bridge-mode-map "M-."     #'lsp-bridge-find-def)
-  (keymap-set lsp-bridge-mode-map "C-x 4 ." #'lsp-bridge-find-def-other-window)
-  (keymap-set lsp-bridge-mode-map "M-,"     #'lsp-bridge-find-def-return)
-  (keymap-set lsp-bridge-mode-map "M-?"     #'lsp-bridge-find-references)
-  (keymap-set lsp-bridge-mode-map "M-'"     #'lsp-bridge-find-impl)
-  (keymap-set lsp-bridge-mode-map "C-c r"   #'lsp-bridge-rename)
-  (keymap-set lsp-bridge-mode-map "M-RET"   #'lsp-bridge-code-action)
-  (keymap-set lsp-bridge-ref-mode-map "p"   #'lsp-bridge-ref-jump-prev-file)
-  (keymap-set lsp-bridge-ref-mode-map "h"   #'lsp-bridge-ref-jump-prev-keyword)
-  (keymap-set lsp-bridge-ref-mode-map "t"   #'lsp-bridge-ref-jump-next-keyword)
-  (keymap-set lsp-bridge-ref-mode-map "n"   #'lsp-bridge-ref-jump-next-file)
-  (keymap-set lsp-bridge-ref-mode-map "j" nil)
-  (keymap-set lsp-bridge-ref-mode-map "k" nil)
-  (keymap-set lsp-bridge-ref-mode-map "h" nil)
-  (keymap-set lsp-bridge-ref-mode-map "l" nil))
-
-;;; breadcrumb
-;;
-;; Display function name on header
-(install-package 'breadcrumb)
+(setq treesit-language-source-alist
+      '((toml . ("https://github.com/ikatyang/tree-sitter-toml"))
+        (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))))
 
 ;;; dumb-jump
 ;;
@@ -93,7 +47,9 @@
 (with-eval-after-load 'citre-peek
   (keymap-set citre-peek-keymap "M-l r" 'citre-peek-through-references))
 
-;;; apheleia
+;;; Code Formatter
+
+;; apheleia
 ;;
 ;; formatter
 (install-package 'apheleia)
@@ -121,7 +77,10 @@
     (setf (alist-get 'go-mode apheleia-mode-alist) '(goimports))
     (setf (alist-get 'go-ts-mode apheleia-mode-alist) '(goimports))))
 
-;;; dape
+
+;;; Debugger
+
+;; dape
 (install-package 'dape)
 
 ;; Usually I use left window to show code
@@ -181,28 +140,6 @@
 ;;; direnv
 (install-package 'envrc)
 (add-hook 'after-init-hook #'envrc-global-mode)
-
-;;; treesit
-(setq treesit-language-source-alist
-      '((gomod . ("https://github.com/camdencheek/tree-sitter-gomod.git"))
-        (toml . ("https://github.com/ikatyang/tree-sitter-toml"))
-        (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))
-        (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" nil "tsx/src"))
-        (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" nil "typescript/src"))
-        (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript"))
-        (css . ("https://github.com/tree-sitter/tree-sitter-css"))
-        (svelte . ("https://github.com/tree-sitter-grammars/tree-sitter-svelte"))
-        (jsdoc . ("https://github.com/tree-sitter/tree-sitter-jsdoc.git" nil "src")))
-      go-ts-mode-indent-offset 4)
-
-(with-eval-after-load 'go-ts-mode
-  (require 'go-mode)
-  (setq go-ts-mode-hook go-mode-hook)
-  (set-keymap-parent go-ts-mode-map go-mode-map))
-
-(when (treesit-available-p)
-  (push '(python-mode . python-ts-mode) major-mode-remap-alist)
-  (push '(go-mode . go-ts-mode) major-mode-remap-alist))
 
 ;;; hideshow
 ;;; pnui

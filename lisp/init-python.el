@@ -1,5 +1,11 @@
 ;;; init-python.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
+(dolist (lang '((python . ("https://github.com/tree-sitter/tree-sitter-python"))))
+  (add-to-list 'treesit-language-source-alist lang))
+
+(when (treesit-available-p)
+  (push '(python-mode . python-ts-mode) major-mode-remap-alist))
+
 ;;; venv
 (install-package 'pet)
 
@@ -22,10 +28,5 @@
     (flymake-ruff-load)))
 (add-hook 'python-base-mode-hook 'my/flymake-ruff-maybe-enable)
 
-;;; jupyter
-;;
-;; Better with jupytext and pandoc installed.
-(install-package 'code-cells)
-(add-hook 'python-base-mode-hook 'code-cells-mode-maybe)
 
 ;;; init-python.el ends here

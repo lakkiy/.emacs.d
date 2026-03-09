@@ -281,3 +281,130 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 ;; 会让我的画面跳来跳去
 ;; https://www.reddit.com/r/emacs/comments/1ltp2j0/comment/n1u4rv1/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
 (setq flymake-show-diagnostics-at-end-of-line 'fancy)
+
+;;; eglot-booster
+;; 现有的电脑已经跑的很快了，暂时不需要
+(install-package 'eglot-booster "https://github.com/jdtsmith/eglot-booster")
+(when (executable-find "emacs-lsp-booster")
+  (setq eglot-booster-no-remote-boost t
+        eglot-booster-io-only t)
+  (add-hook 'after-init-hook #'eglot-booster-mode))
+
+;;; lsp-bridge
+;; 用不上
+(install-package 'lsp-bridge "https://github.com/manateelazycat/lsp-bridge")
+(install-package 'flymake-bridge "https://github.com/liuyinz/flymake-bridge")
+
+;; NOTE otherwise this may cause lsp-bridge-ref buffer didn't show
+(setq window-resize-pixelwise nil)
+
+(setq acm-enable-tabnine nil ;; default is t
+      lsp-bridge-c-lsp-server "ccls")
+
+(defun my/lsp-bridge-mode-setup ()
+  (interactive)
+  (flymake-bridge-setup)
+  ;; Disable corfu since lsp-bridge use acm.
+  (ignore-errors
+    (company-mode -1)
+    (corfu-mode -1))
+  ;; Use tab to jump to next field but do complete when there's acm complete.
+  (with-eval-after-load 'yasnippet
+    (define-key yas-keymap (kbd "<tab>") 'acm-complete-or-expand-yas-snippet)
+    (define-key yas-keymap (kbd "TAB") 'acm-complete-or-expand-yas-snippet)))
+
+(with-eval-after-load 'lsp-bridge
+  (add-hook 'lsp-bridge-mode-hook #'my/lsp-bridge-mode-setup)
+
+  (keymap-set lsp-bridge-mode-map "M-."     #'lsp-bridge-find-def)
+  (keymap-set lsp-bridge-mode-map "C-x 4 ." #'lsp-bridge-find-def-other-window)
+  (keymap-set lsp-bridge-mode-map "M-,"     #'lsp-bridge-find-def-return)
+  (keymap-set lsp-bridge-mode-map "M-?"     #'lsp-bridge-find-references)
+  (keymap-set lsp-bridge-mode-map "M-'"     #'lsp-bridge-find-impl)
+  (keymap-set lsp-bridge-mode-map "C-c r"   #'lsp-bridge-rename)
+  (keymap-set lsp-bridge-mode-map "M-RET"   #'lsp-bridge-code-action)
+  (keymap-set lsp-bridge-ref-mode-map "p"   #'lsp-bridge-ref-jump-prev-file)
+  (keymap-set lsp-bridge-ref-mode-map "h"   #'lsp-bridge-ref-jump-prev-keyword)
+  (keymap-set lsp-bridge-ref-mode-map "t"   #'lsp-bridge-ref-jump-next-keyword)
+  (keymap-set lsp-bridge-ref-mode-map "n"   #'lsp-bridge-ref-jump-next-file)
+  (keymap-set lsp-bridge-ref-mode-map "j" nil)
+  (keymap-set lsp-bridge-ref-mode-map "k" nil)
+  (keymap-set lsp-bridge-ref-mode-map "h" nil)
+  (keymap-set lsp-bridge-ref-mode-map "l" nil))
+
+;;; breadcrumb
+;;
+;; Display function name on header
+(install-package 'breadcrumb)
+
+;; 不知道是啥了
+(install-package 'sly)
+(setq inferior-lisp-program "sbcl")
+
+;; 不学 clojure 了
+(install-package 'clojure-mode)
+(install-package 'cider)
+(install-package 'clj-refactor)
+
+(add-hook 'clojure-mode-hook #'puni-mode)
+
+(with-eval-after-load 'clojure-mode
+  ;; better indentation for compojure
+  ;; https://github.com/weavejester/compojure/wiki/Emacs-indentation
+  (define-clojure-indent
+   (defroutes 'defun)
+   (GET 2)
+   (POST 2)
+   (PUT 2)
+   (DELETE 2)
+   (HEAD 2)
+   (ANY 2)
+   (OPTIONS 2)
+   (PATCH 2)
+   (rfn 2)
+   (let-routes 1)
+   (context 2)))
+
+;; 不在 emacs 中安装
+;; Install or update tools
+(defvar go--tools '("golang.org/x/tools/gopls"
+                    "golang.org/x/tools/cmd/goimports"
+                    "honnef.co/go/tools/cmd/staticcheck"
+                    "github.com/go-delve/delve/cmd/dlv"
+                    "github.com/zmb3/gogetdoc"
+                    "github.com/josharian/impl"
+                    "github.com/cweill/gotests/..."
+                    "github.com/fatih/gomodifytags"
+                    "github.com/davidrjenni/reftools/cmd/fillstruct"
+                    "github.com/rogpeppe/godef")
+  "All necessary go tools.")
+
+(defun go-update-tools ()
+  "Install or update go tools."
+  (interactive)
+  (unless (executable-find "go")
+    (user-error "Unable to find `go' in `exec-path'!"))
+
+  (message "Installing go tools...")
+  (dolist (pkg go--tools)
+    (set-process-sentinel
+     (start-process "go-tools" "*Go Tools*" "go" "install" "-v" "-x" (concat pkg "@latest"))
+     (lambda (proc _)
+       (let ((status (process-exit-status proc)))
+         (if (= 0 status)
+             (message "Installed %s" pkg)
+           (message "Failed to install %s: %d" pkg status)))))))
+
+;; 用不上
+(defun my/format-go ()
+  (interactive)
+  (let ((default-directory (project-root (project-current t))))
+    (shell-command "git diff --name-only --cached | grep '\.go$' | xargs -I {} goimports -w {}")))
+(keymap-set project-prefix-map "t" #'my/format-go)
+
+;;; jupyter
+;;
+;; Better with jupytext and pandoc installed.
+;; 暂时用不上
+(install-package 'code-cells)
+(add-hook 'python-base-mode-hook 'code-cells-mode-maybe)

@@ -1,67 +1,77 @@
 ;;; init-go.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
-;; Install or update tools
-(defvar go--tools '("golang.org/x/tools/gopls"
-                    "golang.org/x/tools/cmd/goimports"
-                    "honnef.co/go/tools/cmd/staticcheck"
-                    "github.com/go-delve/delve/cmd/dlv"
-                    "github.com/zmb3/gogetdoc"
-                    "github.com/josharian/impl"
-                    "github.com/cweill/gotests/..."
-                    "github.com/fatih/gomodifytags"
-                    "github.com/davidrjenni/reftools/cmd/fillstruct"
-                    "github.com/rogpeppe/godef")
-  "All necessary go tools.")
-
-(defun go-update-tools ()
-  "Install or update go tools."
-  (interactive)
-  (unless (executable-find "go")
-    (user-error "Unable to find `go' in `exec-path'!"))
-
-  (message "Installing go tools...")
-  (dolist (pkg go--tools)
-    (set-process-sentinel
-     (start-process "go-tools" "*Go Tools*" "go" "install" "-v" "-x" (concat pkg "@latest"))
-     (lambda (proc _)
-       (let ((status (process-exit-status proc)))
-         (if (= 0 status)
-             (message "Installed %s" pkg)
-           (message "Failed to install %s: %d" pkg status)))))))
-
-(defun my/format-go ()
-  (interactive)
-  (let ((default-directory (project-root (project-current t))))
-    (shell-command "git diff --name-only --cached | grep '\.go$' | xargs -I {} goimports -w {}")))
-(keymap-set project-prefix-map "t" #'my/format-go)
+;; git diff --name-only --cached | grep '\.go$' | xargs -I {} goimports -w {}
 
 (install-package 'go-mode)
-(install-package 'go-gen-test)
 (install-package 'go-dlv)
-(install-package 'go-fill-struct)
-(install-package 'go-impl)
+(install-package 'go-gen-test)
 (install-package 'gotest)
+(install-package 'gotest-ts)
 (install-package 'go-tag)
-(install-package 'go-playground)
-
+(install-package 'go-fill-struct)
 (install-package 'flymake-go-staticcheck)
+
+(setenv "GOPATH" (concat (getenv "HOME") "/.go"))
+
+(setq gofmt-show-errors nil
+      gofmt-command "goimports"
+      go-test-verbose t
+      ;; Do not cache test result.
+      go-test-args "-count=1"
+      go-tag-args (list "-transform" "camelcase"))
+
 (when (executable-find "staticcheck")
   (add-hook 'go-mode-hook #'flymake-go-staticcheck-enable))
 
-(setq gofmt-command "goimports"
-      gofmt-show-errors nil)
-(add-hook 'go-test-mode-hook #'visual-line-mode)
-
-(setq go-test-verbose t
-      ;; Do not cache test result.
-      go-test-args "-count=1")
-
-(setq go-tag-args (list "-transform" "camelcase"))
-
 (with-eval-after-load 'go-mode
   (keymap-set go-mode-map "C-c t g" #'go-gen-test-dwim)
+  (keymap-set go-mode-map "C-c t f" #'go-test-current-file)
   (keymap-set go-mode-map "C-c t t" #'go-test-current-test)
+  (keymap-set go-mode-map "C-c t j" #'go-test-current-project)
+  (keymap-set go-mode-map "C-c t b" #'go-test-current-benchmark)
+  (keymap-set go-mode-map "C-c t c" #'go-test-current-coverage)
+  (keymap-set go-mode-map "C-c t x" #'go-run)
   (keymap-set go-mode-map "C-c t a" #'go-tag-add)
   (keymap-set go-mode-map "C-c t r" #'go-tag-remove))
+
+;; treesit
+(dolist (lang '((go . ("https://github.com/tree-sitter/tree-sitter-go"))
+                (gomod . ("https://github.com/camdencheek/tree-sitter-gomod.git"))
+                (gowork . ("https://github.com/omertuc/tree-sitter-go-work.git"))))
+  (add-to-list 'treesit-language-source-alist lang))
+
+(setq go-ts-mode-indent-offset 4)
+
+(when (treesit-available-p)
+  (push '(go-mode . go-ts-mode) major-mode-remap-alist)
+  (with-eval-after-load 'go-ts-mode
+    (require 'go-mode)
+    (setq go-ts-mode-hook go-mode-hook)
+    (set-keymap-parent go-ts-mode-map go-mode-map)
+    ;; Complete setup with keybindings and imenu for gotest-ts
+    (add-hook 'go-ts-mode-hook #'gotest-ts-setup)))
+
+;; https://github.com/chmouel/gotest-ts.el?tab=readme-ov-file#debugging-with-dape
+;; debug test with gotest-ts
+(defun my-dape-go-test-at-point ()
+  (interactive)
+  (dape (dape--config-eval-1
+         `(modes (go-ts-mode)
+                 ensure dape-ensure-command
+                 fn dape-config-autoport
+                 command "dlv"
+                 command-args ("dap" "--listen" "127.0.0.1::autoport")
+                 command-cwd dape-cwd-fn
+                 port :autoport
+                 :type "debug"
+                 :request "launch"
+                 :mode "test"
+                 :cwd dape-cwd-fn
+                 :program (lambda () (concat "./" (file-relative-name default-directory (funcall dape-cwd-fn))))
+                 :args (lambda ()
+                         (when-let* ((test-name (gotest-ts--build-test-pattern)))
+                           (if test-name `["-test.run" ,test-name]
+                             (error "No test selected"))))))))
+
 
 ;;; init-go.el ends here
