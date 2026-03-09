@@ -51,17 +51,7 @@
       gnus-select-method '(nnnil "")
       gnus-secondary-select-methods
       `((nntp "gmane" (nntp-address "news.gmane.io"))
-	    (nntp "nntp.lore.kernel.org")
-	    (nnimap "Gmail"
-		        (nnimap-user "liubolovelife@gmail.com")
-		        (nnimap-inbox "INBOX")
-		        (nnimap-address "imap.gmail.com")
-		        (nnimap-stream ssl)
-		        (nnimap-expunge 'never)
-		        ;; @see http://www.gnu.org/software/emacs/manual/html_node/gnus/Expiring-Mail.html
-		        ;; press 'E' to expire email
-		        (nnmail-expiry-target "nnimap+Gmail:[Gmail]/Trash")
-		        (nnmail-expiry-wait 90)))
+	    (nntp "nntp.lore.kernel.org"))
       ;; Startup functions
       gnus-save-killed-list nil
       gnus-check-new-newsgroups nil
