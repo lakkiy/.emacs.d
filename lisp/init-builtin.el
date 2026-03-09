@@ -318,9 +318,6 @@ minibuffer, even without explicitly focusing it."
 ;; 光标移动超过窗口边缘 10 行时，才会重新居中窗口（默认为 0 直接重新居中）
 (setq scroll-conservatively 10)
 
-;; The nano style for truncated long lines.
-(setq auto-hscroll-mode 'current-line)
-
 ;; 禁用自动垂直滚动，以解决编辑超长行时的光标滞后和屏幕跳动问题
 (setq auto-window-vscroll nil)
 
@@ -710,7 +707,6 @@ point reaches the beginning or end of the buffer, stop there."
         :documentLinkProvider
         ;; 和 treesit 的缩进冲突
         :documentOnTypeFormattingProvider))
-
 ;; Eglot optimization
 (setq jsonrpc-event-hook nil)
 (setq eglot-events-buffer-size 0)

@@ -40,8 +40,7 @@
 (install-package 'webpaste)
 
 (setq webpaste-add-to-killring t
-      webpaste-paste-raw-text t
-      webpaste-provider-priority '("paste.rs"))
+      webpaste-paste-raw-text t)
 
 ;;; separedit
 (install-package 'separedit)

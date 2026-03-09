@@ -24,7 +24,10 @@
 (theme-util-set-faces 'pale
   (cl-flet ((darken #'theme-util-darken)
             (brighten #'theme-util-brighten)
-            (overlay #'theme-util-color-overlay))
+            (overlay #'theme-util-color-overlay)
+            (box-pad (lambda (width color)
+                       `( :line-width (,width . ,width)
+                          :color ,color))))
     (let* ((bg "#ffffff")
            (bg-tooltip "gray95")
            (bg-block "gray92")
@@ -139,8 +142,12 @@
         (header-line (mode-line) (:height 150))
 
         (tab-bar (mode-line nil ,bg) (:height 140))
-        (tab-bar-tab          (tab-bar nil ,bg))
-        (tab-bar-tab-inactive (tab-bar ,fg-weak ,bg))
+        (tab-bar-tab          (tab-bar nil ,bg)
+                              (:box (:line-width 1 :color ,blue-fg)))
+        (tab-bar-tab-inactive (tab-bar ,fg-weak ,bg)
+                              (:box (:line-width 1 :color "gray90")))
+        (tab-bar-tab-highlight (tab-bar nil ,bg)
+                               (:box (:line-width 2 :color ,blue-fg)))
         (tab-bar-tab-group-current  (tab-bar-tab nil nil nil bold))
         (tab-bar-tab-group-inactive (tab-bar-tab-inactive))
         (tab-bar-tab-ungrouped      (tab-bar-tab-inactive))
@@ -186,18 +193,21 @@
         (magit-section-secondary-heading
          (magit-section-heading nil nil nil light))
 
-        (magit-diff-file-heading           ,bold)
+        (magit-diff-file-heading           (nil ,blue-fg nil nil semi-bold))
         (magit-diff-file-heading-highlight (magit-heading-highlight))
         (magit-diff-file-heading-selection (magit-heading-selection))
 
-        (magit-diff-hunk-heading           ,italic)
-        (magit-diff-hunk-heading-highlight (magit-heading-highlight))
-        (magit-diff-hunk-heading-selection (magit-heading-selection))
+        (magit-diff-hunk-heading           (nil nil "#bde4fc")
+                                           (:box ,(box-pad 3 "#bde4fc")))
+        (magit-diff-hunk-heading-highlight (magit-diff-hunk-heading))
+        (magit-diff-hunk-heading-selection (magit-diff-hunk-heading))
         ;; selected hunk region
         (magit-diff-hunk-region            (region))
         ;; this also determines the hunk region boundary
         (magit-diff-lines-heading          (nil ,bg ,err))
         (magit-diff-revision-summary       ,bold)
+        ;; Don’t inherit ‘magit-diff-hunk-heading’.
+        (magit-diff-conflict-heading       (nil))
 
         (magit-bisect-bad        (error))
         (magit-bisect-good       (success))
@@ -327,7 +337,6 @@
         (selectrum-prescient-secondary-highlight (nil nil ,hl-normal))
 
         (consult-bookmark (consult-buffer))
-        (consult-file (consult-file))
 
         (erc-notice-face (nil ,red-fg)) ; Get rid of bold.
         (erc-timestamp-face (nil ,ok)) ; Use darker green.
