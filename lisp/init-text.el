@@ -96,4 +96,16 @@
 ;;; typst
 (install-package 'typst-ts-mode "https://git.sr.ht/~meow_king/typst-ts-mode")
 
+;;; Ispell
+;;
+;; In Emacs 30 and newer, disable Ispell completion to avoid annotation errors
+;; when no `ispell' dictionary is set.
+(setq text-mode-ispell-word-completion nil)
+
+(setq ispell-silently-savep t)
+
+;;; Outline
+(setq outline-minor-mode-cycle t
+      outline-minor-mode-highlight t)
+
 ;;; init-text.el ends here

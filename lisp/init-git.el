@@ -59,4 +59,38 @@
       (add-to-list 'desktop-minor-mode-table
                    '(diff-hl-margin-mode nil)))))
 
+;;; Ediff
+;;
+;; Configure Ediff to use a single frame and split windows horizontally
+(setq ediff-window-setup-function #'ediff-setup-windows-plain
+      ediff-split-window-function #'split-window-horizontally)
+
+;;; Smerge
+(add-hook 'find-file-hook #'(lambda ()
+                              (save-excursion
+                                (goto-char (point-min))
+                                (when (re-search-forward "^<<<<<<< " nil t)
+                                  (smerge-mode 1)))))
+
+(with-eval-after-load 'smerge-mode
+  (keymap-set smerge-mode-map "C-c c" #'smerge-keep-current)
+  (keymap-set smerge-mode-map "C-c a" #'smerge-smerge-keep-all)
+  (keymap-set smerge-mode-map "M-r" #'smerge-refine)
+  (keymap-set smerge-mode-map "M-n" #'smerge-next)
+  (keymap-set smerge-mode-map "M-p" #'smerge-prev))
+
+;;; vc
+(setq-default vc-handled-backends '(Git))
+
+;; memoize vc-git-root
+(defvar vc-git-root-cache nil)
+(defun memoize-vc-git-root (orig file)
+  (let ((value (memoize-remote (file-name-directory file) 'vc-git-root-cache orig file)))
+    ;; sometimes vc-git-root returns nil even when there is a root there
+    (when (null (cdr (car vc-git-root-cache)))
+      (setq vc-git-root-cache (cdr vc-git-root-cache)))
+    value))
+(with-eval-after-load 'vc
+  (advice-add 'vc-git-root :around #'memoize-vc-git-root))
+
 ;;; init-git.el ends here

@@ -82,4 +82,23 @@ Includes Homebrew GCC paths and CommandLineTools SDK libraries."
 (when (eq system-type 'darwin)
   (setup-macos-native-comp-library-paths))
 
+;;; Find external programs
+;;
+;; Set PATH and `exec-path'
+;; https://emacs-china.org/t/emacs-mac-port-profile/2895/29?u=rua
+;; NOTE: When PATH is changed, run the following command
+;; $ sh -c 'printf "%s" "$PATH"' > ~/.path
+(defun my/getenv-path()
+  (interactive)
+  (condition-case err
+      (let ((path (with-temp-buffer
+                    (insert-file-contents-literally "~/.path")
+                    (buffer-string))))
+        (setenv "PATH" path)
+        (setq exec-path (append (parse-colon-path path) (list exec-directory))))
+    (error (warn "%s" (error-message-string err)))))
+
+(when (file-exists-p "~/.path")
+  (add-hook 'after-init-hook #'my/getenv-path))
+
 ;;; init-osx.el ends here

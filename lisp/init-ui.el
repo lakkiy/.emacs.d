@@ -1,5 +1,90 @@
 ;;; init-ui.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
+;;; Variables
+;;
+;; NOTE Custom these in before-init.el
+(defvar my/fonts-default '("Cascadia Code" "Monaco" "Menlo" "Source Code Pro"))
+(defvar my/fonts-variable-pitch '("Bookerly" "Cardo" "Times New Roman" "DejaVu Sans"))
+(defvar my/fonts-cjk '("LXGW WenKai" "FZYouSong GBK" "WenQuanYi Micro Hei" "Microsoft Yahei"))
+(defvar my/fonts-symbol '("Apple Symbols"))
+(defvar my/fonts-emoji '("Apple Color Emoji" "Segoe UI Symbol" "Noto Color Emoji"))
+(defvar my/font-size-default 12)
+
+(defvar my/theme 'leuven)
+(defvar my/theme-dark 'wombat)
+(defvar after-load-theme-hook nil)
+
+(defun lakki.is/wombat-white-cursor ()
+  (when (eq (car custom-enabled-themes) 'wombat)
+    (set-cursor-color "white")))
+(add-hook 'after-load-theme-hook #'lakki.is/wombat-white-cursor)
+
+;;; Font & Theme
+(defun font-installed-p (font-list)
+  (catch 'font-found
+    (dolist (font font-list)
+      (when (find-font (font-spec :name font))
+        (throw 'font-found font)))))
+
+(defun my/setup-font ()
+  (let* ((my/font-default        (font-installed-p my/fonts-default))
+         (my/font-variable-pitch (font-installed-p my/fonts-variable-pitch))
+         (my/font-cjk            (font-installed-p my/fonts-cjk))
+         (my/font-symbol        (font-installed-p my/fonts-symbol))
+         (my/font-emoji          (font-installed-p my/fonts-emoji))
+         (my/font-rescale-alist  `((,my/font-cjk    . 0.95)
+                                   (,my/font-emoji  . 0.9)
+                                   (,my/font-symbol . 0.95)
+                                   (,my/font-variable-pitch . 1.2))))
+    (set-face-attribute 'default nil :height (* 10 my/font-size-default))
+    (when my/font-default
+      (set-face-attribute 'default     nil :family my/font-default)
+      (set-face-attribute 'fixed-pitch nil :font my/font-default))
+    (when my/font-variable-pitch
+      (set-face-font 'variable-pitch my/font-variable-pitch))
+    (when my/font-emoji
+      (set-fontset-font t 'emoji   my/font-emoji))
+    (when my/font-symbol
+      (set-fontset-font t 'symbol my/font-symbol))
+    (when my/font-cjk
+      (set-fontset-font t 'kana     my/font-cjk)
+      (set-fontset-font t 'han      my/font-cjk)
+      (set-fontset-font t 'cjk-misc my/font-cjk))
+    (dolist (setting my/font-rescale-alist)
+      (when (car setting)
+        (setf (alist-get (car setting)
+                         face-font-rescale-alist nil nil #'equal)
+              (cdr setting))))))
+
+(defun my/load-theme (f theme &optional no-confirm no-enable &rest args)
+  (interactive
+   (list
+    (intern (completing-read "Theme: "
+                             (mapcar #'symbol-name
+				                     (custom-available-themes))))))
+  (dolist (theme custom-enabled-themes)
+    (disable-theme theme))
+  (if (featurep (intern (format "%s-theme" theme)))
+      (enable-theme theme)
+    (apply f theme t no-enable args))
+  (run-hooks 'after-load-theme-hook))
+(advice-add 'load-theme :around #'my/load-theme)
+
+(defun my/setup-theme ()
+  (load-theme my/theme t))
+
+(if (daemonp)
+    (progn
+      (add-hook 'server-after-make-frame-hook #'my/setup-font)
+      (add-hook 'server-after-make-frame-hook #'my/setup-theme))
+  (add-hook 'after-init-hook #'my/setup-font)
+  (add-hook 'after-init-hook #'my/setup-theme))
+
+(defun my/fixed-pitch-setup ()
+  (interactive)
+  (setq buffer-face-mode-face '(:family "Sarasa Mono SC"))
+  (buffer-face-mode +1))
+
 ;; Favorite theme
 (install-package 'spacemacs-theme)
 

@@ -14,8 +14,9 @@
 (setq custom-theme-directory (expand-file-name "themes" user-emacs-directory))
 (push (expand-file-name "site-lisp" user-emacs-directory) load-path)
 
-;;; Built-in config
-(lakki.is/load-relative "lisp/init-builtin.el")
+;;; Built-in defaults
+(lakki.is/load-relative "lisp/init-defaults.el")
+(lakki.is/load-relative "lisp/init-editor.el")
 
 ;;; package.el
 ;;
@@ -45,9 +46,10 @@
 ;; (benchmark-init/activate)
 
 ;;; Configs
+(lakki.is/load-relative "lisp/init-lib.el")
+
 (lakki.is/load-relative "lisp/init-meow.el")
 (lakki.is/load-relative "lisp/init-ui.el")
-(lakki.is/load-relative "lisp/init-lib.el")
 (lakki.is/load-relative "lisp/init-tools.el")
 (lakki.is/load-relative "lisp/init-window.el")
 (lakki.is/load-relative "lisp/init-chinese.el")
@@ -64,6 +66,7 @@
 (lakki.is/load-relative "lisp/init-text.el")
 (lakki.is/load-relative "lisp/init-mail.el")
 (lakki.is/load-relative "lisp/init-shell.el")
+(lakki.is/load-relative "lisp/init-tramp.el")
 (lakki.is/load-relative "lisp/init-telega.el")
 (lakki.is/load-relative "lisp/init-dired.el")
 (lakki.is/load-relative "lisp/init-translator.el")

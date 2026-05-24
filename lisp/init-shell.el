@@ -69,4 +69,10 @@
   (advice-add 'eat-semi-char-mode :after 'eat-emacs-mode)
   (add-hook 'eat-mode-hook 'lakki/eat-meow-setup))
 
+;;; Comint
+;;
+;; `comint-mode' 是 Emacs 中用于实现交互式命令行缓冲区的基础模式（例如 shell、M-x term 等）
+(setq comint-prompt-read-only t)
+(setq comint-buffer-maximum-size 2048)
+
 ;;; init-shell.el ends here

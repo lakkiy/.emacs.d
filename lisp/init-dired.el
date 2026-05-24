@@ -38,4 +38,37 @@
 
   (define-key dirvish-mode-map (kbd "r") #'dirvish-rsync-switches-menu))
 
+;;; Dired
+(setq mouse-drag-and-drop-region t
+      mouse-drag-and-drop-region-cross-program t)
+
+(setq dired-dwim-target t
+      dired-vc-rename-file t
+      dired-mouse-drag-files t
+      dired-auto-revert-buffer t
+      dired-recursive-copies 'always
+      dired-create-destination-dirs 'ask
+      dired-deletion-confirmer 'y-or-n-p
+      dired-kill-when-opening-new-dired-buffer t
+      dired-clean-confirm-killing-deleted-buffers nil)
+
+(setq dired-omit-verbose nil)
+(setq dired-omit-files (rx string-start
+                           (or ".DS_Store"
+                               ".cache"
+                               ".vscode"
+                               "__pycache__"
+                               ".ccls-cache" ".clangd")
+                           string-end))
+
+(add-hook 'dired-mode-hook #'dired-omit-mode)
+(add-hook 'dired-mode-hook #'dired-hide-details-mode)
+
+(with-eval-after-load 'dired
+  (setq dired-listing-switches
+        "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
+  (keymap-set dired-mode-map "C-c C-p" #'wdired-change-to-wdired-mode)
+  (define-key dired-mode-map (kbd "h") #'dired-up-directory)
+  (define-key dired-mode-map [mouse-2] #'dired-find-file))
+
 ;;; init-dired ends here

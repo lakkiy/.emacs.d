@@ -180,4 +180,10 @@
   (let ((inhibit-message t))
     (yas-reload-all)))
 
+;;; Icomplete
+;;
+;; Do not delay displaying completion candidates in `fido-mode' or
+;; `fido-vertical-mode'
+(setq icomplete-compute-delay 0.01)
+
 ;;; init-completion.el ends here
