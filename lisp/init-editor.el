@@ -120,11 +120,23 @@
 ;; Horizontal scrolling, use shift + mouse wheel to scrll horizontally.
 (setq hscroll-margin 2
       hscroll-step 1
-      mouse-wheel-scroll-amount '(2 ((shift) . hscroll))
-      mouse-wheel-scroll-amount-horizontal 2)
+      mouse-wheel-scroll-amount '(1 ((shift) . hscroll))
+      mouse-wheel-scroll-amount-horizontal 2
+      ;; Wheel acceleration makes each notch's scroll distance vary, so the
+      ;; interpolated animations end up uneven and stutter -- keep it constant.
+      mouse-wheel-progressive-speed nil)
 
 ;; Smooth scroll up & down
 (setq pixel-scroll-precision-interpolate-page t)
+;; A trackpad emits pixel-precise deltas, but a mouse wheel emits discrete
+;; line-granularity events that aren't interpolated by default (the threshold
+;; below is nil out of the box), so the wheel scrolls in jumps.  Setting a
+;; pixel threshold makes any scroll taller than it animate too -- this is what
+;; smooths the mouse wheel.
+(setq pixel-scroll-precision-large-scroll-height 40.0)
+;; Shorter per-notch animation completes faster, so rapid wheel notches don't
+;; queue up and lag behind.
+(setq pixel-scroll-precision-interpolation-total-time 0.07)
 (add-hook 'after-init-hook #'pixel-scroll-precision-mode)
 
 (defun pixel-scroll-down (&optional lines)
@@ -236,7 +248,7 @@
   (keymap-set isearch-mode-map "C-c C-o" #'isearch-occur)
   ;; DEL during isearch should edit the search string, not jump back
   ;; to the previous result
-  (keymap-substitute isearch-mode-map #'isearch-delete-chac #'isearch-del-chac))
+  (keymap-substitute isearch-mode-map #'isearch-delete-char #'isearch-del-char))
 
 ;;;; Ibuffer
 (fset 'list-buffers 'ibuffer)

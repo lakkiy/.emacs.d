@@ -2,11 +2,22 @@
 
 ;;; Load pre init
 ;;
+(defvar my/init-errors nil
+  "Alist of (FILE . ERROR-STRING) for config files that errored while loading.
+Collected so one broken module never aborts the rest of the configuration.")
+
 (defun lakki.is/load-relative (file)
-  "Load FILE relative to user-emacs-directory."
+  "Load FILE relative to `user-emacs-directory'.
+Any error is captured into `my/init-errors' and reported, but never
+propagates -- so a single failure can no longer stop the remaining
+modules (and their packages/config) from loading."
   (let ((rfile (expand-file-name file user-emacs-directory)))
     (when (file-exists-p rfile)
-      (load rfile nil t t))))
+      (condition-case err
+          (load rfile nil t t)
+        (error
+         (push (cons file (error-message-string err)) my/init-errors)
+         (message "[init] ERROR loading %s: %s" file (error-message-string err)))))))
 (lakki.is/load-relative "before-init.el")
 
 ;;; Load path
@@ -22,28 +33,80 @@
 ;;
 ;; Install into separate package dirs for each Emacs version, to prevent
 ;; bytecode incompatibility
-(setq package-archives '(("gnu" . "https://mirrors.ustc.edu.cn/elpa/gnu/")
-                         ("nongnu" . "https://mirrors.ustc.edu.cn/elpa/nongnu/")
-                         ("melpa" . "https://mirrors.ustc.edu.cn/elpa/melpa/")))
-(setq package-user-dir (expand-file-name (format "elpa-%s.%s" emacs-major-version emacs-minor-version) user-emacs-directory))
+(setq package-user-dir
+      (expand-file-name (format "elpa-%s.%s" emacs-major-version emacs-minor-version)
+                        user-emacs-directory))
 (setq package-enable-at-startup nil)
+
+;; Mirror bases tried in order. Each must serve gnu/ nongnu/ melpa/ beneath
+;; it, so switching mirrors is just swapping the base. A refresh/download
+;; failure transparently falls back to the next base -- this is what keeps a
+;; single rate-limited or flaky mirror from breaking a from-scratch install.
+(defvar my/package-mirror-bases
+  '("https://mirrors.tuna.tsinghua.edu.cn/elpa/"  ; Tsinghua TUNA
+    "https://mirrors.ustc.edu.cn/elpa/"           ; USTC
+    "https://elpa.emacs-china.org/")              ; Emacs China
+  "Ordered list of ELPA mirror base URLs to try.")
+
+(defun my/use-package-mirror (base)
+  "Point `package-archives' at the mirror rooted at BASE."
+  (setq package-archives
+        `(("gnu"    . ,(concat base "gnu/"))
+          ("nongnu" . ,(concat base "nongnu/"))
+          ("melpa"  . ,(concat base "melpa/")))))
+
+(my/use-package-mirror (car my/package-mirror-bases))
 (package-initialize)
 
-(defvar package-refreshed nil)
+(defvar my/package-refreshed nil
+  "Non-nil once some mirror has successfully refreshed archive contents.")
+(defvar my/failed-packages nil
+  "Alist of (PKG . ERROR-STRING) for packages that could not be installed.")
+
+(defun my/refresh-package-contents ()
+  "Refresh archive contents, falling back through `my/package-mirror-bases'.
+Return non-nil once a mirror succeeds."
+  (catch 'done
+    (dolist (base my/package-mirror-bases)
+      (my/use-package-mirror base)
+      (condition-case err
+          (progn
+            (package-refresh-contents)
+            (setq my/package-refreshed t)
+            (message "[init] package archives refreshed from %s" base)
+            (throw 'done t))
+        (error
+         (message "[init] mirror failed (%s): %s -- trying next"
+                  base (error-message-string err)))))
+    (message "[init] WARNING: every package mirror failed to refresh")
+    nil))
+
 (defun install-package (pkg &optional url)
+  "Ensure PKG is installed, resiliently.
+With URL, install via `package-vc-install'.  Archives are refreshed
+lazily on the first install; on failure we refresh again through the mirror
+fallback and retry once; a package that still fails is recorded in
+`my/failed-packages' instead of aborting init."
   (unless (package-installed-p pkg)
-    (unless package-refreshed
-      (package-refresh-contents)
-      (setq package-refreshed t))
-    (if url
-        (package-vc-install url)
-      (package-install pkg))))
+    (unless my/package-refreshed
+      (my/refresh-package-contents))
+    (condition-case _err
+        (if url (package-vc-install url) (package-install pkg))
+      (error
+       (message "[init] install %s failed; refreshing + retrying once" pkg)
+       (setq my/package-refreshed nil)
+       (my/refresh-package-contents)
+       (condition-case err2
+           (if url (package-vc-install url) (package-install pkg))
+         (error
+          (push (cons pkg (error-message-string err2)) my/failed-packages)
+          (message "[init] GAVE UP on %s: %s" pkg (error-message-string err2))))))))
 
 ;;; Benchmark
-;; (install-package 'benchmark-init)
-;; (require 'benchmark-init)
-;; (add-hook 'after-init-hook 'benchmark-init/deactivate)
-;; (benchmark-init/activate)
+(install-package 'benchmark-init)
+(require 'benchmark-init)
+(add-hook 'after-init-hook 'benchmark-init/deactivate)
+(benchmark-init/activate)
 
 ;;; Configs
 (lakki.is/load-relative "lisp/init-lib.el")

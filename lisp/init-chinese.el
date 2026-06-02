@@ -4,6 +4,9 @@
 ;; Set =rime-emacs-module-header-root= to =emacs/include=.
 ;; set to =librime=.
 (install-package 'rime)
+;; NOTE: rime-regexp and pangu-spacing are NOT ELPA packages -- they are
+;; vendored in site-lisp/ (on `load-path'), so the requires below resolve
+;; from there. Do not add install-package calls for them.
 
 ;; TODO auto 从 librime 仓库下载相应的预编译包
 ;; TODO change emacs rime install id and sync dir

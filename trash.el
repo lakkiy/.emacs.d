@@ -408,3 +408,227 @@ so try complete filst, if there nothing to complete then try to jump to next fie
 ;; 暂时用不上
 (install-package 'code-cells)
 (add-hook 'python-base-mode-hook 'code-cells-mode-maybe)
+
+;;; copilot
+;;
+;; Manually enable copilot, add the following code to post-init.el:
+;; (add-hook 'prog-mode-hook 'copilot-mode)
+;;
+;; AI 时代不需要了
+(install-package 'copilot)
+
+;; 由于 `lisp-indent-offset' 的默认值是 nil，在编辑 elisp 时每敲一个字
+;; 符都会跳出一个 warning，将其默认值设置为 t 以永不显示这个 warning
+(setq-default copilot--indent-warning-printed-p t
+              copilot-indent-offset-warning-disable t)
+
+(with-eval-after-load 'copilot
+  ;; 文件超出 `copilot-max-char' 的时候不要弹出一个 warning 的 window
+  (defun lakki.is/copilot-get-source-suppress-warning (original-function &rest args)
+    "Advice to suppress display-warning in copilot--get-source."
+    (cl-letf (((symbol-function 'display-warning) (lambda (&rest args) nil)))
+      (apply original-function args)))
+  (advice-add 'copilot--get-source :around #'lakki.is/copilot-get-source-suppress-warning)
+
+  (add-to-list 'copilot-major-mode-alist '("go" . "go"))
+  (add-to-list 'copilot-major-mode-alist '("go-ts" . "go"))
+
+  (keymap-set copilot-completion-map "C-g" #'copilot-clear-overlay)
+  (keymap-set copilot-completion-map "C-e" #'copilot-accept-completion)
+  (keymap-set copilot-completion-map "M-p" #'copilot-previous-completion)
+  (keymap-set copilot-completion-map "M-n" #'copilot-next-completion)
+
+  ;; only enable copilot in meow insert mode
+  (with-eval-after-load 'meow
+    (add-to-list 'copilot-enable-predicates 'meow-insert-mode-p)))
+
+
+;; winum
+;;
+;; 不好用，window 的 number 经常变
+(install-package 'winum)
+
+(setq winum-scope 'visible)
+
+(keymap-global-set "M-0" #'winum-select-window-0-or-10)
+(keymap-global-set "M-1" #'winum-select-window-1)
+(keymap-global-set "M-2" #'winum-select-window-2)
+(keymap-global-set "M-3" #'winum-select-window-3)
+(keymap-global-set "M-4" #'winum-select-window-4)
+(keymap-global-set "M-5" #'winum-select-window-5)
+(keymap-global-set "M-6" #'winum-select-window-6)
+(keymap-global-set "M-7" #'winum-select-window-7)
+(keymap-global-set "M-8" #'winum-select-window-8)
+(keymap-global-set "M-9" #'winum-select-window-9)
+
+(add-hook 'after-init-hook #'winum-mode)
+
+;; ace-window
+;;
+;; 没怎么用过，用不上
+(install-package 'ace-window)
+(keymap-global-set "M-o" 'ace-window)
+(setq aw-keys '(?a ?o ?e ?u ?i))
+
+(autoload #'color-outline-mode "color-outline.el" nil t)
+(add-hook 'prog-mode-hook #'color-outline-mode)
+
+
+;; 用不上
+;;; avy
+(install-package 'avy)
+(with-eval-after-load 'avy
+  (setq avy-background t
+        avy-style 'pre))
+
+;;; atomic-chrome
+;;
+;; Edit browser text with emacs.
+;;
+;; 从没用过
+(install-package 'atomic-chrome)
+(setq atomic-chrome-buffer-open-style 'frame)
+(add-hook 'after-init-hook #'atomic-chrome-start-server)
+
+;; 没用过
+;;; uniline
+;;
+;; https://emacs-china.org/t/unline-emacs-package/28112/5?u=rua
+(install-package 'uniline)
+
+(setq meow--kbd-forward-char "<right>"
+      meow--kbd-backward-char "<left>"
+      meow--kbd-forward-line "<down>"
+      meow--kbd-backward-line "<up>")
+
+(with-eval-after-load "uniline"
+  (keymap-set uniline-mode-map "C-c /" 'uniline-hydra-choose-body)
+  (keymap-set uniline-mode-map "C-c u" 'uniline--set-brush-0)
+  (keymap-set uniline-mode-map "C-c -" 'uniline--set-brush-1)
+  (keymap-set uniline-mode-map "C-c +" 'uniline--set-brush-2)
+  (keymap-set uniline-mode-map "C-c =" 'uniline--set-brush-3)
+  (keymap-set uniline-mode-map "C-c #" 'uniline--set-brush-block)
+  (keymap-set uniline-mode-map "-" nil)
+  (keymap-set uniline-mode-map "+" nil)
+  (keymap-set uniline-mode-map "#" nil)
+  (keymap-set uniline-mode-map "=" nil))
+
+;; 我已经不用 nix 了
+;; https://github.com/d12frosted/homebrew-emacs-plus/issues/323#issuecomment-2762214714
+;; 虽然这样可以解决找不到 libgccjit 的问题，但是由于我安装了 nix，带了一个 linux
+;; version 的 ld，导致 native compile 调用 libgccjit 的使用报错 unknown argument，
+;; 暂时不解决这个问题，直接关掉 native compile
+(defun homebrew-gcc-paths ()
+  "Return GCC library paths from Homebrew installations.
+Detects paths for gcc and libgccjit packages to be used in LIBRARY_PATH."
+  (let* ((paths '())
+         (brew-bin (or (executable-find "brew")
+                       (let ((arm-path "/opt/homebrew/bin/brew")
+                             (intel-path "/usr/local/bin/brew"))
+                         (cond
+                          ((file-exists-p arm-path) arm-path)
+                          ((file-exists-p intel-path) intel-path))))))
+
+    (when brew-bin
+      ;; Get gcc paths.
+      (let* ((gcc-prefix (string-trim
+                          (shell-command-to-string
+                           (concat brew-bin " --prefix gcc"))))
+             (gcc-lib-current (expand-file-name "lib/gcc/current" gcc-prefix)))
+        (push gcc-lib-current paths)
+
+        ;; Find apple-darwin directory.
+        (let* ((default-directory gcc-lib-current)
+               (arch-dirs (file-expand-wildcards "gcc/*-apple-darwin*/*[0-9]")))
+          (when arch-dirs
+            (push (expand-file-name
+                   (car (sort arch-dirs #'string>)))
+                  paths))))
+
+      ;; Get libgccjit paths
+      (let* ((jit-prefix (string-trim
+                          (shell-command-to-string
+                           (concat brew-bin " --prefix libgccjit"))))
+             (jit-lib-current (expand-file-name "lib/gcc/current" jit-prefix)))
+        (push jit-lib-current paths)))
+
+    (nreverse paths)))
+
+(defun setup-macos-native-comp-library-paths ()
+  "Set up LIBRARY_PATH for native compilation on macOS.
+Includes Homebrew GCC paths and CommandLineTools SDK libraries."
+  (let* ((existing-paths (split-string (or (getenv "LIBRARY_PATH") "") ":" t))
+         (gcc-paths (homebrew-gcc-paths))
+         (clt-paths '("/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"))
+         (unique-paths (delete-dups
+                        (append existing-paths gcc-paths clt-paths))))
+
+    (setenv "LIBRARY_PATH" (mapconcat #'identity unique-paths ":"))))
+
+;; Set up library paths for native compilation on macOS.
+(when (eq system-type 'darwin)
+  (setup-macos-native-comp-library-paths))
+
+;; eat
+;;
+;;                               ┌─────────────────────────────┐
+;;                               │        Char Mode            │
+;;                               │  (Full Terminal Emulation)  │
+;;                               │                             │
+;;                               │  • ALL keys to terminal     │
+;;                               │  • No Emacs keys work       │
+;;                               └─────────────────────────────┘
+;;                               ▲ │           ▲               ▲
+;;                               │ │           │               │
+;;                       C-c M-d │ │ M-RET     │               │ C-c M-d
+;;                               │ ▼           │               │
+;;  ┌─────────────────────────────┐            │             ┌─────────────────────────────┐
+;;  │      Semi-char Mode         │            │             │        Line Mode            │
+;;  │        (Default)            │            │             │      (Comint-style)         │
+;;  │                             │            │             │                             │
+;;  │  All keys except:           │            │             │  • Line editing             │
+;;  │  • C-\  • C-c  • C-x        │ ◀────────────────────▶   │  • History (↑↓)             │
+;;  │  • C-g  • C-h  • C-M-c      │      C-c C-j / C-c C-l   │  • Tab completion           │
+;;  │  • C-u  • M-x  • C-q        │            │             │  • Enter sends line         │
+;;  │  • M-:  • M-!  • M-&        │            │             │                             │
+;;  └─────────────────────────────┘    C-c M-d │             └─────────────────────────────┘
+;;                              ▲ │            │              ▲ │
+;;                      C-c C-j │ │ C-c C-e    │      C-c C-l │ │ C-c C-e
+;;                              │ ▼            │              │ ▼
+;;                               ┌─────────────────────────────┐
+;;                               │        Emacs Mode           │
+;;                               │    (Read-only buffer)       │
+;;                               │                             │
+;;                               │  • All Emacs keys work      │
+;;                               │  • Buffer is read-only      │
+;;                               │  • Free cursor movement     │
+;;                               │  • Search with C-s/C-r      │
+;;                               │  • Copy text only           │
+;;                               └─────────────────────────────┘
+(install-package 'eat)
+
+(setq eat-term-name "xterm-256color")
+
+(add-hook 'eshell-load-hook 'eat-eshell-mode)
+(add-hook 'eshell-load-hook 'eat-eshell-visual-command-mode)
+
+(defun my/eat-meow-setup ()
+  (add-hook 'meow-normal-mode-hook 'eat-emacs-mode nil t)
+  (add-hook 'meow-insert-mode-hook 'eat-char-mode nil t))
+
+(defun my/eat-toggle-rime ()
+  "切换输入法并自动切换 eat mode"
+  (interactive)
+  (if current-input-method
+      (progn
+        (deactivate-input-method)
+        (eat-char-mode))
+    (progn
+      (activate-input-method "rime")
+      (eat-line-mode))))
+
+(with-eval-after-load "eat"
+  (define-key eat-char-mode-map (kbd "C-\\") 'my/eat-toggle-rime)
+  (define-key eat-line-mode-map (kbd "C-\\") 'my/eat-toggle-rime)
+  (add-hook 'eat-mode-hook 'my/eat-meow-setup))
+

@@ -20,47 +20,37 @@
   (define-key git-commit-mode-map (kbd "C-c g") #'gptel-commit)
   (define-key git-commit-mode-map (kbd "C-c G") #'gptel-commit-rationale))
 
-;;; copilot
-;;
-;; Manually enable copilot, add the following code to post-init.el:
-;; (add-hook 'prog-mode-hook 'copilot-mode)
-;;
-(install-package 'copilot)
-
-;; 由于 `lisp-indent-offset' 的默认值是 nil，在编辑 elisp 时每敲一个字
-;; 符都会跳出一个 warning，将其默认值设置为 t 以永不显示这个 warning
-(setq-default copilot--indent-warning-printed-p t
-              copilot-indent-offset-warning-disable t)
-
-(with-eval-after-load 'copilot
-  ;; 文件超出 `copilot-max-char' 的时候不要弹出一个 warning 的 window
-  (defun lakki.is/copilot-get-source-suppress-warning (original-function &rest args)
-    "Advice to suppress display-warning in copilot--get-source."
-    (cl-letf (((symbol-function 'display-warning) (lambda (&rest args) nil)))
-      (apply original-function args)))
-  (advice-add 'copilot--get-source :around #'lakki.is/copilot-get-source-suppress-warning)
-
-  (add-to-list 'copilot-major-mode-alist '("go" . "go"))
-  (add-to-list 'copilot-major-mode-alist '("go-ts" . "go"))
-
-  (keymap-set copilot-completion-map "C-g" #'copilot-clear-overlay)
-  (keymap-set copilot-completion-map "C-e" #'copilot-accept-completion)
-  (keymap-set copilot-completion-map "M-p" #'copilot-previous-completion)
-  (keymap-set copilot-completion-map "M-n" #'copilot-next-completion)
-
-  ;; only enable copilot in meow insert mode
-  (with-eval-after-load 'meow
-    (add-to-list 'copilot-enable-predicates 'meow-insert-mode-p)))
 
 ;;; claude-code-ide
 (install-package 'claude-code-ide "https://github.com/manzaltu/claude-code-ide.el")
 
-(setq claude-code-ide-terminal-backend 'eat)
+(setq claude-code-ide-terminal-backend 'ghostel)
 
 (global-set-key (kbd "C-c C-'") #'claude-code-ide-menu)
 
 (with-eval-after-load 'claude-code-ide
   ;; Enable Emacs MCP tools
-  (claude-code-ide-emacs-tools-setup))
+  (claude-code-ide-emacs-tools-setup)
+
+  (defun my/claude-code-ide-review-comment (comment)
+    "把当前选区引用 + COMMENT 插入 Claude Code 输入框,每条占一行,不提交。
+  适合一次写多条 comment,最后自己手动回车提交。
+  不要求 Claude 窗口可见,也不会切换焦点。"
+    (interactive (list (read-string "Comment: ")))
+    (claude-code-ide-insert-at-mentioned)
+    (sit-for 0.2)
+    (let ((buffer (get-buffer (claude-code-ide--get-buffer-name))))
+      (unless buffer
+        (user-error "No Claude Code session for this project"))
+      (with-current-buffer buffer
+        (claude-code-ide--terminal-send-string (concat " " comment))
+        (sit-for 0.1)))
+    ;; 软换行:Claude Code 视为换行而非提交
+    (claude-code-ide-insert-newline))
+
+  ;; 加进 claude-code-ide 的 transient 菜单,放在 "i Insert selection" 后面
+  (with-eval-after-load 'claude-code-ide-transient
+    (transient-append-suffix 'claude-code-ide-menu "i"
+      '("m" "Insert selection + comment" my/claude-code-ide-review-comment))))
 
 ;;; init-ai.el ends here

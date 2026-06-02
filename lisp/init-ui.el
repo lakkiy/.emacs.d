@@ -8,7 +8,7 @@
 (defvar my/fonts-cjk '("LXGW WenKai" "FZYouSong GBK" "WenQuanYi Micro Hei" "Microsoft Yahei"))
 (defvar my/fonts-symbol '("Apple Symbols"))
 (defvar my/fonts-emoji '("Apple Color Emoji" "Segoe UI Symbol" "Noto Color Emoji"))
-(defvar my/font-size-default 12)
+(defvar my/font-size-default 14)
 
 (defvar my/theme 'leuven)
 (defvar my/theme-dark 'wombat)
@@ -91,6 +91,8 @@
 ;; form-feed
 ;;
 ;; =page-break-lines= 在开启 =bklink= 和 =visual-fill-column= 的 org buffer 中在 ^L 上移动会卡死，但是 form-feed 用着没有问题。
+;; form-feed is vendored in site-lisp/form-feed.el (on `load-path'); this
+;; autoload resolves from there, so no install-package is needed.
 (autoload 'form-feed-mode "form-feed" nil t)
 (add-hook 'org-mode-hook 'form-feed-mode)
 (add-hook 'emacs-lisp-mode-hook 'form-feed-mode)
