@@ -1,8 +1,5 @@
 ;;; init-tools.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
-(autoload #'color-outline-mode "color-outline.el" nil t)
-(add-hook 'prog-mode-hook #'color-outline-mode)
-
 ;;; gcmh
 (install-package 'gcmh)
 (setq gcmh-high-cons-threshold (* 128 1024 1024))
@@ -29,12 +26,6 @@
 ;; It has a menu command `rg-menu', UI better than urgrep and deadgrep.
 (install-package 'rg)
 (keymap-set project-prefix-map "r" #'rg-project)
-
-;;; avy
-(install-package 'avy)
-(with-eval-after-load 'avy
-  (setq avy-background t
-        avy-style 'pre))
 
 ;;; pastebin
 (install-package 'webpaste)
@@ -124,42 +115,12 @@
 (install-package 'ob-d2)
 (add-to-list 'auto-mode-alist '("\\.d2" . d2-mode))
 
-;;; atomic-chrome
-;;
-;; Edit browser text with emacs.
-(install-package 'atomic-chrome)
-(setq atomic-chrome-buffer-open-style 'frame)
-(add-hook 'after-init-hook #'atomic-chrome-start-server)
-
 ;;; ghelp
 (install-package 'ghelp "https://github.com/casouri/ghelp.git")
 (autoload #'ghelp-describe "ghelp")
 (keymap-global-set "C-h C-h" #'ghelp-describe)
 (with-eval-after-load 'ghelp
   (keymap-global-set "C-h r" #'ghelp-resume))
-
-;;; uniline
-;;
-;; https://emacs-china.org/t/unline-emacs-package/28112/5?u=rua
-(install-package 'uniline)
-
-(setq meow--kbd-forward-char "<right>"
-      meow--kbd-backward-char "<left>"
-      meow--kbd-forward-line "<down>"
-      meow--kbd-backward-line "<up>")
-
-(with-eval-after-load "uniline"
-  (keymap-set uniline-mode-map "C-c /" 'uniline-hydra-choose-body)
-  (keymap-set uniline-mode-map "C-c u" 'uniline--set-brush-0)
-  (keymap-set uniline-mode-map "C-c -" 'uniline--set-brush-1)
-  (keymap-set uniline-mode-map "C-c +" 'uniline--set-brush-2)
-  (keymap-set uniline-mode-map "C-c =" 'uniline--set-brush-3)
-  (keymap-set uniline-mode-map "C-c #" 'uniline--set-brush-block)
-  (keymap-set uniline-mode-map "-" nil)
-  (keymap-set uniline-mode-map "+" nil)
-  (keymap-set uniline-mode-map "#" nil)
-  (keymap-set uniline-mode-map "=" nil))
-
 
 ;;; misc
 (install-package 'csv-mode)

@@ -4,10 +4,42 @@
 (install-package 'magit)
 (keymap-global-set "C-x g" #'magit-status)
 
-(setq magit-diff-refine-hunk t
+;; Refine every hunk immediately (word-level highlight inside changed lines),
+;; not only the current one: after gofmt realigns a struct block, this is what
+;; shows at a glance that a line differs by whitespace only.
+(setq magit-diff-refine-hunk 'all
       magit-diff-paint-whitespace nil
       magit-format-file-function #'magit-format-file-nerd-icons
       magit-show-long-lines-warning nil)
+
+;; Ignore whitespace-only changes in every magit diff.
+;;
+;; gofmt column-aligns struct fields/tags per contiguous block, so adding or
+;; removing one field (when it is the widest one) re-indents the whole block
+;; and git shows dozens of -/+ lines whose only difference is spaces.  With
+;; `--ignore-all-space' those lines disappear and the diff is just the field
+;; that actually changed.  Same idea as GitHub's "Hide whitespace changes".
+;;
+;; This magit (2025+) no longer has `magit-diff-arguments' /
+;; `magit-diff-section-arguments' defcustoms; per-mode defaults live on the
+;; mode symbol's `magit-diff-default-arguments' property and are read only
+;; when nothing was saved via the `D' transient (`C-x C-s').  The `put' calls
+;; below must run after the library set its own defaults, hence the
+;; `with-eval-after-load' wrappers.  A value saved through the transient
+;; (~/.emacs.d/transient/values.el) still wins over these.
+(with-eval-after-load 'magit-diff
+  ;; `d d' / `d r' style diff buffers and commit buffers.
+  (put 'magit-diff-mode 'magit-diff-default-arguments
+       '("--stat" "--no-ext-diff" "--ignore-all-space"))
+  (put 'magit-revision-mode 'magit-diff-default-arguments
+       '("--stat" "--no-ext-diff" "--ignore-all-space")))
+(with-eval-after-load 'magit-status
+  ;; Staged/unstaged sections inside the status buffer.
+  (put 'magit-status-mode 'magit-diff-default-arguments
+       '("--no-ext-diff" "--ignore-submodules=none" "--ignore-all-space")))
+(with-eval-after-load 'magit-stash
+  (put 'magit-stash-mode 'magit-diff-default-arguments
+       '("--no-ext-diff" "--ignore-all-space")))
 
 ;; optimize tramp
 ;;

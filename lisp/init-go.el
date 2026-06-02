@@ -6,7 +6,9 @@
 (install-package 'go-dlv)
 (install-package 'go-gen-test)
 (install-package 'gotest)
-(install-package 'gotest-ts)
+;; gotest-ts is GitHub-only (not on GNU/NonGNU/MELPA), so it must be
+;; installed from its repo via package-vc-install, not package-install.
+(install-package 'gotest-ts "https://github.com/chmouel/gotest-ts.el")
 (install-package 'go-tag)
 (install-package 'go-fill-struct)
 (install-package 'flymake-go-staticcheck)

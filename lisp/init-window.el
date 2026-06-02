@@ -1,23 +1,5 @@
 ;;; init-window.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
-;; winum
-(install-package 'winum)
-
-(setq winum-scope 'visible)
-
-(keymap-global-set "M-0" #'winum-select-window-0-or-10)
-(keymap-global-set "M-1" #'winum-select-window-1)
-(keymap-global-set "M-2" #'winum-select-window-2)
-(keymap-global-set "M-3" #'winum-select-window-3)
-(keymap-global-set "M-4" #'winum-select-window-4)
-(keymap-global-set "M-5" #'winum-select-window-5)
-(keymap-global-set "M-6" #'winum-select-window-6)
-(keymap-global-set "M-7" #'winum-select-window-7)
-(keymap-global-set "M-8" #'winum-select-window-8)
-(keymap-global-set "M-9" #'winum-select-window-9)
-
-(add-hook 'after-init-hook #'winum-mode)
-
 ;; popper
 (install-package 'popper)
 (add-hook 'after-init-hook #'popper-mode)
@@ -54,12 +36,6 @@
      (floor (frame-height) 3)
      (floor (frame-height) 3)))
   (setq popper-window-height #'lakki.is/popper-fit-window-height))
-
-
-;; ace-window
-(install-package 'ace-window)
-(keymap-global-set "M-o" 'ace-window)
-(setq aw-keys '(?a ?o ?e ?u ?i))
 
 ;;; Tab bar
 ;;
@@ -171,36 +147,5 @@
 
 (keymap-global-set "C-x 2" (split-window-func-with-other-buffer 'split-window-vertically))
 (keymap-global-set "C-x 3" (split-window-func-with-other-buffer 'split-window-horizontally))
-
-(defun sanityinc/toggle-delete-other-windows ()
-  "Delete other windows in frame if any, or restore previous window config."
-  (interactive)
-  (if (and winner-mode
-           (equal (selected-window) (next-window)))
-      (winner-undo)
-    (delete-other-windows)))
-
-(keymap-global-set "C-x 1" 'sanityinc/toggle-delete-other-windows)
-
-(defun split-window-horizontally-instead ()
-  "Kill any other windows and re-split such that the current window is on the top half of the frame."
-  (interactive)
-  (let ((other-buffer (and (next-window) (window-buffer (next-window)))))
-    (delete-other-windows)
-    (split-window-horizontally)
-    (when other-buffer
-      (set-window-buffer (next-window) other-buffer))))
-
-(defun split-window-vertically-instead ()
-  "Kill any other windows and re-split such that the current window is on the left half of the frame."
-  (interactive)
-  (let ((other-buffer (and (next-window) (window-buffer (next-window)))))
-    (delete-other-windows)
-    (split-window-vertically)
-    (when other-buffer
-      (set-window-buffer (next-window) other-buffer))))
-
-(keymap-global-set "C-x |" 'split-window-horizontally-instead)
-(keymap-global-set "C-x _" 'split-window-vertically-instead)
 
 ;;; init-window.el ends here

@@ -1,18 +1,5 @@
 ;;; init-mail.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
-;;; fontify-patch
-;;
-;; fontifying buffers (or strings) that contain patch diffs
-(install-package 'fontify-patch "https://github.com/whame/fontify-patch")
-(add-hook 'gnus-part-display-hook 'fontify-patch-buffer)
-
-;;; w3m
-;;
-;;read html mail
-(install-package 'w3m)
-(when (executable-find "w3m")
-  (setq mm-text-html-renderer 'w3m))
-
 ;;; message
 ;;
 ;; https://man.sr.ht/lists.sr.ht/etiquette.md#wrap-lines

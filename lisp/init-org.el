@@ -154,7 +154,7 @@ otherwise call `org-self-insert-command'."
 ;; No confirm when execute code block.
 (setq org-confirm-babel-evaluate nil)
 
-(add-hook 'org-babel-after-execute #'org-redisplay-inline-images)
+(add-hook 'org-babel-after-execute-hook #'org-redisplay-inline-images)
 
 ;; https://emacs-china.org/t/org-babel/18699/10?u=rua
 (defun my/org-babel-execute-src-block (&optional _arg info _params)

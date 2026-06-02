@@ -65,8 +65,8 @@
    '("-" . avy-goto-char-timer)
    '("\\" . golden-ratio)
    '(":" . gptel-menu)
-   '("~" . eat-project)
-   '("`" . eat)
+   '("~" . ghostel-project)
+   '("`" . ghostel)
 
    ;;; Below config basicly won't change anymore.
    '("'" . repeat)

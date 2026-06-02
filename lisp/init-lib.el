@@ -1,8 +1,6 @@
 ;;; init-lib.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
 
 (install-package 'popon)
-(install-package 'fullframe)
-(install-package 'hide-mode-line)
 
 ;; run `nerd-icons-install-fonts'
 ;; ttf-nerd-fonts-symbols-1000-em-mono

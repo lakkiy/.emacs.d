@@ -1,27 +1,6 @@
 ;;; init-chinese.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
-;;
-;; If install emacs with nix:
-;; Set =rime-emacs-module-header-root= to =emacs/include=.
-;; set to =librime=.
+
 (install-package 'rime)
-
-;; TODO auto 从 librime 仓库下载相应的预编译包
-;; TODO change emacs rime install id and sync dir
-
-(defun parent-directory (dir n)
-  "Return the N-th parent directory of DIR."
-  (let ((parent dir))
-    (dotimes (_ n parent)
-      (setq parent (file-name-directory (directory-file-name parent))))))
-
-(if (eq system-type 'darwin)
-    (progn
-      ;; a folder contain emacs-module.h
-      (setq rime-emacs-module-header-root
-            (expand-file-name "Resources/include" (parent-directory invocation-directory 1)))
-      ;; brew install librime
-      (setq rime-librime-root "/opt/homebrew"))
-  (setq rime-share-data-dir "~/.local/share/fcitx5/rime"))
 
 (setq rime-disable-predicates '(meow-normal-mode-p
 				                meow-motion-mode-p
@@ -35,11 +14,12 @@
 
 (with-eval-after-load 'rime
   (define-key rime-active-mode-map [tab] 'rime-inline-ascii)
-  (keymap-set rime-mode-map "M-j" 'rime-force-enable))
+  (keymap-set rime-mode-map "M-j" 'rime-force-enable)
+  ;; FIX Emacs quit unexpectedly.
+  (add-hook 'kill-emacs-hook #'rime-lib-finalize))
 
-(with-eval-after-load 'rime
-  (require 'rime-regexp)
-  (rime-regexp-mode 1))
+;;; fanyi —— 独立的英文词典，M-x fanyi-dwim2
+(install-package 'fanyi)
 
 ;;; org 中文行内格式化
 ;;
@@ -54,7 +34,6 @@
 ;;
 ;; 其他中文相关问题也会写在这里
 ;; https://emacs-china.org/t/org-mode-html/7174
-
 (defun my/insert-zero-width-space ()
   (interactive)
   (insert-char ?\u200B))
@@ -74,26 +53,7 @@
   (prettify-symbols-mode 1))
 (add-hook 'org-mode-hook #'my/display-zero-space)
 
-;; TODO 复制时去掉零宽空格
-
 (with-eval-after-load 'org
-  (keymap-set org-mode-map "M-SPC" #'my/insert-zero-width-space)
-
-  ;; From spacemacs chinese layer
-  (define-advice org-html-paragraph
-      (:around (f paragraph contents info) org-html-paragraph-advice)
-    "Join consecutive Chinese lines into a single long line without
-unwanted space when exporting org-mode to html."
-    (let* ((origin-contents contents)
-           (fix-regexp "[[:multibyte:]]")
-           (fixed-contents
-            (replace-regexp-in-string
-             (concat
-              "\\(" fix-regexp "\\) *\n *\\(" fix-regexp "\\)") "\\1\\2" origin-contents)))
-      (funcall f paragraph fixed-contents info)))
-
-  (require 'pangu-spacing)
-  (setq pangu-spacing-real-insert-separtor t)
-  (add-hook 'org-mode-hook #'pangu-spacing-mode))
+  (keymap-set org-mode-map "M-SPC" #'my/insert-zero-width-space))
 
 ;;; init-chinese.el ends here
