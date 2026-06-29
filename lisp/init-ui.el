@@ -10,8 +10,8 @@
 (defvar my/fonts-emoji '("Apple Color Emoji" "Segoe UI Symbol" "Noto Color Emoji"))
 (defvar my/font-size-default 14)
 
-(defvar my/theme 'leuven)
-(defvar my/theme-dark 'wombat)
+(defvar my/theme 'modus-operandi)
+(defvar my/theme-dark 'modus-vivendi)
 (defvar after-load-theme-hook nil)
 
 (defun lakki.is/wombat-white-cursor ()

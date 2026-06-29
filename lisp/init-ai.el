@@ -20,8 +20,12 @@
   (define-key git-commit-mode-map (kbd "C-c g") #'gptel-commit)
   (define-key git-commit-mode-map (kbd "C-c G") #'gptel-commit-rationale))
 
+;;; emacs-codex-ide
+(install-package 'emacs-codex-ide "https://github.com/dgillis/emacs-codex-ide")
+(global-set-key (kbd "C-c C-;") #'codex-ide-menu)
 
 ;;; claude-code-ide
+;; 号被封了🤡
 (install-package 'claude-code-ide "https://github.com/manzaltu/claude-code-ide.el")
 
 (setq claude-code-ide-terminal-backend 'ghostel)

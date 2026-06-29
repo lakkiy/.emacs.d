@@ -631,4 +631,3 @@ Includes Homebrew GCC paths and CommandLineTools SDK libraries."
   (define-key eat-char-mode-map (kbd "C-\\") 'my/eat-toggle-rime)
   (define-key eat-line-mode-map (kbd "C-\\") 'my/eat-toggle-rime)
   (add-hook 'eat-mode-hook 'my/eat-meow-setup))
-
