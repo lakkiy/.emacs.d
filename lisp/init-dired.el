@@ -40,6 +40,15 @@
   (keymap-set dired-mode-map "TAB" #'dired-subtree-toggle)
   (keymap-set dired-mode-map "<backtab>" #'dired-subtree-toggle))
 
+;;; sidebar
+(install-package 'dired-sidebar)
+
+(setq dired-sidebar-should-follow-file t
+      dired-sidebar-theme 'nerd-icons
+      dired-sidebar-subtree-line-prefix "  ")
+
+(keymap-global-set "C-x C-n" #'dired-sidebar-toggle-sidebar)
+
 ;;; icon
 (install-package 'nerd-icons-dired)
 (add-hook 'dired-mode-hook #'nerd-icons-dired-mode)
